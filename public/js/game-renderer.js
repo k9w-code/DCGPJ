@@ -70,7 +70,7 @@ function renderOpponentBoard(state, selectedAttacker, onSlotClick) {
         }
       } else {
         slot.classList.add('empty');
-        slot.textContent = '—';
+        // slot.textContent = '—'; // 削除
       }
       rowDiv.appendChild(slot);
     }
@@ -149,11 +149,16 @@ function renderUnitCard(unit, canAct) {
   return `
     <div class="unit-card${actedClass}${canActClass}" style="${borderStyle} background-image: url('${bgImage}');" title="${tooltip}">
       <div class="card-overlay">
-        <div class="unit-name">${unit.name}</div>
         <div class="keywords-display">${keywordBadges}</div>
         <div class="unit-stats">
-          <span class="atk">${unit.currentAttack}</span>
-          <span class="hp${isDamaged ? ' damaged' : ''}">${unit.currentHp}</span>
+          <div class="stat-badge atk-badge">
+            <span class="icon">⚔️</span>
+            <span class="val">${unit.currentAttack}</span>
+          </div>
+          <div class="stat-badge hp-badge">
+            <span class="icon">❤️</span>
+            <span class="val${isDamaged ? ' damaged' : ''}">${unit.currentHp}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -333,8 +338,8 @@ function renderHand(state, selectedCardIndex, onCardClick) {
   const isMyTurn = state.currentPlayerId === state.me.id;
   
   const handCount = state.me.hand.length;
-  const maxAngle = Math.min(30, handCount * 5); // 最大の傾き角度（全体で最大60度）
-
+  const maxAngle = Math.min(40, handCount * 8); // 広がりを大きく
+  
   state.me.hand.forEach((card, index) => {
     const hasTribeLevel = (card.colors || [card.color]).every(col => state.me.tribeLevels[col] >= card.cost);
     const canPlay = isMyTurn && state.me.sp >= card.cost && hasTribeLevel;
@@ -342,11 +347,9 @@ function renderHand(state, selectedCardIndex, onCardClick) {
     const el = document.createElement('div');
     el.className = `hand-card${selectedCardIndex === index ? ' selected' : ''}${!canPlay ? ' unplayable' : ''}`;
     
-    // 扇状（Fan）の計算
-    // index=0 が一番左。中央からの相対位置 (-1 to +1 の近い値) を出す
     const offset = handCount > 1 ? (index - (handCount - 1) / 2) : 0;
-    const angle = handCount > 1 ? offset * (maxAngle / ((handCount - 1) / 2)) : 0;
-    const translateY = Math.abs(offset) * 15; // 両端ほど下がる
+    const angle = handCount > 1 ? offset * (maxAngle / ((handCount - 1) || 1)) : 0;
+    const translateY = Math.abs(offset) * 20; // 両端の下げ幅を大きく
     
     // 選択中のカードやホバー時はCSS側で transform が上書きされるよう調整
     el.style.transform = `rotate(${angle}deg) translateY(${translateY}px)`;
@@ -389,12 +392,16 @@ function renderHand(state, selectedCardIndex, onCardClick) {
     };
 
     const statsText = card.type === 'unit'
-      ? `<div class="unit-stats" style="margin-top:auto;"><span class="atk">${card.attack}</span><span class="hp">${card.hp}</span></div>`
-      : `<div class="hc-stats" style="color:var(--accent); margin-top:auto; font-size:10px;">${card.abilityEffect || 'スペル'}</div>`;
+      ? `<div class="unit-stats" style="margin-top:auto;">
+          <div class="stat-badge atk-badge"><span class="icon">⚔️</span><span class="val">${card.attack}</span></div>
+          <div class="stat-badge hp-badge"><span class="icon">❤️</span><span class="val">${card.hp}</span></div>
+         </div>`
+      : `<div class="hc-stats" style="color:var(--accent); margin-top:auto; font-size:10px;">${card.abilityEffect || '期待値'}</div>`;
     
     el.innerHTML = `
       <div class="card-overlay">
         <div class="cost-gem" style="background:${colorBorders[0]};">${card.cost}</div>
+        ${statsText}
       </div>
     `;
 

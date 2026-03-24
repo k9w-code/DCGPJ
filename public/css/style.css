@@ -1062,21 +1062,80 @@ body {
   box-shadow: 0 0 20px rgba(34, 197, 94, 0.6) !important;
 }
 .unit-card.acted { opacity: 0.6; filter: grayscale(0.5); }
-.unit-name { font-size: 13px; font-weight: 700; text-align: center; color: #fff; text-shadow: 1px 1px 3px #000; }
-.keyword-badge {
-  font-size: 10px; padding: 2px 8px; border-radius: 4px;
-  background: rgba(99, 102, 241, 0.4); color: #c7d2fe; font-weight: bold;
-  border: 1px solid rgba(99, 102, 241, 0.6);
-}
-.keywords-display { display: flex; gap: 3px; flex-wrap: wrap; justify-content: center; }
+.unit-name { display: none; } /* 盤面では名前不要 */
 
-/* status-badge */
-.status-badge {
-  background: rgba(0,0,0,0.4);
-  padding: 3px 8px;
-  border-radius: 4px;
-  border: 1px solid rgba(255,255,255,0.1);
-  font-size: 13px;
+.keywords-display { 
+    position: absolute; top: 10px; left: 0; right: 0;
+    display: flex; gap: 3px; flex-wrap: wrap; justify-content: center; 
+    pointer-events: none;
+}
+.keyword-badge {
+  font-size: 9px; padding: 1px 6px; border-radius: 3px;
+  background: rgba(0,0,0,0.6); color: #fff; font-weight: bold;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* status-badge redesigned */
+.unit-stats {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  position: absolute;
+  bottom: 8px;
+  left: 0; right: 0;
+  pointer-events: none;
+}
+.stat-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0,0,0,0.7);
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(4px);
+  font-family: var(--font-fantasy);
+  font-weight: 900;
+  font-size: 18px;
+  color: #fff;
+  line-height: 1;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+.atk-badge { border-color: rgba(239, 68, 68, 0.6); }
+.hp-badge { border-color: rgba(34, 197, 94, 0.6); }
+.stat-badge .icon { font-size: 12px; opacity: 0.8; margin-top: -2px; }
+.stat-badge .val.damaged { color: #f87171; text-shadow: 0 0 8px #ef4444; }
+
+/* Hand card interactions */
+.hand-cards {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  perspective: 1000px;
+}
+.hand-card {
+  margin: 0 -40px; /* 重なりを調整 */
+  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), z-index 0s, filter 0.3s;
+  cursor: pointer;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+}
+.hand-card:hover {
+  filter: drop-shadow(0 15px 30px rgba(0,0,0,0.8));
+}
+
+/* Empty slots */
+.board-slot.empty {
+  border: 1px dashed rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.board-slot.empty::after {
+  content: "";
+  width: 20px; height: 20px;
+  border: 1px solid rgba(255,255,255,0.05);
+  transform: rotate(45deg);
 }
 
 /* animations */
