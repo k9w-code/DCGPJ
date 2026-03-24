@@ -196,13 +196,19 @@ window.showCardDetail = function(card) {
   document.getElementById('cd-cost').style.boxShadow = `0 0 20px ${COLOR_CSS[cardColor] || '#2563eb'}`;
   
   document.getElementById('cd-type').textContent = card.type === 'unit' ? 'Unit' : (card.type === 'shield' ? 'Shield' : 'Spell');
-  document.getElementById('cd-color').textContent = cardColor;
+  
+  const colorTag = document.getElementById('cd-color');
+  colorTag.innerHTML = `
+    <img src="/assets/images/icons/divine/${cardColor}.png" class="cd-color-icon" onerror="this.style.display='none'" alt="">
+    <span>${cardColor}</span>
+  `;
   
   const statsContainer = document.getElementById('cd-stats-container');
+  // 盤面データ（unitInstance）の場合は currentAttack/currentHp を優先する
   if (card.type === 'unit') {
     statsContainer.style.display = 'flex';
-    document.getElementById('cd-attack').textContent = card.attack;
-    document.getElementById('cd-hp').textContent = card.hp;
+    document.getElementById('cd-attack').textContent = card.currentAttack !== undefined ? card.currentAttack : card.attack;
+    document.getElementById('cd-hp').textContent = card.currentHp !== undefined ? card.currentHp : card.hp;
   } else {
     statsContainer.style.display = 'none';
   }

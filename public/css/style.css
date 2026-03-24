@@ -930,18 +930,52 @@ body {
   background-size: cover; background-position: center;
   border: 4px solid #fff; box-shadow: 0 20px 50px #000;
 }
+/* ✖ ボタン */
+.cd-close-btn {
+  position: absolute; top: -20px; right: -20px;
+  width: 50px; height: 50px; background: #e11d48;
+  border: 3px solid #fff; border-radius: 50%;
+  cursor: pointer; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 15px rgba(225, 29, 72, 0.6);
+  transition: all 0.2s ease;
+}
+.cd-close-btn:hover {
+  transform: scale(1.1); background: #fb7185;
+  box-shadow: 0 0 25px rgba(225, 29, 72, 0.9);
+}
+.cd-close-btn::before, .cd-close-btn::after {
+  content: ''; position: absolute;
+  width: 25px; height: 4px; background: #fff;
+  border-radius: 2px;
+}
+.cd-close-btn::before { transform: rotate(45deg); }
+.cd-close-btn::after { transform: rotate(-45deg); }
+
 .cd-info-area {
   flex: 1; display: flex; flex-direction: column; color: #fff;
 }
 .cd-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #b8860b; padding-bottom: 20px; margin-bottom: 20px; }
+
 .cd-cost {
   width: 80px; height: 80px; background: #2563eb; border-radius: 50%;
   border: 4px solid #60a5fa; display: flex; align-items: center; justify-content: center;
   font-size: 40px; font-weight: 900; font-family: var(--font-fantasy); box-shadow: 0 0 20px #2563eb;
 }
 .cd-name { font-size: 48px; font-family: var(--font-fantasy); text-shadow: 2px 2px 4px #000; }
+
 .cd-type-tags { display: flex; gap: 10px; margin-bottom: 30px; }
-.cd-type-tag, .cd-color-tag { font-size: 20px; padding: 5px 20px; background: rgba(255,255,255,0.1); border-radius: 20px; border: 1px solid #fff; }
+.cd-type-tag { font-size: 20px; padding: 5px 20px; background: rgba(255,255,255,0.1); border-radius: 20px; border: 1px solid #fff; }
+
+/* 神族タグ/アイコン */
+.cd-color-tag {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 20px; padding: 5px 20px;
+  background: rgba(255,255,255,0.1); border-radius: 20px; border: 1px solid #fff;
+}
+.cd-color-icon {
+  width: 32px; height: 32px; background-size: contain; background-repeat: no-repeat;
+}
 .cd-stats { display: flex; gap: 40px; margin-bottom: 40px; }
 .cd-stat { display: flex; align-items: center; gap: 10px; font-size: 36px; font-weight: 900; font-family: var(--font-fantasy); text-shadow: 2px 2px 4px #000; }
 .cd-stat-icon { font-size: 40px; }

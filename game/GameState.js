@@ -43,6 +43,7 @@ function createUnitInstance(cardData, ownerId) {
     cardId: cardData.id,
     artId: cardData.artId || cardData.id,
     name: cardData.name,
+    type: 'unit', // 詳細表示用にタイプを明示
     color: cardData.color,
     cost: cardData.cost,
     baseAttack: cardData.attack,
