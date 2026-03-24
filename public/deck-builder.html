@@ -63,13 +63,16 @@
     <!-- 右ペイン: 構築中のデッキ情報 -->
     <div class="deck-panel panel">
       <!-- デッキ保存/読み込みスロット -->
-      <div class="save-slots">
-        <div class="save-slot active" data-slot="0">1</div>
-        <div class="save-slot" data-slot="1">2</div>
-        <div class="save-slot" data-slot="2">3</div>
-        <div class="save-slot" data-slot="3">4</div>
-        <div class="save-slot" data-slot="4">5</div>
-        <button class="btn-save-deck" id="btn-save-deck" title="現在のデッキを保存">💾</button>
+      <div class="deck-builder-header">
+        <div class="header-left">
+          <button class="btn btn-secondary btn-icon" onclick="window.location.href='/'" title="ロビーに戻る">🏠</button>
+          <h1>DECK BUILDER</h1>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary" id="btn-reload-master" title="スプレッドシートから最新データを再取得">🔄 マスタ更新</button>
+          <div class="deck-slots" id="deck-slots"></div>
+          <button class="btn btn-primary" id="btn-save-deck" title="現在のデッキを保存">💾 保存</button>
+        </div>
       </div>
 
       <div class="deck-panel-header">

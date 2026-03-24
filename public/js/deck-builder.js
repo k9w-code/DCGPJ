@@ -102,6 +102,46 @@ function initUI() {
     });
   });
 
+  // マスターデータのリロード
+  const btnReload = document.getElementById('btn-reload-master');
+  if (btnReload) {
+    btnReload.addEventListener('click', async () => {
+      if (!confirm('スプレッドシートから最新のマスターデータを取得します。よろしいですか？')) return;
+      
+      const originalText = btnReload.textContent;
+      btnReload.disabled = true;
+      btnReload.textContent = '🔄 更新中...';
+      
+      try {
+        const res = await fetch('/api/reload', { method: 'POST' });
+        const result = await res.json();
+        
+        if (result.success) {
+          // データを再取得して表示を更新
+          const [cardsRes, shieldsRes] = await Promise.all([
+            fetch('/api/cards'),
+            fetch('/api/shields'),
+          ]);
+          allCards = await cardsRes.json();
+          allShields = await shieldsRes.json();
+          
+          alert(`更新完了！\nカード: ${result.counts.cards}枚\nシールド: ${result.counts.shields}種`);
+          renderGrid();
+          // 詳細プレビューが古い可能性があるのでクリア
+          document.getElementById('preview-content').innerHTML = '<p class="empty-msg">データが更新されました。再度選択してください。</p>';
+          document.getElementById('preview-content').classList.add('empty');
+        } else {
+          alert('更新に失敗しました: ' + result.error);
+        }
+      } catch (e) {
+        alert('通信エラーが発生しました: ' + e.message);
+      } finally {
+        btnReload.disabled = false;
+        btnReload.textContent = originalText;
+      }
+    });
+  }
+
   // デッキ保存スロット
   document.querySelectorAll('.save-slot').forEach(slot => {
     slot.addEventListener('click', () => {

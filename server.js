@@ -42,6 +42,20 @@ app.get('/api/cards', (req, res) => res.json(gameData.cards));
 app.get('/api/shields', (req, res) => res.json(gameData.shields));
 app.get('/api/keywords', (req, res) => res.json(gameData.keywordMap));
 
+// マスターデータ再読み込みAPI
+app.post('/api/reload', async (req, res) => {
+  try {
+    console.log('🔄 マスターデータのリロードを開始します...');
+    const newData = await loadAllData();
+    gameData = newData;
+    console.log(`✅ リロード完了: カード${gameData.cards.length}枚, シールド${gameData.shields.length}種`);
+    res.json({ success: true, message: 'Master data reloaded successfully', counts: { cards: gameData.cards.length, shields: gameData.shields.length } });
+  } catch (err) {
+    console.error('❌ リロードエラー:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // ルーム管理
 const rooms = new Map();
 // sessionId → { roomId, playerIndex } のマッピング（ページ遷移を跨ぐ）
