@@ -349,8 +349,8 @@ function renderHand(state, selectedCardIndex, onCardClick) {
     
     const offset = handCount > 1 ? (index - (handCount - 1) / 2) : 0;
     const angle = handCount > 1 ? offset * (maxAngle / ((handCount - 1) || 1)) : 0;
-    const translateX = offset * 35; // さらに広げて当たり判定を確保
-    const translateY = Math.abs(offset) * 20;
+    const translateX = offset * 60; // 大幅に広げて個々の当たり判定を確保
+    const translateY = Math.abs(offset) * 15;
 
     el.style.transform = `translateX(${translateX}px) rotate(${angle}deg) translateY(${translateY}px)`;
     el.style.setProperty('--fan-angle', `${angle}deg`);
@@ -367,20 +367,21 @@ function renderHand(state, selectedCardIndex, onCardClick) {
     const bgImage = `/assets/images/cards/${card.color}/${card.artId || card.id}.webp`;
     el.style.cssText += `${borderStyle} background-image: url('${bgImage}');`;
     
-    // Z-Index: 中央（offset=0）を一番高くする
-    const baseZ = 100 - Math.floor(Math.abs(offset) * 10);
+    // Z-Index: 標準的な重ね順（右が上）
+    const baseZ = index + 10;
     
     if (selectedCardIndex === index) {
-      el.style.transform = `translateX(${translateX}px) rotate(${angle}deg) translateY(-60px) scale(1.2)`;
-      el.style.zIndex = '1000';
+      el.style.transform = `translateX(${translateX}px) rotate(${angle}deg) translateY(-80px) scale(1.25)`;
+      el.style.zIndex = '3000';
     } else {
       el.style.zIndex = baseZ;
     }
     
     el.onmouseenter = () => {
       if (selectedCardIndex !== index) {
-        el.style.transform = `translateX(${translateX}px) rotate(${angle}deg) translateY(${translateY - 50}px) scale(1.15)`;
-        el.style.zIndex = '2000'; // ホバー時は絶対最前面
+        // ホバー時はさらに大きく浮かせて視認性を高める
+        el.style.transform = `translateX(${translateX}px) rotate(${angle}deg) translateY(${translateY - 60}px) scale(1.2)`;
+        el.style.zIndex = '3000'; 
       }
     };
     el.onmouseleave = () => {

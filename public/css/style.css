@@ -1114,7 +1114,7 @@ body {
   gap: 0;
 }
 .hand-card {
-  margin: 0 -20px; /* 重なりを大幅に緩和 */
+  margin: 0 -10px; /* 重なりを最小限にし、当たり判定を優先 */
   transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), z-index 0s, filter 0.3s;
   cursor: pointer;
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
