@@ -70,7 +70,7 @@ function renderOpponentBoard(state, selectedAttacker, onSlotClick) {
         }
       } else {
         slot.classList.add('empty');
-        // slot.textContent = '—'; // 削除
+        slot.textContent = ''; 
       }
       rowDiv.appendChild(slot);
     }
@@ -112,10 +112,10 @@ function renderPlayerBoard(state, selectedCard, selectedAttacker, onSlotClick) {
         slot.classList.add('empty');
         if (selectedCard !== null && selectedCard.type === 'unit') {
           slot.classList.add('can-place');
-          slot.textContent = '配置';
+          slot.textContent = ''; // '配置' を削除
           slot.addEventListener('click', () => onSlotClick('place_unit', row, lane));
         } else {
-          slot.textContent = '—';
+          slot.textContent = ''; // '—' を削除
         }
       }
       rowDiv.appendChild(slot);
@@ -349,10 +349,10 @@ function renderHand(state, selectedCardIndex, onCardClick) {
     
     const offset = handCount > 1 ? (index - (handCount - 1) / 2) : 0;
     const angle = handCount > 1 ? offset * (maxAngle / ((handCount - 1) || 1)) : 0;
-    const translateY = Math.abs(offset) * 20; // 両端の下げ幅を大きく
-    
-    // 選択中のカードやホバー時はCSS側で transform が上書きされるよう調整
-    el.style.transform = `rotate(${angle}deg) translateY(${translateY}px)`;
+    const translateX = offset * 25; // 左右に広げる
+    const translateY = Math.abs(offset) * 25; // 両端の下げ幅を大きく
+
+    el.style.transform = `translateX(${translateX}px) rotate(${angle}deg) translateY(${translateY}px)`;
     // ホバー時に角度を維持したまま浮かせるためにカスタムプロパティを使う（後日CSS連携）
     el.style.setProperty('--fan-angle', `${angle}deg`);
     
