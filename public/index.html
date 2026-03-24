@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DCG テストプレイ</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="lobby-container">
+    <div class="lobby-header">
+      <h1>DCG TESTPLAY</h1>
+      <p>デジタルカードゲーム テストプレイ環境</p>
+    </div>
+
+    <!-- モード選択 -->
+    <div class="lobby-section">
+      <h2>ゲームモード</h2>
+      <div class="mode-grid">
+        <div class="mode-card active" data-mode="pve" id="mode-pve">
+          <div class="icon">🤖</div>
+          <div class="label">vs NPC</div>
+          <div class="desc">AIと対戦</div>
+        </div>
+        <div class="mode-card" data-mode="pvp" id="mode-pvp">
+          <div class="icon">⚔️</div>
+          <div class="label">vs 人間</div>
+          <div class="desc">遠隔対戦</div>
+        </div>
+        <div class="mode-card" data-mode="spectate" id="mode-spectate">
+          <div class="icon">👁️</div>
+          <div class="label">観戦</div>
+          <div class="desc">NPC同士</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ルーム作成 -->
+    <div class="lobby-section panel" id="create-section">
+      <div class="form-group">
+        <label>プレイヤー名</label>
+        <input type="text" id="player-name" value="プレイヤー" placeholder="名前を入力">
+      </div>
+      <div class="form-group">
+        <label>ルーム名</label>
+        <input type="text" id="room-name" value="" placeholder="自動生成">
+      </div>
+      <button class="btn btn-primary" id="btn-create" style="width: 100%; margin-top: 8px;">ルームを作成</button>
+    </div>
+
+    <!-- PvPルーム一覧 -->
+    <div class="lobby-section" id="pvp-rooms" style="display: none;">
+      <h2>参加可能なルーム</h2>
+      <div class="room-list" id="room-list"></div>
+      <button class="btn btn-sm" id="btn-refresh" style="margin-top: 8px;">🔄 更新</button>
+    </div>
+
+    <!-- ステータス -->
+    <div class="lobby-section" id="status-section" style="display: none;">
+      <div class="panel" style="text-align: center;">
+        <p id="status-text" class="pulsing">接続中...</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/audio-manager.js"></script>
+  <script src="/js/lobby.js"></script>
+</body>
+</html>

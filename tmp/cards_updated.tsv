@@ -1,0 +1,41 @@
+id	art_id	name	color	rarity	type	token_flag	deck_limit	cost	atk	life	keywords	text	description	expansion
+R001	R001	フレイムソルジャー	red	1	unit	n	3	1	2	1			炎の兵士	001
+R002	R002	バーンメイジ	red	1	unit	n	3	2	2	2			炎を操る魔術師	001
+R003	R003	ファイアドレイク	red	1	unit	n	3	3	3	3			灼熱の飛竜	001
+R004	R004	マグマゴーレム	red	1	unit	n	3	4	4	4	taunt		溶岩の巨人	001
+R005	R005	インフェルノドラゴン	red	1	unit	n	3	5	5	5			地獄の業炎竜	001
+R006	R006	フレイムバースト	red	1	spell	n	3	2					炎の爆発	001
+R007	R007	ヘルファイア	red	1	spell	n	3	5					全体炎上	001
+R008	R008	灼熱の刃	red	1	spell	n	3	1					武器に炎を纏わせる	001
+B001	B001	アクアスカウト	blue	1	unit	n	3	1	1	2			水の斥候	001
+B002	B002	フロストメイジ	blue	1	unit	n	3	2	2	2			氷の魔術師	001
+B003	B003	タイダルナイト	blue	1	unit	n	3	3	2	4	barrier		潮流の騎士	001
+B004	B004	シーサーペント	blue	1	unit	n	3	4	3	5			大海蛇	001
+B005	B005	リヴァイアサン	blue	1	unit	n	3	6	5	6			深淵の海竜	001
+B006	B006	氷結の矢	blue	1	spell	n	3	2					凍てつく矢	001
+B007	B007	知恵の潮流	blue	1	spell	n	3	3					知識の波	001
+B008	B008	凍結	blue	1	spell	n	3	4					敵を凍りつかせる	001
+G001	G001	フォレストスカウト	green	1	unit	n	3	1	1	2	search_1		森の探索者	001
+G002	G002	エルフアーチャー	green	1	unit	n	3	2	2	3			森のエルフ弓兵	001
+G003	G003	トレント	green	1	unit	n	3	3	2	5	taunt		森の守護樹	001
+G004	G004	ユニコーン	green	1	unit	n	3	4	3	4			森の聖獣	001
+G005	G005	エンシェントドラゴン	green	1	unit	n	3	6	4	7			太古の竜	001
+G006	G006	自然の恵み	green	1	spell	n	3	2					生命の回復	001
+G007	G007	大地の力	green	1	spell	n	3	3					大地からの加護	001
+G008	G008	茨の壁	green	1	spell	n	3	4					茨で敵を貫く	001
+W001	W001	ライトソルジャー	white	1	unit	n	3	1	1	2	barrier		光の兵士	001
+W002	W002	ヒーラー	white	1	unit	n	3	2	1	3			聖なる癒し手	001
+W003	W003	ホーリーナイト	white	1	unit	n	3	3	3	3	rush		聖騎士	001
+W004	W004	ガーディアンエンジェル	white	1	unit	n	3	4	2	5	taunt,barrier		守護天使	001
+W005	W005	アークエンジェル	white	1	unit	n	3	6	4	6			大天使	001
+W006	W006	聖なる光	white	1	spell	n	3	2					光の治癒	001
+W007	W007	浄化の波動	white	1	spell	n	3	4					最も弱きを浄化	001
+W008	W008	神の盾	white	1	spell	n	3	3					味方にバリアを付与	001
+K001	K001	シャドウスカウト	black	1	unit	n	3	1	2	1	stealth		影の斥候	001
+K002	K002	ダークアサシン	black	1	unit	n	3	2	3	1	rush		闇の暗殺者	001
+K003	K003	ソウルリーパー	black	1	unit	n	3	3	3	2			魂の刈り取り	001
+K004	K004	デスナイト	black	1	unit	n	3	4	4	4	endure		不死の騎士	001
+K005	K005	デーモンロード	black	1	unit	n	3	6	6	5			魔界の王	001
+K006	K006	暗黒の矢	black	1	spell	n	3	1					闇の矢	001
+K007	K007	死の宣告	black	1	spell	n	3	5					対象を即死させる	001
+K008	K008	生命吸収	black	1	spell	n	3	3					HPを吸収する	001

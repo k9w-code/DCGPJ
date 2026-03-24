@@ -1,0 +1,41 @@
+ability_id	card_id	trigger	effect	value	target	text	condition
+R001_1	R001						
+R002_1	R002	on_play	damage	1	enemy_unit_1	炎を操る魔術師	
+R003_1	R003						
+R004_1	R004						
+R005_1	R005	on_attack	damage	2	enemy_unit_1	地獄の業炎竜	
+R006_1	R006	none	damage	3	enemy_unit_1	炎の爆発	
+R007_1	R007	none	damage_all	2	enemy_unit_1	全体炎上	
+R008_1	R008	none	buff_attack	2	enemy_unit_1	武器に炎を纏わせる	
+B001_1	B001						
+B002_1	B002	on_play	draw	1	enemy_unit_1	氷の魔術師	
+B003_1	B003						
+B004_1	B004	on_play	draw	1	enemy_unit_1	大海蛇	
+B005_1	B005	on_play	damage	3	enemy_unit_1	深淵の海竜	
+B006_1	B006	none	damage	2	enemy_unit_1	凍てつく矢	
+B007_1	B007	none	draw	2	enemy_unit_1	知識の波	
+B008_1	B008	none	freeze	1	enemy_unit_1	敵を凍りつかせる	
+G001_1	G001						
+G002_1	G002						
+G003_1	G003						
+G004_1	G004	on_play	heal_all	2	enemy_unit_1	森の聖獣	
+G005_1	G005	on_play	buff_hp_all	1	enemy_unit_1	太古の竜	
+G006_1	G006	none	heal	3	enemy_unit_1	生命の回復	
+G007_1	G007	none	buff_hp	3	enemy_unit_1	大地からの加護	
+G008_1	G008	none	damage	2	enemy_unit_1	茨で敵を貫く	
+W001_1	W001						
+W002_1	W002	on_play	heal	2	enemy_unit_1	聖なる癒し手	
+W003_1	W003						
+W004_1	W004						
+W005_1	W005	on_play	heal_all	3	enemy_unit_1	大天使	
+W006_1	W006	none	heal	3	enemy_unit_1	光の治癒	
+W007_1	W007	none	destroy_weakest	1	enemy_unit_1	最も弱きを浄化	
+W008_1	W008	none	grant_barrier	1	enemy_unit_1	味方にバリアを付与	
+K001_1	K001						
+K002_1	K002						
+K003_1	K003	on_kill	draw	1	enemy_unit_1	魂の刈り取り	
+K004_1	K004						
+K005_1	K005	on_play	damage_all	1	enemy_unit_1	魔界の王	
+K006_1	K006	none	damage	2	enemy_unit_1	闇の矢	
+K007_1	K007	none	destroy	1	enemy_unit_1	対象を即死させる	
+K008_1	K008	none	drain	2	enemy_unit_1	HPを吸収する	

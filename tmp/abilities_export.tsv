@@ -1,0 +1,27 @@
+ability_id	card_id	trigger	effect	value	target	condition
+R002_1	R002	on_play	damage	1		
+R005_1	R005	on_attack	damage	2		
+R006_1	R006	none	damage	3		
+R007_1	R007	none	damage_all	2		
+R008_1	R008	none	buff_attack	2		
+B002_1	B002	on_play	draw	1		
+B004_1	B004	on_play	draw	1		
+B005_1	B005	on_play	damage	3		
+B006_1	B006	none	damage	2		
+B007_1	B007	none	draw	2		
+B008_1	B008	none	freeze	1		
+G004_1	G004	on_play	heal_all	2		
+G005_1	G005	on_play	buff_hp_all	1		
+G006_1	G006	none	heal	3		
+G007_1	G007	none	buff_hp	3		
+G008_1	G008	none	damage	2		
+W002_1	W002	on_play	heal	2		
+W005_1	W005	on_play	heal_all	3		
+W006_1	W006	none	heal	3		
+W007_1	W007	none	destroy_weakest	1		
+W008_1	W008	none	grant_barrier	1		
+K003_1	K003	on_kill	draw	1		
+K005_1	K005	on_play	damage_all	1		
+K006_1	K006	none	damage	2		
+K007_1	K007	none	destroy	1		
+K008_1	K008	none	drain	2		

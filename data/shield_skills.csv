@@ -1,0 +1,11 @@
+id,name,effect_type,effect_value,description
+SS001,硬い守り,none,0,何も起きない。ただ硬いだけの盾。
+SS002,炎の報復,damage_all_enemy,3,相手の全ユニットに3ダメージ
+SS003,叡智の閃き,draw,2,カードを2枚引く
+SS004,生命の癒し,heal_all_ally,2,味方全ユニットのHPを2回復
+SS005,絶望の呪い,discard_random,2,相手の手札からランダムに2枚捨てさせる
+SS006,魂の覚醒,sp_gain,3,SPを3獲得
+SS007,虚無の嘲笑,damage_self,1,自分の全ユニットに1ダメージ（デメリット）
+SS008,逆襲の狼煙,summon_token,2,ATK2/HP2のトークンユニットを味方の空きレーンに配置
+SS009,神族の加護,level_up,1,任意の色の神族レベルを1上げる
+SS010,終焉の叫び,damage_all,1,全ユニット（味方含む）に1ダメージ（デメリット）

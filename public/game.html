@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DCG - ゲーム画面</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- フルHDスケール用コンテナ -->
+  <div class="game-wrapper" id="game-wrapper">
+    <div class="game-container" id="game-container">
+      
+      <!-- 画面左側：アバターとステータス -->
+      <div class="side-area left-side">
+        <!-- 相手アバター領域 (左上) -->
+        <div class="avatar-block opponent-block">
+          <div class="avatar-frame">
+            <div class="avatar-image opp-avatar"></div>
+            <div class="avatar-life" id="opp-life">20</div>
+          </div>
+          <div class="avatar-info">
+            <div class="player-name" id="opp-name">Opponent</div>
+            <div class="status-row">
+              <span class="status-badge" title="SP">SP: <span id="opp-sp">0</span></span>
+              <span class="status-badge" title="デッキ枚数">Deck: <span id="opp-deck">40</span></span>
+              <span class="status-badge" title="手札枚数">Hand: <span id="opp-hand">5</span></span>
+            </div>
+            <!-- 相手シールド -->
+            <div class="shields-display opp-shields" id="opp-shields"></div>
+            <!-- 相手の神族クリスタル -->
+            <div class="tribe-hud opp-crystals" id="opp-tribes"></div>
+          </div>
+        </div>
+
+        <div class="side-spacer"></div>
+
+        <!-- 自分アバター領域 (左下) -->
+        <div class="avatar-block player-block">
+          <div class="avatar-info">
+            <div class="player-name" id="my-name">You</div>
+            <div class="status-row">
+              <span class="status-badge" title="SP">SP: <span id="my-sp">0</span></span>
+              <span class="status-badge" title="デッキ枚数">Deck: <span id="my-deck">40</span></span>
+            </div>
+            <!-- 自分の神族クリスタル -->
+            <div class="tribe-hud my-crystals" id="my-tribes"></div>
+            <!-- 自分のシールド -->
+            <div class="shields-display my-shields" id="my-shields"></div>
+          </div>
+          <div class="avatar-frame">
+            <div class="avatar-image my-avatar"></div>
+            <div class="avatar-life" id="my-life">20</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 画面中央：3D盤面と手札 -->
+      <div class="center-area">
+        <!-- バトルフィールド -->
+        <div class="battlefield-container">
+          <div class="battlefield-3d" id="battlefield-3d">
+            <!-- 相手陣地（奥） -->
+            <div class="board-half opponent-half" id="opponent-board">
+              <!-- JSで back-row, front-row が入る -->
+            </div>
+            
+            <div class="battlefield-divider">
+              <div class="divider-glow"></div>
+            </div>
+            
+            <!-- 自陣地（手前） -->
+            <div class="board-half player-half" id="player-board">
+              <!-- JSで front-row, back-row が入る -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 手札領域 -->
+        <div class="hand-area-wrapper">
+          <div class="hand-area" id="hand-cards"></div>
+        </div>
+      </div>
+
+      <!-- 画面右側：ログとターン制御 -->
+      <div class="side-area right-side">
+        <div class="turn-indicator" id="turn-indicator">TURN 1</div>
+        <div class="settings-btn" id="settings-btn" title="設定">⚙️</div>
+        
+        <div class="log-panel glass-panel">
+          <div class="log-content" id="log-content"></div>
+        </div>
+        
+        <div class="action-panel glass-panel">
+          <div class="panel-subtitle">DIVINE CRYSTAL (COST: 1 SP)</div>
+          <!-- 神族レベルアップ操作用クリスタルボタン -->
+          <div class="crystal-buttons" id="tribe-raise-panel">
+            <div class="crystal-btn red" data-color="red" title="赤"></div>
+            <div class="crystal-btn blue" data-color="blue" title="青"></div>
+            <div class="crystal-btn green" data-color="green" title="緑"></div>
+            <div class="crystal-btn white" data-color="white" title="白"></div>
+            <div class="crystal-btn black" data-color="black" title="黒"></div>
+          </div>
+          <!-- 確定ボタン -->
+          <button class="btn btn-primary" id="btn-confirm-raise" style="display: none; width: 100%; margin-top: 10px; font-weight: bold;">レベルアップ確定</button>
+          
+          <button class="btn btn-primary btn-end-turn" id="btn-end-turn">
+            <span class="btn-text">TURN END</span>
+            <span class="btn-glow"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- マリガン画面 -->
+      <div class="overlay mulligan-overlay" id="mulligan-overlay" style="display: none;">
+        <div class="mulligan-panel glass-panel">
+          <h2>MULLIGAN</h2>
+          <p>初手の手札を引き直しますか？</p>
+          <div class="mulligan-cards" id="mulligan-cards">
+            <!-- 初期手札がここに並ぶ -->
+          </div>
+          <div class="mulligan-actions">
+            <button class="btn btn-primary" id="btn-keep">キープ</button>
+            <button class="btn" id="btn-mulligan">引き直し</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 勝敗画面 -->
+      <div class="overlay" id="result-overlay" style="display: none;">
+        <div class="result-panel glass-panel">
+          <div class="result-text" id="result-text"></div>
+          <button class="btn btn-primary" onclick="window.location.href='/'" style="margin-top: 30px;">ロビーに戻る</button>
+        </div>
+      </div>
+
+      <!-- アタックアロー (SVG) -->
+  <svg class="attack-arrow-svg" id="attack-arrow-svg" style="display: none;">
+    <defs>
+      <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+        <path d="M0,0 L10,5 L0,10 Z" fill="#ef4444" />
+      </marker>
+    </defs>
+    <line class="attack-arrow-line" id="attack-arrow-line" x1="0" y1="0" x2="0" y2="0" marker-end="url(#arrowhead)" />
+  </svg>
+
+  <!-- カード詳細モーダル (右クリック等で表示) -->
+      <div class="overlay card-detail-overlay" id="card-detail-overlay" style="display: none;">
+        <div class="card-detail-modal">
+          <div class="cd-image-area" id="cd-image">
+            <div class="cd-overlay"></div>
+          </div>
+          <div class="cd-info-area">
+            <div class="cd-header">
+              <div class="cd-cost" id="cd-cost">0</div>
+              <h2 class="cd-name" id="cd-name">カード名</h2>
+            </div>
+            <div class="cd-type-tags">
+              <span class="cd-type-tag" id="cd-type">Unit</span>
+              <span class="cd-color-tag" id="cd-color">Red</span>
+            </div>
+            <div class="cd-stats" id="cd-stats-container">
+              <div class="cd-stat"><span class="cd-stat-icon">⚔️</span><span id="cd-attack">0</span></div>
+              <div class="cd-stat"><span class="cd-stat-icon">❤️</span><span id="cd-hp">0</span></div>
+            </div>
+            <div class="cd-text-box">
+              <div class="cd-effect-text" id="cd-text">効果テキスト</div>
+              <div class="cd-flavor-text" id="cd-flavor">フレーバーテキスト</div>
+            </div>
+            <button class="btn btn-close-modal" id="btn-close-detail">閉じる</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 設定モーダル -->
+      <div class="overlay settings-overlay" id="settings-overlay" style="display: none;">
+        <div class="settings-panel glass-panel">
+          <h2>SETTINGS</h2>
+          <div class="settings-list">
+            <button class="btn btn-danger" id="btn-surrender" style="width: 100%; font-weight: bold;">投了 (SURRENDER)</button>
+            <button class="btn" onclick="document.getElementById('settings-overlay').style.display='none'" style="width: 100%;">戻る</button>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/audio-manager.js"></script>
+  <script src="/js/game-renderer.js"></script>
+  <script src="/js/game-client.js"></script>
+  
+  <script>
+    // ブラウザサイズに応じて 1920x1080 を維持・スケールダウンする処理
+    function resizeGame() {
+      const container = document.getElementById('game-container');
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      
+      const scaleX = windowWidth / 1920;
+      const scaleY = windowHeight / 1080;
+      const scale = Math.min(scaleX, scaleY);
+      
+      // メインコンテナのスケール
+      container.style.transform = `scale(${scale})`;
+      
+      // オーバーレイパネルのスケーリング（中央揃えを維持しつつ）
+      const overlays = ['.mulligan-panel', '.result-panel', '.card-detail-modal'];
+      overlays.forEach(sel => {
+        const el = document.querySelector(sel);
+        if (el) {
+          el.style.transform = `scale(${scale})`;
+        }
+      });
+    }
+    window.addEventListener('resize', resizeGame);
+    window.addEventListener('load', resizeGame);
+    resizeGame();
+  </script>
+
+  <!-- グローバル・オーバーレイ (body直下に配置してスタッキングコンテキストの問題を回避) -->
+  <!-- マリガン画面 -->
+  <div class="overlay mulligan-overlay" id="mulligan-overlay" style="display: none;">
+    <div class="mulligan-panel glass-panel">
+      <h2>MULLIGAN</h2>
+      <p>初手の手札を引き直しますか？</p>
+      <div class="mulligan-cards" id="mulligan-cards">
+        <!-- 初期手札がここに並ぶ -->
+      </div>
+      <div class="mulligan-actions">
+        <button class="btn btn-primary" id="btn-keep">キープ</button>
+        <button class="btn" id="btn-mulligan">引き直し</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 勝敗画面 -->
+  <div class="overlay" id="result-overlay" style="display: none;">
+    <div class="result-panel glass-panel">
+      <div class="result-text" id="result-text"></div>
+      <button class="btn btn-primary" onclick="window.location.href='/'" style="margin-top: 30px;">ロビーに戻る</button>
+    </div>
+  </div>
+
+  <!-- 先攻・後攻演出用オーバーレイ -->
+  <div class="overlay" id="turn-order-overlay" style="display: none; background: rgba(0,0,0,0.4); backdrop-filter: none; pointer-events: none;">
+    <div class="turn-order-panel">
+      <div class="turn-order-text" id="turn-order-text">YOU GO FIRST</div>
+    </div>
+  </div>
+</body>
+</html>
