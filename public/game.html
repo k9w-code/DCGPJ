@@ -220,35 +220,5 @@
     resizeGame();
   </script>
 
-  <!-- グローバル・オーバーレイ (body直下に配置してスタッキングコンテキストの問題を回避) -->
-  <!-- マリガン画面 -->
-  <div class="overlay mulligan-overlay" id="mulligan-overlay" style="display: none;">
-    <div class="mulligan-panel glass-panel">
-      <h2>MULLIGAN</h2>
-      <p>初手の手札を引き直しますか？</p>
-      <div class="mulligan-cards" id="mulligan-cards">
-        <!-- 初期手札がここに並ぶ -->
-      </div>
-      <div class="mulligan-actions">
-        <button class="btn btn-primary" id="btn-keep">キープ</button>
-        <button class="btn" id="btn-mulligan">引き直し</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 勝敗画面 -->
-  <div class="overlay" id="result-overlay" style="display: none;">
-    <div class="result-panel glass-panel">
-      <div class="result-text" id="result-text"></div>
-      <button class="btn btn-primary" onclick="window.location.href='/'" style="margin-top: 30px;">ロビーに戻る</button>
-    </div>
-  </div>
-
-  <!-- 先攻・後攻演出用オーバーレイ -->
-  <div class="overlay" id="turn-order-overlay" style="display: none; background: rgba(0,0,0,0.4); backdrop-filter: none; pointer-events: none;">
-    <div class="turn-order-panel">
-      <div class="turn-order-text" id="turn-order-text">YOU GO FIRST</div>
-    </div>
-  </div>
 </body>
 </html>

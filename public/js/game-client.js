@@ -300,8 +300,11 @@ if (btnSurrender) {
 
 function updateShieldAttackUI() {
   const opponentShields = document.getElementById('opp-shields');
+  if (!opponentShields) return;
+
   opponentShields.style.cursor = '';
   opponentShields.style.outline = '';
+  opponentShields.classList.remove('target-highlight');
   opponentShields.onclick = null;
   
   if (!selectedAttacker || !gameState) return;
@@ -309,13 +312,13 @@ function updateShieldAttackUI() {
   
   const { row, lane } = selectedAttacker;
   
-  // 攻撃可能対象（シールドが攻撃対象に含まれるか簡易チェック）
-  // 挑発がいなくて、正面の敵がいなければ攻撃可能
-  const hasTaunt = gameState.opponent.board.front.some(u => u && u.keywords && u.keywords.includes('taunt'));
+  // 挑発チェック (クライアント側の簡易判定を強化)
+  const isTaunt = (u) => u && (u.keywords || []).some(k => k.startsWith('taunt'));
+  const hasTaunt = gameState.opponent.board.front.some(isTaunt);
+
   if (!hasTaunt) {
     opponentShields.style.cursor = 'pointer';
-    opponentShields.style.outline = '2px solid var(--red)';
-    opponentShields.style.borderRadius = '8px';
+    opponentShields.classList.add('target-highlight');
     opponentShields.onclick = () => {
       const allDestroyed = gameState.opponent.totalShieldDurability <= 0;
       socket.emit('game_action', {
@@ -326,8 +329,7 @@ function updateShieldAttackUI() {
       });
       if (window.audioManager) window.audioManager.playSE('attack');
       selectedAttacker = null;
-      opponentShields.style.outline = '';
-      opponentShields.onclick = null;
+      updateUI();
     };
   }
 }

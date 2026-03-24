@@ -70,7 +70,7 @@ function getTauntTargets(opponentBoard) {
 function getValidAttackTargets(attackerRow, attackerLane, attackerUnit, opponentBoard, opponentShields) {
   const targets = [];
 
-  // 挑発チェック（前列のみ）
+  // 1. 挑発チェック (挑発はグローバルに優先)
   const tauntTargets = getTauntTargets(opponentBoard);
   if (tauntTargets.length > 0) {
     for (const t of tauntTargets) {
@@ -79,36 +79,31 @@ function getValidAttackTargets(attackerRow, attackerLane, attackerUnit, opponent
     return targets;
   }
 
-  // 相手の前列にユニットがいるか
-  const frontHasUnits = opponentBoard.front.some(u => u && !hasKeyword(u, 'stealth'));
-  
-  if (frontHasUnits) {
-    // 前列のユニットを攻撃可能
-    for (let lane = 0; lane < NUM_LANES; lane++) {
-      const unit = opponentBoard.front[lane];
-      if (unit && !hasKeyword(unit, 'stealth')) {
-        targets.push({ type: 'unit', row: 'front', lane, unit });
-      }
-    }
-  } else {
-    // 前列が空なら後列を攻撃可能
-    for (let lane = 0; lane < NUM_LANES; lane++) {
-      const unit = opponentBoard.back[lane];
-      if (unit && !hasKeyword(unit, 'stealth')) {
-        targets.push({ type: 'unit', row: 'back', lane, unit });
-      }
-    }
-    
-    // 後列にもユニットがいなければシールド/ダイレクトアタック
-    if (targets.length === 0) {
-      const hasShields = opponentShields.some(s => s && !s.destroyed && s.currentDurability > 0);
-      if (hasShields) {
-        targets.push({ type: 'shield' });
-      } else {
-        targets.push({ type: 'direct' });
-      }
-    }
+  // 2. 正面の判定
+  // 同レーンの前列を確認
+  const frontUnit = opponentBoard.front[attackerLane];
+  if (frontUnit && !hasKeyword(frontUnit, 'stealth')) {
+    targets.push({ type: 'unit', row: 'front', lane: attackerLane, unit: frontUnit });
+    return targets;
   }
+
+  // 同レーンの後列を確認
+  const backUnit = opponentBoard.back[attackerLane];
+  if (backUnit && !hasKeyword(backUnit, 'stealth')) {
+    targets.push({ type: 'unit', row: 'back', lane: attackerLane, unit: backUnit });
+    return targets;
+  }
+
+  // 3. 正面が空なら、シールドまたはダイレクトアタック可能
+  const hasShields = opponentShields.some(s => s && !s.destroyed && s.currentDurability > 0);
+  if (hasShields) {
+    targets.push({ type: 'shield' });
+  } else {
+    targets.push({ type: 'direct' });
+  }
+
+  // (オプション) 他のレーンの前列ユニットも攻撃対象に含める場合はここに追加しますが、
+  // 現状の「正面優先・空ならシールド」というルールに合わせてこれ以上追加しません。
 
   return targets;
 }
