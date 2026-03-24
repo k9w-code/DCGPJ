@@ -713,8 +713,7 @@ body {
   display: flex; flex-direction: column; gap: 40px;
   padding: 40px;
   background: 
-    radial-gradient(ellipse at center, rgba(30,40,90,0.5) 0%, transparent 80%),
-    url('data:image/svg+xml;utf8,<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg"><path d="M200 20L380 320L20 320Z" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="2"/><circle cx="200" cy="200" r="150" fill="none" stroke="rgba(139,92,246,0.1)" stroke-width="1"/></svg>');
+    radial-gradient(ellipse at center, rgba(30,40,90,0.5) 0%, transparent 80%);
   background-size: cover;
   border-radius: 40px;
   box-shadow: 0 0 50px rgba(139, 92, 246, 0.15);

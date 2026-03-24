@@ -349,11 +349,10 @@ function renderHand(state, selectedCardIndex, onCardClick) {
     
     const offset = handCount > 1 ? (index - (handCount - 1) / 2) : 0;
     const angle = handCount > 1 ? offset * (maxAngle / ((handCount - 1) || 1)) : 0;
-    const translateX = offset * 25; // 左右に広げる
-    const translateY = Math.abs(offset) * 25; // 両端の下げ幅を大きく
+    const translateX = offset * 35; // さらに広げて当たり判定を確保
+    const translateY = Math.abs(offset) * 20;
 
     el.style.transform = `translateX(${translateX}px) rotate(${angle}deg) translateY(${translateY}px)`;
-    // ホバー時に角度を維持したまま浮かせるためにカスタムプロパティを使う（後日CSS連携）
     el.style.setProperty('--fan-angle', `${angle}deg`);
     
     attachCardDetailEvent(el, card);
@@ -368,26 +367,26 @@ function renderHand(state, selectedCardIndex, onCardClick) {
     const bgImage = `/assets/images/cards/${card.color}/${card.artId || card.id}.webp`;
     el.style.cssText += `${borderStyle} background-image: url('${bgImage}');`;
     
-    // 選択時はtransformを固定化
+    // Z-Index: 中央（offset=0）を一番高くする
+    const baseZ = 100 - Math.floor(Math.abs(offset) * 10);
+    
     if (selectedCardIndex === index) {
-      el.style.transform = `rotate(${angle}deg) translateY(-40px) scale(1.15)`;
+      el.style.transform = `translateX(${translateX}px) rotate(${angle}deg) translateY(-60px) scale(1.2)`;
       el.style.zIndex = '1000';
     } else {
-      // 選択されていない時のZ-Index（右のカードほど上に来る一般的なDCG仕様）
-      el.style.zIndex = index + 10;
+      el.style.zIndex = baseZ;
     }
     
-    // JSのホバーイベントで扇状角度を考慮して浮かせる
     el.onmouseenter = () => {
       if (selectedCardIndex !== index) {
-        el.style.transform = `rotate(${angle}deg) translateY(${translateY - 30}px) scale(1.1)`;
-        el.style.zIndex = '1000';
+        el.style.transform = `translateX(${translateX}px) rotate(${angle}deg) translateY(${translateY - 50}px) scale(1.15)`;
+        el.style.zIndex = '2000'; // ホバー時は絶対最前面
       }
     };
     el.onmouseleave = () => {
       if (selectedCardIndex !== index) {
-        el.style.transform = `rotate(${angle}deg) translateY(${translateY}px)`;
-        el.style.zIndex = index + 10;
+        el.style.transform = `translateX(${translateX}px) rotate(${angle}deg) translateY(${translateY}px)`;
+        el.style.zIndex = baseZ;
       }
     };
 
