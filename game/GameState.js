@@ -68,6 +68,7 @@ function createUnitInstance(cardData, ownerId) {
 function createShieldInstance(shieldData) {
   return {
     id: shieldData.id,
+    type: 'shield',
     name: shieldData.name,
     skillId: shieldData.skillId,
     skill: shieldData.skill,

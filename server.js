@@ -113,13 +113,13 @@ io.on('connection', (socket) => {
           // ゲームが開始済みなら状態を送信
           if (room.engine) {
             const playerId = player.id;
-            // マリガン未完了の場合
+            const view = room.engine.getPlayerView(playerId);
+            // 常に現在の盤面状態を先に送る (背景描画用)
+            socket.emit('game_state', view);
+            
+            // マリガン未完了の場合のみ、追加でマリガン指示を送る
             if (room.engine.gameState.phase === 'mulligan' && !player.mulliganDone) {
-              const view = room.engine.getPlayerView(playerId);
               socket.emit('mulligan_phase', { hand: view.me.hand });
-            } else {
-              const view = room.engine.getPlayerView(playerId);
-              socket.emit('game_state', view);
             }
           }
           socket.emit('session_restored', { sessionId, roomId: currentRoom, playerId: player.id });
@@ -292,7 +292,7 @@ io.on('connection', (socket) => {
       const currentId = room.engine.gameState.playerOrder[room.engine.gameState.currentPlayerIndex];
       const currentPlayerObj = room.players.find(p => p.id === currentId);
       if (currentPlayerObj && currentPlayerObj.isAI) {
-        setTimeout(() => executeAITurn(room, currentPlayerObj), 800);
+        setTimeout(() => executeAITurn(room, currentPlayerObj), 1200);
       }
     } else {
       socket.emit('waiting_mulligan');
@@ -321,6 +321,9 @@ io.on('connection', (socket) => {
       case 'attack':
         result = room.engine.attackWithUnit(player.id, data.attackerRow, data.attackerLane, data.targetInfo);
         break;
+      case 'activate_ability':
+        result = room.engine.activateUnitAbility(player.id, data.unitRow, data.unitLane, data.abilityIndex);
+        break;
       case 'end_turn':
         result = room.engine.endTurn(player.id);
         break;
@@ -332,7 +335,10 @@ io.on('connection', (socket) => {
     }
 
     if (result && result.error) {
-      socket.emit('action_error', { message: result.error });
+      console.warn(`⚠️ アクションエラー [${player.name}]: ${result.error}`, { action: data.action, data });
+      socket.emit('error_msg', { message: result.error });
+      // エラー時も盤面情報を再送してクライアントと同期させる
+      sendGameStateToAll(room);
     } else {
       sendGameStateToAll(room);
 

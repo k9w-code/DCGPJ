@@ -37,7 +37,7 @@ function getAbilityTargets(targetId, currentPlayer, opponentPlayer, value) {
   }
 }
 
-function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer, cardMap, logs) {
+function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer, cardMap, logs, targetRow, targetLane) {
   // 複数アビリティ対応: unit.abilities があればそれを、なければ単一アビリティとして処理
   const abilities = unit.abilities && unit.abilities.length > 0 ? unit.abilities : [
     { trigger: unit.abilityTrigger, effect: unit.abilityEffect, value: unit.abilityValue, target: 'enemy_unit_1' }
@@ -51,9 +51,14 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
     const value = ability.value;
     const targetId = ability.target || 'enemy_unit_1';
 
+    // クライアントから明示的なターゲット(targetRow, targetLane)が指定されている場合、最優先でそれを使用
+    const manualTarget = (targetRow !== undefined && targetRow !== null && targetLane !== undefined && targetLane !== null) 
+      ? (targetId.includes('self') ? currentPlayer.board[targetRow][targetLane] : opponentPlayer.board[targetRow][targetLane])
+      : null;
+
     switch (effect) {
       case 'damage': {
-        const targets = getAbilityTargets(targetId, currentPlayer, opponentPlayer, value);
+        const targets = manualTarget ? [manualTarget] : getAbilityTargets(targetId, currentPlayer, opponentPlayer, value);
         targets.forEach(target => {
           if (target.instanceId) { // ユニットの場合
             target.currentHp -= value;
@@ -64,9 +69,11 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
         });
         break;
       }
-      case 'damage_all': {
+      case 'damage_all':
+      case 'damage_all_enemy': {
         // 全体ダメージはターゲット指定を無視して相手全ユニット（または指定された範囲）に
-        const targets = targetId.includes('enemy') || targetId === 'all_units' ? getAbilityTargets('enemy_unit_all', currentPlayer, opponentPlayer) : [];
+        const tType = effect === 'damage_all' ? 'all_units' : 'enemy_unit_all';
+        const targets = getAbilityTargets(tType, currentPlayer, opponentPlayer);
         targets.forEach(target => {
           target.currentHp -= value;
           logs.push(`🔥 ${unit.name} のアビリティ発動！${target.name} に ${value} ダメージ (HP: ${target.currentHp})`);
@@ -75,7 +82,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
         break;
       }
       case 'heal': {
-        const targets = getAbilityTargets(targetId === 'enemy_unit_1' ? 'self_unit_1' : targetId, currentPlayer, opponentPlayer, value);
+        const targets = manualTarget ? [manualTarget] : getAbilityTargets(targetId === 'enemy_unit_1' ? 'self_unit_1' : targetId, currentPlayer, opponentPlayer, value);
         targets.forEach(target => {
           if (target.instanceId) {
             const healed = Math.min(value, target.maxHp - target.currentHp);
@@ -102,14 +109,22 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
         break;
       }
       case 'buff_attack': {
-        const targets = getAbilityTargets(targetId, currentPlayer, opponentPlayer, value);
+        const targets = manualTarget ? [manualTarget] : getAbilityTargets(targetId, currentPlayer, opponentPlayer, value);
         const target = targets.length > 0 ? targets[0] : unit; // 指定がなければ自分
         target.currentAttack += value;
         logs.push(`⬆️ ${unit.name} のアビリティ発動！${target.name} 攻撃力+${value} (ATK: ${target.currentAttack})`);
         break;
       }
+      case 'buff_attack_all': {
+        const targets = getAbilityTargets('self_unit_all', currentPlayer, opponentPlayer);
+        targets.forEach(target => {
+          target.currentAttack += value;
+          logs.push(`⬆️ ${unit.name} のアビリティ発動！${target.name} 攻撃力+${value}`);
+        });
+        break;
+      }
       case 'buff_hp': {
-        const targets = getAbilityTargets(targetId, currentPlayer, opponentPlayer, value);
+        const targets = manualTarget ? [manualTarget] : getAbilityTargets(targetId, currentPlayer, opponentPlayer, value);
         const target = targets.length > 0 ? targets[0] : unit;
         target.currentHp += value;
         target.maxHp += value;
@@ -128,6 +143,15 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
       case 'sp_gain': {
         currentPlayer.sp += value;
         logs.push(`💰 ${unit.name} のアビリティ発動！SP+${value} (SP: ${currentPlayer.sp})`);
+        break;
+      }
+      case 'discard_random': {
+        for (let i = 0; i < value && opponentPlayer.hand.length > 0; i++) {
+          const idx = Math.floor(Math.random() * opponentPlayer.hand.length);
+          const discarded = opponentPlayer.hand.splice(idx, 1)[0];
+          logs.push(`✋ ${unit.name} のアビリティ発動！相手の手札を ${i+1} 枚破棄`);
+          events.push({ type: 'ability_discard', player: opponentPlayer.id });
+        }
         break;
       }
       default:
@@ -188,6 +212,8 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
           target.currentHp -= value;
           logs.push(`🔥 スペル「${card.name}」: ${target.name} に ${value} ダメージ (HP: ${target.currentHp})`);
           if (target.currentHp <= 0) events.push({ type: 'spell_kill', target: target.instanceId, row: t.row, lane: t.lane });
+        } else {
+          logs.push(`💨 スペル「${card.name}」: 対象がいないため不発`);
         }
       }
       break;
@@ -293,12 +319,52 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
         
         const allies = [];
         forEachUnit(currentPlayer.board, u => { if (u.currentHp < u.maxHp) allies.push(u); });
+        
         if (allies.length > 0) {
           allies.sort((a, b) => a.currentHp - b.currentHp);
           const healed = Math.min(value, allies[0].maxHp - allies[0].currentHp);
           allies[0].currentHp += healed;
           logs.push(`💚 ${allies[0].name} を ${healed} 回復`);
         }
+      } else {
+        logs.push(`💨 スペル「${card.name}」: 対象がいないため不発`);
+      }
+      break;
+    }
+    case 'sp_gain': {
+      currentPlayer.sp += value;
+      logs.push(`💰 スペル「${card.name}」: SP+${value} (SP: ${currentPlayer.sp})`);
+      break;
+    }
+    case 'damage_all_enemy': {
+      forEachUnit(opponentPlayer.board, (target, row, lane) => {
+        target.currentHp -= value;
+        logs.push(`🔥 スペル「${card.name}」: ${target.name} に ${value} ダメージ`);
+        if (target.currentHp <= 0) events.push({ type: 'spell_kill', target: target.instanceId, row, lane });
+      });
+      break;
+    }
+    case 'buff_attack_all': {
+      forEachUnit(currentPlayer.board, (target) => {
+        target.currentAttack += value;
+        logs.push(`⬆️ スペル「${card.name}」: ${target.name} の攻撃力+${value}`);
+      });
+      break;
+    }
+    case 'buff_hp_all': {
+      forEachUnit(currentPlayer.board, (target) => {
+        target.currentHp += value;
+        target.maxHp += value;
+        logs.push(`⬆️ スペル「${card.name}」: ${target.name} のHP+${value}`);
+      });
+      break;
+    }
+    case 'discard_random': {
+      for (let i = 0; i < value && opponentPlayer.hand.length > 0; i++) {
+        const idx = Math.floor(Math.random() * opponentPlayer.hand.length);
+        const discarded = opponentPlayer.hand.splice(idx, 1)[0];
+        logs.push(`✋ スペル「${card.name}」: 相手の手札を ${i+1} 枚破棄`);
+        events.push({ type: 'spell_discard', player: opponentPlayer.id });
       }
       break;
     }

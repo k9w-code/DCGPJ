@@ -18,10 +18,11 @@ let activeTab = 'cards';
 let activeColors = new Set(['red', 'blue', 'green', 'white', 'black']);
 let activeType = 'all';
 let activeCost = 'all';
+let activeSearchText = '';
+let activeKeyword = 'all';
 let currentPreviewItem = null;
 let currentSaveSlot = 0;
 
-const COLOR_NAMES = { red: '赤', blue: '青', green: '緑', white: '白', black: '黒' };
 const SAVE_KEY_PREFIX = 'dcg_deck_slot_';
 
 // セッション復帰
@@ -43,12 +44,38 @@ async function loadData() {
   allCards = await cardsRes.json();
   allShields = await shieldsRes.json();
   
+  console.log('Data loaded:', { cards: allCards.length, shields: allShields.length });
+  updateKeywordDropdown();
   loadDeckFromSlot(currentSaveSlot);
   initUI();
   renderGrid();
   renderDeckList();
   renderShieldSlotsList();
   updateSubmitButton();
+}
+
+function updateKeywordDropdown() {
+  const keywordSet = new Set();
+  allCards.forEach(c => {
+    if (c.keywords && Array.isArray(c.keywords)) {
+      c.keywords.forEach(kw => keywordSet.add(kw));
+    }
+  });
+  
+  const select = document.getElementById('keyword-filter');
+  if (!select) return;
+  
+  // 初期化 (最初の1つ以外を消す)
+  while (select.options.length > 1) {
+    select.remove(1);
+  }
+  
+  Array.from(keywordSet).sort().forEach(kw => {
+    const opt = document.createElement('option');
+    opt.value = kw;
+    opt.textContent = kw;
+    select.appendChild(opt);
+  });
 }
 
 function initUI() {
@@ -102,6 +129,24 @@ function initUI() {
     });
   });
 
+  // フィルタ：検索窓
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      activeSearchText = e.target.value.trim();
+      renderGrid();
+    });
+  }
+
+  // フィルタ：キーワードプルダウン
+  const keywordFilter = document.getElementById('keyword-filter');
+  if (keywordFilter) {
+    keywordFilter.addEventListener('change', (e) => {
+      activeKeyword = e.target.value;
+      renderGrid();
+    });
+  }
+
   // マスターデータのリロード
   const btnReload = document.getElementById('btn-reload-master');
   if (btnReload) {
@@ -142,6 +187,18 @@ function initUI() {
     });
   }
 
+  // デッキ保存スロットの生成と初期化
+  const slotsContainer = document.getElementById('deck-slots');
+  if (slotsContainer && slotsContainer.children.length === 0) {
+    for (let i = 0; i < 3; i++) {
+      const slot = document.createElement('div');
+      slot.className = `save-slot${i === currentSaveSlot ? ' active' : ''}`;
+      slot.dataset.slot = i;
+      slot.textContent = i + 1;
+      slotsContainer.appendChild(slot);
+    }
+  }
+
   // デッキ保存スロット
   document.querySelectorAll('.save-slot').forEach(slot => {
     slot.addEventListener('click', () => {
@@ -159,15 +216,25 @@ function initUI() {
   document.getElementById('btn-save-deck').addEventListener('click', () => {
     saveDeckToSlot(currentSaveSlot);
   });
+
+  // 詳細モーダルの閉じるボタン初期化
+  const btnCloseDetail = document.getElementById('btn-close-detail');
+  if (btnCloseDetail) {
+    btnCloseDetail.onclick = () => {
+      document.getElementById('card-detail-overlay').style.display = 'none';
+    };
+  }
 }
 
 function getColorCSS(color) {
+  const c = (color || 'neutral').toLowerCase();
   const map = { red: '#ef4444', blue: '#3b82f6', green: '#22c55e', white: '#e2e8f0', black: '#8b5cf6', neutral: '#9ca3af' };
-  return map[color] || '#666';
+  return map[c] || '#666';
 }
 
 function getCardImagePath(card) {
-  const folder = card.colors && card.colors.length > 0 ? card.colors[0] : card.color;
+  const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
+  const folder = colors[0].toLowerCase() === 'neutral' ? 'rainbow' : colors[0].toLowerCase();
   const fileName = card.artId || card.id;
   return `/assets/images/cards/${folder}/${fileName}.webp`;
 }
@@ -194,6 +261,7 @@ function saveDeckToSlot(slotIndex) {
   const data = { deck, selectedShields };
   try {
     localStorage.setItem(SAVE_KEY_PREFIX + slotIndex, JSON.stringify(data));
+    if (window.audioManager) window.audioManager.playSE('levelUp');
     // 視覚的フィードバック
     const slot = document.querySelector(`.save-slot[data-slot="${slotIndex}"]`);
     slot.classList.add('saved-flash');
@@ -243,19 +311,40 @@ function renderCardGrid() {
   grid.innerHTML = '';
   
   const filtered = allCards.filter(c => {
-    const colors = c.colors && c.colors.length > 0 ? c.colors : [c.color];
-    const isNeutral = c.color === 'neutral' || !c.color;
-    const passColor = isNeutral ? true : colors.some(col => activeColors.has(col));
-    const passType = activeType === 'all' || c.type === activeType;
+    const colors = c.colors && c.colors.length > 0 ? c.colors : [c.color || 'neutral'];
+    const passColor = colors.some(col => {
+      const colLower = col.toLowerCase();
+      return colLower === 'neutral' || activeColors.has(colLower);
+    });
+    
+    const passType = activeType === 'all' || (c.type || '').toLowerCase() === activeType.toLowerCase();
     let passCost = true;
     if (activeCost !== 'all') {
       if (activeCost === '7+') passCost = c.cost >= 7;
       else passCost = c.cost === parseInt(activeCost);
     }
-    return passColor && passType && passCost;
+    
+    // 検索テキストによるフィルタ (名称またはテキスト)
+    const passSearch = !activeSearchText || 
+      (c.name && c.name.includes(activeSearchText)) || 
+      (c.text && c.text.includes(activeSearchText));
+      
+    // キーワードによるフィルタ (完全一致)
+    const passKeyword = activeKeyword === 'all' || 
+      (c.keywords && c.keywords.includes(activeKeyword));
+
+    return passColor && passType && passCost && passSearch && passKeyword;
   });
   
-  filtered.sort((a, b) => a.cost - b.cost || (a.colors ? a.colors[0] : a.color).localeCompare(b.colors ? b.colors[0] : b.color));
+  console.log(`Rendering Grid: Tab=${activeTab}, Total=${allCards.length}, Filtered=${filtered.length}`);
+  
+  filtered.sort((a, b) => {
+    const costDiff = (a.cost || 0) - (b.cost || 0);
+    if (costDiff !== 0) return costDiff;
+    const colorA = (a.colors && a.colors.length > 0 ? a.colors[0] : (a.color || 'neutral')).toLowerCase();
+    const colorB = (b.colors && b.colors.length > 0 ? b.colors[0] : (b.color || 'neutral')).toLowerCase();
+    return colorA.localeCompare(colorB);
+  });
 
   for (const card of filtered) {
     const count = deck[card.id] || 0;
@@ -284,6 +373,12 @@ function renderCardGrid() {
     
     el.addEventListener('click', () => showPreview('card', card));
     el.addEventListener('contextmenu', (e) => { e.preventDefault(); removeFromDeck(card.id); });
+    
+    // バトル画面と同じ詳細表示を有効化
+    if (typeof attachCardDetailEvent === 'function') {
+      attachCardDetailEvent(el, card);
+    }
+    
     grid.appendChild(el);
   }
   
@@ -329,8 +424,26 @@ function showPreview(type, data) {
     const keywordHtml = data.keywords && data.keywords.length > 0 
       ? `<div class="preview-keywords">${data.keywords.map(kw => `<span class="kw-badge">${kw}</span>`).join('')}</div>` 
       : '';
-    // text (アビリティ記述列) を優先表示。なければ abilityEffect。
-    const descText = data.text || data.abilityEffect || 'アビリティを持たない。';
+
+    // アビリティリストの表示 (複数能力対応)
+    let abilitiesHtml = '';
+    if (data.abilities && data.abilities.length > 0) {
+      abilitiesHtml = `
+        <div class="cd-abilities-list">
+          ${data.abilities.map(a => `
+            <div class="ability-item">
+              ${a.trigger && a.trigger !== 'none' ? `<span class="ability-trigger">${a.trigger.replace('on_', '').toUpperCase()}</span>` : ''}
+              ${a.text || a.effect || ''}
+            </div>
+          `).join('')}
+        </div>
+      `;
+    } else if (data.text || data.abilityEffect) {
+      abilitiesHtml = `<div class="cd-abilities-list"><div class="ability-item">${data.text || data.abilityEffect}</div></div>`;
+    } else {
+      abilitiesHtml = '<div class="ability-item" style="border:none;">アビリティを持たない。</div>';
+    }
+
     const flavorHtml = data.flavorText ? `<div class="preview-flavor">${data.flavorText}</div>` : '';
     const statsHtml = data.type === 'unit' 
       ? `<div class="preview-stats"><span class="ps-atk">⚔ ${data.attack}</span><span class="ps-hp">❤ ${data.hp}</span></div>` 
@@ -340,12 +453,12 @@ function showPreview(type, data) {
       <div class="preview-card-image" style="background-image: url('${bgImage}')"></div>
       <div class="preview-info">
         <div class="preview-title">
-          <span class="preview-cost" style="background:${getColorCSS(data.color)};">${data.cost}</span>
+          <span class="preview-cost" style="background-image: url('/assets/images/icon/divine/${(data.color || 'neutral').toLowerCase()}.png');">${data.cost}</span>
           <h2>${data.name}</h2>
         </div>
         ${statsHtml}
         ${keywordHtml}
-        <div class="preview-desc">${descText}</div>
+        <div class="preview-desc">${abilitiesHtml}</div>
         ${flavorHtml}
       </div>
       
@@ -397,6 +510,7 @@ function addToDeck(card) {
   const current = deck[card.id] || 0;
   if (current >= (card.maxCopies || 3)) return;
   deck[card.id] = current + 1;
+  if (window.audioManager) window.audioManager.playSE('draw');
   renderGrid();
   renderDeckList();
   updateSubmitButton();
@@ -406,6 +520,7 @@ function removeFromDeck(cardId) {
   if (!deck[cardId]) return;
   deck[cardId]--;
   if (deck[cardId] <= 0) delete deck[cardId];
+  if (window.audioManager) window.audioManager.playSE('draw');
   renderGrid();
   renderDeckList();
   updateSubmitButton();
@@ -417,6 +532,7 @@ function toggleShield(shieldId) {
   } else if (selectedShields.length < 3) {
     selectedShields.push(shieldId);
   }
+  if (window.audioManager) window.audioManager.playSE('click');
   renderGrid();
   renderShieldSlotsList();
   updateSubmitButton();
@@ -443,6 +559,12 @@ function renderDeckList() {
       <span class="de-copies">×${count}</span>
     `;
     el.addEventListener('click', () => { showPreview('card', card); });
+    
+    // デッキリスト内でも詳細表示を有効化
+    if (typeof attachCardDetailEvent === 'function') {
+      attachCardDetailEvent(el, card);
+    }
+    
     list.appendChild(el);
   }
 }

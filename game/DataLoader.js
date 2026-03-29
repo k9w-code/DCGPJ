@@ -92,7 +92,7 @@ async function loadAllData() {
       color: row.color ? row.color.split(',')[0].trim() : 'neutral',
       rarity: parseInt(row.rarity || 1),
       type: row.type || 'unit',
-      isToken: row.token_flag === 'y',
+      isToken: row.token_flag === 'y' || row.token_flag === '1' || row.token_flag === 'true',
       cost: parseInt(row.cost) || 0,
       attack: parseInt(row.atk || row.attack) || 0,
       hp: parseInt(row.life || row.hp) || 0,
@@ -115,6 +115,7 @@ async function loadAllData() {
   // シールドデータの構築（ターゲット指定と表示テキスト追加）
   const shields = shieldsRaw.filter(row => row.id).map(row => ({
     id: row.id,
+    type: 'shield',
     name: row.name,
     durability: parseInt(row.life) || 1,
     skill: {

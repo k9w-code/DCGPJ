@@ -15,6 +15,16 @@ document.querySelectorAll('.mode-card').forEach(card => {
     document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
     card.classList.add('active');
     selectedMode = card.dataset.mode;
+      
+    const btnCreate = document.getElementById('btn-create');
+    if (selectedMode === 'pve') {
+      btnCreate.textContent = 'PvEで開始';
+    } else if (selectedMode === 'spectate') {
+      btnCreate.textContent = '観戦を開始';
+    } else { // This covers 'pvp'
+      btnCreate.textContent = 'ルームを作成';
+    }
+
     document.getElementById('pvp-rooms').style.display = selectedMode === 'pvp' ? 'block' : 'none';
     if (selectedMode === 'pvp') socket.emit('get_rooms');
   });

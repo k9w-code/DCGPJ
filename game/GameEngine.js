@@ -62,16 +62,19 @@ class GameEngine {
 
   processMulligan(playerId, doMulligan) {
     const player = this.gameState.players[playerId];
-    if (!player) return null;
+    if (!player) {
+      console.warn(`⚠️ processMulligan: プレイヤー ${playerId} が見つかりません`);
+      return null;
+    }
 
     if (doMulligan) {
       const handCardIds = player.hand.map(c => c.id);
       player.deck = shuffleDeck([...player.deck, ...handCardIds]);
       player.hand = [];
       drawCards(player, this.cardMap, INITIAL_HAND_SIZE);
-      this.log(`🔄 ${player.name}: フルマリガン実行！`);
+      this.log(`🔄 ${player.name}: フルマリガン実行！ (新手札: ${player.hand.map(c => c.name).join(', ')})`);
     } else {
-      this.log(`✅ ${player.name}: マリガンなし`);
+      this.log(`✅ ${player.name}: マリガンなし (キープ)`);
     }
     return this.getGameStateForClients();
   }
@@ -104,17 +107,14 @@ class GameEngine {
     current.sp += spGain;
     this.log(`💰 ${current.name}: SP+${spGain} (SP: ${current.sp})`);
 
+    // ターン開始時にフラグを更新
     gs.isFirstTurn[current.id] = false;
 
     // ユニットの行動可能状態をリセット（全列走査）
     forEachUnit(current.board, (unit) => {
       unit.hasActed = false;
-      if (unit.summonedThisTurn) {
-        unit.summonedThisTurn = false;
-        unit.canAttack = hasKeyword(unit, 'rush');
-      } else {
-        unit.canAttack = true;
-      }
+      unit.summonedThisTurn = false; 
+      unit.canAttack = true;
     });
 
     gs.phase = 'main';
@@ -188,7 +188,7 @@ class GameEngine {
       const rowLabel = targetRow === 'front' ? '前列' : '後列';
       this.log(`🃏 ${player.name}: ${card.name} を${rowLabel}レーン${targetLane + 1}に配置 (SP: ${player.sp})`);
 
-      const events = processAbility('on_play', unit, gs, player, opponent, this.cardMap, gs.logs);
+      const events = processAbility('on_play', unit, gs, player, opponent, this.cardMap, gs.logs, targetRow, targetLane);
       this.processEvents(events, player, opponent);
 
       if (hasKeyword(unit, 'search')) {
@@ -225,6 +225,18 @@ class GameEngine {
     const validTargets = getValidAttackTargets(attackerRow, attackerLane, attacker, opponent.board, opponent.shields);
     if (validTargets.length === 0) return { error: '攻撃対象がありません' };
 
+    // ターゲットの妥当性チェック
+    const isTargetValid = validTargets.some(t => {
+      if (t.type !== targetInfo.type) return false;
+      if (t.type === 'unit') {
+        return t.row === targetInfo.row && t.lane === targetInfo.lane;
+      }
+      return true; // shield, direct
+    });
+
+    if (!isTargetValid) {
+      return { error: '無効な攻撃対象です（挑発ユニットがいるか、正面の敵を優先する必要があります）' };
+    }
     // 潜伏解除
     if (attacker.stealthActive) {
       attacker.stealthActive = false;
@@ -278,6 +290,45 @@ class GameEngine {
 
     this.processEvents(abilityEvents, player, opponent);
     this.cleanupDeadUnits();
+    return this.getGameStateForClients();
+  }
+
+  activateUnitAbility(playerId, unitRow, unitLane, abilityIndex) {
+    const gs = this.gameState;
+    const player = gs.players[playerId];
+    if (!player || gs.phase !== 'main') return { error: 'アクション不可' };
+    const currentPlayerId = gs.playerOrder[gs.currentPlayerIndex];
+    if (playerId !== currentPlayerId) return { error: '自分のターンではありません' };
+
+    const unit = getBoardUnit(player.board, unitRow, unitLane);
+    if (!unit) return { error: 'ユニットがいません' };
+    if (unit.hasActed) return { error: 'このユニットはすでに行動済みです' };
+
+    const ability = unit.abilities && unit.abilities[abilityIndex];
+    if (!ability || ability.trigger !== 'activate') return { error: '起動能力が見つかりません' };
+
+    // コストチェック (例: condition が "sp:1" の場合)
+    if (ability.condition && ability.condition.startsWith('sp:')) {
+      const cost = parseInt(ability.condition.split(':')[1]) || 0;
+      if (player.sp < cost) return { error: `SPが足りません（必要: ${cost}）` };
+      player.sp -= cost;
+      this.log(`💰 ${player.name}: SP を ${cost} 消費して能力を発動`);
+    }
+
+    this.log(`⚡ ${unit.name} の起動能力発動！: ${ability.text || ''}`);
+    
+    // 処理実行
+    // processAbility はトリガーが一致するものすべてを処理するため、一時的に個別の能力として渡すか、
+    // あるいは trigger 文字列を工夫する必要があります。ここでは対象の1つだけを処理するようにラップします。
+    const originalAbilities = unit.abilities;
+    unit.abilities = [ability]; // 一時的に対象のみにする
+    const events = processAbility('activate', unit, gs, player, getOpponentPlayer(gs), this.cardMap, gs.logs);
+    unit.abilities = originalAbilities; // 戻す
+
+    unit.hasActed = true;
+    this.processEvents(events, player, getOpponentPlayer(gs));
+    this.cleanupDeadUnits();
+    
     return this.getGameStateForClients();
   }
 

@@ -51,6 +51,13 @@
               <button class="pill" data-cost="7+">7+</button>
             </div>
           </div>
+          <!-- 検索/キーワードフィルタ -->
+          <div class="search-filter-bar">
+            <input type="text" id="search-input" placeholder="カード名・テキスト検索..." class="glass-input">
+            <select id="keyword-filter" class="glass-select">
+              <option value="all">すべてのキーワード</option>
+            </select>
+          </div>
         </div>
       </div>
       
@@ -95,12 +102,42 @@
         </div>
       </div>
       
-      <button class="btn btn-primary btn-start-game" id="btn-submit-deck" disabled>START GAME</button>
+    <button class="btn btn-primary btn-start-game" id="btn-submit-deck" disabled>START GAME</button>
+    </div>
+  </div>
+
+  <!-- カード詳細モーダル (バトル画面共通仕様) -->
+  <div class="overlay card-detail-overlay" id="card-detail-overlay" style="display: none;">
+    <div class="card-detail-modal">
+      <div class="cd-close-btn" id="btn-close-detail"></div>
+      <div class="cd-image-area" id="cd-image"></div>
+      <div class="cd-info-area">
+        <div class="cd-header">
+          <div class="cd-cost" id="cd-cost">0</div>
+          <h2 class="cd-name" id="cd-name">Card Name</h2>
+        </div>
+        <div class="cd-type-tags">
+          <span class="cd-type-tag" id="cd-type">Unit</span>
+          <div class="cd-tribe-tag">
+            <div class="cd-tribe-icon" id="cd-tribe-icon"></div>
+            <span class="cd-tribe-text" id="cd-tribe-text">Neutral</span>
+          </div>
+        </div>
+        <div class="cd-stats" id="cd-stats-container">
+          <div class="cd-stat"><span class="cd-stat-icon">⚔️</span><span id="cd-attack">0</span></div>
+          <div class="cd-stat"><span class="cd-stat-icon">❤️</span><span id="cd-hp">0</span></div>
+        </div>
+        <div class="cd-text-box">
+          <div class="cd-effect-text" id="cd-text"></div>
+          <div class="cd-flavor-text" id="cd-flavor"></div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/audio-manager.js"></script>
+  <script src="/js/game-renderer.js"></script>
   <script src="/js/deck-builder.js"></script>
 </body>
 </html>

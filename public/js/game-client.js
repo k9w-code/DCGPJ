@@ -1,475 +1,355 @@
-// game-client.js - ゲーム画面のクライアント通信ロジック（3レーン×前後列対応）
-'use strict';
-
+// game-client.js
 const socket = io();
 
-// BGM再生
-if (window.audioManager) {
-  window.audioManager.playBGM('game');
-}
-
-const sessionId = sessionStorage.getItem('sessionId');
+// ゲーム状態
 let gameState = null;
 let selectedCardIndex = null;
-let selectedAttacker = null; // { row, lane }
-let keywordMap = {};
+let selectedAttacker = null;
 
-// マスタデータ取得
-async function loadMasterData() {
-  try {
-    const res = await fetch('/api/keywords');
-    keywordMap = await res.json();
-    console.log('✅ キーワードマスタ取得完了');
-  } catch (err) {
-    console.error('❌ キーワードマスタ取得エラー:', err);
-  }
-}
-loadMasterData();
-
-if (sessionId) {
-  socket.emit('restore_session', { sessionId });
-} else {
-  alert('セッションが見つかりません。ロビーに戻ります。');
-  window.location.href = '/';
-}
-
-socket.on('session_invalid', () => {
-  alert('セッションが無効です。ロビーに戻ります。');
-  window.location.href = '/';
-});
-
-socket.on('session_restored', (data) => console.log('✅ セッション復帰:', data));
-
-socket.on('mulligan_phase', (data) => {
-  console.log('==> EVENT mulligan_phase received', data);
-  try {
-    showMulligan(data.hand,
-      () => socket.emit('mulligan_decision', { doMulligan: false }),
-      () => socket.emit('mulligan_decision', { doMulligan: true })
-    );
-  } catch (e) {
-    console.error('❌ Error in showMulligan:', e);
-  }
-});
-
-let turnOrderShown = false;
-
-socket.on('game_state', (state) => {
-  console.log('==> EVENT game_state received', state);
-  
-  // 先攻・後攻演出 (第1ターンの開始時に一度だけ表示)
-  if (!turnOrderShown && state.turnNumber === 1 && state.phase === 'battle') {
-    if (window.showTurnOrder) {
-      window.showTurnOrder(state.currentPlayerId === state.me.id);
-    }
-    turnOrderShown = true;
-  }
-
-  gameState = state;
-  selectedCardIndex = null;
-  selectedAttacker = null;
-  try {
-    updateUI();
-  } catch (e) {
-    console.error('❌ Error in updateUI:', e);
-  }
-});
-
-socket.on('waiting_mulligan', () => {});
-
-socket.on('action_error', (data) => {
-  console.warn('❌ アクションエラー:', data.message);
-  if (window.audioManager) window.audioManager.playSE('error');
-  
-  const logContent = document.getElementById('log-content');
-  const el = document.createElement('div');
-  el.className = 'log-entry important';
-  el.style.color = 'var(--danger)';
-  el.textContent = `❌ ${data.message}`;
-  logContent.appendChild(el);
-  logContent.scrollTop = logContent.scrollHeight;
-});
-
-socket.on('player_disconnected', () => {
-  alert('対戦相手が切断しました');
-  window.location.href = '/';
-});
-
-// インタラクション管理
-let dragGhost = null;
+// ドラッグ＆ドロップ用
 let isDragging = false;
-let dragSource = null; // { type, index, row, lane }
+let isDraggingAttack = false;
+let dragSource = null;
+let dragGhost = null;
+let attackerPos = null;
+let pendingShieldAttack = null;
+let previousGameState = null;
 
+// 初期化
 function initInteractions() {
   document.addEventListener('pointermove', onPointerMove);
   document.addEventListener('pointerup', onPointerUp);
+  document.addEventListener('pointercancel', onPointerUp);
 }
 
-let isDraggingAttack = false;
-let attackerPos = null; // { x, y }
+socket.on('connect', () => {
+  const sessionId = sessionStorage.getItem('sessionId');
+  if (sessionId) socket.emit('restore_session', { sessionId });
+});
+
+socket.on('session_restored', (data) => {
+  if (window.audioManager) window.audioManager.playBGM('game');
+});
+
+socket.on('session_invalid', () => {
+  window.location.href = '/';
+});
+
+function triggerShieldBreakEffect() {
+  console.log('💥 triggerShieldBreakEffect called');
+  const overlay = document.getElementById('shield-break-overlay');
+  if (!overlay) {
+    console.warn('⚠️ shield-break-overlay not found');
+    return;
+  }
+  if (window.audioManager) window.audioManager.playSE('shieldBreak');
+  overlay.style.display = 'flex';
+  setTimeout(() => {
+    overlay.style.display = 'none';
+  }, 2000);
+}
+
+socket.on('game_state', (state) => {
+  if (!state) return;
+  
+  // シールド破壊演出のチェック
+  if (previousGameState && state.opponent && previousGameState.opponent) {
+    if (state.opponent.shieldsDestroyed > previousGameState.opponent.shieldsDestroyed) {
+      triggerShieldBreakEffect();
+    }
+  }
+
+  gameState = state;
+  updateUI();
+  previousGameState = JSON.parse(JSON.stringify(state));
+});
+
+socket.on('mulligan_phase', (data) => {
+  if (window.audioManager) window.audioManager.playBGM('game');
+  showMulligan(data.hand, () => {
+    socket.emit('mulligan_decision', { doMulligan: false });
+  }, () => {
+    socket.emit('mulligan_decision', { doMulligan: true });
+  });
+});
+
+socket.on('error_msg', (data) => {
+  console.error('❌ Game error:', data.message);
+  if (window.audioManager) window.audioManager.playSE('error');
+});
+
+function getInternalCoords(clientX, clientY) {
+    const container = document.getElementById('game-container');
+    const rect = container.getBoundingClientRect();
+    const scale = rect.width / 1920;
+    return {
+        x: (clientX - rect.left) / scale,
+        y: (clientY - rect.top) / scale
+    };
+}
+
+function isValidTarget(target) {
+    if (!dragSource || !gameState) return false;
+    if (dragSource.type === 'unit') {
+        const opponent = gameState.opponent;
+        const tauntUnits = [];
+        for (let l = 0; l < 3; l++) {
+          const u = opponent.board.front[l];
+          if (u && (u.keywords || []).includes('taunt')) tauntUnits.push({ row: 'front', lane: l });
+        }
+        if (tauntUnits.length > 0) {
+          if (target.type !== 'unit') return false;
+          return tauntUnits.some(t => t.row === target.row && t.lane === target.lane);
+        }
+        return true;
+    }
+    return true;
+}
 
 function onPointerMove(e) {
   if (isDragging && dragGhost) {
     dragGhost.style.left = `${e.clientX - 90}px`;
     dragGhost.style.top = `${e.clientY - 126}px`;
-    dragGhost.style.transform = 'scale(1.1) rotate(2deg)';
-
-    const elements = document.elementsFromPoint(e.clientX, e.clientY);
-    const slot = elements.find(el => el.classList.contains('board-slot') && el.classList.contains('can-place'));
-    document.querySelectorAll('.board-slot.can-place').forEach(s => s.style.boxShadow = '');
-    if (slot) slot.style.boxShadow = '0 0 30px #3b82f6, inset 0 0 20px #3b82f6';
   }
-
   if (isDraggingAttack && attackerPos) {
+    const coords = getInternalCoords(e.clientX, e.clientY);
     const svg = document.getElementById('attack-arrow-svg');
     const line = document.getElementById('attack-arrow-line');
     if (svg && line) {
       svg.style.display = 'block';
-      line.setAttribute('x1', attackerPos.x);
-      line.setAttribute('y1', attackerPos.y);
-      line.setAttribute('x2', e.clientX);
-      line.setAttribute('y2', e.clientY);
-    }
-    
-    // ターゲットのハイライト
-    const elements = document.elementsFromPoint(e.clientX, e.clientY);
-    const target = elements.find(el => el.classList.contains('board-slot') || el.id === 'opp-shields');
-    document.querySelectorAll('.board-slot').forEach(s => s.style.outline = '');
-    document.getElementById('opp-shields').style.outline = '';
-    
-    if (target) {
-        target.style.outline = '3px solid #ef4444';
+      line.setAttribute('x1', attackerPos.x); line.setAttribute('y1', attackerPos.y);
+      line.setAttribute('x2', coords.x); line.setAttribute('y2', coords.y);
     }
   }
 }
 
 function onPointerUp(e) {
   const elements = document.elementsFromPoint(e.clientX, e.clientY);
-
-  if (isDragging) {
-    isDragging = false;
-    const slot = elements.find(el => el.classList.contains('board-slot') && el.classList.contains('can-place'));
-    if (slot && dragSource && dragSource.type === 'hand') {
+  if (isDragging && dragSource && dragSource.type === 'hand') {
+    const slot = elements.find(el => el.classList.contains('board-slot') && !el.classList.contains('opponent'));
+    if (slot) {
       const row = slot.dataset.row;
       const lane = parseInt(slot.dataset.lane);
       socket.emit('game_action', { action: 'play_card', handIndex: dragSource.index, targetRow: row, targetLane: lane });
-      if (window.audioManager) window.audioManager.playSE('playCard');
-      selectedCardIndex = null; // 配置成功時はリセット
-    }
-    if (dragGhost) { 
-        dragGhost.remove(); 
-        dragGhost = null; 
-        // もし大きく動かしていたらリセットするなどの処理も可能だが、
-        // 現状はクリック時の pointerdown での状態トグルを優先するため、
-        // ここでの一律リセットは避ける。
+      selectedCardIndex = null;
     }
   }
-
-  if (isDraggingAttack) {
-    isDraggingAttack = false;
-    document.getElementById('attack-arrow-svg').style.display = 'none';
-    
-    const target = elements.find(el => el.classList.contains('board-slot') || el.id === 'opp-shields');
-    if (target && dragSource && dragSource.type === 'unit') {
-      const { row, lane } = dragSource;
-      if (target.id === 'opp-shields') {
+  if (isDraggingAttack && dragSource && dragSource.type === 'unit') {
+    const targetEl = elements.find(el => el.classList.contains('board-slot') || el.id === 'opp-shields');
+    if (targetEl) {
+      const targetType = targetEl.id === 'opp-shields' ? 'shield' : 'unit';
+      const targetData = {
+        type: targetType,
+        row: targetEl.dataset?.row,
+        lane: targetEl.dataset?.lane ? parseInt(targetEl.dataset.lane) : undefined,
+      };
+      if (isValidTarget(targetData)) {
+        if (targetType === 'shield') {
           const allDestroyed = gameState.opponent.totalShieldDurability <= 0;
-          socket.emit('game_action', { action: 'attack', attackerRow: row, attackerLane: lane, targetInfo: { type: allDestroyed ? 'direct' : 'shield' } });
-          if (window.audioManager) window.audioManager.playSE('attack');
-          selectedAttacker = null; // 攻撃成功時はリセット
-      } else if (target.classList.contains('opponent')) {
-          const targetRow = target.dataset.row; 
-          const targetLane = parseInt(target.dataset.lane);
-          socket.emit('game_action', { action: 'attack', attackerRow: row, attackerLane: lane, targetInfo: { type: 'unit', row: targetRow, lane: targetLane } });
-          if (window.audioManager) window.audioManager.playSE('attack');
-          selectedAttacker = null; // 攻撃成功時はリセット
+          pendingShieldAttack = { action: 'attack', attackerRow: dragSource.row, attackerLane: dragSource.lane, targetInfo: { type: allDestroyed ? 'direct' : 'shield' } };
+          const modal = document.getElementById('shield-confirm-overlay');
+          if (modal) {
+              modal.querySelector('h2').textContent = allDestroyed ? 'Direct Attack?' : 'Shield Break?';
+              modal.querySelector('p').textContent = allDestroyed ? '相手プレイヤーに直接攻撃しますか？' : '相手のシールドを攻撃しますか？';
+              modal.style.display = 'flex';
+          }
+        } else {
+          socket.emit('game_action', { action: 'attack', attackerRow: dragSource.row, attackerLane: dragSource.lane, targetInfo: { type: 'unit', row: targetData.row, lane: targetData.lane } });
+        }
       }
     }
-    document.querySelectorAll('.board-slot').forEach(s => s.style.outline = '');
-    document.getElementById('opp-shields').style.outline = '';
   }
-
-  document.querySelectorAll('.hand-card').forEach(c => c.classList.remove('dragging'));
-  document.querySelectorAll('.board-slot').forEach(s => s.style.boxShadow = '');
-  selectedCardIndex = null;
-  selectedAttacker = null;
+  
+  if (dragGhost) { dragGhost.remove(); dragGhost = null; }
+  const svg = document.getElementById('attack-arrow-svg');
+  if (svg) svg.style.display = 'none';
+  isDragging = false;
+  isDraggingAttack = false;
+  dragSource = null;
   updateUI();
 }
 
-// ユニットのドラッグ開始
 function handleUnitPointerDown(e, row, lane) {
   if (!gameState || gameState.currentPlayerId !== gameState.me.id) return;
-  if (row !== 'player') return;
-  
-  const unit = gameState.me.board.front[lane] || gameState.me.board.back[lane];
+  const unit = gameState.me.board[row][lane];
   if (!unit || !unit.canAttack) return;
-
-  // 選択状態を更新（クリック対応）
-  if (selectedAttacker && selectedAttacker.row === row && selectedAttacker.lane === lane) {
-    selectedAttacker = null;
-  } else {
-    selectedAttacker = { row, lane };
-    selectedCardIndex = null;
-  }
-  updateUI();
-
+  selectedAttacker = { row, lane };
   isDraggingAttack = true;
   dragSource = { type: 'unit', row, lane };
   const rect = e.currentTarget.getBoundingClientRect();
-  attackerPos = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-  
+  attackerPos = getInternalCoords(rect.left + rect.width / 2, rect.top + rect.height / 2);
   e.preventDefault();
 }
 
-// ハンドカードのドラッグ開始
 function handleCardPointerDown(e, index) {
   if (!gameState || gameState.currentPlayerId !== gameState.me.id) return;
-  
-  // 選択状態を更新（クリック対応）
-  if (selectedCardIndex === index) {
-    selectedCardIndex = null;
-  } else {
-    selectedCardIndex = index;
-    selectedAttacker = null;
-  }
-  updateUI();
-
+  selectedCardIndex = index;
   isDragging = true;
   dragSource = { type: 'hand', index };
-  
   const original = e.currentTarget;
-  original.classList.add('dragging');
-
-  // ゴースト作成
   dragGhost = original.cloneNode(true);
   dragGhost.classList.add('drag-ghost');
-  dragGhost.style.left = `${e.clientX - 90}px`;
-  dragGhost.style.top = `${e.clientY - 126}px`;
+  dragGhost.style.position = 'fixed';
+  dragGhost.style.pointerEvents = 'none';
+  dragGhost.style.zIndex = '1000';
+  dragGhost.style.transform = 'none'; // 手札の傾きをリセット
+  dragGhost.style.transition = 'none';
   document.body.appendChild(dragGhost);
-  
   e.preventDefault();
-}
-
-function updateUI() {
-  if (!gameState) return;
-  try {
-    if (gameState.phase === 'game_over' && gameState.winner) {
-      if (window.audioManager) {
-        window.audioManager.stopBGM();
-        window.audioManager.playBGM(gameState.winner === gameState.me.id ? 'victory' : 'defeat');
-      }
-      showResult(gameState.winner === gameState.me.id);
-    }
-  
-    renderPlayerInfo(gameState);
-    renderBoard(gameState, 
-      selectedCardIndex !== null ? gameState.me.hand[selectedCardIndex] : null,
-      selectedAttacker,
-      handleSlotClick
-    );
-    renderHand(gameState, null, handleCardPointerDown); // clickの代わりにpointerdownを渡す
-    renderLogs(gameState.logs || []);
-    renderTurnInfo(gameState);
-    updateShieldAttackUI();
-  } catch (e) {
-    console.error('❌ updateUI execution failed!', e);
-  }
-}
-
-initInteractions();
-
-// 設定メニュー制御
-const settingsBtn = document.getElementById('settings-btn');
-const settingsOverlay = document.getElementById('settings-overlay');
-if (settingsBtn && settingsOverlay) {
-  settingsBtn.onclick = () => {
-    settingsOverlay.style.display = 'flex';
-  };
-}
-
-// 投了ボタン
-const btnSurrender = document.getElementById('btn-surrender');
-if (btnSurrender) {
-  btnSurrender.onclick = () => {
-    if (confirm('本当に投了しますか？')) {
-      socket.emit('game_action', { action: 'surrender' });
-      settingsOverlay.style.display = 'none';
-    }
-  };
-}
-
-function updateShieldAttackUI() {
-  const opponentShields = document.getElementById('opp-shields');
-  if (!opponentShields) return;
-
-  opponentShields.style.cursor = '';
-  opponentShields.style.outline = '';
-  opponentShields.classList.remove('target-highlight');
-  opponentShields.onclick = null;
-  
-  if (!selectedAttacker || !gameState) return;
-  if (gameState.currentPlayerId !== gameState.me.id) return;
-  
-  const { row, lane } = selectedAttacker;
-  
-  // 挑発チェック (クライアント側の簡易判定を強化)
-  const isTaunt = (u) => u && (u.keywords || []).some(k => k.startsWith('taunt'));
-  const hasTaunt = gameState.opponent.board.front.some(isTaunt);
-
-  if (!hasTaunt) {
-    opponentShields.style.cursor = 'pointer';
-    opponentShields.classList.add('target-highlight');
-    opponentShields.onclick = () => {
-      const allDestroyed = gameState.opponent.totalShieldDurability <= 0;
-      socket.emit('game_action', {
-        action: 'attack',
-        attackerRow: row,
-        attackerLane: lane,
-        targetInfo: { type: allDestroyed ? 'direct' : 'shield' },
-      });
-      if (window.audioManager) window.audioManager.playSE('attack');
-      selectedAttacker = null;
-      updateUI();
-    };
-  }
-}
-
-// ハンドラ
-function handleCardClick(index) {
-  if (!gameState || gameState.currentPlayerId !== gameState.me.id) return;
-  
-  if (selectedCardIndex === index) {
-    selectedCardIndex = null;
-    selectedAttacker = null;
-  } else {
-    selectedCardIndex = index;
-    selectedAttacker = null;
-    
-    const card = gameState.me.hand[index];
-    if (card.type === 'spell') {
-      const needsTarget = ['damage', 'destroy', 'freeze', 'drain', 'buff_attack', 'buff_hp', 'grant_barrier'].includes(card.abilityEffect);
-      if (!needsTarget) {
-        socket.emit('game_action', { action: 'play_card', handIndex: index, targetRow: null, targetLane: null });
-        if (window.audioManager) window.audioManager.playSE('playCard');
-        selectedCardIndex = null;
-        updateUI();
-        return;
-      }
-    }
-  }
-  updateUI();
 }
 
 function handleSlotClick(type, row, lane, e) {
   if (!gameState || gameState.currentPlayerId !== gameState.me.id) return;
-  
-  if (type === 'unit_pointerdown') {
-    handleUnitPointerDown(e, row, lane);
+  if (type === 'unit_pointerdown') { handleUnitPointerDown(e, row, lane); return; }
+}
+
+function updateShieldAttackUI() {
+    const opponentShields = document.getElementById('opp-shields');
+    if (!opponentShields || !selectedAttacker || !gameState) return;
+    opponentShields.onclick = (e) => {
+        const allDestroyed = gameState.opponent.totalShieldDurability <= 0;
+        pendingShieldAttack = { action: 'attack', attackerRow: selectedAttacker.row, attackerLane: selectedAttacker.lane, targetInfo: { type: allDestroyed ? 'direct' : 'shield' } };
+        document.getElementById('shield-confirm-overlay').style.display = 'flex';
+        e.stopPropagation();
+    };
+}
+
+function updateUnitActionUI() {
+    const panel = document.getElementById('unit-actions-panel');
+    const btn = document.getElementById('btn-activate-ability');
+    if (!panel || !btn || !selectedAttacker || !gameState) return;
+    const { row, lane } = selectedAttacker;
+    const unit = gameState.me.board[row][lane];
+    if (!unit || unit.hasActed) { panel.style.display = 'none'; return; }
+    const activateIdx = (unit.abilities || []).findIndex(a => a.trigger === 'activate');
+    if (activateIdx !== -1) {
+        panel.style.display = 'block';
+        btn.onclick = () => {
+            socket.emit('game_action', { action: 'activate_ability', unitRow: row, unitLane: lane, abilityIndex: activateIdx });
+            selectedAttacker = null; updateUI();
+        };
+    } else { panel.style.display = 'none'; }
+}
+
+function updateUI() {
+  console.log('🔄 updateUI called', gameState);
+  if (!gameState || !gameState.me) {
+    console.warn('⚠️ updateUI skipped: gameState or gameState.me is missing');
     return;
   }
-  
-  // クリック時の旧来のロジック（後方互換）
-  switch (type) {
-    case 'place_unit':
-      if (selectedCardIndex === null) return;
-      socket.emit('game_action', { action: 'play_card', handIndex: selectedCardIndex, targetRow: row, targetLane: lane });
-      selectedCardIndex = null;
-      updateUI();
-      break;
-    case 'select_attacker':
-      if (selectedAttacker && selectedAttacker.row === row && selectedAttacker.lane === lane) {
-        selectedAttacker = null;
-      } else {
-        selectedAttacker = { row, lane };
-        selectedCardIndex = null;
-      }
-      updateUI();
-      break;
-    case 'attack_unit':
-      if (!selectedAttacker) return;
-      socket.emit('game_action', { action: 'attack', attackerRow: selectedAttacker.row, attackerLane: selectedAttacker.lane, targetInfo: { type: 'unit', row, lane } });
-      if (window.audioManager) window.audioManager.playSE('attack');
-      selectedAttacker = null;
-      break;
-    case 'attack_spell':
-      if (selectedCardIndex === null) return;
-      socket.emit('game_action', { action: 'play_card', handIndex: selectedCardIndex, targetRow: row, targetLane: lane });
-      if (window.audioManager) window.audioManager.playSE('playCard'); // Assuming spell play also uses 'playCard' sound
-      selectedCardIndex = null;
-      break;
+  try {
+    console.log('Rendering PlayerInfo...');
+    renderPlayerInfo(gameState);
+    
+    console.log('Rendering Board...');
+    renderBoard(gameState, selectedCardIndex !== null ? gameState.me.hand[selectedCardIndex] : null, selectedAttacker, handleSlotClick);
+    
+    console.log('Rendering Hand...');
+    renderHand(gameState, selectedCardIndex, handleCardPointerDown);
+    
+    console.log('Rendering Logs & Turn Info...');
+    renderLogs(gameState.logs || []);
+    renderTurnInfo(gameState);
+    
+    updateShieldAttackUI();
+    updateUnitActionUI();
+    console.log('✅ updateUI completed');
+  } catch (e) { console.error('❌ updateUI failed!', e); }
+}
+
+const btnEndTurn = document.getElementById('btn-end-turn');
+if (btnEndTurn) btnEndTurn.onclick = () => {
+    if (!gameState || gameState.currentPlayerId !== gameState.me.id) return;
+    socket.emit('game_action', { action: 'end_turn' });
+    selectedCardIndex = null; selectedAttacker = null;
+};
+
+let pendingCrystalColor = null;
+document.querySelectorAll('.crystal-btn').forEach(btn => {
+  btn.onclick = () => {
+    if (!gameState || gameState.currentPlayerId !== gameState.me.id) return;
+    const color = btn.dataset.color;
+    pendingCrystalColor = color;
+    document.getElementById('crystal-confirm-msg').textContent = `${color.toUpperCase()} の神族レベルを上げますか？`;
+    document.getElementById('crystal-confirm-popup').style.display = 'flex';
+  };
+});
+
+document.getElementById('btn-crystal-confirm')?.addEventListener('click', () => {
+    if (pendingCrystalColor) {
+        socket.emit('game_action', { action: 'raise_tribe', color: pendingCrystalColor });
+    }
+    pendingCrystalColor = null;
+    document.getElementById('crystal-confirm-popup').style.display = 'none';
+});
+
+document.getElementById('btn-crystal-cancel')?.addEventListener('click', () => {
+    pendingCrystalColor = null;
+    document.getElementById('crystal-confirm-popup').style.display = 'none';
+});
+
+document.getElementById('btn-shield-confirm')?.addEventListener('click', () => {
+  if (pendingShieldAttack) socket.emit('game_action', pendingShieldAttack);
+  pendingShieldAttack = null; selectedAttacker = null;
+  document.getElementById('shield-confirm-overlay').style.display = 'none';
+  updateUI();
+});
+
+document.getElementById('btn-shield-cancel')?.addEventListener('click', () => {
+  pendingShieldAttack = null;
+  document.getElementById('shield-confirm-overlay').style.display = 'none';
+});
+
+function showMulligan(hand, onKeep, onRedraw) {
+  const overlay = document.getElementById('mulligan-overlay');
+  const container = document.getElementById('mulligan-cards');
+  if (!overlay || !container) return;
+
+  container.innerHTML = '';
+  hand.forEach(card => {
+    const el = document.createElement('div');
+    el.className = 'hand-card';
+    const folder = card.color === 'neutral' ? 'rainbow' : (card.color || 'neutral');
+    const bgImage = `/assets/images/cards/${folder}/${card.artId || card.id}.webp`;
+    el.style.backgroundImage = `url('${bgImage}')`;
+    
+    el.innerHTML = `
+      <div class="card-overlay">
+        <div class="cost-gem">${card.cost}</div>
+      </div>
+    `;
+    // カード詳細表示を有効化
+    if (typeof attachCardDetailEvent === 'function') {
+      attachCardDetailEvent(el, card);
+    }
+    container.appendChild(el);
+  });
+
+  overlay.style.display = 'flex';
+
+  const btnKeep = document.getElementById('btn-mulligan-keep');
+  const btnRedraw = document.getElementById('btn-mulligan-redraw');
+
+  if (btnKeep) {
+    btnKeep.replaceWith(btnKeep.cloneNode(true)); // 既存のイベントをクリア
+    const newBtn = document.getElementById('btn-mulligan-keep');
+    newBtn.addEventListener('click', (e) => {
+      console.log('👆 Mulligan: Keep clicked. Socket connected:', socket.connected);
+      e.preventDefault();
+      overlay.style.display = 'none';
+      if (typeof onKeep === 'function') onKeep();
+    });
+  }
+  if (btnRedraw) {
+    btnRedraw.replaceWith(btnRedraw.cloneNode(true)); // 既存のイベントをクリア
+    const newBtn = document.getElementById('btn-mulligan-redraw');
+    newBtn.addEventListener('click', (e) => {
+      console.log('👆 Mulligan: Redraw clicked. Socket connected:', socket.connected);
+      e.preventDefault();
+      overlay.style.display = 'none';
+      if (typeof onRedraw === 'function') onRedraw();
+    });
   }
 }
 
-// イベント
-document.getElementById('btn-end-turn').addEventListener('click', () => {
-  if (!gameState || gameState.currentPlayerId !== gameState.me.id) return;
-  socket.emit('game_action', { action: 'end_turn' });
-  if (window.audioManager) window.audioManager.playSE('endTurn');
-  selectedCardIndex = null;
-  selectedAttacker = null;
-});
-
-let pendingRaiseColor = null;
-
-document.querySelectorAll('.crystal-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (!gameState || gameState.currentPlayerId !== gameState.me.id) return;
-    
-    const color = btn.dataset.color;
-    
-    // すでに選択中なら解除、そうでなければ選択
-    if (pendingRaiseColor === color) {
-      pendingRaiseColor = null;
-      btn.classList.remove('selected');
-      document.getElementById('btn-confirm-raise').style.display = 'none';
-    } else {
-      // 他の選択を解除
-      document.querySelectorAll('.crystal-btn').forEach(b => b.classList.remove('selected'));
-      
-      pendingRaiseColor = color;
-      btn.classList.add('selected');
-      document.getElementById('btn-confirm-raise').style.display = 'block';
-      if (window.audioManager) window.audioManager.playSE('click');
-    }
-  });
-});
-
-document.getElementById('btn-confirm-raise').addEventListener('click', () => {
-  if (!gameState || !pendingRaiseColor || gameState.currentPlayerId !== gameState.me.id) return;
-  
-  socket.emit('game_action', { action: 'raise_tribe', color: pendingRaiseColor });
-  if (window.audioManager) window.audioManager.playSE('levelUp');
-  
-  // リセット
-  pendingRaiseColor = null;
-  document.querySelectorAll('.crystal-btn').forEach(b => b.classList.remove('selected'));
-  document.getElementById('btn-confirm-raise').style.display = 'none';
-});
-
-// スペル対象: 相手ユニット
-document.getElementById('opponent-board')?.addEventListener('click', (e) => {
-  if (selectedCardIndex === null || !gameState) return;
-  const card = gameState.me.hand[selectedCardIndex];
-  if (!card || card.type !== 'spell') return;
-  const slot = e.target.closest('.board-slot');
-  if (!slot || !slot.dataset.row) return;
-  const row = slot.dataset.row;
-  const lane = parseInt(slot.dataset.lane, 10);
-  if (gameState.opponent.board[row][lane]) handleSlotClick('attack_spell', row, lane);
-});
-
-// スペル対象: 味方ユニット
-document.getElementById('player-board')?.addEventListener('click', (e) => {
-  if (selectedCardIndex === null || !gameState) return;
-  const card = gameState.me.hand[selectedCardIndex];
-  if (!card || card.type !== 'spell') return;
-  if (!['buff_attack', 'buff_hp', 'grant_barrier', 'heal'].includes(card.abilityEffect)) return;
-  const slot = e.target.closest('.board-slot');
-  if (!slot || !slot.dataset.row) return;
-  const row = slot.dataset.row;
-  const lane = parseInt(slot.dataset.lane, 10);
-  if (gameState.me.board[row][lane]) {
-    socket.emit('game_action', { action: 'play_card', handIndex: selectedCardIndex, targetRow: row, targetLane: lane });
-    selectedCardIndex = null;
-  }
-});
+initInteractions();
