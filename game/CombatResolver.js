@@ -19,6 +19,15 @@ function resolveUnitCombat(attacker, defender, logs) {
   // --- 1撃目 ---
   const firstDamage = attacker.currentAttack;
   const actualFirstDamage = applyDamage(defender, firstDamage, logs);
+  
+  if (actualFirstDamage > 0 && hasKeyword(attacker, 'drain')) {
+    const healed = Math.min(2, attacker.maxHp - attacker.currentHp);
+    if (healed > 0) {
+      attacker.currentHp += healed;
+      logs.push(`🩸 ${attacker.name} の吸命！HPを ${healed} 回復 (HP: ${attacker.currentHp})`);
+    }
+  }
+  
   results.events.push({
     type: 'damage',
     source: attacker.instanceId,
@@ -44,6 +53,15 @@ function resolveUnitCombat(attacker, defender, logs) {
   if (isDoubleStrike && !results.defenderDead) {
     const secondDamage = attacker.currentAttack;
     const actualSecondDamage = applyDamage(defender, secondDamage, logs);
+    
+    if (actualSecondDamage > 0 && hasKeyword(attacker, 'drain')) {
+      const healed = Math.min(2, attacker.maxHp - attacker.currentHp);
+      if (healed > 0) {
+        attacker.currentHp += healed;
+        logs.push(`🩸 ${attacker.name} の吸命！HPを ${healed} 回復 (HP: ${attacker.currentHp})`);
+      }
+    }
+    
     results.events.push({
       type: 'damage',
       source: attacker.instanceId,
@@ -67,6 +85,15 @@ function resolveUnitCombat(attacker, defender, logs) {
   // --- 反撃 ---
   const counterDamage = defender.currentAttack;
   const actualCounterDamage = applyDamage(attacker, counterDamage, logs);
+  
+  if (actualCounterDamage > 0 && hasKeyword(defender, 'drain')) {
+    const healed = Math.min(2, defender.maxHp - defender.currentHp);
+    if (healed > 0) {
+      defender.currentHp += healed;
+      logs.push(`🩸 ${defender.name} の吸命！HPを ${healed} 回復 (HP: ${defender.currentHp})`);
+    }
+  }
+  
   results.events.push({
     type: 'counter',
     source: defender.instanceId,

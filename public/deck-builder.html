@@ -19,28 +19,32 @@
     <div class="collection-panel panel">
       <div class="collection-header">
         <div class="tabs">
-          <div class="tab active" data-tab="cards">カード</div>
-          <div class="tab" data-tab="shields">シールド</div>
+          <button class="tab premium-tab active" data-tab="cards">
+            <span class="tab-icon">🎴</span> <span class="tab-text">カード</span>
+          </button>
+          <button class="tab premium-tab" data-tab="shields">
+            <span class="tab-icon">🛡️</span> <span class="tab-text">シールド</span>
+          </button>
         </div>
         
         <div class="filters" id="card-filters">
-          <!-- 色フィルタ: アイコン形式 -->
+          <!-- 色フィルタ: 神族アイコン形式 -->
           <div class="color-filter-bar">
-            <button class="color-orb active" data-color="red" title="赤"><span class="orb-inner red"></span></button>
-            <button class="color-orb active" data-color="blue" title="青"><span class="orb-inner blue"></span></button>
-            <button class="color-orb active" data-color="green" title="緑"><span class="orb-inner green"></span></button>
-            <button class="color-orb active" data-color="white" title="白"><span class="orb-inner white"></span></button>
-            <button class="color-orb active" data-color="black" title="黒"><span class="orb-inner black"></span></button>
+            <button class="tribe-filter active" data-color="white" title="白(神聖)"></button>
+            <button class="tribe-filter active" data-color="red" title="赤(火炎)"></button>
+            <button class="tribe-filter active" data-color="blue" title="青(海洋)"></button>
+            <button class="tribe-filter active" data-color="green" title="緑(自然)"></button>
+            <button class="tribe-filter active" data-color="black" title="黒(暗黒)"></button>
           </div>
-          <!-- タイプ/コストフィルタ -->
-          <div class="type-cost-filters">
+          <!-- タイプ/コストフィルタ (カード用) -->
+          <div class="type-cost-filters" id="card-specific-filters">
             <div class="pill-group type-filters">
               <button class="pill active" data-type="all">ALL</button>
               <button class="pill" data-type="unit">UNIT</button>
               <button class="pill" data-type="spell">SPELL</button>
             </div>
             <div class="pill-group cost-filters">
-              <button class="pill active" data-cost="all">ALL</button>
+              <button class="pill active" data-cost="all">COST</button>
               <button class="pill" data-cost="0">0</button>
               <button class="pill" data-cost="1">1</button>
               <button class="pill" data-cost="2">2</button>
@@ -49,6 +53,15 @@
               <button class="pill" data-cost="5">5</button>
               <button class="pill" data-cost="6">6</button>
               <button class="pill" data-cost="7+">7+</button>
+            </div>
+          </div>
+          <!-- 耐久値フィルタ (シールド用) -->
+          <div class="type-cost-filters" id="shield-specific-filters" style="display: none;">
+            <div class="pill-group durability-filters">
+              <button class="pill active" data-durability="all">耐久 ALL</button>
+              <button class="pill" data-durability="1">1</button>
+              <button class="pill" data-durability="2">2</button>
+              <button class="pill" data-durability="3">3</button>
             </div>
           </div>
           <!-- 検索/キーワードフィルタ -->
@@ -76,9 +89,24 @@
           <h1>DECK BUILDER</h1>
         </div>
         <div class="header-actions">
-          <button class="btn btn-secondary" id="btn-reload-master" title="スプレッドシートから最新データを再取得">🔄 マスタ更新</button>
-          <div class="deck-slots" id="deck-slots"></div>
-          <button class="btn btn-primary" id="btn-save-deck" title="現在のデッキを保存">💾 保存</button>
+          <div class="deck-slots-container">
+            <span class="slot-label">SLOT</span>
+            <div class="deck-slots" id="deck-slots"></div>
+          </div>
+          <div class="deck-action-buttons">
+            <button class="btn btn-secondary btn-icon-text tooltip-btn" id="btn-clear-deck" title="編集中のデッキを空にする">
+              <span class="icon">🔄</span>
+            </button>
+            <button class="btn btn-danger btn-icon-text tooltip-btn" id="btn-delete-deck" title="選択中のスロットを削除">
+              <span class="icon">🗑️</span>
+            </button>
+            <button class="btn btn-primary btn-save" id="btn-save-deck" title="現在のデッキをスロットに保存">
+              💾 保存
+            </button>
+            <button class="btn btn-secondary btn-icon-text tooltip-btn" id="btn-reload-master" title="マスタデータ再取得">
+              <span class="icon">📥</span>
+            </button>
+          </div>
         </div>
       </div>
 

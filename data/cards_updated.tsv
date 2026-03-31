@@ -1,0 +1,151 @@
+id	art_id	name	color	rarity	cost	type	token_flag	atk	life	keywords	trigger	effect	value	target	deck_limit	description	text
+WH001	WH001	聖都の剣士見習い	white	1	1	unit		1	2						3	聖都で修行に励む若き剣士。	
+WH002	WH002	城塞の見張り番	white	1	1	unit		1	3						3	城壁の上から敵を見張る少年。	
+WH003	WH003	光の盾兵	white	1	1	unit		1	2	barrier					3	光を宿す盾で身を守る兵士。	【加護】
+WH004	WH004	見習い天使騎士	white	1	2	unit		2	3						3	白い翼の鎧を纏う見習い騎士。	
+WH005	WH005	聖典の学者	white	1	2	unit		1	3		on_play	heal	2	self_unit_1	3	古の聖典を研究する女性学者。	【登場時】味方ユニット1体を2回復。
+WH006	WH006	聖鎖の騎士	white	1	2	unit		2	2	barrier					3	聖なる鎖で敵を縛る騎士。	【加護】
+WH007	WH007	聖盾の守護者	white	2	3	unit		2	5	taunt					3	巨大な白銀の盾で味方を守る。	【挑発】
+WH008	WH008	黄金の獣騎士	white	2	3	unit		3	3	rush					3	黄金の鎧に身を包む獣の騎士。	【速攻】
+WH009	WH009	銀翼の聖騎士	white	2	3	unit		2	4		on_play	heal_all	1	self_unit_all	3	銀色の翼の鎧で戦場を駆ける。	【登場時】味方全ユニットを1回復。
+WH010	WH010	戦場の祈祷師	white	1	3	unit		2	3		on_play	grant_barrier	1	self_unit_1	3	戦場の最前線で祈りを捧げる。	【登場時】味方ユニット1体に加護を付与。
+WH011	WH011	遺跡の守護戦乙女	white	2	4	unit		3	5		on_play	buff_hp	2	self_unit_1	3	聖なる遺跡を守る斧使いの乙女。	【登場時】味方ユニット1体のHP+2。
+WH012	WH012	銀嶺の騎士団長	white	2	4	unit		2	6	taunt,barrier					3	騎士団を率いる重装の女騎士。	【挑発】【加護】
+WH013	WH013	聖騎士グランティア	white	2	4	unit		4	4		on_play	damage	2	enemy_unit_1	3	光と共に敵を討つ白銀の聖騎士。	【登場時】敵ユニット1体に2ダメージ。
+WH014	WH014	天弓の天使	white	3	5	unit		4	6		on_play	heal_all	3	self_unit_all	3	光の矢で邪を射抜く翼の天使。	【登場時】味方全ユニットを3回復。
+WH015	WH015	裁きの聖女	white	3	5	unit		3	6		on_play	destroy_weakest	1	enemy_unit_all	3	魔法陣と共に裁きを下す聖女。	【登場時】敵のHP最低ユニットを破壊。
+WH016	WH016	聖剣騎士ファルシオン	white	3	5	unit		5	5	lifedrain					3	聖剣と共に命を癒す騎士。	【吸命】戦闘ダメージ分だけHP回復。
+WH017	WH017	大司教グラティウス	white	3	6	unit		4	7	taunt					3	大聖堂を統べる赤衣の大司教。	【挑発】
+WH018	WH018	聖灯の祈祷師	white	3	6	unit		5	7		on_play	heal_all	3	self_unit_all	3	蝋燭の光と共に奇跡を起こす。	【登場時】味方全ユニットを3回復。
+WH019	WH019	紫晶の剣聖	white	3	6	unit		5	8	taunt,barrier					3	紫水晶の鎧を纏う最強の剣聖。	【挑発】【加護】
+WH020	WH020	聖法王の代行者	white	3	7	unit		6	8	lifedrain	on_play	heal_all	3	self_unit_all	3	法王の代理として光の裁きを行う。	【吸命】【登場時】味方全ユニットを3回復。
+WH021	WH021	退魔の大司祭	white	4	7	unit		7	7		on_play	destroy	1	enemy_unit_1	3	闇を払う光の爆発を放つ大司祭。	【登場時】敵ユニット1体を破壊。
+WH022	WH022	白銀の英雄	white	3	7	unit		6	8		on_play	buff_attack_all	1	self_unit_all	3	荒野に立つ白銀の鎧の英雄。	【登場時】味方全ユニットのATK+1。
+WH023	WH023	聖王ソロモン	white	4	8	unit		7	9	barrier	on_play	heal_all	4	self_unit_all	3	王冠を戴く白銀の聖王。	【加護】【登場時】味方全ユニットを4回復。
+WH024	WH024	光輝王ルミナス	white	4	8	unit		6	8	last_stand	on_play	destroy_weakest	1	enemy_unit_all	3	光の中に立つ白い毛皮の王。	【背水】シールド全破壊時ATK+3/HP+3。【登場時】敵HP最低ユニット破壊。
+WH025	WH025	聖域の守護竜騎士	white	4	8	unit		7	9		on_play	damage_all_enemy	3	enemy_unit_all	3	聖なる鎧で天を舞う紫の竜騎士。	【登場時】敵全ユニットに3ダメージ。
+WH026	WH026	創世竜ルミナリア	white	4	9	unit		8	11		on_play	heal_all	5	self_unit_all	3	天空城を守る白銀の創世竜。	【登場時】味方全ユニットを5回復。
+WH027	WH027	天罰の光	white	2	3	spell					on_play	damage	4	enemy_unit_1	3	天から落ちる裁きの雷。	敵ユニット1体に4ダメージ。
+WH028	WH028	聖剣の裁き	white	3	5	spell					on_play	destroy	1	enemy_unit_1	3	光の剣で罪を裁く。	敵ユニット1体を破壊。
+WH029	WH029	聖域展開	white	3	6	spell					on_play	heal_all	4	self_unit_all	3	光の渦が全てを包む。	味方全ユニットを4回復。
+WH030	WH030	信仰の盾	white	1	2	spell					on_play	grant_barrier	1	self_unit_1	3	信仰の力で身を守る。	味方ユニット1体に加護を付与。
+RE001	RE001	火花のインプ	red	1	1	unit		1	1		on_play	damage	1	enemy_unit_1	3	小さな火種が世界を焼く。	【登場時】敵ユニット1体に1ダメージ。
+RE002	RE002	荒野の斥候	red	1	1	unit		2	1						3	荒野を駆ける斥候。突撃あるのみ。	
+RE003	RE003	屋根上の忍	red	1	1	unit		2	2						3	夜を照らす赤き炎。	
+RE004	RE004	業火の術師	red	1	2	unit		2	2		on_play	damage	1	enemy_unit_1	3	制御不能の業火を放つ。	【登場時】敵ユニット1体に1ダメージ。
+RE005	RE005	鉄拳の闘士	red	1	2	unit		3	2						3	赤き拳で敵を砕く。	
+RE006	RE006	双刃の小鬼	red	1	2	unit		2	3						3	いつか大空を焦がす存在。	
+RE007	RE007	炎舞の剣士	red	1	3	unit		3	3						3	炎のように舞う剣技。	
+RE008	RE008	溶岩の精霊	red	2	3	unit		4	2	rush					3	溶岩から生まれし速攻の化身。	【速攻】
+RE009	RE009	紅蓮の弓兵	red	2	3	unit		2	3		on_play	damage	2	enemy_unit_1	3	必中の炎矢を放つ。	【登場時】敵ユニット1体に2ダメージ。
+RE010	RE010	戦旗の守護者	red	2	3	unit		3	4		on_play	damage	1	enemy_unit_1	3	戦旗を掲げ味方を鼓舞する。	【登場時】敵ユニット1体に1ダメージ。
+RE011	RE011	マグマゴーレム	red	2	4	unit		4	5	taunt					3	灼熱の肉体が全てを阻む。	【挑発】
+RE012	RE012	紅蓮の狂戦士	red	2	4	unit		5	3	rush					3	駆け抜ける赤い稲妻。	【速攻】
+RE013	RE013	骸骨火神	red	2	4	unit		4	4		on_play	damage_all_enemy	1	enemy_unit_all	3	その足音が大地を揺らす。	【登場時】敵全ユニットに1ダメージ。
+RE014	RE014	インフェルノドラゴン	red	3	5	unit		5	5		on_attack	damage	2	enemy_unit_1	3	地獄の業炎竜。	【攻撃時】敵ユニット1体に2ダメージ。
+RE015	RE015	灼熱の鍛冶屋	red	3	5	unit		6	4		on_play	damage	3	enemy_unit_1	3	炎と鉄を打ち据える巨漢。	【登場時】敵ユニット1体に3ダメージ。
+RE016	RE016	紅蓮の将軍	red	3	5	unit		5	4	spread					3	薙ぎ払う炎が隣を焼く。	【拡散】攻撃時、隣接レーンの敵にもATK半分のダメージ。
+RE017	RE017	煉獄の剣士	red	3	6	unit		5	5	endure	on_death	damage_all_enemy	2	enemy_unit_all	3	業火の中でも倒れない。	【不屈】【死亡時】敵全ユニットに2ダメージ。
+RE018	RE018	紅蓮の氷剣士	red	3	6	unit		7	6		on_play	damage	4	enemy_unit_1	3	相反する氷と炎を纏う。	【登場時】敵ユニット1体に4ダメージ。
+RE019	RE019	双剣の豪傑	red	3	7	unit		7	7		on_play	damage_all_enemy	3	enemy_unit_all	3	全てを切り裂く双剣。	【登場時】敵全ユニットに3ダメージ。
+RE020	RE020	超新星の騎士	red	4	7	unit		8	5	rush	on_play	damage	3	enemy_unit_1	3	現れた瞬間に世界を焼く。	【速攻】【登場時】敵ユニット1体に3ダメージ。
+RE021	RE021	星砕きの射手	red	4	8	unit		9	7	pierce					3	その一撃は前列を貫き後列を穿つ。	【貫通】撃破時、超過ダメージが同レーン背後に貫通。
+RE022	RE022	灼天の剣姫	red	4	8	unit		8	7		on_attack	damage_all_enemy	2	enemy_unit_all	3	攻撃する度に世界が燃える。	【攻撃時】敵全ユニットに2ダメージ。
+RE023	RE023	妖魔の炎精	red	3	3	unit		2	2		on_play	damage	1	enemy_unit_1	3	炎を操る小さな妖精。	【登場時】敵ユニット1体に1ダメージ。
+RE024	RE024	炎の楽師	red	2	2	unit		1	2		on_play	buff_attack	1	self_unit_1	3	熱情の音楽を奏でる。	【登場時】味方ユニット1体のATK+1。
+RE025	RE025	原初の炎神ヴェスタ	red	4	9	unit		10	8		on_play	damage_all_enemy	4	enemy_unit_all	3	世界を創り世界を焼く原初の炎。	【登場時】敵全ユニットに4ダメージ。
+RE026	RE026	灼熱の刃	red	1	2	spell					on_play	buff_attack	3	self_unit_1	3	武器に炎を纏わせる。	味方ユニット1体のATK+3。
+RE027	RE027	火炎放射	red	2	3	spell					on_play	damage	4	enemy_unit_1	3	炎の奔流。	敵ユニット1体に4ダメージ。
+RE028	RE028	ヘルファイア	red	2	4	spell					on_play	damage_all_enemy	2	enemy_unit_all	3	炎の竜巻が全てを焼き尽くす。	敵全ユニットに2ダメージ。
+RE029	RE029	灼熱の審判	red	3	5	spell					on_play	damage	6	enemy_unit_1	3	光の一撃。	敵ユニット1体に6ダメージ。
+RE030	RE030	天罰の隕石	red	4	8	spell					on_play	damage_all	5	all_units	3	降り注ぐ滅びの星。	全ユニットに5ダメージ。
+BL001	BL001	波打ち際のスライム	blue	1	1	unit		1	2		on_play	draw	1	self	3	打ち寄せた波から生まれた不思議な生命体。	【登場時】1枚ドロー
+BL002	BL002	図書館の見習い魔道士	blue	1	1	unit		1	1	search_1					3	古文書の整理で忙しい毎日。	【探索1】
+BL003	BL003	深海の踊り子	blue	1	2	unit		1	3		on_play	draw	1	self	3	水底で舞う美しい姿。	【登場時】1枚ドロー
+BL004	BL004	星読みの少女	blue	1	2	unit		2	2		on_play	draw	1	self	3	星の軌道から未来を予測する。	【登場時】1枚ドロー
+BL005	BL005	魔術院の優等生	blue	1	2	unit		1	2	search_2					3	飛び級で魔術院を卒業した秀才。	【探索2】
+BL006	BL006	紫翼の刃舞	blue	2	3	unit		3	3		on_play	draw	1	self	3	紫の翼で空を舞い、刃を振るう。	【登場時】1枚ドロー
+BL007	BL007	書庫の護り手	blue	2	3	unit		2	4		on_play	freeze	1	enemy_unit_1	3	禁書への侵入者を魔法の鎖で捕縛する。	【登場時】敵ユニット1体を凍結。
+BL008	BL008	防衛魔導重装兵	blue	2	3	unit		2	3	taunt	on_play	draw	1	self	3	魔力を込められた大盾は決して砕けない。	【挑発】【登場時】1枚ドロー。
+BL009	BL009	盾鱗の人魚	blue	2	3	unit		1	5	taunt					3	水鏡の盾で仲間を守る。	【挑発】
+BL010	BL010	電撃クラゲ	blue	2	4	unit		3	4		on_play	bounce	1	enemy_unit_1	3	深海の闇を照らす危険な光。	【登場時】敵ユニット1体を手札に戻す。
+BL011	BL011	青衣の高位魔道士	blue	2	4	unit		3	5		on_play	draw	2	self	3	青き魔力を操り、戦場を支配する。	【登場時】2枚ドロー。
+BL012	BL012	知識の探求者	blue	2	4	unit		4	3	search_3					3	本に囲まれながら宙に浮く不思議な少女。	【探索3】
+BL013	BL013	水晶杖の見習い	blue	2	4	unit		2	4		on_play	draw	2	self	3	杖に宿る魔力で奇跡を起こす。	【登場時】2枚ドロー。
+BL014	BL014	重魔導兵器操者	blue	3	4	unit		4	4		on_play	freeze	1	enemy_unit_1	3	巨大な錨型の魔導兵器を軽々と振り回す。	【登場時】敵ユニット1体を凍結。
+BL015	BL015	銀鱗の海騎士	blue	3	5	unit		5	5		on_play	damage	3	enemy_unit_1	3	海風を切り裂く美しき騎士。	【登場時】敵ユニット1体に3ダメージ。
+BL016	BL016	氷刃の剣姫	blue	3	5	unit		4	6		on_play	debuff_attack	4	enemy_unit_1	3	全てを凍らせる氷の剣。	【登場時】敵ユニット1体のATK-4。
+BL017	BL017	蒼の魔道剣士	blue	3	5	unit		6	4		on_play	draw	2	self	3	剣と魔法を高次元で融合させた達人。	【登場時】2枚ドロー。
+BL018	BL018	魔導狙撃手	blue	3	6	unit		6	5		on_play	bounce	1	enemy_unit_1	3	魔力を弾丸に変えて遠距離から撃ち抜く。	【登場時】敵ユニット1体を手札に戻す。
+BL019	BL019	禁書の守護者	blue	3	6	unit		5	6		on_play	cost_reduce	1	self	3	図書館の最深部で禁書を守り続ける。	【登場時】手札のカード1枚のコスト-1。
+BL020	BL020	深海の巨大クラーケン	blue	3	6	unit		7	6		on_play	damage_all_enemy	2	enemy_unit_all	3	深海から現れた巨大な魔物。	【登場時】敵全ユニットに2ダメージ。
+BL021	BL021	深海龍	blue	4	7	unit		6	8		on_play	destroy	1	enemy_unit_1	3	海を統べる巨大な龍。	【登場時】敵ユニット1体を破壊。
+BL022	BL022	海神ポセイドン	blue	4	7	unit		7	7		on_play	draw	3	self	3	海そのものが意思を持った姿。	【登場時】3枚ドロー。
+BL023	BL023	暗黒龍の急襲	blue	4	8	unit		8	8	raid					3	空からの一撃で全てが終わる。	【急襲】
+BL024	BL024	巨岩の海竜	blue	4	8	unit		7	9	taunt	on_play	draw	2	self	3	岩山のように巨大で硬い鱗。	【挑発】【登場時】2枚ドロー。
+BL025	BL025	雷雨の召喚	blue	2	3	spell					on_play	draw	3	self	3	稲妻を伴う嵐を呼び起こす。	3枚ドロー。
+BL026	BL026	蒼炎の剣	blue	1	2	spell					on_play	cost_reduce	1	self	3	青き炎を刃に纏わせる。	手札のカード1枚のコスト-1。
+BL027	BL027	黄金の旋律	blue	2	4	spell					on_play	draw	2	self	3	魔法のハープが奏でる奇跡の音色。	2枚ドロー。
+BL028	BL028	大津波	blue	3	5	spell					on_play	bounce	1	enemy_unit_1	3	全てを飲み込む巨大な波。	敵ユニット1体を手札に戻す。
+BL029	BL029	時空断裂	blue	4	7	spell					on_play	damage_all_enemy	4	enemy_unit_all	3	宇宙の次元ごと切り裂く禁断の魔法。	敵全ユニットに4ダメージ。
+BL030	BL030	深海蒼龍リヴァイアサン	blue	4	9	unit		9	10	raid	on_play	draw	4	self	3	青き海を支配する伝説の龍王。	【急襲】【登場時】4枚ドロー。
+GR001	GR001	森の修行僧	green	1	1	unit		1	2		on_play	sp_gain	1	self	3	森で鍛え上げられた身軽な体術。	【登場時】SP+1。
+GR002	GR002	霊気の拳士	green	1	1	unit		2	1						3	気脈を読み、一撃で敵の急所を突く。	
+GR003	GR003	森のエルフ弓兵	green	1	2	unit		2	2						3	百発百中の腕前を持つ森の守り手。	
+GR004	GR004	風の妖精	green	1	2	unit		1	3		on_play	heal	1	self_unit_1	3	風に乗って戦場を自在に舞う。	【登場時】自身を1回復。
+GR005	GR005	森の吟遊詩人	green	1	2	unit		1	2		on_play	heal	2	self_unit_1	3	ハープの音色が仲間を癒やす。	【登場時】味方ユニット1体を2回復。
+GR006	GR006	紫電の剣士	green	2	3	unit		3	3						3	森の奥深くに住む孤高の剣士。	
+GR007	GR007	ルーン見習い	green	2	3	unit		2	3		on_play	sp_gain	2	self	3	古代のルーン文字で森の力を引き出す。	【登場時】SP+2。
+GR008	GR008	茨の魔剣士	green	2	3	unit		3	2						3	茨のように鋭く敵を切り裂く。	
+GR009	GR009	深緑の魔術師	green	2	3	unit		2	4		on_play	buff_hp	2	self_unit_1	3	森と一体化し、大地の魔力を操る。	【登場時】味方ユニット1体のHP+2。
+GR010	GR010	風駆けの乙女	green	2	4	unit		4	3	rush					3	風よりも速く森を駆け抜ける。	【速攻】
+GR011	GR011	妖精の盾騎士	green	2	4	unit		3	5	taunt					3	小さな体で大きな盾を構える。	【挑発】
+GR012	GR012	大地の戦士	green	2	4	unit		4	4						3	大地の力を剣に宿して戦う。	
+GR013	GR013	金髪の森王子	green	3	5	unit		5	5		on_play	heal_all	1	self_unit_all	3	森を統べる誇り高き王族。	【登場時】味方全ユニットを1回復。
+GR014	GR014	太陽の近衛兵	green	3	5	unit		4	6	taunt					3	太陽の光を浴びて神聖に輝く鎧。	【挑発】
+GR015	GR015	深紅の森剣士	green	3	5	unit		5	4	spread					3	深紅の剣閃が敵を薙ぎ払う。	【拡散】攻撃時、隣接レーンにもダメージ。
+GR016	GR016	尖塔の飛空娘	green	3	6	unit		6	5		on_play	damage	2	enemy_unit_1	3	高所から奇襲をかける飛空部隊。	【登場時】敵ユニット1体に2ダメージ。
+GR017	GR017	豊穣の貴族剣士	green	3	6	unit		5	7		on_play	buff_hp	3	self_unit_1	3	森の恵みを守るために戦う貴族。	【登場時】味方ユニット1体のHP+3。
+GR018	GR018	重装森騎士	green	3	6	unit		5	6	taunt	on_play	heal	2	self_unit_1	3	森の入り口を守る鉄壁の重装騎士。	【挑発】【登場時】自身を2回復。
+GR019	GR019	黒鉄の洞窟騎士	green	4	7	unit		7	6	endure					3	洞窟で鍛えられた強靭な肉体と剣。	【不屈】
+GR020	GR020	ストーンアーマー	green	4	7	unit		6	8	taunt	on_play	buff_hp	2	self_unit_1	3	石の鎧がすべての攻撃を弾き返す。	【挑発】【登場時】味方ユニット1体のHP+2。
+GR021	GR021	古代の巨石兵	green	4	8	unit		7	9	taunt					3	遺跡を守護し続ける巨大なゴーレム。	【挑発】
+GR022	GR022	荒野の暴獣	green	4	8	unit		8	7	siege					3	立ち塞がるものを全て粉砕する。	【攻城】シールドへのダメージが2になる。
+GR023	GR023	アクアクリスタル竜	green	4	8	unit		7	8	awaken					3	魔力を持つ美しい水晶の竜。	【覚醒】
+GR024	GR024	レヴィアタン	green	4	8	unit		8	8		on_play	damage_all_enemy	2	enemy_unit_all	3	渓谷に封印されていた長大な怪蛇。	【登場時】敵全ユニットに2ダメージ。
+GR025	GR025	大地の怒り	green	2	3	spell					on_play	damage_all_enemy	3	enemy_unit_all	3	大地を揺るがし隕石を降らせる。	敵全ユニットに3ダメージ。
+GR026	GR026	妖精の癒弾	green	1	2	spell					on_play	heal	4	self_unit_1	3	きらめく音符が傷を癒やす。	味方ユニット1体を4回復。
+GR027	GR027	生命の循環	green	3	5	spell					on_play	heal_all	3	self_unit_all	3	森の魔力で傷ついた肉体を再生する。	味方全ユニットを3回復。
+GR028	GR028	大自然の加護	green	2	4	spell					on_play	grant_barrier	1	self_unit_1	3	大いなる自然が仲間を包み込む。	味方ユニット1体に加護を付与。
+GR029	GR029	豊穣の祈り	green	3	6	spell					on_play	sp_gain	4	self	3	魔力の球体が大地を潤す。	SP+4。
+GR030	GR030	創世の巨緑竜	green	4	9	unit		9	12		on_play	sp_gain	10	self	3	自然を創り出した原初の大いなる龍。	【登場時】SPを最大(10)まで回復する。
+BK001	BK001	彷徨う霊魂	black	1	1	unit		1	1		on_death	discard	1	enemy	3	現世に未練を残し、夜を飛ぶ霊体。	【死亡時】相手は手札を1枚捨てる。
+BK002	BK002	月夜の悪霊	black	1	2	unit		2	1		on_death	discard	1	enemy	3	闇夜に乗じて命を奪う。	【死亡時】相手は手札を1枚捨てる。
+BK003	BK003	急降下する幽鬼	black	1	2	unit		3	1	rush					3	標的を見つけると猛スピードで襲い掛かる。	【速攻】
+BK004	BK004	呪縛の囚人	black	2	2	unit		1	3	taunt					3	魔方陣に縛り付けられ、盾として使われる。	【挑発】
+BK005	BK005	路地裏の暗殺者	black	2	2	unit		2	2		on_play	destroy	1	enemy_unit_1	3	闇に紛れ、確実にターゲットを仕留める。	【登場時】ATK2以下の敵ユニット1体を破壊。
+BK006	BK006	次元落としの罠	black	2	2	unit		1	2		on_death	destroy	1	enemy_unit_1	3	触れた者を闇の底へ引き摺り込む。	【死亡時】このユニットを破壊した敵ユニットを破壊。
+BK007	BK007	燃える骸骨兵	black	2	3	unit		3	2		on_play	buff_attack	3	self_unit_1	3	怨念の炎で動く不死の兵士。	【登場時】自分の墓地の枚数だけATKアップ(最大+3)。
+BK008	BK008	死を告げる死神	black	3	3	unit		3	3		on_play	damage	2	enemy_unit_1	3	砂時計の砂が落ちる時、命が尽きる。	【登場時】敵ユニット1体に2ダメージ。
+BK009	BK009	骨と闇の合成獣	black	2	3	unit		4	2						3	様々な死骸を繋ぎ合わせて作られた怪物。	
+BK010	BK010	屋根伝いの妖魔	black	2	3	unit		3	3						3	夜の街を飛び回り、獲物を探す。	
+BK011	BK011	夜叉の二刀流	black	3	4	unit		4	3	rush					3	二本の刃が闇夜で交差する。	【速攻】
+BK012	BK012	月下の狼男	black	3	4	unit		5	3		on_play	damage_shield	1	enemy	3	満月の光を浴びて凶暴化する。	【登場時】敵のシールドに1ダメージ。
+BK013	BK013	髑髏の槍使い	black	3	4	unit		3	4		on_death	discard	1	enemy	3	無数の死骸を背に、槍を構える。	【死亡時】相手は手札を1枚捨てる。
+BK014	BK014	黒鎧の重装兵	black	2	4	unit		2	5	taunt					3	闇の金属で作られた重厚な鎧。	【挑発】
+BK015	BK015	夜を結ぶ妖精	black	3	5	unit		4	5		on_play	draw	1	self	3	星空を駆けて夜を終わらせない。	【搭乗時】自分の墓地からコスト3以下のユニットを1体手札に戻す。
+BK016	BK016	紫炎の呪術師	black	3	5	unit		5	4		on_play	damage	3	enemy_unit_1	3	紫の炎は魂そのものを燃やす。	【搭乗時】敵ユニット1体に3ダメージ。
+BK017	BK017	漆黒の魔剣士	black	3	5	unit		6	4						3	闇のオーラを纏う恐るべき剣技。	
+BK018	BK018	闇の執行人	black	4	5	unit		5	5		on_play	destroy	1	enemy_unit_1	3	裏社会で恐れられる非情の暗殺者。	【登場時】敵ユニット1体を破壊。自分のリーダーに2ダメージ。
+BK019	BK019	暗黒騎士	black	3	6	unit		5	6	taunt					3	光を拒絶する者の最強の盾。	【挑発】
+BK020	BK020	銀髪の処刑刃	black	3	6	unit		6	5		on_play	damage	4	enemy_unit_1	3	血に染まる事のない白き刃。	【登場時】敵ユニット1体に4ダメージ。
+BK021	BK021	古城の吸血鬼	black	4	6	unit		6	6	drain					3	血を吸う度に力を増していく。	【吸収】与えたダメージ分、自分のリーダーを回復。
+BK022	BK022	深淵を歩く舞姫	black	4	7	unit		7	6	rush					3	闇の中を優雅に、そして致命的に舞う。	【速攻】
+BK023	BK023	月夜の監視者	black	4	7	unit		7	7		on_play	discard	2	enemy	3	高い塔から夜のすべてを見下ろす。	【登場時】相手は手札を2枚捨てる。
+BK024	BK024	廃都の魔王	black	4	8	unit		8	8		on_death	damage_all_enemy	3	enemy_unit_all	3	廃都の中心に座す恐怖の象徴。	【死亡時】敵全ユニットに3ダメージ。
+BK025	BK025	邪教の儀式	black	1	1	spell					on_play	draw	2	self	3	闇の力を呼び覚ます禁忌の儀式。	味方ユニット1体を破壊し、2枚ドロー。
+BK026	BK026	奈落への誘い	black	2	3	spell					on_play	destroy	1	enemy_unit_1	3	足元に口を開ける底なしの闇。	敵ユニット1体を破壊する。
+BK027	BK027	影の侵食	black	3	4	spell					on_play	debuff_attack	-1	enemy_unit_1	3	忍び寄る影がすべてを飲み込む。	敵ユニット1体のATKとHPを半減する。
+BK028	BK028	魂の昇華	black	3	6	spell					on_play	draw	2	self	3	無数の生贄の魂を天へ送る。	自分の墓地からユニットを2体、手札に戻す。
+BK029	BK029	インクの魔人	black	4	7	spell					on_play	damage_all_enemy	4	enemy_unit_all	3	どす黒い力が具現化する。	敵全ユニットに4ダメージ。
+BK030	BK030	終焉の黒龍王ファフニール	black	4	9	unit		10	10	pierce	on_play	discard	10	enemy	3	世界に終わりを告げる究極の闇竜。	【貫通】【登場時】相手は手札をすべて捨てる。

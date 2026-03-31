@@ -1,5 +1,5 @@
 const { NUM_LANES, ROWS, forEachUnit, calculateLife } = require('./GameState');
-const { hasKeyword, getKeywordParam } = require('./KeywordEffects');
+const { hasKeyword, getKeywordParam, getKeywordId } = require('./KeywordEffects');
 
 // ヘルパー: 対象指定識別子に基づいてターゲットを取得
 function getAbilityTargets(targetId, currentPlayer, opponentPlayer, value) {
@@ -44,6 +44,24 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
   ];
 
   const events = [];
+  
+  // 覚醒（awaken）チェック: on_playかつawakenを持つ場合、条件を満たさなければ発動しない
+  if (trigger === 'on_play' && hasKeyword(unit, 'awaken')) {
+    const rawAwaken = unit.keywords.find(k => k.startsWith('awaken'));
+    if (rawAwaken) {
+      const parsed = getKeywordId(rawAwaken);
+      const reqLevel = parsed.param || 7;
+      let reqColor = parsed.color;
+      if (reqColor === 'self' || !reqColor) reqColor = unit.colors ? unit.colors[0] : unit.color;
+      
+      const currentLvl = currentPlayer.tribeLevels[reqColor] || 0;
+      if (currentLvl < reqLevel) {
+        logs.push(`💤 ${unit.name} は神族レベル不足（${reqColor} Lv.${currentLvl}/${reqLevel}）により覚醒せず、効果は発動しませんでした`);
+        return events; // キャンセル
+      }
+      logs.push(`🌟 ${unit.name} が覚醒！`);
+    }
+  }
   for (const ability of abilities) {
     if (ability.trigger !== trigger || !ability.effect) continue;
 

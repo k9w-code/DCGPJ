@@ -37,12 +37,14 @@ socket.on('session_invalid', () => {
 
 // データ取得と初期化
 async function loadData() {
-  const [cardsRes, shieldsRes] = await Promise.all([
+  const [cardsRes, shieldsRes, keywordsRes] = await Promise.all([
     fetch('/api/cards'),
     fetch('/api/shields'),
+    fetch('/api/keywords')
   ]);
   allCards = await cardsRes.json();
   allShields = await shieldsRes.json();
+  window.keywordMap = await keywordsRes.json();
   
   console.log('Data loaded:', { cards: allCards.length, shields: allShields.length });
   updateKeywordDropdown();
@@ -70,10 +72,19 @@ function updateKeywordDropdown() {
     select.remove(1);
   }
   
+  // 初期表示用に一部ハードコードしたマッピングもサポート
+  const KEYWORD_NAMES = { taunt: '挑発', rush: '速攻', speed: '速攻', stealth: '潜伏', double_strike: '連撃', barrier: '加護', endure: '不屈', siege: '攻城', comeback: '逆転', awaken: '覚醒', pierce: '貫通', spread: '拡散', drain: '吸命', intimidate: '威圧' };
+
   Array.from(keywordSet).sort().forEach(kw => {
+    // 削除済マスタ対応: baseKw (例:'awaken'等)でチェックし、マスタがロード済なのに該当設定がなければ除外
+    const baseKw = kw.split(':')[0];
+    if (window.keywordMap && Object.keys(window.keywordMap).length > 0 && !window.keywordMap[baseKw]) {
+      return;
+    }
     const opt = document.createElement('option');
     opt.value = kw;
-    opt.textContent = kw;
+    const kwName = (window.keywordMap && window.keywordMap[kw]) ? window.keywordMap[kw].name : (KEYWORD_NAMES[baseKw] || kw);
+    opt.textContent = kwName;
     select.appendChild(opt);
   });
 }
@@ -81,26 +92,29 @@ function updateKeywordDropdown() {
 function initUI() {
   // タブ切り替え
   document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', () => {
+    tab.addEventListener('click', (e) => {
+      const btn = e.target.closest('.tab');
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      activeTab = tab.dataset.tab;
+      btn.classList.add('active');
+      activeTab = btn.dataset.tab;
       
       if (activeTab === 'cards') {
         document.getElementById('card-grid').style.display = 'grid';
         document.getElementById('shield-grid').style.display = 'none';
-        document.getElementById('card-filters').style.display = '';
+        document.getElementById('card-specific-filters').style.display = 'flex';
+        document.getElementById('shield-specific-filters').style.display = 'none';
       } else {
         document.getElementById('card-grid').style.display = 'none';
         document.getElementById('shield-grid').style.display = 'grid';
-        document.getElementById('card-filters').style.display = 'none';
+        document.getElementById('card-specific-filters').style.display = 'none';
+        document.getElementById('shield-specific-filters').style.display = 'flex';
       }
       renderGrid();
     });
   });
 
-  // フィルタ：色（オーブ型）
-  document.querySelectorAll('.color-orb').forEach(el => {
+  // フィルタ：神族アイコン（色）
+  document.querySelectorAll('.tribe-filter').forEach(el => {
     el.addEventListener('click', () => {
       const color = el.dataset.color;
       if (activeColors.has(color)) { activeColors.delete(color); el.classList.remove('active'); }
@@ -125,6 +139,17 @@ function initUI() {
       document.querySelectorAll('.cost-filters .pill').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       activeCost = btn.dataset.cost;
+      renderGrid();
+    });
+  });
+
+  window.activeDurability = 'all';
+  // フィルタ：耐久値（シールド用ピル型）
+  document.querySelectorAll('.durability-filters .pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.durability-filters .pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      window.activeDurability = btn.dataset.durability;
       renderGrid();
     });
   });
@@ -190,7 +215,7 @@ function initUI() {
   // デッキ保存スロットの生成と初期化
   const slotsContainer = document.getElementById('deck-slots');
   if (slotsContainer && slotsContainer.children.length === 0) {
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 5; i++) {
       const slot = document.createElement('div');
       slot.className = `save-slot${i === currentSaveSlot ? ' active' : ''}`;
       slot.dataset.slot = i;
@@ -213,8 +238,32 @@ function initUI() {
     });
   });
 
-  document.getElementById('btn-save-deck').addEventListener('click', () => {
+  document.getElementById('btn-save-deck')?.addEventListener('click', () => {
     saveDeckToSlot(currentSaveSlot);
+  });
+
+  document.getElementById('btn-clear-deck')?.addEventListener('click', () => {
+    if (confirm('現在編集中のデッキをすべて空にしますか？')) {
+      deck = {};
+      selectedShields = [];
+      renderGrid();
+      renderDeckList();
+      renderShieldSlotsList();
+      updateSubmitButton();
+    }
+  });
+
+  document.getElementById('btn-delete-deck')?.addEventListener('click', () => {
+    if (confirm(`スロット ${currentSaveSlot + 1} に保存されているデッキを完全に削除しますか？`)) {
+      deck = {};
+      selectedShields = [];
+      localStorage.removeItem(SAVE_KEY_PREFIX + currentSaveSlot);
+      updateSlotIndicators();
+      renderGrid();
+      renderDeckList();
+      renderShieldSlotsList();
+      updateSubmitButton();
+    }
   });
 
   // 詳細モーダルの閉じるボタン初期化
@@ -390,7 +439,12 @@ function renderShieldGrid() {
   const grid = document.getElementById('shield-grid');
   grid.innerHTML = '';
   
-  for (const shield of allShields) {
+  const filteredShields = allShields.filter(s => {
+    if (!window.activeDurability || window.activeDurability === 'all') return true;
+    return s.durability === parseInt(window.activeDurability);
+  });
+
+  for (const shield of filteredShields) {
     const isSelected = selectedShields.includes(shield.id);
     const el = document.createElement('div');
     el.className = `card-item shield-item${isSelected ? ' in-deck' : ''}`;
@@ -405,6 +459,12 @@ function renderShieldGrid() {
     `;
     
     el.addEventListener('click', () => showPreview('shield', shield));
+    
+    // 詳細モーダル表示イベントのアタッチ
+    if (typeof attachCardDetailEvent === 'function') {
+      attachCardDetailEvent(el, shield);
+    }
+    
     grid.appendChild(el);
   }
 }
@@ -621,6 +681,14 @@ function updateSubmitButton() {
   const totalCards = Object.values(deck).reduce((s, c) => s + c, 0);
   const btn = document.getElementById('btn-submit-deck');
   btn.disabled = !(totalCards === 40 && selectedShields.length === 3);
+
+  const deckBadge = document.getElementById('deck-count').parentElement;
+  if(totalCards !== 40 && totalCards > 0) deckBadge.classList.add('error-pulse');
+  else deckBadge.classList.remove('error-pulse');
+  
+  const shieldBadge = document.getElementById('shield-count').parentElement;
+  if(selectedShields.length !== 3 && totalCards > 0) shieldBadge.classList.add('error-pulse');
+  else shieldBadge.classList.remove('error-pulse');
 }
 
 document.getElementById('btn-submit-deck').addEventListener('click', () => {

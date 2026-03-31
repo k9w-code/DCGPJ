@@ -186,10 +186,24 @@ window.showCardDetail = function(card) {
   const tribeIcon = document.getElementById('cd-tribe-icon');
   const tribeText = document.getElementById('cd-tribe-text');
   if (tribeIcon && tribeText) {
-    const mainColor = firstColor;
-    tribeIcon.style.backgroundImage = `url('/assets/images/icon/divine/${mainColor}.png')`;
-    tribeText.textContent = (COLOR_NAMES[mainColor] || mainColor).toUpperCase();
-    tribeText.style.color = COLOR_CSS[mainColor] || '#fff';
+    const parentTag = tribeIcon.parentElement;
+    if (isShield) {
+      if (parentTag && parentTag.classList.contains('cd-tribe-tag')) {
+        parentTag.style.display = 'none';
+      }
+      tribeIcon.style.display = 'none';
+      tribeText.style.display = 'none';
+    } else {
+      if (parentTag && parentTag.classList.contains('cd-tribe-tag')) {
+        parentTag.style.display = 'flex';
+      }
+      tribeIcon.style.display = 'block';
+      tribeText.style.display = 'block';
+      const mainColor = firstColor;
+      tribeIcon.style.backgroundImage = `url('/assets/images/icon/divine/${mainColor}.png')`;
+      tribeText.textContent = (COLOR_NAMES[mainColor] || mainColor).toUpperCase();
+      tribeText.style.color = COLOR_CSS[mainColor] || '#fff';
+    }
   }
 
   // ステータス表示
@@ -206,8 +220,9 @@ window.showCardDetail = function(card) {
   // テキスト・アビリティ表示
   const textEl = document.getElementById('cd-text');
   if (textEl) {
+    let mainText = '';
     if (card.abilities && card.abilities.length > 0) {
-      textEl.innerHTML = `
+      mainText = `
         <div class="cd-abilities-list">
           ${card.abilities.map(a => `
             <div class="ability-item">
@@ -218,11 +233,32 @@ window.showCardDetail = function(card) {
         </div>
       `;
     } else {
-      textEl.textContent = card.text || card.abilityEffect || (card.skill ? card.skill.description : '');
+      mainText = card.text || card.abilityEffect || (card.skill ? card.skill.text : '');
     }
+
+    let kwHTML = '';
+    if (card.keywords && card.keywords.length > 0) {
+      const validKws = card.keywords.map(k => k.split(':')[0]).filter(k => window.keywordMap && window.keywordMap[k]);
+      if (validKws.length > 0) {
+        kwHTML = '<div style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.2);">';
+        validKws.forEach(kw => {
+          const m = window.keywordMap[kw];
+          kwHTML += `<div style="font-size: 11px; color: #a09880; line-height: 1.4; margin-bottom: 6px;">
+            <strong style="color: #d4c8a8;">【${m.name}】</strong>: ${m.description}
+          </div>`;
+        });
+        kwHTML += '</div>';
+      }
+    }
+    
+    // Set HTML safely handling line breaks for standard text if not wrapped in divs
+    if (mainText && !mainText.includes('<div')) {
+      mainText = mainText.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+    }
+    textEl.innerHTML = mainText + kwHTML;
   }
 
-  document.getElementById('cd-flavor').textContent = card.flavorText || '';
+  document.getElementById('cd-flavor').textContent = card.flavorText || (card.skill ? card.skill.description : '');
   
   const closeBtn = document.getElementById('btn-close-detail');
   if (closeBtn) {

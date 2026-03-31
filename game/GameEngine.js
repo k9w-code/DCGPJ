@@ -194,6 +194,20 @@ class GameEngine {
       if (hasKeyword(unit, 'search')) {
         processSearch(unit, player, this.cardMap, gs.logs);
       }
+      
+      // 威圧（intimidate）処理: 正面の敵ユニット1体を凍結
+      if (hasKeyword(unit, 'intimidate')) {
+        let frontEnemy = opponent.board.front[targetLane];
+        if (!frontEnemy && targetRow === 'back') {
+          frontEnemy = opponent.board.back[targetLane];
+        }
+        if (frontEnemy && !frontEnemy.stealthActive) {
+          frontEnemy.hasActed = true;
+          frontEnemy.canAttack = false;
+          this.log(`❄️ ${unit.name} の「威圧」！正面の ${frontEnemy.name} を凍結（次ターン行動不可）`);
+          // Note: events push not strictly needed for basic intimidate, just status change + log is enough for client update
+        }
+      }
 
     } else if (card.type === 'spell') {
       player.sp -= card.cost;
@@ -265,6 +279,30 @@ class GameEngine {
         processAbility('on_death', attacker, gs, player, opponent, this.cardMap, gs.logs);
         player.board[attackerRow][attackerLane] = null;
         player.graveyard.push({ id: attacker.cardId, name: attacker.name });
+      }
+
+      // 拡散（spread）処理: 攻撃時、隣接レーンにも1ダメージ
+      if (hasKeyword(attacker, 'spread') && !attacker.stealthActive) { // stealth check just in case, though attacking breaks stealth
+        const spreadDmg = 1;
+        const adjLanes = [defLane - 1, defLane + 1];
+        adjLanes.forEach(l => {
+          if (l >= 0 && l < 3) {
+            const adj = opponent.board[defRow][l];
+            if (adj) {
+              adj.currentHp -= spreadDmg;
+              this.log(`💥 ${attacker.name} の「拡散」！隣接する ${adj.name} に ${spreadDmg} ダメージ (HP: ${adj.currentHp})`);
+              if (adj.currentHp <= 0) {
+                const adjKilled = processUnitDeath(adj, gs.logs);
+                if (adjKilled) {
+                  this.log(`💀 ${adj.name} を巻き添えで撃破！`);
+                  processAbility('on_death', adj, gs, opponent, player, this.cardMap, gs.logs);
+                  opponent.board[defRow][l] = null;
+                  opponent.graveyard.push({ id: adj.cardId, name: adj.name });
+                }
+              }
+            }
+          }
+        });
       }
 
     } else if (targetInfo.type === 'shield') {

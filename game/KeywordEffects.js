@@ -24,7 +24,11 @@ function getKeywordId(keyword) {
   if (match && match[1] === 'search') {
     return { id: 'search', param: parseInt(match[2]) };
   }
-  return { id: keyword, param: null };
+  const parts = keyword.split(':');
+  if (parts[0] === 'awaken') {
+    return { id: 'awaken', color: parts[1] || 'self', param: parseInt(parts[2]) || 7 };
+  }
+  return { id: parts[0], param: null };
 }
 
 function hasKeyword(unit, keywordId) {

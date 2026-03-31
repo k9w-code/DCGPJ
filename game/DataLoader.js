@@ -5,7 +5,6 @@ const { parse } = require('csv-parse/sync');
 
 // Google Spreadsheet CSV Export URLs
 const CARDS_URL = 'https://docs.google.com/spreadsheets/d/1R6-XpyHV_WiFIWKx6kSRNf-A7LjRrRhrrhK1FKMaTTw/export?format=csv&gid=0';
-const ABILITIES_URL = 'https://docs.google.com/spreadsheets/d/1R6-XpyHV_WiFIWKx6kSRNf-A7LjRrRhrrhK1FKMaTTw/export?format=csv&gid=693348463';
 const SHIELDS_URL = 'https://docs.google.com/spreadsheets/d/1R6-XpyHV_WiFIWKx6kSRNf-A7LjRrRhrrhK1FKMaTTw/export?format=csv&gid=108587861';
 const KEYWORDS_URL = 'https://docs.google.com/spreadsheets/d/1R6-XpyHV_WiFIWKx6kSRNf-A7LjRrRhrrhK1FKMaTTw/export?format=csv&gid=1171970069';
 
@@ -43,9 +42,8 @@ function fetchCSV(url) {
 
 async function loadAllData() {
   console.log('Fetching master data from Google Spreadsheets...');
-  const [cardsRaw, abilitiesRaw, shieldsRaw, keywordsRaw] = await Promise.all([
+  const [cardsRaw, shieldsRaw, keywordsRaw] = await Promise.all([
     fetchCSV(CARDS_URL),
-    fetchCSV(ABILITIES_URL),
     fetchCSV(SHIELDS_URL),
     fetchCSV(KEYWORDS_URL)
   ]);
@@ -61,28 +59,21 @@ async function loadAllData() {
     };
   }
 
-  // アビリティをカードIDでグループ化
-  const abilitiesByCard = {};
-  for (const ability of abilitiesRaw) {
-    if (!ability.card_id) continue;
-    if (!abilitiesByCard[ability.card_id]) {
-      abilitiesByCard[ability.card_id] = [];
-    }
-    abilitiesByCard[ability.card_id].push({
-      id: ability.ability_id,
-      trigger: ability.trigger || 'none',
-      effect: ability.effect || '',
-      value: parseInt(ability.value) || 0,
-      target: ability.target || '',
-      text: ability.text || '',
-      condition: ability.condition || ''
-    });
-  }
-
   // カードデータの構築
   const cards = cardsRaw.filter(row => row.id).map(row => {
-    const abilities = abilitiesByCard[row.id] || [];
-    const firstAbility = abilities.find(a => a.trigger && a.trigger !== 'none') || abilities[0] || {};
+    const abilities = [];
+    if (row.trigger && row.trigger.trim() !== '' && row.trigger.trim() !== 'none') {
+      abilities.push({
+        id: `${row.id}_ability`,
+        trigger: row.trigger.trim(),
+        effect: row.effect ? row.effect.trim() : '',
+        value: parseInt(row.value) || 0,
+        target: row.target ? row.target.trim() : '',
+        text: row.text ? row.text.trim() : '',
+        condition: row.condition ? row.condition.trim() : ''
+      });
+    }
+    const firstAbility = abilities.length > 0 ? abilities[0] : {};
     
     return {
       id: row.id,

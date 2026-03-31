@@ -25,3 +25,7 @@ Thumbs.db
 # Local data (if applicable)
 data/*.tmp
 logs/
+
+# Antigravity/Temp files
+.gemini/
+tmp/
