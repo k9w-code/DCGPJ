@@ -281,8 +281,12 @@ function renderPlayerInfo(state) {
     if (el) el.textContent = text !== undefined ? text : '';
   };
 
-  const myNameEl = document.getElementById('my-name');
-  if (myNameEl) myNameEl.innerHTML = `<span class="player-avatar">${state.me.avatar || '🤖'}</span>${state.me.name}`;
+  safeSetText('my-name', state.me.name);
+  const myAvatarEl = document.getElementById('my-avatar');
+  if (myAvatarEl) {
+    // もしアバターが絵文字の場合
+    myAvatarEl.innerHTML = `<div style="font-size: 60px; text-align: center; line-height: 120px;">${state.me.avatar || '🤖'}</div>`;
+  }
   safeSetText('my-sp', state.me.sp);
   safeSetText('my-deck', state.me.deckCount);
   safeSetText('my-hand-count', state.me.hand.length);
@@ -307,8 +311,12 @@ function renderPlayerInfo(state) {
   renderShields('my-shields', state.me.shields, true);
 
   if (state.opponent) {
-    const oppNameEl = document.getElementById('opp-name');
-    if (oppNameEl) oppNameEl.innerHTML = `<span class="player-avatar">${state.opponent.avatar || '🤖'}</span>${state.opponent.name}`;
+    safeSetText('opp-name', state.opponent.name);
+    const oppAvatarEl = document.getElementById('opp-avatar');
+    if (oppAvatarEl) {
+      // もしアバターが絵文字の場合
+      oppAvatarEl.innerHTML = `<div style="font-size: 60px; text-align: center; line-height: 120px;">${state.opponent.avatar || '🤖'}</div>`;
+    }
     safeSetText('opp-sp', state.opponent.sp);
     safeSetText('opp-hand', state.opponent.handCount);
     safeSetText('opp-deck', state.opponent.deckCount);
