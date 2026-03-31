@@ -23,8 +23,8 @@ class GameEngine {
   }
 
   initGame(p1Info, p2Info) {
-    const p1 = createPlayerState(p1Info.id, p1Info.name);
-    const p2 = createPlayerState(p2Info.id, p2Info.name);
+    const p1 = createPlayerState(p1Info.id, p1Info.name, p1Info.avatar);
+    const p2 = createPlayerState(p2Info.id, p2Info.name, p2Info.avatar);
     this.gameState = createGameState(p1, p2);
 
     p1.deck = shuffleDeck(p1Info.deckCardIds);

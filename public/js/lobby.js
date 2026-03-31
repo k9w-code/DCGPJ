@@ -8,6 +8,17 @@ if (window.audioManager) {
 }
 
 let selectedMode = 'pve';
+let selectedAvatar = '🤖'; // デフォルトアバター
+
+// アバター選択
+document.querySelectorAll('.avatar-option').forEach(option => {
+  option.addEventListener('click', () => {
+    document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('active'));
+    option.classList.add('active');
+    selectedAvatar = option.dataset.avatar;
+    if (window.audioManager) window.audioManager.playSE('click');
+  });
+});
 
 // モード選択
 document.querySelectorAll('.mode-card').forEach(card => {
@@ -37,6 +48,7 @@ document.getElementById('btn-create').addEventListener('click', () => {
   
   socket.emit('create_room', {
     playerName,
+    avatar: selectedAvatar,
     roomName: roomName || `${playerName}の部屋`,
     mode: selectedMode,
   });
@@ -68,7 +80,7 @@ socket.on('room_list', (roomItems) => {
     `;
     item.querySelector('button').addEventListener('click', () => {
       const playerName = document.getElementById('player-name').value || 'プレイヤー2';
-      socket.emit('join_room', { roomId: room.roomId, playerName });
+      socket.emit('join_room', { roomId: room.roomId, playerName, avatar: selectedAvatar });
       document.getElementById('status-section').style.display = 'block';
       document.getElementById('status-text').textContent = 'ルームに参加中...';
     });

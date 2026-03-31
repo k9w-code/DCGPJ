@@ -2105,3 +2105,46 @@ body.targeting-mode {
   animation: errorPulse 1.5s infinite;
   border-color: var(--danger) !important;
 }
+/* アバター選択パレット */
+.avatar-palette {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.avatar-option {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  background: var(--bg-primary);
+  border: 2px solid var(--border-subtle);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: var(--transition);
+  user-select: none;
+}
+.avatar-option:hover {
+  transform: scale(1.1);
+  border-color: var(--accent);
+}
+.avatar-option.active {
+  background: var(--bg-card-hover);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-glow);
+}
+.player-avatar {
+  font-size: 1.5em;
+  margin-right: 8px;
+  display: inline-block;
+  vertical-align: middle;
+  background: rgba(0,0,0,0.3);
+  border-radius: 50%;
+  width: 1.8em;
+  height: 1.8em;
+  text-align: center;
+  line-height: 1.8em;
+}

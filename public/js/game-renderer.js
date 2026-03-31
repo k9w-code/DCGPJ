@@ -281,7 +281,8 @@ function renderPlayerInfo(state) {
     if (el) el.textContent = text !== undefined ? text : '';
   };
 
-  safeSetText('my-name', state.me.name);
+  const myNameEl = document.getElementById('my-name');
+  if (myNameEl) myNameEl.innerHTML = `<span class="player-avatar">${state.me.avatar || '🤖'}</span>${state.me.name}`;
   safeSetText('my-sp', state.me.sp);
   safeSetText('my-deck', state.me.deckCount);
   safeSetText('my-hand-count', state.me.hand.length);
@@ -306,7 +307,8 @@ function renderPlayerInfo(state) {
   renderShields('my-shields', state.me.shields, true);
 
   if (state.opponent) {
-    safeSetText('opp-name', state.opponent.name);
+    const oppNameEl = document.getElementById('opp-name');
+    if (oppNameEl) oppNameEl.innerHTML = `<span class="player-avatar">${state.opponent.avatar || '🤖'}</span>${state.opponent.name}`;
     safeSetText('opp-sp', state.opponent.sp);
     safeSetText('opp-hand', state.opponent.handCount);
     safeSetText('opp-deck', state.opponent.deckCount);

@@ -19,10 +19,11 @@ function createBoard() {
   };
 }
 
-function createPlayerState(playerId, playerName) {
+function createPlayerState(playerId, playerName, avatar = '🤖') {
   return {
     id: playerId,
     name: playerName,
+    avatar: avatar,
     deck: [],
     hand: [],
     board: createBoard(),    // 前列3 + 後列3 = 6スロット

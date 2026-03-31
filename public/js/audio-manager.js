@@ -38,34 +38,75 @@ class SoundManager {
   playSE(type) {
     if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
     const now = this.audioCtx.currentTime;
-    const gain = this.audioCtx.createGain();
-    gain.gain.setValueAtTime(this.seVolume, now);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-    gain.connect(this.mainGain);
-
-    const osc = this.audioCtx.createOscillator();
-    osc.connect(gain);
     
+    // 基本となるマスターゲイン
+    const masterGain = this.audioCtx.createGain();
+    masterGain.gain.value = this.seVolume;
+    masterGain.connect(this.mainGain);
+
     switch (type) {
       case 'click':
-        osc.frequency.setValueAtTime(800, now);
-        osc.frequency.exponentialRampToValueAtTime(400, now + 0.1);
-        osc.start(); osc.stop(now + 0.1);
+        this._playSynthSound('sine', 800, 400, 0.05, 0.1, masterGain, now);
         break;
+      
       case 'error':
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(150, now);
-        osc.start(); osc.stop(now + 0.3);
+        // エラー用の濁った音
+        this._playSynthSound('triangle', 150, 100, 0.05, 0.3, masterGain, now);
+        this._playSynthSound('sawtooth', 155, 105, 0.05, 0.3, masterGain, now);
         break;
+
       case 'levelUp':
-        osc.frequency.setValueAtTime(440, now);
-        osc.frequency.linearRampToValueAtTime(880, now + 0.5);
-        osc.start(); osc.stop(now + 0.5);
+        // レベルアップ用のファンファーレ的な音（アルペジオ）
+        this._playSynthSound('square', 440, 440, 0.05, 0.15, masterGain, now);
+        this._playSynthSound('square', 554, 554, 0.05, 0.15, masterGain, now + 0.15);
+        this._playSynthSound('square', 659, 659, 0.05, 0.15, masterGain, now + 0.3);
+        this._playSynthSound('sine', 880, 880, 0.05, 0.4, masterGain, now + 0.45);
         break;
+
+      case 'attack':
+        // 打撃音
+        this._playSynthSound('square', 100, 20, 0.01, 0.2, masterGain, now);
+        // ノイズ的な成分
+        this._playSynthSound('sawtooth', 80, 10, 0.01, 0.2, masterGain, now);
+        break;
+        
+      case 'select':
+      case 'start':
+        // 決定音/ゲーム開始音
+        this._playSynthSound('sine', 600, 1200, 0.02, 0.3, masterGain, now);
+        this._playSynthSound('triangle', 600, 1200, 0.02, 0.3, masterGain, now);
+        break;
+
       default:
-        osc.frequency.setValueAtTime(440, now);
-        osc.start(); osc.stop(now + 0.2);
+        // デフォルトのタップ音
+        this._playSynthSound('sine', 440, 0, 0.05, 0.1, masterGain, now);
     }
+  }
+
+  // 汎用的なシンセサイザー再生関数
+  _playSynthSound(type, freqStart, freqEnd, attackTime, decayTime, destination, startTime) {
+    const osc = this.audioCtx.createOscillator();
+    const env = this.audioCtx.createGain();
+    
+    osc.type = type;
+    osc.connect(env);
+    env.connect(destination);
+
+    // ボリュームエンベロープ（Attack -> Decay）
+    env.gain.setValueAtTime(0, startTime);
+    env.gain.linearRampToValueAtTime(1.0, startTime + attackTime);
+    env.gain.exponentialRampToValueAtTime(0.01, startTime + attackTime + decayTime);
+
+    // ピッチへのエンベロープ（任意）
+    if(freqEnd > 0) {
+        osc.frequency.setValueAtTime(freqStart, startTime);
+        osc.frequency.exponentialRampToValueAtTime(Math.max(10, freqEnd), startTime + attackTime + decayTime);
+    } else {
+        osc.frequency.setValueAtTime(freqStart, startTime);
+    }
+
+    osc.start(startTime);
+    osc.stop(startTime + attackTime + decayTime + 0.1);
   }
 }
 

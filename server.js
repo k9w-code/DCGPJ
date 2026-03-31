@@ -155,6 +155,7 @@ io.on('connection', (socket) => {
     const playerObj = {
       id: playerId,
       name: data.playerName || 'プレイヤー1',
+      avatar: data.avatar || '🤖',
       socket: socket,
       deck: null,
       shields: null,
@@ -184,6 +185,7 @@ io.on('connection', (socket) => {
       const aiPlayer = {
         id: aiId,
         name: 'NPC',
+        avatar: '🤖', // AI用デフォルトアバター
         socket: null,
         deck: null,
         shields: null,
@@ -215,6 +217,7 @@ io.on('connection', (socket) => {
     const playerObj = {
       id: playerId,
       name: data.playerName || 'プレイヤー2',
+      avatar: data.avatar || '🤖',
       socket: socket,
       deck: null,
       shields: null,
