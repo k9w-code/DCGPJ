@@ -27,8 +27,8 @@ async function initServer() {
     
     // サーバー起動
     const PORT = process.env.PORT || 3000;
-    server.listen(PORT, () => {
-      console.log(`\n🎮 DCG テストプレイサーバー起動: http://localhost:${PORT}\n`);
+    server.listen(PORT, '0.0.0.0', () => {
+      console.log(`\n🎮 DCG テストプレイサーバー起動: http://0.0.0.0:${PORT}\n`);
     });
   } catch (err) {
     console.error('❌ データ読み込みエラー:', err);
