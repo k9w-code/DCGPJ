@@ -171,16 +171,44 @@ window.showCardDetail = function(card) {
   overlay.style.display = 'flex';
   const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
   const firstColor = colors[0].toLowerCase();
-  const folder = firstColor === 'neutral' ? 'rainbow' : firstColor;
-  const isShield = card.type && card.type.toLowerCase() === 'shield';
+  const fileName = card.artId || card.cardId || card.id || 'unknown';
+  const cleanId = String(fileName).split('_')[0]; // instanceId 対策
+  const upperId = cleanId.toUpperCase();
+  
+  const isShield = card.type === 'shield';
+  // 1. 属性(color)に基づくデフォルト判定
+  let folder = firstColor === 'neutral' ? 'rainbow' : firstColor;
+
+  // 2. IDプレフィックスによるフォルダ強制特定 (修正の核心)
+  if (upperId.startsWith('RE') || upperId.startsWith('R')) folder = 'red';
+  else if (upperId.startsWith('BK') || upperId.startsWith('KE') || upperId.startsWith('K')) folder = 'black';
+  else if (upperId.startsWith('BE') || upperId.startsWith('B')) {
+    // BK (Black) と B (Blue) を区別
+    folder = 'blue';
+  }
+  else if (upperId.startsWith('GE') || upperId.startsWith('G')) folder = 'green';
+  else if (upperId.startsWith('WE') || upperId.startsWith('W')) folder = 'white';
+  else if (upperId.startsWith('N')) folder = 'rainbow';
+  
   const bgImage = isShield
     ? `url('/assets/images/shields/${card.id.replace('SH', 'S')}.webp')`
-    : `url('/assets/images/cards/${folder}/${card.artId || card.id}.webp')`;
+    : `url('/assets/images/cards/${folder}/${cleanId}.webp')`;
   
-  document.getElementById('cd-image').style.backgroundImage = bgImage;
-  document.getElementById('cd-name').textContent = card.name;
-  document.getElementById('cd-cost').textContent = card.cost !== undefined ? card.cost : (card.durability || 0);
-  document.getElementById('cd-type').textContent = (card.type || 'Unit').toUpperCase();
+  const imgEl = document.getElementById('cd-image');
+  if (imgEl) {
+    imgEl.style.backgroundImage = bgImage;
+    console.log(`[DEBUG] Final Logic: Name=${card.name}, ID=${cleanId}, Folder=${folder}, Path=${bgImage}`);
+  }
+
+  // 要素更新を安全に行う
+  const safeSetText = (id, text) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text !== undefined ? text : '';
+  };
+
+  safeSetText('cd-name', card.name);
+  safeSetText('cd-cost', card.cost !== undefined ? card.cost : (card.durability || 0));
+  safeSetText('cd-type', (card.type || 'Unit').toUpperCase());
   
   // 神族（色）表示
   const tribeIcon = document.getElementById('cd-tribe-icon');
@@ -208,13 +236,17 @@ window.showCardDetail = function(card) {
 
   // ステータス表示
   const statsContainer = document.getElementById('cd-stats-container');
-  const cardType = (card.type || '').toLowerCase();
-  if (cardType === 'unit') {
-    statsContainer.style.display = 'flex';
-    document.getElementById('cd-attack').textContent = card.currentAttack !== undefined ? card.currentAttack : (card.attack || 0);
-    document.getElementById('cd-hp').textContent = card.currentHp !== undefined ? card.currentHp : (card.hp || 0);
-  } else {
-    statsContainer.style.display = 'none';
+  if (statsContainer) {
+    const cardType = (card.type || '').toLowerCase();
+    if (cardType === 'unit') {
+      statsContainer.style.display = 'flex';
+      const atkEl = document.getElementById('cd-attack');
+      const hpEl = document.getElementById('cd-hp');
+      if (atkEl) atkEl.textContent = card.currentAttack !== undefined ? card.currentAttack : (card.attack || 0);
+      if (hpEl) hpEl.textContent = card.currentHp !== undefined ? card.currentHp : (card.hp || 0);
+    } else {
+      statsContainer.style.display = 'none';
+    }
   }
 
   // テキスト・アビリティ表示
@@ -251,14 +283,16 @@ window.showCardDetail = function(card) {
       }
     }
     
-    // Set HTML safely handling line breaks for standard text if not wrapped in divs
     if (mainText && !mainText.includes('<div')) {
       mainText = mainText.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
     }
     textEl.innerHTML = mainText + kwHTML;
   }
 
-  document.getElementById('cd-flavor').textContent = card.flavorText || (card.skill ? card.skill.description : '');
+  const flavorEl = document.getElementById('cd-flavor');
+  if (flavorEl) {
+    flavorEl.textContent = card.flavorText || (card.skill ? card.skill.description : '');
+  }
   
   const closeBtn = document.getElementById('btn-close-detail');
   if (closeBtn) {

@@ -376,18 +376,60 @@ class GameEngine {
     if (playerId !== currentPlayerId) return { error: '自分のターンではありません' };
 
     const player = gs.players[playerId];
-    while (player.hand.length > MAX_HAND_SIZE) {
-      const discarded = player.hand.pop();
-      player.graveyard.push(discarded);
-      this.log(`✋ ${player.name}: 手札上限超過により ${discarded.name} を捨てた`);
+
+    // 手札上限チェック
+    if (player.hand.length > MAX_HAND_SIZE) {
+      if (player.isAI) {
+        // AIの場合は自動でランダムに捨てる
+        this.log(`🤖 ${player.name}: 手札上限超過。自動で破棄します。`);
+        const discardCount = player.hand.length - MAX_HAND_SIZE;
+        for (let i = 0; i < discardCount; i++) {
+          const idx = Math.floor(Math.random() * player.hand.length);
+          const discarded = player.hand.splice(idx, 1)[0];
+          player.graveyard.push(discarded);
+          this.log(`🗑️ ${player.name}: ${discarded.name} を捨てた`);
+        }
+      } else {
+        // プレイヤーの場合は破棄フェーズへ移行
+        gs.phase = 'discarding';
+        this.log(`⚠️ ${player.name}: 手札が多すぎます。捨てるカードを選択してください。`);
+        return this.getGameStateForClients();
+      }
     }
 
+    return this.completeEndTurn(player);
+  }
+
+  completeEndTurn(player) {
+    const gs = this.gameState;
+    gs.phase = 'main'; // フェーズを戻す
     this.log(`⏭️ ${player.name}: ターン終了`);
 
     gs.currentPlayerIndex = gs.currentPlayerIndex === 0 ? 1 : 0;
     if (gs.currentPlayerIndex === 0) gs.turnNumber++;
 
     return this.startTurn();
+  }
+
+  discardCards(playerId, cardIndices) {
+    const gs = this.gameState;
+    const player = gs.players[playerId];
+    if (!player || gs.phase !== 'discarding') return { error: '不正なアクション' };
+
+    const needed = player.hand.length - MAX_HAND_SIZE;
+    if (cardIndices.length !== needed) return { error: `${needed}枚選択してください` };
+
+    // インデックスの降順でソート（削除時の位置ずれ防止）
+    const sortedIndices = [...cardIndices].sort((a, b) => b - a);
+    sortedIndices.forEach(idx => {
+      const discarded = player.hand.splice(idx, 1)[0];
+      if (discarded) {
+        player.graveyard.push(discarded);
+        this.log(`🗑️ ${player.name}: ${discarded.name} を捨てた`);
+      }
+    });
+
+    return this.completeEndTurn(player);
   }
 
   processEvents(events, currentPlayer, opponent) {
@@ -472,7 +514,7 @@ class GameEngine {
         tribeLevels: player.tribeLevels,
         shields: player.shields,
         totalShieldDurability: player.totalShieldDurability,
-        life: calculateLife(player),
+        life: calculateLife(player, gs),
         shieldsDestroyed: player.shieldsDestroyed,
         deckCount: player.deck.length,
         graveyard: player.graveyard,
@@ -485,7 +527,7 @@ class GameEngine {
         sp: opponent.sp,
         tribeLevels: opponent.tribeLevels,
         totalShieldDurability: opponent.totalShieldDurability,
-        life: calculateLife(opponent),
+        life: calculateLife(opponent, gs),
         shieldsDestroyed: opponent.shieldsDestroyed,
         shieldsRemaining: NUM_SHIELDS - opponent.shieldsDestroyed,
         deckCount: opponent.deck.length,

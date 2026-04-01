@@ -330,6 +330,9 @@ io.on('connection', (socket) => {
       case 'end_turn':
         result = room.engine.endTurn(player.id);
         break;
+      case 'discard_cards':
+        result = room.engine.discardCards(player.id, data.cardIndices);
+        break;
       case 'surrender':
         result = room.engine.surrender(player.id);
         break;
