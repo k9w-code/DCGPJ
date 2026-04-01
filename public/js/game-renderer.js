@@ -1,5 +1,9 @@
-// game-renderer.js - 盤面描画（3レーン×前後列対応）
 'use strict';
+
+// 共有されるゲーム状態（ファイルを跨いで参照可能にするため var で宣言）
+var gameState = window.gameState || null;
+var selectedCardIndex = window.selectedCardIndex || null;
+var selectedAttacker = window.selectedAttacker || null;
 
 const KEYWORD_NAMES = {
   taunt: '挑発',
@@ -44,6 +48,32 @@ function getKeywordDescription(kw) {
   return master ? master.description : '';
 }
 
+// 共通画像パス生成（IDプレフィックスによるフォルダ特定）
+window.getCardImagePath = function(card) {
+  if (!card) return '';
+  const isShield = card.type === 'shield';
+  const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
+  const firstColor = colors[0].toLowerCase();
+  const fileName = card.artId || card.cardId || card.id || 'unknown';
+  const cleanId = String(fileName).split('_')[0]; // instanceId 対策
+  const upperId = cleanId.toUpperCase();
+  
+  // 1. デフォルト判定
+  let folder = firstColor === 'neutral' ? 'rainbow' : firstColor;
+
+  // 2. IDプレフィックスによる強制特定
+  if (upperId.startsWith('RE') || upperId.startsWith('R')) folder = 'red';
+  else if (upperId.startsWith('BK') || upperId.startsWith('KE') || upperId.startsWith('K')) folder = 'black';
+  else if (upperId.startsWith('BE') || upperId.startsWith('B')) folder = 'blue';
+  else if (upperId.startsWith('GE') || upperId.startsWith('G')) folder = 'green';
+  else if (upperId.startsWith('WE') || upperId.startsWith('W')) folder = 'white';
+  else if (upperId.startsWith('N')) folder = 'rainbow';
+  
+  return isShield
+    ? `/assets/images/shields/${cleanId.replace('SH', 'S')}.webp`
+    : `/assets/images/cards/${folder}/${cleanId}.webp`;
+};
+
 // 盤面描画
 function renderBoard(state, selectedCard, selectedAttacker, onSlotClick) {
   renderOpponentBoard(state, selectedAttacker, onSlotClick);
@@ -62,7 +92,10 @@ function renderOpponentBoard(state, selectedAttacker, onSlotClick) {
     rowDiv.className = `board-row opponent-${row}`;
     
     for (let lane = 0; lane < 3; lane++) {
-      const unit = state.opponent.board[row][lane];
+      const board = (state.opponent && state.opponent.board) || {};
+      const rowData = board[row] || [];
+      const unit = rowData[lane];
+      
       const slot = document.createElement('div');
       slot.className = `board-slot opponent ${row}`;
       slot.dataset.row = row;
@@ -100,14 +133,18 @@ function renderPlayerBoard(state, selectedCard, selectedAttacker, onSlotClick) {
     rowDiv.className = `board-row player-${row}`;
     
     for (let lane = 0; lane < 3; lane++) {
-      const unit = state.me.board[row][lane];
+      const board = (state.me && state.me.board) || {};
+      const rowData = board[row] || [];
+      const unit = rowData[lane];
+      
       const slot = document.createElement('div');
       slot.className = `board-slot ${row}`;
       slot.dataset.row = row;
       slot.dataset.lane = lane;
       
       if (unit) {
-        const hasActivate = (unit.abilities || []).some(a => a.trigger === 'activate');
+        const abilities = unit.abilities || [];
+        const hasActivate = abilities.some(a => a.trigger === 'activate');
         const canAct = isMyTurn && !unit.hasActed && (unit.canAttack || hasActivate);
         
         slot.innerHTML = renderUnitCard(unit, canAct);
@@ -143,8 +180,7 @@ function renderUnitCard(unit, canAct) {
   const isDamaged = unit.currentHp < unit.maxHp;
   const actedClass = unit.hasActed ? ' acted' : '';
   const canActClass = canAct ? ' can-act' : '';
-  const folder = unit.color === 'neutral' ? 'rainbow' : (unit.color || 'neutral');
-  const bgImage = `/assets/images/cards/${folder}/${unit.artId || unit.cardId || unit.id}.webp`;
+  const bgImage = window.getCardImagePath(unit);
   
   return `
     <div class="unit-card${actedClass}${canActClass}" style="${borderStyle} background-image: url('${bgImage}');">
@@ -152,11 +188,11 @@ function renderUnitCard(unit, canAct) {
         <div class="unit-stats">
           <div class="atk">
             <span class="icon">⚔️</span>
-            <span class="val">${unit.currentAttack}</span>
+            <span class="val">${unit.currentAttack !== undefined ? unit.currentAttack : (unit.attack || 0)}</span>
           </div>
           <div class="hp">
             <span class="icon">❤️</span>
-            <span class="val${isDamaged ? ' damaged' : ''}">${unit.currentHp}</span>
+            <span class="val${isDamaged ? ' damaged' : ''}">${unit.currentHp !== undefined ? unit.currentHp : (unit.hp || 0)}</span>
           </div>
         </div>
       </div>
@@ -169,35 +205,15 @@ window.showCardDetail = function(card) {
   if (!overlay) return;
   
   overlay.style.display = 'flex';
+  const isShield = card.type === 'shield';
   const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
   const firstColor = colors[0].toLowerCase();
-  const fileName = card.artId || card.cardId || card.id || 'unknown';
-  const cleanId = String(fileName).split('_')[0]; // instanceId 対策
-  const upperId = cleanId.toUpperCase();
-  
-  const isShield = card.type === 'shield';
-  // 1. 属性(color)に基づくデフォルト判定
-  let folder = firstColor === 'neutral' ? 'rainbow' : firstColor;
 
-  // 2. IDプレフィックスによるフォルダ強制特定 (修正の核心)
-  if (upperId.startsWith('RE') || upperId.startsWith('R')) folder = 'red';
-  else if (upperId.startsWith('BK') || upperId.startsWith('KE') || upperId.startsWith('K')) folder = 'black';
-  else if (upperId.startsWith('BE') || upperId.startsWith('B')) {
-    // BK (Black) と B (Blue) を区別
-    folder = 'blue';
-  }
-  else if (upperId.startsWith('GE') || upperId.startsWith('G')) folder = 'green';
-  else if (upperId.startsWith('WE') || upperId.startsWith('W')) folder = 'white';
-  else if (upperId.startsWith('N')) folder = 'rainbow';
-  
-  const bgImage = isShield
-    ? `url('/assets/images/shields/${card.id.replace('SH', 'S')}.webp')`
-    : `url('/assets/images/cards/${folder}/${cleanId}.webp')`;
-  
+  const bgImagePath = window.getCardImagePath(card);
   const imgEl = document.getElementById('cd-image');
   if (imgEl) {
-    imgEl.style.backgroundImage = bgImage;
-    console.log(`[DEBUG] Final Logic: Name=${card.name}, ID=${cleanId}, Folder=${folder}, Path=${bgImage}`);
+    imgEl.style.backgroundImage = `url('${bgImagePath}')`;
+    console.log(`[DEBUG] Final Logic: Name=${card.name}, ID=${card.id}, Path=${bgImagePath}`);
   }
 
   // 要素更新を安全に行う
@@ -318,8 +334,19 @@ function renderPlayerInfo(state) {
   safeSetText('my-name', state.me.name);
   const myAvatarEl = document.getElementById('my-avatar');
   if (myAvatarEl) {
-    // もしアバターが絵文字の場合
-    myAvatarEl.innerHTML = `<div style="font-size: 60px; text-align: center; line-height: 120px;">${state.me.avatar || '🤖'}</div>`;
+    const avatarStr = String(state.me.avatar || '1');
+    const avatarPath = (!isNaN(avatarStr) && avatarStr.length < 3) 
+      ? `/assets/images/avatar/${avatarStr}.png` 
+      : (avatarStr.includes('/') ? avatarStr : null);
+    
+    if (avatarPath) {
+      myAvatarEl.style.backgroundImage = `url('${avatarPath}')`;
+      myAvatarEl.innerHTML = '';
+      myAvatarEl.style.backgroundSize = 'cover';
+    } else {
+      myAvatarEl.innerHTML = `<div style="font-size: 60px; text-align: center; line-height: 120px;">${avatarStr}</div>`;
+      myAvatarEl.style.backgroundImage = 'none';
+    }
   }
   safeSetText('my-sp', state.me.sp);
   safeSetText('my-deck', state.me.deckCount);
@@ -348,18 +375,33 @@ function renderPlayerInfo(state) {
     safeSetText('opp-name', state.opponent.name);
     const oppAvatarEl = document.getElementById('opp-avatar');
     if (oppAvatarEl) {
-      // もしアバターが絵文字の場合
-      oppAvatarEl.innerHTML = `<div style="font-size: 60px; text-align: center; line-height: 120px;">${state.opponent.avatar || '🤖'}</div>`;
+      const avatarStr = String(state.opponent.avatar || '1');
+      const avatarPath = (!isNaN(avatarStr) && avatarStr.length < 3) 
+        ? `/assets/images/avatar/${avatarStr}.png` 
+        : (avatarStr.includes('/') ? avatarStr : null);
+      
+      if (avatarPath) {
+        oppAvatarEl.style.backgroundImage = `url('${avatarPath}')`;
+        oppAvatarEl.innerHTML = '';
+        oppAvatarEl.style.backgroundSize = 'cover';
+      } else {
+        oppAvatarEl.innerHTML = `<div style="font-size: 60px; text-align: center; line-height: 120px;">${avatarStr}</div>`;
+        oppAvatarEl.style.backgroundImage = 'none';
+      }
     }
+    
+    // 相手側の各ステータステキスト更新
     safeSetText('opp-sp', state.opponent.sp);
     safeSetText('opp-hand', state.opponent.handCount);
     safeSetText('opp-deck', state.opponent.deckCount);
     const oppLifeEl = document.getElementById('opp-life');
     if (oppLifeEl) oppLifeEl.textContent = state.opponent.life || 0;
 
+    // 相手側の神族レベル表示
     const oppTribes = document.getElementById('opp-tribes');
     if (oppTribes) {
       oppTribes.innerHTML = '';
+      const tribeColors = ['red', 'blue', 'green', 'white', 'black'];
       tribeColors.forEach(color => {
         const level = (state.opponent.tribeLevels && state.opponent.tribeLevels[color]) || 0;
         const badge = document.createElement('div');
@@ -410,12 +452,16 @@ function renderHand(state, selectedCardIndex, onCardClick) {
   if (!container) return;
   container.innerHTML = '';
   const isMyTurn = state.currentPlayerId === state.me.id;
-  const handCount = state.me.hand.length;
+  const hand = state.me.hand || [];
+  const handCount = hand.length;
   const maxAngle = Math.min(40, handCount * 8);
   
-  state.me.hand.forEach((card, index) => {
-    const hasTribeLevel = (card.colors || [card.color]).every(col => state.me.tribeLevels[col] >= card.cost);
-    const canPlay = isMyTurn && state.me.sp >= card.cost && hasTribeLevel;
+  hand.forEach((card, index) => {
+    if (!card) return;
+    const myLevels = state.me.tribeLevels || {};
+    const cardColors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
+    const hasTribeLevel = cardColors.every(col => (myLevels[col] || 0) >= (card.cost || 0));
+    const canPlay = isMyTurn && (state.me.sp || 0) >= (card.cost || 0) && hasTribeLevel;
     const el = document.createElement('div');
     el.className = `hand-card${selectedCardIndex === index ? ' selected' : ''}${!canPlay ? ' unplayable' : ''}`;
     
@@ -427,8 +473,7 @@ function renderHand(state, selectedCardIndex, onCardClick) {
     
     const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
     const colorBorders = colors.map(c => COLOR_CSS[c] || '#666');
-    const folder = card.color === 'neutral' ? 'rainbow' : (card.color || 'neutral');
-    const bgImage = `/assets/images/cards/${folder}/${card.artId || card.id}.webp`;
+    const bgImage = window.getCardImagePath(card);
     el.style.backgroundImage = `url('${bgImage}')`;
     el.style.borderLeft = `4px solid ${colorBorders[0]}`;
     
@@ -477,13 +522,47 @@ function renderTurnInfo(state) {
   }
 }
 
-function updateUI() {
-  if (!gameState || !gameState.me) return;
+window.updateUI = function() {
+  const state = window.gameState;
+  if (!state || !state.me) {
+    console.log('⏳ [RENDER] updateUI: No state yet');
+    return;
+  }
+  
+  // データの極限正規化（欠落していても描画を継続）
   try {
-    renderPlayerInfo(gameState);
-    renderBoard(gameState, selectedCardIndex !== null ? gameState.me.hand[selectedCardIndex] : null, selectedAttacker, handleSlotClick);
-    renderHand(gameState, selectedCardIndex, handleCardPointerDown);
-    renderLogs(gameState.logs || []);
-    renderTurnInfo(gameState);
-  } catch (e) { console.error('❌ updateUI failed!', e); }
-}
+    state.me.hand = state.me.hand || [];
+    state.me.board = state.me.board || { front: [null,null,null], back: [null,null,null] };
+    state.opponent = state.opponent || { 
+      name: 'OPPONENT', 
+      sp: 0, 
+      hand: [], 
+      board: { front: [null,null,null], back: [null,null,null] },
+      shields: [] 
+    };
+    state.logs = state.logs || [];
+  } catch (e) {
+    console.warn('⚠️ [RENDER] Data normalization failed:', e.message);
+  }
+
+  try {
+    const selIndex = window.selectedCardIndex;
+    const selectedCard = (selIndex !== null && state.me.hand && state.me.hand[selIndex]) ? state.me.hand[selIndex] : null;
+    const attacker = window.selectedAttacker;
+    const slotClickHandler = window.handleSlotClick;
+
+    // 各パーツを独立して描画（一つが死んでも他を生かす）
+    try { renderPlayerInfo(state); } catch (e) { console.error('❌ renderPlayerInfo error:', e); }
+    try { renderHand(state, selIndex, window.handleCardPointerDown); } catch (e) { console.error('❌ renderHand error:', e); }
+    try { renderBoard(state, selectedCard, attacker, slotClickHandler); } catch (e) { console.error('❌ renderBoard error:', e); }
+    try { renderShields(state); } catch (e) { console.error('❌ renderShields error:', e); }
+    try { renderLogs(state.logs); } catch (e) { console.error('❌ renderLogs error:', e); }
+    try { renderTurnInfo(state); } catch (e) { console.error('❌ renderTurnInfo error:', e); }
+    
+    if (typeof window.onUpdateUIHook === 'function') {
+      try { window.onUpdateUIHook(); } catch (e) {}
+    }
+  } catch (e) {
+    console.error('💥 [RENDER] FATAL: Critical Render Protection triggered:', e);
+  }
+};

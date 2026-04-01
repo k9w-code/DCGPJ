@@ -112,20 +112,28 @@ io.on('connection', (socket) => {
 
           // ゲームが開始済みなら状態を送信
           if (room.engine) {
-            const playerId = player.id;
-            const view = room.engine.getPlayerView(playerId);
-            // 常に現在の盤面状態を先に送る (背景描画用)
-            socket.emit('game_state', view);
-            
-            // マリガン未完了の場合のみ、追加でマリガン指示を送る
-            if (room.engine.gameState.phase === 'mulligan' && !player.mulliganDone) {
-              socket.emit('mulligan_phase', { hand: view.me.hand });
+            try {
+              const view = room.engine.getPlayerView(player.id);
+              // 📡 送信前にシリアライズ可能かチェックしつつ、余計なプロパティを排除
+              const sanitizedView = JSON.parse(JSON.stringify(view));
+              console.log(`📡 [SERVER] Sending game_state to ${player.name} (Phase: ${sanitizedView.phase})`);
+              socket.emit('game_state', sanitizedView);
+              console.log(`✅ [SERVER] game_state sent successfully`);
+              
+              // マリガン未完了の場合のみ、追加でマリガン指示を送る
+              if (room.engine.gameState.phase === 'mulligan' && !player.mulliganDone) {
+                socket.emit('mulligan_phase', { hand: sanitizedView.me.hand });
+                console.log(`✅ [SERVER] mulligan_phase sent`);
+              }
+            } catch (e) {
+              console.error(`💥 [SERVER] restore_session data send failed:`, e.message);
             }
           }
           socket.emit('session_restored', { sessionId, roomId: currentRoom, playerId: player.id });
         }
       }
     } else {
+      console.log(`❌ [SERVER] restore_session failed: session not found for ${sessionId.slice(0, 8)}`);
       socket.emit('session_invalid');
     }
   });
@@ -447,8 +455,14 @@ function sendGameStateToAll(room) {
   if (!room.engine) return;
   for (const p of room.players) {
     if (p.socket && p.socket.connected) {
-      const view = room.engine.getPlayerView(p.id);
-      p.socket.emit('game_state', view);
+      try {
+        const view = room.engine.getPlayerView(p.id);
+        const sanitizedView = JSON.parse(JSON.stringify(view));
+        console.log(`📡 [SERVER] Broadcast game_state to ${p.name}`);
+        p.socket.emit('game_state', sanitizedView);
+      } catch (e) {
+        console.error(`💥 [SERVER] Failed to send state to ${p.name}:`, e.message);
+      }
     }
   }
 }

@@ -14,6 +14,12 @@ let allShields = [];
 let deck = {};
 let selectedShields = [];
 
+// グローバル共有用
+window.allCards = allCards;
+window.allShields = allShields;
+window.deck = deck;
+window.selectedShields = selectedShields;
+
 let activeTab = 'cards';
 let activeColors = new Set(['red', 'blue', 'green', 'white', 'black']);
 let activeType = 'all';
@@ -254,15 +260,21 @@ function initUI() {
   });
 
   document.getElementById('btn-delete-deck')?.addEventListener('click', () => {
-    if (confirm(`スロット ${currentSaveSlot + 1} に保存されているデッキを完全に削除しますか？`)) {
+    const slotNum = currentSaveSlot + 1;
+    if (confirm(`スロット ${slotNum} に保存されているデッキを完全に削除しますか？`)) {
+      console.log(`[DECK] Deleting slot ${currentSaveSlot}`);
       deck = {};
       selectedShields = [];
       localStorage.removeItem(SAVE_KEY_PREFIX + currentSaveSlot);
+      
+      // UIを即座にリセット
       updateSlotIndicators();
       renderGrid();
       renderDeckList();
       renderShieldSlotsList();
       updateSubmitButton();
+      
+      alert(`スロット ${slotNum} のデッキを削除しました。`);
     }
   });
 
@@ -281,12 +293,7 @@ function getColorCSS(color) {
   return map[c] || '#666';
 }
 
-function getCardImagePath(card) {
-  const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
-  const folder = colors[0].toLowerCase() === 'neutral' ? 'rainbow' : colors[0].toLowerCase();
-  const fileName = card.artId || card.id;
-  return `/assets/images/cards/${folder}/${fileName}.webp`;
-}
+// カード画像パスの取得は game-renderer.js の window.getCardImagePath を直接参照します
 
 function getShieldImagePath(shield) {
   // マスタのID(SH001)とファイル名(S001.webp)のズレを吸収
