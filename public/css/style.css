@@ -885,7 +885,7 @@ body {
   padding: 40px;
   background:
     radial-gradient(circle at 50% 50%, rgba(184, 134, 11, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at center, rgba(10, 15, 35, 0.9) 0%, rgba(3, 7, 18, 0.95) 100%);
+    radial-gradient(ellipse at center, rgba(30, 50, 100, 0.4) 0%, rgba(20, 30, 60, 0.5) 100%);
   background-size: cover;
   border-radius: 40px;
   border: 1px solid rgba(184, 134, 11, 0.12);
@@ -908,8 +908,8 @@ body {
   display: grid; grid-template-columns: repeat(3, 160px);
   justify-content: center; gap: 30px;
 }
-.opponent-half { transform: translateZ(-20px); }
-.player-half { transform: translateZ(20px); }
+.opponent-half { transform: none; position: relative; z-index: 10; }
+.player-half { transform: none; }
 
 .board-slot {
   width: 160px; height: 224px;
@@ -1681,7 +1681,7 @@ input[type="range"]::-webkit-slider-thumb {
   border: 2px solid var(--success) !important;
   box-shadow: 0 0 20px rgba(34, 197, 94, 0.6) !important;
 }
-.unit-card.acted { opacity: 0.6; filter: grayscale(0.5); }
+.unit-card.acted { opacity: 0.8; filter: grayscale(0.3) brightness(0.9); }
 .unit-name { display: none; } /* 騾ｶ�､鬮ｱ�｢邵ｺ�ｧ邵ｺ�ｯ陷ｷ讎顔√闕ｳ蟠趣ｽｦ繝ｻ*/
 
 .keywords-display { 
@@ -2151,3 +2151,52 @@ body.targeting-mode {
 
 /* Chrome用レイアウト補強 */
 .mulligan-panel { min-height: 480px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; }
+
+/* 手札上限破棄スタイル (APPENDED) */
+.discard-overlay {
+  z-index: 6000;
+  background: radial-gradient(circle at center, rgba(30, 10, 10, 0.9) 0%, rgba(0, 0, 0, 0.98) 100%);
+}
+.discard-panel {
+  text-align: center;
+  padding: 40px 60px;
+  max-width: 1300px;
+  border: 2px solid #f43f5e;
+  box-shadow: 0 0 60px rgba(244, 63, 94, 0.3);
+}
+.discard-cards {
+  display: flex;
+  gap: 15px;
+  margin: 30px 0;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.discard-cards .hand-card {
+  position: static;
+  width: 180px; height: 252px;
+  transform: none !important;
+  opacity: 1 !important;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 4px solid transparent;
+  pointer-events: auto !important;
+  z-index: 7000;
+}
+.discard-cards .hand-card:hover {
+  transform: translateY(-5px) !important;
+}
+.discard-cards .hand-card.selected-to-discard {
+  border: 4px solid #f43f5e !important;
+  box-shadow: 0 0 30px rgba(244, 63, 94, 0.6) !important;
+  transform: translateY(-15px) scale(1.05) !important;
+  filter: brightness(1.2);
+}
+.btn-danger:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+  border: 1px solid rgba(244, 63, 94, 0.5);
+  background: rgba(244, 63, 94, 0.1);
+  color: rgba(255, 255, 255, 0.4);
+}
+

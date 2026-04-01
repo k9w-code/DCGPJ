@@ -123,6 +123,18 @@
         </div>
       </div>
 
+      <!-- 手札上限破棄オーバーレイ -->
+      <div class="overlay discard-overlay" id="discard-overlay" style="display: none;">
+        <div class="discard-panel glass-panel">
+          <h2 style="color: #f43f5e;">DISCARD CARDS</h2>
+          <p id="discard-message" style="margin-bottom: 20px; font-weight: bold;">手札が上限を超えています。捨てるカードを選択してください。</p>
+          <div class="discard-cards" id="discard-cards"></div>
+          <div class="discard-actions" style="margin-top: 30px;">
+            <button class="btn btn-danger" id="btn-discard-confirm" disabled style="min-width: 200px; font-weight: 900;">選択したカードを捨てる</button>
+          </div>
+        </div>
+      </div>
+
       <div class="overlay" id="result-overlay" style="display: none;">
         <div class="result-panel glass-panel">
           <div class="result-text" id="result-text"></div>

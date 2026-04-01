@@ -384,8 +384,8 @@ function startGame(room) {
   const p2 = room.players[1];
 
   engine.initGame(
-    { id: p1.id, name: p1.name, deckCardIds: p1.deck, shieldIds: p1.shields },
-    { id: p2.id, name: p2.name, deckCardIds: p2.deck, shieldIds: p2.shields }
+    { id: p1.id, name: p1.name, deckCardIds: p1.deck, shieldIds: p1.shields, isAI: p1.isAI },
+    { id: p2.id, name: p2.name, deckCardIds: p2.deck, shieldIds: p2.shields, isAI: p2.isAI }
   );
 
   console.log(`🎮 ゲーム開始: ${p1.name} vs ${p2.name}`);

@@ -354,5 +354,15 @@ function showMulligan(hand, onKeep, onRedraw) {
   setupBtn('btn-mulligan-redraw', onRedraw);
 }
 
+// 破棄アクションの送信
+window.emitDiscardCards = function(cardIndices) {
+  console.log('🗑️ [CLIENT] Emitting discard_cards:', cardIndices);
+  socket.emit('game_action', { 
+    action: 'discard_cards', 
+    cardIndices: cardIndices 
+  });
+  if (window.audioManager) window.audioManager.playSE('click');
+};
+
 // 最後に初期化を実行
 initInteractions();

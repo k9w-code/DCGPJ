@@ -578,7 +578,93 @@ window.updateUI = function() {
     if (typeof window.onUpdateUIHook === 'function') {
       try { window.onUpdateUIHook(); } catch (e) {}
     }
+
+    // 手札上限破棄フェーズのチェック
+    if (state.phase === 'discarding' && state.currentPlayerId === state.me.id) {
+      const needed = state.me.hand.length - 7; // MAX_HAND_SIZE = 7
+      if (needed > 0) {
+        showDiscardModal(state.me.hand, needed);
+      }
+    } else {
+      document.getElementById('discard-overlay').style.display = 'none';
+    }
   } catch (e) {
     console.error('💥 [RENDER] FATAL: Critical Render Protection triggered:', e);
   }
 };
+
+/**
+ * 手札破棄モーダルの表示と選択ロジック
+ */
+function showDiscardModal(hand, neededCount) {
+  const overlay = document.getElementById('discard-overlay');
+  const container = document.getElementById('discard-cards');
+  const msg = document.getElementById('discard-message');
+  const btn = document.getElementById('btn-discard-confirm');
+  
+  if (overlay.style.display === 'flex') return; // すでに開いていれば何もしない
+
+  overlay.style.display = 'flex';
+  msg.textContent = `手札が上限 (${hand.length}/7) を超えています。あと ${neededCount} 枚選んで捨ててください。`;
+  container.innerHTML = '';
+  
+  const selectedIndices = [];
+  
+  // 旧ボタンをクローンして差し替え（イベントの重複登録防止）
+  const newBtn = btn.cloneNode(true);
+  btn.parentNode.replaceChild(newBtn, btn);
+  
+  // 最新のボタン(newBtn)の状態を更新する関数
+  const updateButtonState = () => {
+    const remaining = neededCount - selectedIndices.length;
+    if (remaining === 0) {
+      newBtn.disabled = false;
+      newBtn.textContent = '選択したカードを捨てる';
+      newBtn.style.opacity = '1';
+      newBtn.style.filter = 'none';
+      newBtn.style.boxShadow = '0 0 20px rgba(244, 63, 94, 0.8)';
+      msg.textContent = '枚数が揃いました。確定ボタンを押してください。';
+      msg.style.color = '#10b981'; 
+    } else {
+      newBtn.disabled = true;
+      newBtn.textContent = `あと ${remaining} 枚選択してください`;
+      newBtn.style.opacity = '0.4';
+      newBtn.style.boxShadow = 'none';
+      msg.textContent = `手札が上限を超えています。あと ${remaining} 枚選んで捨ててください。`;
+      msg.style.color = '#f43f5e';
+    }
+  };
+
+  hand.forEach((card, index) => {
+    const cardEl = document.createElement('div');
+    cardEl.className = 'hand-card';
+    cardEl.innerHTML = renderUnitCard(card, true); 
+    cardEl.dataset.index = index;
+
+    cardEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (selectedIndices.includes(index)) {
+        const pos = selectedIndices.indexOf(index);
+        selectedIndices.splice(pos, 1);
+        cardEl.classList.remove('selected-to-discard');
+      } else {
+        if (selectedIndices.length < neededCount) {
+          selectedIndices.push(index);
+          cardEl.classList.add('selected-to-discard');
+        }
+      }
+      updateButtonState();
+    });
+
+    container.appendChild(cardEl);
+  });
+
+  newBtn.addEventListener('click', () => {
+    if (selectedIndices.length === neededCount) {
+      if (typeof window.emitDiscardCards === 'function') {
+        window.emitDiscardCards(selectedIndices);
+        overlay.style.display = 'none';
+      }
+    }
+  });
+}

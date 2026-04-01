@@ -19,10 +19,11 @@ function createBoard() {
   };
 }
 
-function createPlayerState(playerId, playerName, avatar = '🤖') {
+function createPlayerState(playerId, playerName, isAI = false, avatar = '🤖') {
   return {
     id: playerId,
     name: playerName,
+    isAI: isAI,
     avatar: avatar,
     deck: [],
     hand: [],
@@ -111,16 +112,20 @@ function shuffleDeck(deck) {
 
 function drawCards(playerState, cardMap, count) {
   const drawn = [];
+  console.log(`[GameState] ${playerState.name}: Drawing ${count} cards. Current hand: ${playerState.hand.length}`);
   for (let i = 0; i < count; i++) {
     if (playerState.deck.length === 0) {
+      console.log(`[GameState] ${playerState.name}: DECK OUT!`);
       return { drawn, deckOut: true };
     }
-    if (playerState.hand.length >= MAX_HAND_SIZE) break;
+    // 手札上限によるドロー制限を撤廃（ターン終了時に調整するため）
+    // if (playerState.hand.length >= MAX_HAND_SIZE) break;
     const cardId = playerState.deck.shift();
     const cardData = cardMap[cardId];
     if (cardData) {
       playerState.hand.push({ ...cardData });
       drawn.push(cardData);
+      console.log(`[GameState] ${playerState.name}: Drew ${cardData.name} (Hand: ${playerState.hand.length})`);
     }
   }
   return { drawn, deckOut: false };
