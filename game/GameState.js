@@ -56,6 +56,10 @@ function createUnitInstance(cardData, ownerId) {
     abilityTrigger: cardData.abilityTrigger,
     abilityEffect: cardData.abilityEffect,
     abilityValue: cardData.abilityValue,
+    // 新アビリティリスト（配列内の各オブジェクトも複製）
+    abilities: cardData.abilities ? cardData.abilities.map(a => ({...a})) : [],
+    flavorText: cardData.flavorText || '',
+    text: cardData.text || '',
     ownerId,
     canAttack: false,
     hasActed: false,

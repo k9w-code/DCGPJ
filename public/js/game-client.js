@@ -120,6 +120,7 @@ let dragSource = null;
 let dragGhost = null;
 let attackerPos = null;
 let pendingShieldAttack = null;
+let selectedTribeColor = null; // レベルアップ確認用
 
 function onPointerMove(e) {
   if (isDragging && dragGhost) {
@@ -230,6 +231,93 @@ function initInteractions() {
   document.getElementById('btn-shield-cancel')?.addEventListener('click', () => {
     pendingShieldAttack = null;
     document.getElementById('shield-confirm-overlay').style.display = 'none';
+  });
+
+  // --- 設定パネル ---
+  const settingsBtn = document.getElementById('settings-btn');
+  const settingsOverlay = document.getElementById('settings-overlay');
+  if (settingsBtn && settingsOverlay) {
+    settingsBtn.onclick = () => {
+      settingsOverlay.style.display = 'flex';
+      if (window.audioManager) window.audioManager.playSE('select');
+    };
+  }
+
+  // --- 音量スライダー ---
+  const sliderBGM = document.getElementById('slider-bgm');
+  const sliderSE = document.getElementById('slider-se');
+  if (sliderBGM) {
+    sliderBGM.oninput = (e) => {
+      if (window.audioManager) window.audioManager.updateBGMVolume(e.target.value);
+    };
+  }
+  if (sliderSE) {
+    sliderSE.oninput = (e) => {
+      if (window.audioManager) window.audioManager.updateSEVolume(e.target.value);
+    };
+  }
+
+  // --- 投了 ---
+  document.getElementById('btn-surrender')?.addEventListener('click', () => {
+    if (confirm('本当に投了しますか？')) {
+      socket.emit('game_action', { action: 'surrender' });
+      if (settingsOverlay) settingsOverlay.style.display = 'none';
+    }
+  });
+
+  // --- 神族レベルアップ ---
+  const crystalConfirm = document.getElementById('crystal-confirm-popup');
+  document.querySelectorAll('.crystal-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const state = window.gameState;
+      if (!state) return;
+      
+      // SP不足チェック
+      if (!state.me || (state.me.sp || 0) <= 0) {
+        console.warn('⚠️ SP不足：レベルアップできません');
+        if (window.audioManager) window.audioManager.playSE('error');
+        return;
+      }
+
+      selectedTribeColor = e.target.dataset.color;
+      
+      // アイコンの反映
+      const confirmIcon = document.getElementById('confirm-tribe-icon');
+      if (confirmIcon) {
+        confirmIcon.style.backgroundImage = `url('/assets/images/icon/divine/${selectedTribeColor}.png')`;
+      }
+
+      if (crystalConfirm) {
+        crystalConfirm.style.display = 'block';
+      }
+      if (window.audioManager) window.audioManager.playSE('click');
+    });
+  });
+
+  document.getElementById('btn-crystal-confirm')?.addEventListener('click', () => {
+    if (selectedTribeColor) {
+      socket.emit('game_action', { action: 'raise_tribe', color: selectedTribeColor });
+      if (window.audioManager) window.audioManager.playSE('levelUp');
+    }
+    if (crystalConfirm) crystalConfirm.style.display = 'none';
+    selectedTribeColor = null;
+  });
+
+  document.getElementById('btn-crystal-cancel')?.addEventListener('click', () => {
+    if (crystalConfirm) crystalConfirm.style.display = 'none';
+    selectedTribeColor = null;
+    if (window.audioManager) window.audioManager.playSE('click');
+  });
+
+  // --- 能力発動 ---
+  document.getElementById('btn-activate-ability')?.addEventListener('click', () => {
+    // 選択中のユニット情報を取得 (現在はドラッグソースやselectedCardIndexから推測)
+    // ここではグローバルな選択状態から発動させるシンプルな実装にします
+    console.log('⚡ 能力発動：現在は直接攻撃ドラッグで対応していますが、ボタンも有効化');
+    const state = window.gameState;
+    if (!state) return;
+    // ... 適時拡張可能なように構造を用意 ...
+    socket.emit('game_action', { action: 'activate_ability', unitRow: 'front', unitLane: 0, abilityIndex: 0 }); 
   });
 }
 

@@ -30,6 +30,15 @@ class SoundManager {
     });
   }
 
+  updateBGMVolume(val) {
+    this.bgmVolume = parseFloat(val);
+    this.bgmAudio.volume = this.bgmVolume;
+  }
+
+  updateSEVolume(val) {
+    this.seVolume = parseFloat(val);
+  }
+
   stopBGM() {
     this.bgmAudio.pause();
     this.bgmAudio.currentTime = 0;

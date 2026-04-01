@@ -272,12 +272,16 @@ window.showCardDetail = function(card) {
     if (card.abilities && card.abilities.length > 0) {
       mainText = `
         <div class="cd-abilities-list">
-          ${card.abilities.map(a => `
-            <div class="ability-item">
-              ${a.trigger && a.trigger !== 'none' ? `<span class="ability-trigger">${a.trigger.replace('on_', '').toUpperCase()}</span>` : ''}
-              ${a.text || a.effect || ''}
-            </div>
-          `).join('')}
+          ${card.abilities.map(a => {
+            // 日本語テキストがあればそれを使い、なければ a.effect や card.text を検討
+            const displayAbilityText = (a.text && a.text !== a.effect) ? a.text : (card.text || a.effect || '');
+            return `
+              <div class="ability-item">
+                ${a.trigger && a.trigger !== 'none' ? `<span class="ability-trigger">${a.trigger.replace('on_', '').toUpperCase()}</span>` : ''}
+                ${displayAbilityText}
+              </div>
+            `;
+          }).join('')}
         </div>
       `;
     } else {
@@ -343,9 +347,15 @@ function renderPlayerInfo(state) {
       myAvatarEl.style.backgroundImage = `url('${avatarPath}')`;
       myAvatarEl.innerHTML = '';
       myAvatarEl.style.backgroundSize = 'cover';
+      myAvatarEl.style.display = 'block';
     } else {
-      myAvatarEl.innerHTML = `<div style="font-size: 60px; text-align: center; line-height: 120px;">${avatarStr}</div>`;
+      myAvatarEl.innerHTML = avatarStr;
       myAvatarEl.style.backgroundImage = 'none';
+      myAvatarEl.style.display = 'flex';
+      myAvatarEl.style.alignItems = 'center';
+      myAvatarEl.style.justifyContent = 'center';
+      myAvatarEl.style.fontSize = '60px';
+      myAvatarEl.style.color = '#ffffff';
     }
   }
   safeSetText('my-sp', state.me.sp);
@@ -384,9 +394,15 @@ function renderPlayerInfo(state) {
         oppAvatarEl.style.backgroundImage = `url('${avatarPath}')`;
         oppAvatarEl.innerHTML = '';
         oppAvatarEl.style.backgroundSize = 'cover';
+        oppAvatarEl.style.display = 'block';
       } else {
-        oppAvatarEl.innerHTML = `<div style="font-size: 60px; text-align: center; line-height: 120px;">${avatarStr}</div>`;
+        oppAvatarEl.innerHTML = avatarStr;
         oppAvatarEl.style.backgroundImage = 'none';
+        oppAvatarEl.style.display = 'flex';
+        oppAvatarEl.style.alignItems = 'center';
+        oppAvatarEl.style.justifyContent = 'center';
+        oppAvatarEl.style.fontSize = '60px';
+        oppAvatarEl.style.color = '#ffffff';
       }
     }
     
