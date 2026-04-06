@@ -195,7 +195,12 @@ const manualHtml = `
 function showGameManual() {
   const overlay = document.getElementById('help-overlay');
   const content = document.getElementById('help-content');
+  const settingsOverlay = document.getElementById('settings-overlay');
+  
   if (overlay && content) {
+    // 設定画面が開いていれば閉じる
+    if (settingsOverlay) settingsOverlay.style.display = 'none';
+    
     content.innerHTML = manualHtml;
     overlay.style.display = 'flex';
     if (window.audioManager) window.audioManager.playSE('click');
