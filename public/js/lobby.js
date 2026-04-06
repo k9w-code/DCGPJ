@@ -8,7 +8,7 @@ if (window.audioManager) {
 }
 
 let selectedMode = 'pve';
-let selectedAvatar = '🤖'; // デフォルトアバター
+let selectedAvatar = '1'; // デフォルトアバター (1, 2, 3...)
 
 // アバター選択
 document.querySelectorAll('.avatar-option').forEach(option => {
@@ -16,6 +16,7 @@ document.querySelectorAll('.avatar-option').forEach(option => {
     document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('active'));
     option.classList.add('active');
     selectedAvatar = option.dataset.avatar;
+    console.log(`[LOBBY] Avatar selected: ID=${selectedAvatar}`);
     if (window.audioManager) window.audioManager.playSE('click');
   });
 });
@@ -46,6 +47,7 @@ document.getElementById('btn-create').addEventListener('click', () => {
   const playerName = document.getElementById('player-name').value || 'プレイヤー';
   const roomName = document.getElementById('room-name').value || '';
   
+  console.log(`[LOBBY] Emitting create_room with avatar: ${selectedAvatar}`);
   socket.emit('create_room', {
     playerName,
     avatar: selectedAvatar,

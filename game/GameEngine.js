@@ -175,6 +175,7 @@ class GameEngine {
       }
       if (player.board[targetRow][targetLane] !== null) return { error: 'そのスロットにはすでにユニットがいます' };
 
+      // ユニットプレイ確定。ここで 1 回だけコストを支払う
       player.sp -= card.cost;
       player.hand.splice(handIndex, 1);
 
@@ -183,13 +184,21 @@ class GameEngine {
       unit.barrierActive = hasKeyword(unit, 'barrier');
       unit.endureActive = hasKeyword(unit, 'endure');
       unit.stealthActive = hasKeyword(unit, 'stealth');
-      player.board[targetRow][targetLane] = unit;
 
+      // 本体を盤面に配置（アビリティ解決前に存在を確定させる）
+      player.board[targetRow][targetLane] = unit;
       const rowLabel = targetRow === 'front' ? '前列' : '後列';
       this.log(`🃏 ${player.name}: ${card.name} を${rowLabel}レーン${targetLane + 1}に配置 (SP: ${player.sp})`);
 
-      const events = processAbility('on_play', unit, gs, player, opponent, this.cardMap, gs.logs, targetRow, targetLane);
-      this.processEvents(events, player, opponent);
+      // アビリティ処理
+      const abilityResult = processAbility('on_play', unit, this.gameState, player, opponent, this.cardMap, this.gameState.logs, null, null);
+      if (this.handleAbilityResult(abilityResult, unit, 'on_play', player, opponent)) {
+        // ターゲット選択が必要な場合はここで一旦停止（クライアントに通知）
+        // 既に盤面にいるため、resolveTargeting で instanceId から再検索可能
+        return this.getGameStateForClients();
+      }
+
+      this.processEvents(abilityResult.events, player, opponent);
 
       if (hasKeyword(unit, 'search')) {
         processSearch(unit, player, this.cardMap, gs.logs);
@@ -210,17 +219,105 @@ class GameEngine {
       }
 
     } else if (card.type === 'spell') {
+      const result = processSpellEffect(card, gs, player, opponent, targetRow, targetLane, this.cardMap, gs.logs);
+      
+      if (result.needsTarget) {
+        // スペル発動中にターゲット選択（召喚場所など）が必要な場合
+        gs.phase = 'targeting';
+        gs.pendingAbilitySource = {
+          spellCardId: card.id,
+          unitName: card.name, // 共通表示用
+          trigger: 'on_play',
+          effect: result.effect,
+          targetId: result.targetId,
+          ownerId: player.id
+        };
+        this.log(`✨ スペル「${card.name}」の発動対象を選択してください...`);
+        return this.getGameStateForClients();
+      }
+
       player.sp -= card.cost;
       player.hand.splice(handIndex, 1);
       this.log(`✨ ${player.name}: スペル「${card.name}」を発動 (SP: ${player.sp})`);
 
-      const events = processSpellEffect(card, gs, player, opponent, targetRow, targetLane, this.cardMap, gs.logs);
-      this.processEvents(events, player, opponent);
+      this.processEvents(result.events, player, opponent);
       player.graveyard.push(card);
     }
 
     this.cleanupDeadUnits();
     return this.getGameStateForClients();
+  }
+
+  resolvePendingAbility(playerId, targetRow, targetLane) {
+    const gs = this.gameState;
+    if (gs.phase !== 'targeting') return { error: 'ターゲット選択フェーズではありません' };
+    
+    const currentPlayerId = gs.playerOrder[gs.currentPlayerIndex];
+    if (playerId !== currentPlayerId) return { error: '自分のターンではありません' };
+
+    const sourceInfo = gs.pendingAbilitySource;
+    if (!sourceInfo) {
+       gs.phase = 'main';
+       return this.getGameStateForClients();
+    }
+
+    const player = gs.players[playerId];
+    const opponent = getOpponentPlayer(gs);
+
+    // 共通のユニットアビリティ解決（既に盤面に配置されている前提）
+    if (sourceInfo.unitInstanceId) {
+      let unit = null;
+      let owner = gs.players[sourceInfo.ownerId] || player;
+      forEachUnit(owner.board, u => { if (u.instanceId === sourceInfo.unitInstanceId) unit = u; });
+      
+      if (!unit) {
+        gs.phase = 'main';
+        gs.pendingAbilitySource = null;
+        return this.getGameStateForClients();
+      }
+
+      // 解決前のバリデーション (empty_slot の場合)
+      if (sourceInfo.targetId === 'empty_slot') {
+          if (gs.players[playerId].board[targetRow][targetLane] !== null) {
+              console.warn(`⚠️ [GameEngine] Invalid target: ${targetRow},${targetLane} is occupied.`);
+              return this.getGameStateForClients();
+          }
+      }
+
+      // 能力解決の実行
+      const { events } = processAbility(sourceInfo.trigger, unit, gs, player, opponent, this.cardMap, gs.logs, targetRow, targetLane);
+      this.processEvents(events, player, opponent);
+
+      gs.phase = 'main';
+      gs.pendingAbilitySource = null;
+      this.cleanupDeadUnits();
+      return this.getGameStateForClients();
+    }
+
+    if (sourceInfo.spellCardId) {
+      // スペル（プレイ待機中）の解決
+      const card = player.hand.find(c => c.id === sourceInfo.spellCardId);
+      if (!card) {
+          gs.phase = 'main';
+          gs.pendingAbilitySource = null;
+          return this.getGameStateForClients();
+      }
+
+      const handIndex = player.hand.indexOf(card);
+      player.sp -= card.cost;
+      player.hand.splice(handIndex, 1);
+      this.log(`✨ ${player.name}: スペル「${card.name}」を確定発動 (SP: ${player.sp})`);
+
+      const result = processSpellEffect(card, gs, player, opponent, targetRow, targetLane, this.cardMap, gs.logs);
+      this.processEvents(result.events, player, opponent);
+      player.graveyard.push(card);
+
+      gs.phase = 'main';
+      gs.pendingAbilitySource = null;
+      this.cleanupDeadUnits();
+      return this.getGameStateForClients();
+    }
+    
   }
 
   attackWithUnit(playerId, attackerRow, attackerLane, targetInfo) {
@@ -245,7 +342,10 @@ class GameEngine {
       if (t.type === 'unit') {
         return t.row === targetInfo.row && t.lane === targetInfo.lane;
       }
-      return true; // shield, direct
+      if (t.type === 'shield') {
+        return t.id === targetInfo.id || !targetInfo.id; // 旧AIとの互換性のために !targetInfo.id も許容
+      }
+      return true; // direct
     });
 
     if (!isTargetValid) {
@@ -258,7 +358,8 @@ class GameEngine {
       this.log(`👁️ ${attacker.name} が潜伏を解除！`);
     }
 
-    const abilityEvents = processAbility('on_attack', attacker, gs, player, opponent, this.cardMap, gs.logs);
+    const abilityResult = processAbility('on_attack', attacker, gs, player, opponent, this.cardMap, gs.logs);
+    if (this.handleAbilityResult(abilityResult, attacker, 'on_attack', player, opponent)) return this.getGameStateForClients();
 
     if (targetInfo.type === 'unit') {
       const defRow = targetInfo.row || 'front';
@@ -270,13 +371,19 @@ class GameEngine {
       const result = resolveUnitCombat(attacker, defender, gs.logs);
 
       if (result.defenderDead) {
-        processAbility('on_kill', attacker, gs, player, opponent, this.cardMap, gs.logs);
-        processAbility('on_death', defender, gs, opponent, player, this.cardMap, gs.logs);
+        const killResult = processAbility('on_kill', attacker, gs, player, opponent, this.cardMap, gs.logs);
+        if (this.handleAbilityResult(killResult, attacker, 'on_kill', player, opponent)) return this.getGameStateForClients();
+
+        const deathResult = processAbility('on_death', defender, gs, opponent, player, this.cardMap, gs.logs);
+        if (this.handleAbilityResult(deathResult, defender, 'on_death', opponent, player)) return this.getGameStateForClients();
+
         opponent.board[defRow][defLane] = null;
         opponent.graveyard.push({ id: defender.cardId, name: defender.name });
       }
       if (result.attackerDead) {
-        processAbility('on_death', attacker, gs, player, opponent, this.cardMap, gs.logs);
+        const deathResult = processAbility('on_death', attacker, gs, player, opponent, this.cardMap, gs.logs);
+        if (this.handleAbilityResult(deathResult, attacker, 'on_death', player, opponent)) return this.getGameStateForClients();
+
         player.board[attackerRow][attackerLane] = null;
         player.graveyard.push({ id: attacker.cardId, name: attacker.name });
       }
@@ -295,7 +402,8 @@ class GameEngine {
                 const adjKilled = processUnitDeath(adj, gs.logs);
                 if (adjKilled) {
                   this.log(`💀 ${adj.name} を巻き添えで撃破！`);
-                  processAbility('on_death', adj, gs, opponent, player, this.cardMap, gs.logs);
+                  const deathResult = processAbility('on_death', adj, gs, opponent, player, this.cardMap, gs.logs);
+                  this.handleAbilityResult(deathResult, adj, 'on_death', opponent, player);
                   opponent.board[defRow][l] = null;
                   opponent.graveyard.push({ id: adj.cardId, name: adj.name });
                 }
@@ -311,7 +419,7 @@ class GameEngine {
 
       if (result.shieldDestroyed) {
         opponent.shieldsDestroyed++;
-        const skillEvents = processShieldSkill(result.shield, gs, opponent, player, this.cardMap, gs.logs);
+        const skillEvents = processShieldSkill(result.shield, opponent, player, this.cardMap, gs.logs);
         this.processEvents(skillEvents, opponent, player);
       }
 
@@ -326,7 +434,6 @@ class GameEngine {
       attacker.hasActed = true;
     }
 
-    this.processEvents(abilityEvents, player, opponent);
     this.cleanupDeadUnits();
     return this.getGameStateForClients();
   }
@@ -360,11 +467,11 @@ class GameEngine {
     // あるいは trigger 文字列を工夫する必要があります。ここでは対象の1つだけを処理するようにラップします。
     const originalAbilities = unit.abilities;
     unit.abilities = [ability]; // 一時的に対象のみにする
-    const events = processAbility('activate', unit, gs, player, getOpponentPlayer(gs), this.cardMap, gs.logs);
+    const abilityResult = processAbility('activate', unit, gs, player, getOpponentPlayer(gs), this.cardMap, gs.logs);
+    if (this.handleAbilityResult(abilityResult, unit, 'activate', player, getOpponentPlayer(gs))) return this.getGameStateForClients();
     unit.abilities = originalAbilities; // 戻す
 
     unit.hasActed = true;
-    this.processEvents(events, player, getOpponentPlayer(gs));
     this.cleanupDeadUnits();
     
     return this.getGameStateForClients();
@@ -432,9 +539,10 @@ class GameEngine {
     return this.completeEndTurn(player);
   }
 
-  processEvents(events, currentPlayer, opponent) {
+  // イベントの処理
+  processEvents(events, currentPlayer, opponentPlayer) {
     if (!events || events.length === 0) return;
-    for (const event of events) {
+    events.forEach(event => {
       switch (event.type) {
         case 'ability_draw':
         case 'spell_draw':
@@ -448,8 +556,36 @@ class GameEngine {
           }
           break;
         }
+        case 'ability_summon': {
+          const targetPlayer = this.gameState.players[event.player];
+          if (targetPlayer && event.unit && event.row && event.lane !== undefined) {
+             targetPlayer.board[event.row][event.lane] = event.unit;
+             // 必要に応じて追加のキーワード初期化（トークンの場合は基本初期化済みのため代入のみでOK）
+          }
+          break;
+        }
       }
+    });
+  }
+
+  // アビリティ結果のハンドリング（ターゲット要求対応）
+  handleAbilityResult(result, unit, trigger, player, opponent) {
+    if (result.needsTarget) {
+      console.log(`🎯 [GameEngine] Transitioning to targeting phase for: ${unit.name} (${trigger})`);
+      this.gameState.phase = 'targeting';
+      this.gameState.pendingAbilitySource = {
+        unitInstanceId: unit.instanceId,
+        unitName: unit.name,
+        ability: result.originalAbility,
+        trigger: trigger,
+        effect: result.effect, // 追加: summons_token 等の判別に必要
+        targetId: result.targetId,
+        ownerId: player.id
+      };
+      return true; // ターゲット選択が必要
     }
+    this.processEvents(result.events, player, opponent);
+    return false; // 継続可能
   }
 
   cleanupDeadUnits() {
@@ -466,7 +602,10 @@ class GameEngine {
               this.log(`💪 ${unit.name} の不屈が発動！HP1で復活！`);
             } else {
               const opId = Object.keys(this.gameState.players).find(id => id !== pid);
-              processAbility('on_death', unit, this.gameState, player, this.gameState.players[opId], this.cardMap, this.gameState.logs);
+              const opponent = this.gameState.players[opId];
+              const deathResult = processAbility('on_death', unit, this.gameState, player, opponent, this.cardMap, this.gameState.logs);
+              this.handleAbilityResult(deathResult, unit, 'on_death', player, opponent);
+
               player.graveyard.push({ id: unit.cardId, name: unit.name });
               player.board[row][i] = null;
               this.log(`💀 ${unit.name} が場から除去された`);
@@ -505,9 +644,11 @@ class GameEngine {
 
     return {
       ...this.getGameStateForClients(),
+      pendingAbilitySource: gs.pendingAbilitySource,
       me: {
         id: player.id,
         name: player.name,
+        avatar: player.avatar,
         hand: player.hand,
         board: player.board,   // { front: [...], back: [...] }
         sp: player.sp,
@@ -522,10 +663,12 @@ class GameEngine {
       opponent: {
         id: opponent.id,
         name: opponent.name,
+        avatar: opponent.avatar,
         handCount: opponent.hand.length,
         board: opponent.board,
         sp: opponent.sp,
         tribeLevels: opponent.tribeLevels,
+        shields: opponent.shields, // 追加: AIがシールドの存在を認識できるようにする
         totalShieldDurability: opponent.totalShieldDurability,
         life: calculateLife(opponent, gs),
         shieldsDestroyed: opponent.shieldsDestroyed,

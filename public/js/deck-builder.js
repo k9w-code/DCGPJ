@@ -89,7 +89,8 @@ function updateKeywordDropdown() {
     }
     const opt = document.createElement('option');
     opt.value = kw;
-    const kwName = (window.keywordMap && window.keywordMap[kw]) ? window.keywordMap[kw].name : (KEYWORD_NAMES[baseKw] || kw);
+    const master = window.keywordMap && window.keywordMap[kw];
+    const kwName = master ? master.name : (typeof KEYWORD_NAMES !== 'undefined' ? KEYWORD_NAMES[baseKw] : kw);
     opt.textContent = kwName;
     select.appendChild(opt);
   });
@@ -389,7 +390,10 @@ function renderCardGrid() {
     const passKeyword = activeKeyword === 'all' || 
       (c.keywords && c.keywords.includes(activeKeyword));
 
-    return passColor && passType && passCost && passSearch && passKeyword;
+    // 枚数制限が0のカード(トークン用)はコレクションに表示しない
+    const passLimit = (typeof c.maxCopies !== 'undefined') ? c.maxCopies > 0 : true;
+
+    return passColor && passType && passCost && passSearch && passKeyword && passLimit;
   });
   
   console.log(`Rendering Grid: Tab=${activeTab}, Total=${allCards.length}, Filtered=${filtered.length}`);
@@ -484,7 +488,7 @@ function showPreview(type, data) {
   
   if (type === 'card') {
     const count = deck[data.id] || 0;
-    const maxCopies = data.maxCopies || 3;
+    const maxCopies = (typeof data.maxCopies !== 'undefined') ? data.maxCopies : 3;
     const bgImage = getCardImagePath(data);
     
     // スキル・キーワード表示 (DataLoaderのマッピングに合わせて調整)
@@ -575,7 +579,8 @@ function addToDeck(card) {
   const totalCards = Object.values(deck).reduce((s, c) => s + c, 0);
   if (totalCards >= 40) return;
   const current = deck[card.id] || 0;
-  if (current >= (card.maxCopies || 3)) return;
+  const maxCopies = (typeof card.maxCopies !== 'undefined') ? card.maxCopies : 3;
+  if (current >= maxCopies) return;
   deck[card.id] = current + 1;
   if (window.audioManager) window.audioManager.playSE('draw');
   renderGrid();

@@ -1,6 +1,8 @@
 'use strict';
 
 const https = require('https');
+const fs = require('fs');
+const path = require('path');
 const { parse } = require('csv-parse/sync');
 
 // Google Spreadsheet CSV Export URLs
@@ -29,6 +31,8 @@ function fetchCSV(url) {
               columns: true,
               skip_empty_lines: true,
               trim: true,
+              relax_column_count: true,
+              bom: true
             });
             resolve(parsed);
           } catch(e) {
@@ -40,13 +44,28 @@ function fetchCSV(url) {
   });
 }
 
+function loadLocalCSV(filename) {
+  const filePath = path.join(__dirname, '..', 'data', filename);
+  if (fs.existsSync(filePath)) {
+    console.log(`[DataLoader] Local file found: ${filename}`);
+    const data = fs.readFileSync(filePath, 'utf8');
+    return parse(data, {
+      columns: true,
+      skip_empty_lines: true,
+      trim: true,
+      relax_column_count: true,
+      bom: true
+    });
+  }
+  return null;
+}
+
 async function loadAllData() {
-  console.log('Fetching master data from Google Spreadsheets...');
-  const [cardsRaw, shieldsRaw, keywordsRaw] = await Promise.all([
-    fetchCSV(CARDS_URL),
-    fetchCSV(SHIELDS_URL),
-    fetchCSV(KEYWORDS_URL)
-  ]);
+  console.log('Loading master data...');
+  
+  const cardsRaw = loadLocalCSV('cards.csv') || await fetchCSV(CARDS_URL);
+  const shieldsRaw = loadLocalCSV('shields.csv') || await fetchCSV(SHIELDS_URL);
+  const keywordsRaw = loadLocalCSV('keyword_master.csv') || loadLocalCSV('keywords.csv') || await fetchCSV(KEYWORDS_URL);
 
   // キーワードマスタ
   const keywordMap = {};
@@ -62,12 +81,16 @@ async function loadAllData() {
   // カードデータの構築
   const cards = cardsRaw.filter(row => row.id).map(row => {
     const abilities = [];
-    if (row.trigger && row.trigger.trim() !== '' && row.trigger.trim() !== 'none') {
+    const trigger = row.ability_trigger || row.trigger;
+    const effect = row.ability_effect || row.effect;
+    const valueStr = row.ability_value || row.value;
+    
+    if (trigger && trigger.trim() !== '' && trigger.trim() !== 'none') {
       abilities.push({
         id: `${row.id}_ability`,
-        trigger: row.trigger.trim(),
-        effect: row.effect ? row.effect.trim() : '',
-        value: parseInt(row.value) || 0,
+        trigger: trigger.trim(),
+        effect: effect ? effect.trim() : '',
+        value: isNaN(parseInt(valueStr)) ? (valueStr ? valueStr.trim() : '') : parseInt(valueStr),
         target: row.target ? row.target.trim() : '',
         text: row.text ? row.text.trim() : '',
         condition: row.condition ? row.condition.trim() : ''
@@ -83,7 +106,7 @@ async function loadAllData() {
       color: row.color ? row.color.split(',')[0].trim() : 'neutral',
       rarity: parseInt(row.rarity || 1),
       type: row.type || 'unit',
-      isToken: row.token_flag === 'y' || row.token_flag === '1' || row.token_flag === 'true',
+      isToken: (parseInt(row.deck_limit || row.max_copies) || 0) === 0, // 制限0ならトークン
       cost: parseInt(row.cost) || 0,
       attack: parseInt(row.atk || row.attack) || 0,
       hp: parseInt(row.life || row.hp) || 0,
@@ -92,14 +115,14 @@ async function loadAllData() {
       // 旧実装との互換性
       abilityTrigger: firstAbility.trigger || 'none',
       abilityEffect: firstAbility.effect || '',
-      abilityValue: firstAbility.value || 0,
+      abilityValue: isNaN(parseInt(firstAbility.value)) ? (firstAbility.value || '') : parseInt(firstAbility.value),
       
       // 新アビリティリスト
       abilities: abilities,
       
       flavorText: row.description || row.flavor_text || '',
       text: row.text || '',
-      maxCopies: parseInt(row.deck_limit || row.max_copies) || 3,
+      maxCopies: parseInt(row.deck_limit || row.max_copies) || 0,
     };
   });
 
@@ -113,7 +136,7 @@ async function loadAllData() {
       id: `${row.id}_skill`,
       name: row.name + 'のスキル',
       effectType: row.effect || 'none',
-      effectValue: parseInt(row.value) || 0,
+      effectValue: isNaN(parseInt(row.value)) ? (row.value ? row.value.trim() : '') : parseInt(row.value),
       target: row.target || '',
       text: row.text || '',
       description: row.description || ''

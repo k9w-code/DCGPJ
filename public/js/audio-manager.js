@@ -13,6 +13,13 @@ class SoundManager {
     this.files = {
       bgm: {
         game: '/assets/bgm/battle1.mp3',
+        battle1: '/assets/bgm/battle1.mp3',
+        battle2: '/assets/bgm/battle2.mp3',
+        battle3: '/assets/bgm/battle3.mp3',
+        battle4: '/assets/bgm/battle4.mp3',
+        battle5: '/assets/bgm/battle5.mp3',
+        battle6: '/assets/bgm/battle6.mp3',
+        battle7: '/assets/bgm/battle7.mp3',
         victory: '/assets/bgm/victory.mp3',
         defeat: '/assets/bgm/defeat.mp3',
       }

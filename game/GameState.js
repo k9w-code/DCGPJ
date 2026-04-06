@@ -68,6 +68,7 @@ function createUnitInstance(cardData, ownerId) {
     endureActive: false,
     stealthActive: false,
     summonedThisTurn: true,
+    modifiers: [],
   };
 }
 

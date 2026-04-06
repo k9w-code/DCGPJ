@@ -99,9 +99,12 @@ function getValidAttackTargets(attackerRow, attackerLane, attackerUnit, opponent
   }
 
   // 3. 正面が空なら、シールドまたはダイレクトアタック可能
-  const hasShields = opponentShields.some(s => s && !s.destroyed && s.currentDurability > 0);
-  if (hasShields) {
-    targets.push({ type: 'shield' });
+  const activeShields = (opponentShields || []).filter(s => s && !s.destroyed && s.currentDurability > 0);
+  if (activeShields.length > 0) {
+    // 破壊されていないシールドをすべて候補として返す
+    for (const s of activeShields) {
+      targets.push({ type: 'shield', id: s.id, name: s.name });
+    }
   } else {
     targets.push({ type: 'direct' });
   }

@@ -15,53 +15,57 @@ function resolveUnitCombat(attacker, defender, logs) {
   };
 
   const isDoubleStrike = hasKeyword(attacker, 'double_strike');
+  
+  // 1. 攻撃側の第1撃のダメージを計算（適用はまだログのみ）
+  const atkDamage = attacker.currentAttack;
+  const defDamage = defender.currentAttack;
 
-  // --- 1撃目 ---
-  const firstDamage = attacker.currentAttack;
-  const actualFirstDamage = applyDamage(defender, firstDamage, logs);
-  
-  if (actualFirstDamage > 0 && hasKeyword(attacker, 'drain')) {
-    const healed = Math.min(2, attacker.maxHp - attacker.currentHp);
-    if (healed > 0) {
-      attacker.currentHp += healed;
-      logs.push(`🩸 ${attacker.name} の吸命！HPを ${healed} 回復 (HP: ${attacker.currentHp})`);
-    }
-  }
-  
+  // --- 第1撃処理 ---
+  const actualAtkDamage = applyDamage(defender, atkDamage, logs);
   results.events.push({
     type: 'damage',
     source: attacker.instanceId,
     target: defender.instanceId,
-    damage: actualFirstDamage,
+    damage: actualAtkDamage,
     strike: 1,
   });
-  logs.push(`⚔️ ${attacker.name}(ATK${attacker.currentAttack}) → ${defender.name} に ${actualFirstDamage} ダメージ (HP: ${defender.currentHp})`);
+  logs.push(`⚔️ ${attacker.name}(ATK${atkDamage}) → ${defender.name} に ${actualAtkDamage} ダメージ (HP: ${defender.currentHp})`);
 
-  // 1撃目で撃破チェック
-  if (defender.currentHp <= 0) {
+  // 特殊ルール: 連撃（Double Strike）持ちが第1撃で仕留めた場合のみ「無傷」で終了
+  const isDefenderDeadFirstHit = defender.currentHp <= 0;
+  if (isDoubleStrike && isDefenderDeadFirstHit) {
     const defenderKilled = processUnitDeath(defender, logs);
     results.defenderDead = defenderKilled;
     if (defenderKilled) {
       results.events.push({ type: 'kill', target: defender.instanceId });
-      logs.push(`💀 ${defender.name} 撃破！（1撃目で撃破のため反撃なし）`);
-      // 1撃目で撃破 → 反撃なし
-      return results;
+      logs.push(`💀 ${defender.name} 撃破！（連撃の1撃目で倒されたため、${attacker.name} は無傷）`);
     }
+    return results;
   }
 
-  // --- 2撃目（連撃） ---
-  if (isDoubleStrike && !results.defenderDead) {
-    const secondDamage = attacker.currentAttack;
-    const actualSecondDamage = applyDamage(defender, secondDamage, logs);
-    
-    if (actualSecondDamage > 0 && hasKeyword(attacker, 'drain')) {
-      const healed = Math.min(2, attacker.maxHp - attacker.currentHp);
-      if (healed > 0) {
-        attacker.currentHp += healed;
-        logs.push(`🩸 ${attacker.name} の吸命！HPを ${healed} 回復 (HP: ${attacker.currentHp})`);
-      }
-    }
-    
+  // --- 反撃処理（通常攻撃なら相打ち、連撃で仕留めきれなかった場合も反撃を受ける） ---
+  const actualCounterDamage = applyDamage(attacker, defDamage, logs);
+  results.events.push({
+    type: 'counter',
+    source: defender.instanceId,
+    target: attacker.instanceId,
+    damage: actualCounterDamage,
+  });
+  logs.push(`🔄 ${defender.name}(ATK${defDamage}) 反撃 → ${attacker.name} に ${actualCounterDamage} ダメージ (HP: ${attacker.currentHp})`);
+
+  // ドレイン等の効果（戦闘中適時）
+  if (actualAtkDamage > 0 && hasKeyword(attacker, 'drain')) {
+    const healed = Math.min(2, attacker.maxHp - attacker.currentHp);
+    if (healed > 0) { attacker.currentHp += healed; logs.push(`🩸 ${attacker.name} の吸命！HP+${healed}`); }
+  }
+  if (actualCounterDamage > 0 && hasKeyword(defender, 'drain')) {
+    const healed = Math.min(2, defender.maxHp - defender.currentHp);
+    if (healed > 0) { defender.currentHp += healed; logs.push(`🩸 ${defender.name} の吸命！HP+${healed}`); }
+  }
+
+  // --- 連撃の第2撃（1打目で倒せなかった場合のみ） ---
+  if (isDoubleStrike && !isDefenderDeadFirstHit) {
+    const actualSecondDamage = applyDamage(defender, atkDamage, logs);
     results.events.push({
       type: 'damage',
       source: attacker.instanceId,
@@ -69,46 +73,19 @@ function resolveUnitCombat(attacker, defender, logs) {
       damage: actualSecondDamage,
       strike: 2,
     });
-    logs.push(`⚔️ ${attacker.name} 連撃2撃目 → ${defender.name} に ${actualSecondDamage} ダメージ (HP: ${defender.currentHp})`);
-
-    if (defender.currentHp <= 0) {
-      const defenderKilled = processUnitDeath(defender, logs);
-      results.defenderDead = defenderKilled;
-      if (defenderKilled) {
-        results.events.push({ type: 'kill', target: defender.instanceId });
-        logs.push(`💀 ${defender.name} 連撃で撃破！（反撃なし）`);
-        return results;
-      }
-    }
+    logs.push(`⚔️ ${attacker.name} 連撃2撃目 → ${defender.name} に ${actualSecondDamage} ダメージ`);
   }
 
-  // --- 反撃 ---
-  const counterDamage = defender.currentAttack;
-  const actualCounterDamage = applyDamage(attacker, counterDamage, logs);
-  
-  if (actualCounterDamage > 0 && hasKeyword(defender, 'drain')) {
-    const healed = Math.min(2, defender.maxHp - defender.currentHp);
-    if (healed > 0) {
-      defender.currentHp += healed;
-      logs.push(`🩸 ${defender.name} の吸命！HPを ${healed} 回復 (HP: ${defender.currentHp})`);
-    }
+  // 最終的な死亡判定をまとめて実行
+  if (defender.currentHp <= 0) {
+    const defenderKilled = processUnitDeath(defender, logs);
+    results.defenderDead = defenderKilled;
+    if (defenderKilled) results.events.push({ type: 'kill', target: defender.instanceId });
   }
-  
-  results.events.push({
-    type: 'counter',
-    source: defender.instanceId,
-    target: attacker.instanceId,
-    damage: actualCounterDamage,
-  });
-  logs.push(`🔄 ${defender.name}(ATK${defender.currentAttack}) 反撃 → ${attacker.name} に ${actualCounterDamage} ダメージ (HP: ${attacker.currentHp})`);
-
   if (attacker.currentHp <= 0) {
     const attackerKilled = processUnitDeath(attacker, logs);
     results.attackerDead = attackerKilled;
-    if (attackerKilled) {
-      results.events.push({ type: 'kill', target: attacker.instanceId });
-      logs.push(`💀 ${attacker.name} 反撃により撃破！`);
-    }
+    if (attackerKilled) results.events.push({ type: 'kill', target: attacker.instanceId });
   }
 
   return results;

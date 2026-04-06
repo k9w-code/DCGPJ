@@ -4,18 +4,12 @@
 var gameState = window.gameState || null;
 var selectedCardIndex = window.selectedCardIndex || null;
 var selectedAttacker = window.selectedAttacker || null;
+ 
+ // すでに描画済みのユニットIDを保持（アニメーション重複防止）
+ var seenInstanceIds = new Set();
+ var isInitialRender = true;
 
-const KEYWORD_NAMES = {
-  taunt: '挑発',
-  rush: '速攻',
-  speed: '速攻',
-  stealth: '潜伏',
-  double_strike: '連撃',
-  barrier: '加護',
-  endure: '不屈',
-  siege: '攻城',
-  comeback: '逆転',
-};
+// マスタデータ（keywords.csv）は game-client.js でフェッチされ window.keywordMap に格納されます。
 
 window.COLOR_CSS = window.COLOR_CSS || {
   red: '#ef4444',
@@ -40,7 +34,7 @@ function getKeywordDisplayName(kw) {
     return `探索${kw.split('_')[1]}`;
   }
   const master = window.keywordMap && window.keywordMap[kw];
-  return master ? master.name : (KEYWORD_NAMES[kw] || kw);
+  return master ? master.name : kw;
 }
 
 function getKeywordDescription(kw) {
@@ -68,6 +62,7 @@ window.getCardImagePath = function(card) {
   else if (upperId.startsWith('GE') || upperId.startsWith('G')) folder = 'green';
   else if (upperId.startsWith('WE') || upperId.startsWith('W')) folder = 'white';
   else if (upperId.startsWith('N')) folder = 'rainbow';
+  else if (upperId.startsWith('T')) folder = 'token'; // トークン用
   
   return isShield
     ? `/assets/images/shields/${cleanId.replace('SH', 'S')}.webp`
@@ -109,10 +104,33 @@ function renderOpponentBoard(state, selectedAttacker, onSlotClick) {
         if (selectedAttacker !== null) {
           slot.classList.add('can-attack');
           slot.addEventListener('click', () => onSlotClick('attack_unit', row, lane));
+        } else if (selectedCard !== null && selectedCard.type === 'spell') {
+          // スペル使用時の敵ユニットターゲット
+          slot.classList.add('can-spell-target');
+          slot.addEventListener('click', () => onSlotClick('place_unit', row, lane));
         }
       } else {
         slot.classList.add('empty');
         slot.textContent = ''; 
+      }
+
+      // 共通のターゲット選択フェーズ (敵陣)
+      const isMyTurn = state.currentPlayerId === state.me.id;
+      if (state.phase === 'targeting' && state.pendingAbilitySource && isMyTurn) {
+        const source = state.pendingAbilitySource;
+        const targetId = source.targetId || '';
+        const isSummonToken = source.effect === 'summon_token';
+        const isSelfTarget = targetId.includes('self');
+        const needsEmpty = targetId.includes('empty');
+
+        // self/empty/summon_token は敵陣対象外
+        const isSelectable = !isSelfTarget && !needsEmpty && !isSummonToken && !!unit;
+
+        if (isSelectable) {
+            slot.classList.add('can-target');
+        } else {
+            slot.classList.add('target-disabled');
+        }
       }
       rowDiv.appendChild(slot);
     }
@@ -121,10 +139,19 @@ function renderOpponentBoard(state, selectedAttacker, onSlotClick) {
 }
 
 function renderPlayerBoard(state, selectedCard, selectedAttacker, onSlotClick) {
+  // 描画開始時に古い演出（ロックオン演出など）を強制クリーンアップ
+  document.querySelectorAll('.is-locked-on').forEach(el => el.classList.remove('is-locked-on'));
+
   const container = document.getElementById('player-board');
   if (!container) return;
   container.innerHTML = '';
   const isMyTurn = state.currentPlayerId === state.me.id;
+  
+  // ターゲット選択フェーズかどうかを先に判定
+  const isTargeting = state.phase === 'targeting' && state.pendingAbilitySource && isMyTurn;
+  if (isTargeting) {
+    console.log('🎯 [RENDERER] Targeting phase detected! source:', JSON.stringify(state.pendingAbilitySource));
+  }
 
   const rows = ['front', 'back']; // 自分は手前が前列、奥が後列
 
@@ -141,26 +168,67 @@ function renderPlayerBoard(state, selectedCard, selectedAttacker, onSlotClick) {
       slot.className = `board-slot ${row}`;
       slot.dataset.row = row;
       slot.dataset.lane = lane;
-      
-      if (unit) {
-        const abilities = unit.abilities || [];
-        const hasActivate = abilities.some(a => a.trigger === 'activate');
-        const canAct = isMyTurn && !unit.hasActed && (unit.canAttack || hasActivate);
-        
-        slot.innerHTML = renderUnitCard(unit, canAct);
-        
-        const cardEl = slot.querySelector('.unit-card');
-        if (cardEl) attachCardDetailEvent(cardEl, unit);
-        
-        if (canAct) {
-          cardEl.addEventListener('pointerdown', (e) => onSlotClick('unit_pointerdown', row, lane, e));
-          cardEl.style.cursor = 'grab';
+
+      // ターゲット選択フェーズ中は、通常のカード配置ハンドラを付けない
+      if (isTargeting) {
+        const source = state.pendingAbilitySource;
+        const targetId = source.targetId || '';
+        const isSummonToken = source.effect === 'summon_token';
+        const isSelfTarget = targetId.includes('self');
+        const needsEmpty = targetId.includes('empty');
+
+        let isSelectable = false;
+        if (isSummonToken || needsEmpty) {
+            isSelectable = !unit;
+        } else if (isSelfTarget || targetId === 'all_units') {
+            isSelectable = !!unit || targetId === 'all_units';
+        } else if (!isSelfTarget && unit) {
+            // 敵ターゲットの場合は自分側は選択不可
+            isSelectable = false;
+        }
+
+        if (unit) {
+          slot.innerHTML = renderUnitCard(unit, false); // ターゲット中は行動不可
+          const cardEl = slot.querySelector('.unit-card');
+          if (cardEl) attachCardDetailEvent(cardEl, unit);
+        } else {
+          slot.classList.add('empty');
+        }
+
+        if (isSelectable) {
+            slot.classList.add('can-target');
+            console.log(`🎯 [RENDERER] Slot ${row}/${lane} → can-target (empty=${!unit})`);
+        } else {
+            slot.classList.add('target-disabled');
         }
       } else {
-        slot.classList.add('empty');
-        if (selectedCard !== null && selectedCard.type === 'unit') {
-          slot.classList.add('can-place');
-          slot.addEventListener('click', () => onSlotClick('place_unit', row, lane));
+        // 通常フェーズの描画
+        if (unit) {
+          const abilities = unit.abilities || [];
+          const hasActivate = abilities.some(a => a.trigger === 'activate');
+          const canAct = isMyTurn && !unit.hasActed && (unit.canAttack || hasActivate);
+          
+          slot.innerHTML = renderUnitCard(unit, canAct);
+          
+          const cardEl = slot.querySelector('.unit-card');
+          if (cardEl) attachCardDetailEvent(cardEl, unit);
+          
+          if (canAct) {
+            cardEl.addEventListener('pointerdown', (e) => onSlotClick('unit_pointerdown', row, lane, e));
+            cardEl.style.cursor = 'grab';
+          } else if (selectedCard !== null && selectedCard.type === 'spell') {
+            slot.classList.add('can-spell-target');
+            slot.addEventListener('click', () => onSlotClick('place_unit', row, lane));
+          }
+        } else {
+          slot.classList.add('empty');
+          if (selectedCard !== null && selectedCard.type === 'unit') {
+            slot.classList.add('can-place');
+            slot.addEventListener('click', () => onSlotClick('place_unit', row, lane));
+          } else if (selectedCard !== null && selectedCard.type === 'spell') {
+            slot.classList.add('can-spell-target');
+            slot.addEventListener('click', () => onSlotClick('place_unit', row, lane));
+          }
         }
       }
       rowDiv.appendChild(slot);
@@ -180,19 +248,34 @@ function renderUnitCard(unit, canAct) {
   const isDamaged = unit.currentHp < unit.maxHp;
   const actedClass = unit.hasActed ? ' acted' : '';
   const canActClass = canAct ? ' can-act' : '';
-  const bgImage = window.getCardImagePath(unit);
   
+  // 出現アニメーション判定
+  let appearClass = '';
+  if (unit.instanceId && !seenInstanceIds.has(unit.instanceId)) {
+    if (!isInitialRender) {
+      appearClass = ' unit-appear';
+    }
+    seenInstanceIds.add(unit.instanceId);
+  }
+  
+  const bgImage = window.getCardImagePath(unit);
+  const barrierClass = unit.barrierActive ? ' has-barrier' : '';
+  
+  // バフ・デバフによる色付けクラス
+  const atkClass = (unit.currentAttack > unit.attack) ? ' stat-buffed' : (unit.currentAttack < unit.attack ? ' stat-debuffed' : '');
+  const hpClass = (unit.currentHp > unit.hp) ? ' stat-buffed' : (unit.currentHp < unit.hp ? ' stat-debuffed' : '');
+
   return `
-    <div class="unit-card${actedClass}${canActClass}" style="${borderStyle} background-image: url('${bgImage}');">
+    <div class="unit-card${actedClass}${canActClass}${appearClass}${barrierClass}" style="${borderStyle} background-image: url('${bgImage}');">
       <div class="card-overlay">
         <div class="unit-stats">
           <div class="atk">
             <span class="icon">⚔️</span>
-            <span class="val">${unit.currentAttack !== undefined ? unit.currentAttack : (unit.attack || 0)}</span>
+            <span class="val${atkClass}">${unit.currentAttack !== undefined ? unit.currentAttack : (unit.attack || 0)}</span>
           </div>
           <div class="hp">
             <span class="icon">❤️</span>
-            <span class="val${isDamaged ? ' damaged' : ''}">${unit.currentHp !== undefined ? unit.currentHp : (unit.hp || 0)}</span>
+            <span class="val${isDamaged ? ' damaged' : ''}${hpClass}">${unit.currentHp !== undefined ? unit.currentHp : (unit.hp || 0)}</span>
           </div>
         </div>
       </div>
@@ -258,8 +341,18 @@ window.showCardDetail = function(card) {
       statsContainer.style.display = 'flex';
       const atkEl = document.getElementById('cd-attack');
       const hpEl = document.getElementById('cd-hp');
-      if (atkEl) atkEl.textContent = card.currentAttack !== undefined ? card.currentAttack : (card.attack || 0);
-      if (hpEl) hpEl.textContent = card.currentHp !== undefined ? card.currentHp : (card.hp || 0);
+      
+      const currentAtk = card.currentAttack !== undefined ? card.currentAttack : (card.attack || 0);
+      const currentHp = card.currentHp !== undefined ? card.currentHp : (card.hp || 0);
+      
+      if (atkEl) {
+        atkEl.textContent = currentAtk;
+        atkEl.className = (currentAtk > card.attack) ? 'stat-buffed' : (currentAtk < card.attack ? 'stat-debuffed' : '');
+      }
+      if (hpEl) {
+        hpEl.textContent = currentHp;
+        hpEl.className = (currentHp > card.hp) ? 'stat-buffed' : (currentHp < card.hp ? 'stat-debuffed' : '');
+      }
     } else {
       statsContainer.style.display = 'none';
     }
@@ -289,24 +382,48 @@ window.showCardDetail = function(card) {
     }
 
     let kwHTML = '';
-    if (card.keywords && card.keywords.length > 0) {
-      const validKws = card.keywords.map(k => k.split(':')[0]).filter(k => window.keywordMap && window.keywordMap[k]);
+    const currentKws = [...(card.keywords || [])];
+    if (card.barrierActive && !currentKws.includes('barrier')) currentKws.push('barrier');
+    
+    if (currentKws.length > 0) {
+      const validKws = currentKws.map(k => k.split(':')[0]).filter(k => (window.keywordMap && window.keywordMap[k]));
       if (validKws.length > 0) {
         kwHTML = '<div style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.2);">';
         validKws.forEach(kw => {
-          const m = window.keywordMap[kw];
+          const m = (window.keywordMap && window.keywordMap[kw]) || { name: kw, description: '' };
           kwHTML += `<div style="font-size: 11px; color: #a09880; line-height: 1.4; margin-bottom: 6px;">
-            <strong style="color: #d4c8a8;">【${m.name}】</strong>: ${m.description}
+            <strong style="color: #d4c8a8;">【${m.name || kw}】</strong>: ${m.description || ''}
           </div>`;
         });
         kwHTML += '</div>';
       }
     }
+
+    // 修正履歴（Modifiers）の表示
+    let modHTML = '';
+    if (card.modifiers && card.modifiers.length > 0) {
+      modHTML += `
+        <div class="cd-modifiers-container">
+          <div class="cd-modifiers-title">ステータス修正履歴 (Modifications)</div>
+          ${card.modifiers.map(m => {
+            const valChar = m.value > 0 ? '+' : '';
+            const valClass = m.value > 0 ? 'plus' : 'minus';
+            const typeLabel = m.type === 'atk' ? '攻撃力' : 'HP';
+            return `
+              <div class="modifier-item">
+                <span class="modifier-source">${m.source}</span>
+                <span class="modifier-value ${valClass}">${typeLabel} ${valChar}${m.value}</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
     
     if (mainText && !mainText.includes('<div')) {
       mainText = mainText.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
     }
-    textEl.innerHTML = mainText + kwHTML;
+    textEl.innerHTML = mainText + kwHTML + modHTML;
   }
 
   const flavorEl = document.getElementById('cd-flavor');
@@ -327,7 +444,7 @@ function attachCardDetailEvent(el, card) {
   });
 }
 
-function renderPlayerInfo(state) {
+function renderPlayerInfo(state, selectedAttacker) {
   if (!state || !state.me) return;
 
   const safeSetText = (id, text) => {
@@ -336,28 +453,29 @@ function renderPlayerInfo(state) {
   };
 
   safeSetText('my-name', state.me.name);
+  // 自分のアバター表示
   const myAvatarEl = document.getElementById('my-avatar');
   if (myAvatarEl) {
     const avatarStr = String(state.me.avatar || '1');
-    const avatarPath = (!isNaN(avatarStr) && avatarStr.length < 3) 
-      ? `/assets/images/avatar/${avatarStr}.png` 
-      : (avatarStr.includes('/') ? avatarStr : null);
+    console.log(`[RENDERER] My Avatar State: "${state.me.avatar}", Rendering ID: "${avatarStr}"`);
     
+    // 画像パスの生成 (1〜99 番の数値を想定)
+    let avatarPath = `/assets/images/avatar/${avatarStr}.png`;
+    
+    // 数値でない、または特殊な文字列が含まれる場合のエラーガード (以前の仕様との互換性)
+    if (isNaN(avatarStr) && avatarStr.includes('/')) {
+        avatarPath = avatarStr;
+    }
+
     if (avatarPath) {
       myAvatarEl.style.backgroundImage = `url('${avatarPath}')`;
       myAvatarEl.innerHTML = '';
       myAvatarEl.style.backgroundSize = 'cover';
+      myAvatarEl.style.backgroundPosition = 'center';
       myAvatarEl.style.display = 'block';
-    } else {
-      myAvatarEl.innerHTML = avatarStr;
-      myAvatarEl.style.backgroundImage = 'none';
-      myAvatarEl.style.display = 'flex';
-      myAvatarEl.style.alignItems = 'center';
-      myAvatarEl.style.justifyContent = 'center';
-      myAvatarEl.style.fontSize = '60px';
-      myAvatarEl.style.color = '#ffffff';
     }
   }
+
   safeSetText('my-sp', state.me.sp);
   safeSetText('my-deck', state.me.deckCount);
   safeSetText('my-hand-count', state.me.hand.length);
@@ -365,6 +483,7 @@ function renderPlayerInfo(state) {
   const myLifeEl = document.getElementById('my-life');
   if (myLifeEl) myLifeEl.textContent = state.me.life || 0;
 
+  // 自分の神族レベル表示
   const tribeColors = ['red', 'blue', 'green', 'white', 'black'];
   const myTribes = document.getElementById('my-tribes');
   if (myTribes) {
@@ -385,25 +504,15 @@ function renderPlayerInfo(state) {
     safeSetText('opp-name', state.opponent.name);
     const oppAvatarEl = document.getElementById('opp-avatar');
     if (oppAvatarEl) {
-      const avatarStr = String(state.opponent.avatar || '1');
-      const avatarPath = (!isNaN(avatarStr) && avatarStr.length < 3) 
-        ? `/assets/images/avatar/${avatarStr}.png` 
-        : (avatarStr.includes('/') ? avatarStr : null);
+      const oppAvatarStr = String(state.opponent.avatar || '1');
+      console.log(`[RENDERER] Opponent Avatar Rendering: "${oppAvatarStr}"`);
       
-      if (avatarPath) {
-        oppAvatarEl.style.backgroundImage = `url('${avatarPath}')`;
-        oppAvatarEl.innerHTML = '';
-        oppAvatarEl.style.backgroundSize = 'cover';
-        oppAvatarEl.style.display = 'block';
-      } else {
-        oppAvatarEl.innerHTML = avatarStr;
-        oppAvatarEl.style.backgroundImage = 'none';
-        oppAvatarEl.style.display = 'flex';
-        oppAvatarEl.style.alignItems = 'center';
-        oppAvatarEl.style.justifyContent = 'center';
-        oppAvatarEl.style.fontSize = '60px';
-        oppAvatarEl.style.color = '#ffffff';
-      }
+      const oppAvatarPath = `/assets/images/avatar/${oppAvatarStr}.png`;
+      oppAvatarEl.style.backgroundImage = `url('${oppAvatarPath}')`;
+      oppAvatarEl.innerHTML = '';
+      oppAvatarEl.style.backgroundSize = 'cover';
+      oppAvatarEl.style.backgroundPosition = 'center';
+      oppAvatarEl.style.display = 'block';
     }
     
     // 相手側の各ステータステキスト更新
@@ -417,7 +526,6 @@ function renderPlayerInfo(state) {
     const oppTribes = document.getElementById('opp-tribes');
     if (oppTribes) {
       oppTribes.innerHTML = '';
-      const tribeColors = ['red', 'blue', 'green', 'white', 'black'];
       tribeColors.forEach(color => {
         const level = (state.opponent.tribeLevels && state.opponent.tribeLevels[color]) || 0;
         const badge = document.createElement('div');
@@ -427,33 +535,50 @@ function renderPlayerInfo(state) {
         oppTribes.appendChild(badge);
       });
     }
-    renderOpponentShields('opp-shields', state.opponent);
+    renderOpponentShields('opp-shields', state.opponent, selectedAttacker);
   }
 }
 
-function renderShields(containerId, shields, showDurability) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  container.innerHTML = '';
-  if (!shields) return;
-  shields.forEach(shield => {
-    const el = document.createElement('div');
-    el.className = `shield-gem${shield.destroyed ? ' destroyed' : ''}`;
-    if (!shield.destroyed && showDurability) {
-      const dur = document.createElement('div');
-      dur.className = 'shield-durability-overlay';
-      dur.textContent = `${shield.currentDurability}`;
-      el.appendChild(dur);
-    }
-    attachCardDetailEvent(el, shield);
-    container.appendChild(el);
-  });
+function renderShields(state, selectedAttacker) {
+  if (!state || !state.me) return;
+  
+  // 自分のシールド描画（ここでは攻撃対象ではないため selectedAttacker は未使用）
+  const container = document.getElementById('my-shields');
+  if (container) {
+    container.innerHTML = '';
+    const shields = state.me.shields || [];
+    shields.forEach(shield => {
+      const el = document.createElement('div');
+      el.className = `shield-gem${shield.destroyed ? ' destroyed' : ''}`;
+      if (!shield.destroyed) {
+        const dur = document.createElement('div');
+        dur.className = 'shield-durability-overlay';
+        dur.textContent = `${shield.currentDurability}`;
+        el.appendChild(dur);
+      }
+      attachCardDetailEvent(el, shield);
+      container.appendChild(el);
+    });
+  }
+
+  // 相手のシールド描画
+  if (state.opponent) {
+    renderOpponentShields('opp-shields', state.opponent, selectedAttacker);
+  }
 }
 
-function renderOpponentShields(containerId, opponent) {
+function renderOpponentShields(containerId, opponent, selectedAttacker) {
   const container = document.getElementById(containerId);
   if (!container) return;
   container.innerHTML = '';
+
+  // 攻撃選択中ならコンテナに can-attack を付与（矢印のスナップ用）
+  if (selectedAttacker !== null) {
+    container.classList.add('can-attack');
+  } else {
+    container.classList.remove('can-attack');
+  }
+
   const totalShields = 3;
   const destroyed = opponent.shieldsDestroyed || 0;
   for (let i = 0; i < totalShields; i++) {
@@ -568,15 +693,34 @@ window.updateUI = function() {
     const slotClickHandler = window.handleSlotClick;
 
     // 各パーツを独立して描画（一つが死んでも他を生かす）
-    try { renderPlayerInfo(state); } catch (e) { console.error('❌ renderPlayerInfo error:', e); }
+    try { renderPlayerInfo(state, attacker); } catch (e) { console.error('❌ renderPlayerInfo error:', e); }
     try { renderHand(state, selIndex, window.handleCardPointerDown); } catch (e) { console.error('❌ renderHand error:', e); }
     try { renderBoard(state, selectedCard, attacker, slotClickHandler); } catch (e) { console.error('❌ renderBoard error:', e); }
-    try { renderShields(state); } catch (e) { console.error('❌ renderShields error:', e); }
+    try { renderShields(state, attacker); } catch (e) { console.error('❌ renderShields error:', e); }
     try { renderLogs(state.logs); } catch (e) { console.error('❌ renderLogs error:', e); }
     try { renderTurnInfo(state); } catch (e) { console.error('❌ renderTurnInfo error:', e); }
     
     if (typeof window.onUpdateUIHook === 'function') {
       try { window.onUpdateUIHook(); } catch (e) {}
+    }
+
+    // --- ターン開始演出（スプラッシュ） ---
+    // ターン数または手番プレイヤーが変わった瞬間に一度だけ表示
+    if (state.phase === 'main' || state.phase === 'mulligan') {
+      if (state.turnNumber !== window.lastTurnNumber || state.currentPlayerId !== window.lastTurnPlayerId) {
+        const splash = document.getElementById('turn-splash');
+        const content = document.getElementById('splash-content');
+        if (splash && content) {
+          const isMyTurn = state.currentPlayerId === state.me.id;
+          content.textContent = isMyTurn ? 'YOUR TURN' : "OPPONENT'S TURN";
+          content.style.textShadow = isMyTurn ? '0 0 50px var(--gold)' : '0 0 50px #ef4444';
+          
+          splash.style.display = 'block';
+          setTimeout(() => { splash.style.display = 'none'; }, 2500);
+        }
+        window.lastTurnNumber = state.turnNumber;
+        window.lastTurnPlayerId = state.currentPlayerId;
+      }
     }
 
     // 手札上限破棄フェーズのチェック
@@ -585,9 +729,66 @@ window.updateUI = function() {
       if (needed > 0) {
         showDiscardModal(state.me.hand, needed);
       }
-    } else {
+    } else if (document.getElementById('discard-overlay')) {
       document.getElementById('discard-overlay').style.display = 'none';
     }
+
+    // --- 対戦終了（リザルト演出） ---
+    const resultOverlay = document.getElementById('result-overlay');
+    if (state.phase === 'game_over') {
+      const isWinner = state.winner === state.me.id;
+      const header = document.getElementById('result-header');
+      
+      // クラス付与と演出開始
+      resultOverlay.style.display = 'flex';
+      resultOverlay.className = 'overlay result-overlay ' + (isWinner ? 'victory' : 'defeat');
+      header.className = 'result-title'; // プレミアムデザイン対応
+      header.textContent = isWinner ? 'VICTORY' : 'DEFEAT';
+
+      // 統計情報の表示
+      const stats = document.getElementById('result-stats');
+      if (stats) {
+        stats.className = 'result-content'; // プレミアムデザイン対応
+        stats.innerHTML = `
+          <div>SURVIVED FOR ${state.turn || 1} TURNS</div>
+          <div style="font-size: 0.7em; color: rgba(255,255,255,0.6); margin-top: 10px;">FINAL LIFE: ${state.me.life}</div>
+        `;
+      }
+
+      // BGM再生（一度だけ）
+      if (!window.resultBgmPlayed) {
+        if (window.audioManager) {
+          window.audioManager.playBGM(isWinner ? 'victory' : 'defeat', false);
+        }
+        window.resultBgmPlayed = true;
+      }
+    } else {
+      resultOverlay.style.display = 'none';
+      window.resultBgmPlayed = false;
+    }
+
+    // --- ターゲット選択中オーバーレイ ---
+    const instructionDiv = document.getElementById('targeting-instruction');
+    if (instructionDiv) {
+        if (state.phase === 'targeting' && state.currentPlayerId === state.me.id) {
+            const source = state.pendingAbilitySource;
+            const name = source ? source.unitName : 'ユニット';
+            const isSummon = source && (source.effect === 'summon_token' || (source.targetId && source.targetId.includes('empty')));
+            const subtitle = isSummon 
+                ? 'トークンの召喚場所を選択してください' 
+                : '対象を選択してください';
+            instructionDiv.innerHTML = `
+                <div class="targeting-message">
+                    【${name}】のアビリティ発動<br>
+                    <span style="font-size: 24px; color: #fff;">${subtitle}</span>
+                </div>
+            `;
+            instructionDiv.style.display = 'flex';
+        } else {
+            instructionDiv.style.display = 'none';
+        }
+    }
+    isInitialRender = false;
   } catch (e) {
     console.error('💥 [RENDER] FATAL: Critical Render Protection triggered:', e);
   }

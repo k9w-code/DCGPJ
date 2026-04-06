@@ -163,7 +163,7 @@ io.on('connection', (socket) => {
     const playerObj = {
       id: playerId,
       name: data.playerName || 'プレイヤー1',
-      avatar: data.avatar || '🤖',
+      avatar: data.avatar || '1',
       socket: socket,
       deck: null,
       shields: null,
@@ -193,19 +193,19 @@ io.on('connection', (socket) => {
       const aiPlayer = {
         id: aiId,
         name: 'NPC',
-        avatar: '🤖', // AI用デフォルトアバター
+        avatar: '6', // AI用デフォルトアバター (例: 6番)
         socket: null,
         deck: null,
         shields: null,
         mulliganDone: false,
         isAI: true,
-        ai: new AIPlayer(aiId),
+        ai: new AIPlayer(aiId, gameData.cardMap),
       };
       room.players.push(aiPlayer);
 
       if (data.mode === 'spectate') {
         playerObj.isAI = true;
-        playerObj.ai = new AIPlayer(playerId);
+        playerObj.ai = new AIPlayer(playerId, gameData.cardMap);
       }
 
       socket.emit('room_ready', { roomId, mode: data.mode });
@@ -225,7 +225,7 @@ io.on('connection', (socket) => {
     const playerObj = {
       id: playerId,
       name: data.playerName || 'プレイヤー2',
-      avatar: data.avatar || '🤖',
+      avatar: data.avatar || '1',
       socket: socket,
       deck: null,
       shields: null,
@@ -312,58 +312,67 @@ io.on('connection', (socket) => {
 
   // ゲームアクション
   socket.on('game_action', (data) => {
-    if (!currentRoom) return;
-    const room = rooms.get(currentRoom);
-    if (!room || !room.engine) return;
+    try {
+      if (!sessionId || !currentRoom) return;
+      const room = rooms.get(currentRoom);
+      const session = sessions.get(sessionId);
+      if (!room || !room.engine || !session) return;
+      
+      const player = room.players[session.playerIndex];
+      if (!player) return;
 
-    const session = sessions.get(sessionId);
-    if (!session) return;
-    const player = room.players[session.playerIndex];
-    if (!player) return;
+      let result;
+      switch (data.action) {
+        case 'draw_card':
+          result = room.engine.drawCardsForPlayer(player.id, 1);
+          break;
+        case 'raise_tribe':
+          result = room.engine.raiseTribeLevel(player.id, data.color);
+          break;
+        case 'play_card':
+          result = room.engine.playCard(player.id, data.handIndex, data.targetRow, data.targetLane);
+          break;
+        case 'attack':
+          result = room.engine.attackWithUnit(player.id, data.attackerRow, data.attackerLane, data.targetInfo);
+          break;
+        case 'end_turn':
+          result = room.engine.endTurn(player.id);
+          break;
+        case 'discard_cards':
+          result = room.engine.discardCards(player.id, data.cardIndices);
+          break;
+        case 'surrender':
+          result = room.engine.surrender(player.id);
+          break;
+        case 'select_target':
+          console.log(`🎯 [SERVER] select_target received from ${player.name}: row=${data.targetRow}, lane=${data.targetLane}`);
+          console.log(`🎯 [SERVER] Current phase: ${room.engine.gameState.phase}, pendingAbilitySource:`, JSON.stringify(room.engine.gameState.pendingAbilitySource));
+          result = room.engine.resolvePendingAbility(player.id, data.targetRow, data.targetLane);
+          console.log(`🎯 [SERVER] resolvePendingAbility result:`, result ? (result.error || 'OK') : 'null');
+          break;
+        default:
+          result = { error: '不明なアクション' };
+      }
 
-    let result;
-    switch (data.action) {
-      case 'raise_tribe':
-        result = room.engine.raiseTribeLevel(player.id, data.color);
-        break;
-      case 'play_card':
-        result = room.engine.playCard(player.id, data.handIndex, data.targetRow, data.targetLane);
-        break;
-      case 'attack':
-        result = room.engine.attackWithUnit(player.id, data.attackerRow, data.attackerLane, data.targetInfo);
-        break;
-      case 'activate_ability':
-        result = room.engine.activateUnitAbility(player.id, data.unitRow, data.unitLane, data.abilityIndex);
-        break;
-      case 'end_turn':
-        result = room.engine.endTurn(player.id);
-        break;
-      case 'discard_cards':
-        result = room.engine.discardCards(player.id, data.cardIndices);
-        break;
-      case 'surrender':
-        result = room.engine.surrender(player.id);
-        break;
-      default:
-        result = { error: '不明なアクション' };
-    }
+      if (result && result.error) {
+        console.warn(`⚠️ アクションエラー [${player.name}]: ${result.error}`, { action: data.action, data });
+        socket.emit('error_msg', { message: result.error });
+        sendGameStateToAll(room);
+      } else {
+        sendGameStateToAll(room);
 
-    if (result && result.error) {
-      console.warn(`⚠️ アクションエラー [${player.name}]: ${result.error}`, { action: data.action, data });
-      socket.emit('error_msg', { message: result.error });
-      // エラー時も盤面情報を再送してクライアントと同期させる
-      sendGameStateToAll(room);
-    } else {
-      sendGameStateToAll(room);
-
-      // AIのターンチェック
-      if (room.engine.gameState.phase === 'main') {
-        const currentId = room.engine.gameState.playerOrder[room.engine.gameState.currentPlayerIndex];
-        const currentPlayerObj = room.players.find(p => p.id === currentId);
-        if (currentPlayerObj && currentPlayerObj.isAI) {
-          setTimeout(() => executeAITurn(room, currentPlayerObj), 800);
+        // AIのターンチェック
+        if (room.engine.gameState.phase === 'main') {
+          const currentId = room.engine.gameState.playerOrder[room.engine.gameState.currentPlayerIndex];
+          const currentPlayerObj = room.players.find(p => p.id === currentId);
+          if (currentPlayerObj && currentPlayerObj.isAI) {
+            setTimeout(() => executeAITurn(room, currentPlayerObj), 800);
+          }
         }
       }
+    } catch (err) {
+      console.error(`💥 [SERVER] Fatal error in server_action:`, err);
+      socket.emit('error_msg', { message: 'サーバー内部エラーが発生しました' });
     }
   });
 
@@ -384,8 +393,8 @@ function startGame(room) {
   const p2 = room.players[1];
 
   engine.initGame(
-    { id: p1.id, name: p1.name, deckCardIds: p1.deck, shieldIds: p1.shields, isAI: p1.isAI },
-    { id: p2.id, name: p2.name, deckCardIds: p2.deck, shieldIds: p2.shields, isAI: p2.isAI }
+    { id: p1.id, name: p1.name, avatar: p1.avatar, deckCardIds: p1.deck, shieldIds: p1.shields, isAI: p1.isAI },
+    { id: p2.id, name: p2.name, avatar: p2.avatar, deckCardIds: p2.deck, shieldIds: p2.shields, isAI: p2.isAI }
   );
 
   console.log(`🎮 ゲーム開始: ${p1.name} vs ${p2.name}`);
@@ -408,45 +417,63 @@ function startGame(room) {
   }
 }
 
-// AIターン実行
+// AIターン実行（逐次意思決定方式）
 function executeAITurn(room, aiPlayerObj) {
   if (!room.engine || room.engine.gameState.phase === 'game_over') return;
 
-  const view = room.engine.getPlayerView(aiPlayerObj.id);
-  const actions = aiPlayerObj.ai.decideTurnActions(view);
+  try {
+    // 1. 最新のビューを取得し、現在の手番とフェーズを確認
+    const view = room.engine.getPlayerView(aiPlayerObj.id);
+    if (view.currentPlayerId !== aiPlayerObj.id) return;
+    if (view.phase === 'game_over') return;
 
-  let delay = 0;
-  for (const action of actions) {
+    // 2. AI に次の一手（1件）を決定させる
+    const action = aiPlayerObj.ai.decideNextAction(view);
+    if (!action) return;
+
+    // 3. アクションを実行（間隔を空けて人間味を出す）
     setTimeout(() => {
-      if (!room.engine || room.engine.gameState.phase === 'game_over') return;
+      try {
+        if (!room.engine || room.engine.gameState.phase === 'game_over') return;
 
-      let result;
-      switch (action.type) {
-        case 'raise_tribe':
-          result = room.engine.raiseTribeLevel(aiPlayerObj.id, action.color);
-          break;
-        case 'play_card':
-          result = room.engine.playCard(aiPlayerObj.id, action.handIndex, action.targetRow, action.targetLane);
-          break;
-        case 'attack':
-          result = room.engine.attackWithUnit(aiPlayerObj.id, action.attackerRow, action.attackerLane, action.targetInfo);
-          break;
-        case 'end_turn':
-          result = room.engine.endTurn(aiPlayerObj.id);
-          break;
-      }
-
-      sendGameStateToAll(room);
-
-      if (action.type === 'end_turn' && room.engine.gameState.phase === 'main') {
-        const nextId = room.engine.gameState.playerOrder[room.engine.gameState.currentPlayerIndex];
-        const nextPlayer = room.players.find(p => p.id === nextId);
-        if (nextPlayer && nextPlayer.isAI) {
-          setTimeout(() => executeAITurn(room, nextPlayer), 1000);
+        let result;
+        switch (action.type) {
+          case 'raise_tribe':
+            result = room.engine.raiseTribeLevel(aiPlayerObj.id, action.color);
+            break;
+          case 'play_card':
+            result = room.engine.playCard(aiPlayerObj.id, action.handIndex, action.targetRow, action.targetLane);
+            break;
+          case 'attack':
+            result = room.engine.attackWithUnit(aiPlayerObj.id, action.attackerRow, action.attackerLane, action.targetInfo);
+            break;
+          case 'select_target':
+            result = room.engine.resolvePendingAbility(aiPlayerObj.id, action.targetRow, action.targetLane);
+            break;
+          case 'end_turn':
+            result = room.engine.endTurn(aiPlayerObj.id);
+            break;
+          default:
+            console.warn(`⚠️ [SERVER] Unknown AI action type: ${action.type}`);
+            return;
         }
+
+        // 4. 実行結果を全プレイヤーに同期
+        sendGameStateToAll(room);
+
+        // 5. アクション実行後、まだ AI の手番（またはアビリティ処理中）なら次の一手を実行
+        const nextState = room.engine.getGameStateForClients();
+        if (nextState.currentPlayerId === aiPlayerObj.id && nextState.phase !== 'game_over') {
+          // 少し間を置いて再帰的に呼び出し
+          setTimeout(() => executeAITurn(room, aiPlayerObj), 1000);
+        }
+      } catch (innerErr) {
+        console.error(`💥 [SERVER] AI Action Execution Error:`, innerErr);
       }
-    }, delay);
-    delay += 600;
+    }, 800);
+
+  } catch (outerErr) {
+    console.error(`💥 [SERVER] AI Turn Calculation Error:`, outerErr);
   }
 }
 
