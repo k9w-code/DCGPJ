@@ -142,6 +142,89 @@ socket.on('session_invalid', () => {
   }
 });
 
+// === HELP MODAL / MANUAL LOGIC ===
+const manualHtml = `
+<div class="manual-section">
+  <h3>1. 基本ルール (Basic Rules)</h3>
+  <p>本ゲームは<b>3つのレーン</b>と<b>2つの列（前列・後列）</b>で構成される盤面で戦う対戦型カードゲームです。</p>
+  <div class="rule-box">
+    <b>勝利条件:</b><br>
+    ・相手の全シールドを破壊し、本体への<b>ダイレクトアタック</b>を成功させる。<br>
+    ・相手の山札が0枚になり、ドローできなくなる（デッキアウト）。
+  </div>
+</div>
+
+<div class="manual-section">
+  <h3>2. リソース管理 (Resources)</h3>
+  <p><b>SP (灵力):</b> カードのプレイや神族レベル上げに使用。毎ターン開始時に <b>3 SP</b>（後攻1ターン目は4）獲得します。</p>
+  <p><b>神族レベル:</b> 赤・青・緑・白・黒の5属性。カードを出すには、その色のレベルが<b>カードのコスト以上</b>である必要があります。</p>
+  <div class="rule-box">
+    <b>レベル上げ:</b> 1 SP 消費して 属性レベルを 1 上げられます（最大Lv.9）。レベルは消費されず、一度上げればターンの間ずっと有効です。
+  </div>
+</div>
+
+<div class="manual-section">
+  <h3>3. 配置とガード (Lanes & Rows)</h3>
+  <p>ユニットは3つのレーンのいずれかの前列または後列に配置します。</p>
+  <div class="rule-box">
+    <b>ガードの仕組み:</b> 同レーンの<b>前列にユニットがいる場合、相手はそのレーンの後列やシールドを攻撃できません</b>。前列は強力な防壁となります。<br>
+    ※前列・後列の両方が空のレーンでのみ、相手はシールドを攻撃可能です。
+  </div>
+</div>
+
+<div class="manual-section">
+  <h3>4. 戦闘ルール (Combat)</h3>
+  <p>攻撃側がダメージを与えると同時に、防御側も攻撃力分のダメージを「反撃」として与えます。HPが0になったユニットは破壊されます。</p>
+  <p><b>連撃 (Double Strike):</b> 攻撃時に2回ダメージ。1撃目で敵を倒せば反撃を受けず無傷で勝利できます。</p>
+</div>
+
+<div class="manual-section">
+  <h3>5. 能力キーワード (Keywords)</h3>
+  <ul style="list-style: none; padding: 0;">
+    <li>🛡️ <b>挑発 (Taunt):</b> 前列にいる時、相手はこのユニット以外攻撃できません。</li>
+    <li>⚡ <b>速攻 (Rush):</b> 出したターンから攻撃可能です。</li>
+    <li>👤 <b>潜伏 (Stealth):</b> 攻撃するまで相手の攻撃対象になりません。</li>
+    <li>✨ <b>加護 (Barrier):</b> 1度だけダメージを無効化します。</li>
+    <li>💪 <b>不屈 (Endure):</b> 破壊される時、1度だけHP 1で耐えます。</li>
+    <li>🏰 <b>攻城 (Siege):</b> シールドへのダメージが 2 になります。</li>
+    <li>🩸 <b>吸命 (Drain):</b> ダメージを与えた時、自身のHPを最大 2 回復します。</li>
+  </ul>
+</div>
+`;
+
+function showGameManual() {
+  const overlay = document.getElementById('help-overlay');
+  const content = document.getElementById('help-content');
+  if (overlay && content) {
+    content.innerHTML = manualHtml;
+    overlay.style.display = 'flex';
+    if (window.audioManager) window.audioManager.playSE('click');
+  }
+}
+
+// ヘルプ機能の初期化
+function initHelpManual() {
+  const btnHelp = document.getElementById('btn-show-help');
+  const btnCloseHelp = document.getElementById('btn-close-help');
+  const helpOverlay = document.getElementById('help-overlay');
+
+  if (btnHelp) btnHelp.addEventListener('click', showGameManual);
+  if (btnCloseHelp) btnCloseHelp.addEventListener('click', () => {
+    if (helpOverlay) helpOverlay.style.display = 'none';
+  });
+  
+  if (helpOverlay) {
+    helpOverlay.addEventListener('click', (e) => {
+      if (e.target === helpOverlay) {
+        helpOverlay.style.display = 'none';
+      }
+    });
+  }
+}
+
+// スクリプト読み込み時に実行
+initHelpManual();
+
 socket.on('connect', () => {
   console.log('🔌 [CLIENT] Socket connected via event');
   const signal = document.getElementById('debug-signal');
@@ -149,86 +232,6 @@ socket.on('connect', () => {
     signal.textContent = 'STATUS: CONNECTED';
     signal.style.background = 'rgba(255,165,0,0.8)';
   }
-  // === HELP MODAL / MANUAL LOGIC ===
-  const manualHtml = `
-  <div class="manual-section">
-    <h3>1. 基本ルール (Basic Rules)</h3>
-    <p>本ゲームは<b>3つのレーン</b>と<b>2つの列（前列・後列）</b>で構成される盤面で戦う対戦型カードゲームです。</p>
-    <div class="rule-box">
-      <b>勝利条件:</b><br>
-      ・相手の全シールドを破壊し、本体への<b>ダイレクトアタック</b>を成功させる。<br>
-      ・相手の山札が0枚になり、ドローできなくなる（デッキアウト）。
-    </div>
-  </div>
-
-  <div class="manual-section">
-    <h3>2. リソース管理 (Resources)</h3>
-    <p><b>SP (灵力):</b> カードのプレイや神族レベル上げに使用。毎ターン開始時に <b>3 SP</b>（後攻1ターン目は4）獲得します。</p>
-    <p><b>神族レベル:</b> 赤・青・緑・白・黒の5属性。カードを出すには、その色のレベルが<b>カードのコスト以上</b>である必要があります。</p>
-    <div class="rule-box">
-      <b>レベル上げ:</b> 1 SP 消費して 属性レベルを 1 上げられます（最大Lv.9）。レベルは消費されず、一度上げればターンの間ずっと有効です。
-    </div>
-  </div>
-
-  <div class="manual-section">
-    <h3>3. 配置とガード (Lanes & Rows)</h3>
-    <p>ユニットは3つのレーンのいずれかの前列または後列に配置します。</p>
-    <div class="rule-box">
-      <b>ガードの仕組み:</b> 同レーンの<b>前列にユニットがいる場合、相手はそのレーンの後列やシールドを攻撃できません</b>。前列は強力な防壁となります。<br>
-      ※前列・後列の両方が空のレーンでのみ、相手はシールドを攻撃可能です。
-    </div>
-  </div>
-
-  <div class="manual-section">
-    <h3>4. 戦闘ルール (Combat)</h3>
-    <p>攻撃側がダメージを与えると同時に、防御側も攻撃力分のダメージを「反撃」として与えます。HPが0になったユニットは破壊されます。</p>
-    <p><b>連撃 (Double Strike):</b> 攻撃時に2回ダメージ。1撃目で敵を倒せば反撃を受けず無傷で勝利できます。</p>
-  </div>
-
-  <div class="manual-section">
-    <h3>5. 能力キーワード (Keywords)</h3>
-    <ul style="list-style: none; padding: 0;">
-      <li>🛡️ <b>挑発 (Taunt):</b> 前列にいる時、相手はこのユニット以外攻撃できません。</li>
-      <li>⚡ <b>速攻 (Rush):</b> 出したターンから攻撃可能です。</li>
-      <li>👤 <b>潜伏 (Stealth):</b> 攻撃するまで相手の攻撃対象になりません。</li>
-      <li>✨ <b>加護 (Barrier):</b> 1度だけダメージを無効化します。</li>
-      <li>💪 <b>不屈 (Endure):</b> 破壊される時、1度だけHP 1で耐えます。</li>
-      <li>🏰 <b>攻城 (Siege):</b> シールドへのダメージが 2 になります。</li>
-      <li>🩸 <b>吸命 (Drain):</b> ダメージを与えた時、自身のHPを最大 2 回復します。</li>
-    </ul>
-  </div>
-`;
-
-  function showGameManual() {
-    const overlay = document.getElementById('help-overlay');
-    const content = document.getElementById('help-content');
-    if (overlay && content) {
-      content.innerHTML = manualHtml;
-      overlay.style.display = 'flex';
-      if (window.audioManager) window.audioManager.playSE('click');
-    }
-  }
-
-  // イベントリスナー登録
-  document.addEventListener('DOMContentLoaded', () => {
-    const btnHelp = document.getElementById('btn-show-help');
-    const btnCloseHelp = document.getElementById('btn-close-help');
-    const helpOverlay = document.getElementById('help-overlay');
-
-    if (btnHelp) btnHelp.addEventListener('click', showGameManual);
-    if (btnCloseHelp) btnCloseHelp.addEventListener('click', () => {
-      if (helpOverlay) helpOverlay.style.display = 'none';
-    });
-    
-    // モーダル外クリックで閉じる
-    if (helpOverlay) {
-      helpOverlay.addEventListener('click', (e) => {
-        if (e.target === helpOverlay) {
-          helpOverlay.style.display = 'none';
-        }
-      });
-    }
-  });
   requestSessionRestore();
 });
 
