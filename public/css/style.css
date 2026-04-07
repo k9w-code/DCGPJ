@@ -800,7 +800,7 @@ body {
 .tribe-white { color: #f1f5f9; }
 .tribe-black { color: #a78bfa; }
 
-/* 闔�蜻磯共隲､�ｧ驍ｯ�ｭ隰悶��ｼ蝓滂ｽｮ�ｵ鬮ｫ螳亥飭邵ｺ�ｫ驕假ｽｻ髯ｦ魃会ｽｼ繝ｻ*/
+/* 闔蜻磯共隲､ｧ驍ｯｭ隰悶ｼ蝓滂ｽｮｵ鬮ｫ螳亥飭邵ｺｫ驕假ｽｻ髯ｦ魃会ｽｼ繝ｻ*/
 .crystal-orb { display: none; }
 
 /* 郢ｧ�ｷ郢晢ｽｼ郢晢ｽｫ郢晏ｳｨ繝ｧ郢ｧ�｣郢ｧ�ｹ郢晏干ﾎ樒ｹｧ�､繝ｻ繝ｻVG鬯夲ｽｨ繝ｻ繝ｻ*/
@@ -1643,7 +1643,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 .cd-info-area {
   flex: 1;
-  padding: 40px 50px;
+  padding: 40px 25px; /* 30px -> 25px にさらに削減 */
   display: flex;
   flex-direction: column;
   gap: 25px;
@@ -1740,10 +1740,27 @@ input[type="range"]::-webkit-slider-thumb {
 
 .cd-text-box {
   background: rgba(0,0,0,0.3);
-  padding: 24px;
+  padding: 16px; /* 20px -> 16px にさらに削減 */
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.05);
   margin-top: auto;
+}
+
+.preview-desc {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #a0aec0;
+  margin-top: 1rem;
+  white-space: pre-wrap;
+}
+
+.preview-flavor {
+  font-style: italic;
+  color: #a09880;
+  font-size: 0.9rem;
+  margin-top: 0.8rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
 }
 
 .cd-effect-text {
@@ -2032,18 +2049,35 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* Card Detail Enhanced Styles */
 .cd-rarity {
-  margin: 5px 0;
-  display: flex;
-  gap: 4px;
+  margin-top: 5px;
+  display: inline-flex;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.1);
+  font-family: var(--font-fantasy);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  align-items: center;
   justify-content: center;
 }
-.rarity-star {
-  font-size: 20px;
-  filter: drop-shadow(0 0 3px rgba(255,255,255,0.3));
+
+/* Rarity Colors (Common=White, Rare=Blue, Majestic=Red, Legendary=Gold) */
+.rarity-1 { color: #e2e8f0; text-shadow: 0 0 5px rgba(255,255,255,0.3); }
+.rarity-2 { color: #3b82f6; text-shadow: 0 0 10px rgba(59, 130, 246, 0.4); }
+.rarity-3 { color: #ef4444; text-shadow: 0 0 15px rgba(239, 68, 68, 0.6); animation: majesticGlow 3s infinite alternate; }
+.rarity-4 { color: #d4a017; text-shadow: 0 0 20px rgba(212, 160, 23, 0.8); animation: legendaryGlow 3s infinite alternate; border: 1px solid rgba(212, 160, 23, 0.3); }
+
+@keyframes majesticGlow {
+  from { filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.4)); }
+  to { filter: drop-shadow(0 0 15px rgba(239, 68, 68, 0.8)); }
 }
-.star-gold { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.6); }
-.star-silver { color: #94a3b8; text-shadow: 0 0 8px rgba(148, 163, 184, 0.4); }
-.star-bronze { color: #b45309; text-shadow: 0 0 5px rgba(180, 83, 9, 0.4); }
+@keyframes legendaryGlow {
+  from { filter: drop-shadow(0 0 5px rgba(212, 160, 23, 0.5)); transform: scale(1); }
+  to { filter: drop-shadow(0 0 20px rgba(212, 160, 23, 1)); transform: scale(1.05); }
+}
 
 .cd-abilities-list {
   display: flex;
@@ -2062,6 +2096,18 @@ input[type="range"]::-webkit-slider-thumb {
   font-size: 13px;
   line-height: 1.5;
   color: #e2e8f0;
+  white-space: pre-wrap;
+}
+
+.cd-flavor-text {
+  font-style: italic;
+  color: #d4c8a8;
+  font-size: 13px;
+  line-height: 1.6;
+  letter-spacing: -0.03em; /* 文字間をさらに詰める */
+  margin-top: 10px;
+  white-space: pre-wrap;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 .ability-trigger {
   font-weight: bold;
@@ -2515,3 +2561,22 @@ body.targeting-mode {
     0% { transform: scale(0.8) translateY(30px); opacity: 0; }
     100% { transform: scale(1) translateY(0); opacity: 1; }
 }
+
+/* シールドジェムのレアリティ別演出 */
+.shield-gem.rarity-1 { border: 2px solid #e2e8f0; box-shadow: 0 0 5px rgba(255,255,255,0.2); }
+.shield-gem.rarity-2 { border: 2.5px solid #3b82f6; box-shadow: 0 0 12px rgba(59, 130, 246, 0.5); }
+.shield-gem.rarity-3 { border: 3px solid #ef4444; box-shadow: 0 0 18px rgba(239, 68, 68, 0.7); animation: majesticGlow 3s infinite alternate; }
+.shield-gem.rarity-4 { border: 4px solid #d4a017; box-shadow: 0 0 25px rgba(212, 160, 23, 0.9); animation: legendaryGlow 3s infinite alternate; }
+
+.shield-gem.destroyed {
+  opacity: 0.2;
+  filter: grayscale(1);
+  border-color: #444 !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+
+/* �f�b�L�\�z�O���b�h�p�̃��A���e�B���o */
+.grid-item.rarity-2 { border: 2px solid #3b82f6 !important; box-shadow: 0 0 10px rgba(59, 130, 246, 0.3) !important; }
+.grid-item.rarity-3 { border: 2.5px solid #ef4444 !important; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4) !important; }
+.grid-item.rarity-4 { border: 3px solid #d4a017 !important; box-shadow: 0 0 20px rgba(212, 160, 23, 0.5) !important; }

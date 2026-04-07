@@ -10,7 +10,7 @@ const CARDS_URL = 'https://docs.google.com/spreadsheets/d/1R6-XpyHV_WiFIWKx6kSRN
 const SHIELDS_URL = 'https://docs.google.com/spreadsheets/d/1R6-XpyHV_WiFIWKx6kSRNf-A7LjRrRhrrhK1FKMaTTw/export?format=csv&gid=108587861';
 const KEYWORDS_URL = 'https://docs.google.com/spreadsheets/d/1R6-XpyHV_WiFIWKx6kSRNf-A7LjRrRhrrhK1FKMaTTw/export?format=csv&gid=1171970069';
 
-function fetchCSV(url) {
+function fetchRawData(url) {
   return new Promise((resolve, reject) => {
     https.get(url, (res) => {
       // 302 redirect handling for Google Sheets
@@ -25,23 +25,33 @@ function fetchCSV(url) {
         }
         let data = '';
         response.on('data', chunk => { data += chunk; });
-        response.on('end', () => {
-          try {
-            const parsed = parse(data, {
-              columns: true,
-              skip_empty_lines: true,
-              trim: true,
-              relax_column_count: true,
-              bom: true
-            });
-            resolve(parsed);
-          } catch(e) {
-            reject(e);
-          }
-        });
+        response.on('end', () => resolve(data));
       }
     }).on('error', reject);
   });
+}
+
+async function fetchCSV(url) {
+  const data = await fetchRawData(url);
+  return parse(data, {
+    columns: true,
+    skip_empty_lines: true,
+    trim: true,
+    relax_column_count: true,
+    bom: true
+  });
+}
+
+function saveLocalCSV(filename, content) {
+  const filePath = path.join(__dirname, '..', 'data', filename);
+  try {
+    fs.writeFileSync(filePath, content, 'utf8');
+    console.log(`[DataLoader] Successfully saved to local file: ${filename}`);
+    return true;
+  } catch (e) {
+    console.error(`[DataLoader] Failed to save local file: ${filename}`, e.message);
+    return false;
+  }
 }
 
 function loadLocalCSV(filename) {
@@ -60,12 +70,36 @@ function loadLocalCSV(filename) {
   return null;
 }
 
-async function loadAllData() {
-  console.log('Loading master data...');
+async function loadAllData(options = {}) {
+  const forceSync = options.sync || false;
+  console.log(`Loading master data... (forceSync: ${forceSync})`);
   
-  const cardsRaw = loadLocalCSV('cards.csv') || await fetchCSV(CARDS_URL);
-  const shieldsRaw = loadLocalCSV('shields.csv') || await fetchCSV(SHIELDS_URL);
-  const keywordsRaw = loadLocalCSV('keyword_master.csv') || loadLocalCSV('keywords.csv') || await fetchCSV(KEYWORDS_URL);
+  let cardsRaw, shieldsRaw, keywordsRaw;
+
+  if (forceSync) {
+    console.log('[DataLoader] Force fetching from spreadsheets and updating local files...');
+    // 同期モード: URLから取得し、成功したものをローカルに保存
+    const [cData, sData, kData] = await Promise.all([
+      fetchRawData(CARDS_URL),
+      fetchRawData(SHIELDS_URL),
+      fetchRawData(KEYWORDS_URL),
+    ]);
+    
+    // 保存
+    saveLocalCSV('cards.csv', cData);
+    saveLocalCSV('shields.csv', sData);
+    saveLocalCSV('keywords.csv', kData);
+    
+    // パース
+    cardsRaw = parse(cData, { columns: true, skip_empty_lines: true, trim: true, relax_column_count: true, bom: true });
+    shieldsRaw = parse(sData, { columns: true, skip_empty_lines: true, trim: true, relax_column_count: true, bom: true });
+    keywordsRaw = parse(kData, { columns: true, skip_empty_lines: true, trim: true, relax_column_count: true, bom: true });
+  } else {
+    // 通常モード: ローカル優先、なければURL
+    cardsRaw = loadLocalCSV('cards.csv') || await fetchCSV(CARDS_URL);
+    shieldsRaw = loadLocalCSV('shields.csv') || await fetchCSV(SHIELDS_URL);
+    keywordsRaw = loadLocalCSV('keyword_master.csv') || loadLocalCSV('keywords.csv') || await fetchCSV(KEYWORDS_URL);
+  }
 
   // キーワードマスタ
   const keywordMap = {};
@@ -93,10 +127,18 @@ async function loadAllData() {
         value: isNaN(parseInt(valueStr)) ? (valueStr ? valueStr.trim() : '') : parseInt(valueStr),
         target: row.target ? row.target.trim() : '',
         text: row.text ? row.text.trim() : '',
+        description: row.description || '',
         condition: row.condition ? row.condition.trim() : ''
       });
     }
     const firstAbility = abilities.length > 0 ? abilities[0] : {};
+    
+    // 数値データの安全なパース
+    const cost = parseInt(row.cost || row.コスト || 0);
+    const attack = parseInt(row.atk || row.attack || row.攻撃力 || 0);
+    const hp = parseInt(row.life || row.hp || row.体力 || 0);
+    const rarity = parseInt(row.rarity || row.レアリティ || 1);
+    const deckLimit = parseInt(row.deck_limit || row.max_copies || row.枚数制限 || 3);
     
     return {
       id: row.id,
@@ -104,12 +146,12 @@ async function loadAllData() {
       name: row.name,
       colors: row.color ? row.color.split(',').map(c => c.trim()).filter(c => c) : ['neutral'],
       color: row.color ? row.color.split(',')[0].trim() : 'neutral',
-      rarity: parseInt(row.rarity || 1),
+      rarity: isNaN(rarity) ? 1 : rarity,
       type: row.type || 'unit',
-      isToken: (parseInt(row.deck_limit || row.max_copies) || 0) === 0, // 制限0ならトークン
-      cost: parseInt(row.cost) || 0,
-      attack: parseInt(row.atk || row.attack) || 0,
-      hp: parseInt(row.life || row.hp) || 0,
+      isToken: isNaN(deckLimit) || deckLimit === 0, // 制限0ならトークン
+      cost: isNaN(cost) ? 0 : cost,
+      attack: isNaN(attack) ? 0 : attack,
+      hp: isNaN(hp) ? 0 : hp,
       keywords: row.keywords ? row.keywords.split(',').map(k => k.trim()).filter(k => k) : [],
       
       // 旧実装との互換性
@@ -122,26 +164,32 @@ async function loadAllData() {
       
       flavorText: row.description || row.flavor_text || '',
       text: row.text || '',
-      maxCopies: parseInt(row.deck_limit || row.max_copies) || 0,
+      maxCopies: isNaN(deckLimit) ? 3 : deckLimit,
     };
   });
 
   // シールドデータの構築（ターゲット指定と表示テキスト追加）
-  const shields = shieldsRaw.filter(row => row.id).map(row => ({
-    id: row.id,
-    type: 'shield',
-    name: row.name,
-    durability: parseInt(row.life) || 1,
-    skill: {
-      id: `${row.id}_skill`,
-      name: row.name + 'のスキル',
-      effectType: row.effect || 'none',
-      effectValue: isNaN(parseInt(row.value)) ? (row.value ? row.value.trim() : '') : parseInt(row.value),
-      target: row.target || '',
-      text: row.text || '',
-      description: row.description || ''
-    }
-  }));
+  const shields = shieldsRaw.filter(row => row.id).map(row => {
+    const rarity = parseInt(row.rarity || row.レアリティ || 1);
+    const life = parseInt(row.durability || row.life || row.hp || 1);
+    
+    return {
+      id: row.id,
+      type: 'shield',
+      name: row.name,
+      rarity: isNaN(rarity) ? 1 : rarity,
+      durability: isNaN(life) ? 1 : life,
+      skill: {
+        id: `${row.id}_skill`,
+        name: row.name + 'のスキル',
+        effectType: row.effect || 'none',
+        effectValue: isNaN(parseInt(row.value)) ? (row.value ? row.value.trim() : '') : parseInt(row.value),
+        target: row.target || '',
+        text: row.text || '',
+        description: row.description || ''
+      }
+    };
+  });
 
   const cardMap = {};
   for (const card of cards) {

@@ -59,6 +59,7 @@ function createUnitInstance(cardData, ownerId) {
     abilityValue: cardData.abilityValue,
     // 新アビリティリスト（配列内の各オブジェクトも複製）
     abilities: cardData.abilities ? cardData.abilities.map(a => ({...a})) : [],
+    rarity: cardData.rarity || 1,
     flavorText: cardData.flavorText || '',
     text: cardData.text || '',
     ownerId,
@@ -79,6 +80,7 @@ function createShieldInstance(shieldData) {
     name: shieldData.name,
     skillId: shieldData.skillId,
     skill: shieldData.skill,
+    rarity: shieldData.rarity || 1,
     maxDurability: shieldData.durability,
     currentDurability: shieldData.durability,
     destroyed: false,

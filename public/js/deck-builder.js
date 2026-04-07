@@ -297,8 +297,8 @@ function getColorCSS(color) {
 // カード画像パスの取得は game-renderer.js の window.getCardImagePath を直接参照します
 
 function getShieldImagePath(shield) {
-  // マスタのID(SH001)とファイル名(S001.webp)のズレを吸収
-  const fileName = shield.id.replace('SH', 'S');
+  // artIdがあれば優先、なければidを使用
+  const fileName = shield.artId || shield.id || 'unknown';
   return `/assets/images/shields/${fileName}.webp`;
 }
 
@@ -409,7 +409,8 @@ function renderCardGrid() {
   for (const card of filtered) {
     const count = deck[card.id] || 0;
     const el = document.createElement('div');
-    el.className = `card-item${count > 0 ? ' in-deck' : ''}`;
+    const rarityClass = card.rarity ? ` rarity-${card.rarity}` : ' rarity-1';
+    el.className = `grid-item card-item${count > 0 ? ' in-deck' : ''}${rarityClass}`;
     
     const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
     const primaryColor = getColorCSS(colors[0]);
@@ -524,8 +525,11 @@ function showPreview(type, data) {
       <div class="preview-card-image" style="background-image: url('${bgImage}')"></div>
       <div class="preview-info">
         <div class="preview-title">
-          <span class="preview-cost" style="background-image: url('/assets/images/icon/divine/${(data.color || 'neutral').toLowerCase()}.png');">${data.cost}</span>
+          <span class="preview-cost" style="background-image: url('/assets/images/icon/divine/${(data.color || 'neutral').toLowerCase()}.png');">${data.cost || (data.durability || 0)}</span>
           <h2>${data.name}</h2>
+          <div class="cd-rarity rarity-${data.rarity || 1}" style="font-size: 11px; padding: 2px 8px; margin-left: 10px;">
+            ${(window.getRarityName ? window.getRarityName(data.rarity || 1) : (data.rarity === 4 ? 'Legendary' : (data.rarity === 3 ? 'Majestic' : (data.rarity === 2 ? 'Rare' : 'Common'))))}
+          </div>
         </div>
         ${statsHtml}
         ${keywordHtml}
@@ -549,7 +553,8 @@ function showPreview(type, data) {
   } else if (type === 'shield') {
     const isSelected = selectedShields.includes(data.id);
     const bgImage = getShieldImagePath(data);
-    const abilityText = data.skill ? data.skill.description : '能力なし';
+    const abilityText = (data.skill ? data.skill.text || '' : '能力なし').toString().replace(/\\n/g, '\n');
+    const flavorText = (data.skill ? data.skill.description || '' : '').toString().replace(/\\n/g, '\n');
     
     container.innerHTML = `
       <div class="preview-card-image" style="background-image: url('${bgImage}')"></div>
@@ -559,6 +564,7 @@ function showPreview(type, data) {
         </div>
         <div class="preview-stats"><span style="background:#444;padding:4px 12px;border-radius:6px;border:1px solid #b8860b;">耐久値 ${data.durability}</span></div>
         <div class="preview-desc">${abilityText}</div>
+        ${flavorText ? `<div class="preview-flavor">${flavorText}</div>` : ''}
       </div>
       
       <div class="preview-controls">

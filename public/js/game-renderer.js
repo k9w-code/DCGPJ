@@ -287,6 +287,16 @@ window.showCardDetail = function(card) {
   const overlay = document.getElementById('card-detail-overlay');
   if (!overlay) return;
   
+  const getRarityName = (lvl) => {
+    switch(parseInt(lvl)) {
+      case 1: return 'Common';
+      case 2: return 'Rare';
+      case 3: return 'Majestic';
+      case 4: return 'Legendary';
+      default: return 'Common';
+    }
+  };
+
   overlay.style.display = 'flex';
   const isShield = card.type === 'shield';
   const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
@@ -302,12 +312,25 @@ window.showCardDetail = function(card) {
   // 要素更新を安全に行う
   const safeSetText = (id, text) => {
     const el = document.getElementById(id);
-    if (el) el.textContent = text !== undefined ? text : '';
+    if (el) {
+      // \n という二文字の文字列を実際の改行コードに変換
+      const processedText = (text !== undefined ? text : '').toString().replace(/\\n/g, '\n');
+      el.textContent = processedText;
+    }
   };
 
   safeSetText('cd-name', card.name);
   safeSetText('cd-cost', card.cost !== undefined ? card.cost : (card.durability || 0));
   safeSetText('cd-type', (card.type || 'Unit').toUpperCase());
+  
+  // レアリティ表示
+  const rarityEl = document.getElementById('cd-rarity');
+  if (rarityEl) {
+    const rarity = card.rarity || 1;
+    rarityEl.textContent = getRarityName(rarity);
+    // クラスをリセットしてから付与
+    rarityEl.className = 'cd-rarity rarity-' + rarity;
+  }
   
   // 神族（色）表示
   const tribeIcon = document.getElementById('cd-tribe-icon');
@@ -378,7 +401,12 @@ window.showCardDetail = function(card) {
         </div>
       `;
     } else {
-      mainText = card.text || card.abilityEffect || (card.skill ? card.skill.text : '');
+      // シールドやアビリティ配列を持たないカード
+      if (card.skill) {
+        mainText = card.skill.text || '';
+      } else {
+        mainText = card.text || card.abilityEffect || '';
+      }
     }
 
     let kwHTML = '';
@@ -391,7 +419,7 @@ window.showCardDetail = function(card) {
         kwHTML = '<div style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.2);">';
         validKws.forEach(kw => {
           const m = (window.keywordMap && window.keywordMap[kw]) || { name: kw, description: '' };
-          kwHTML += `<div style="font-size: 11px; color: #a09880; line-height: 1.4; margin-bottom: 6px;">
+          kwHTML += `<div style="font-size: 14px; color: #a09880; line-height: 1.5; margin-bottom: 6px;">
             <strong style="color: #d4c8a8;">【${m.name || kw}】</strong>: ${m.description || ''}
           </div>`;
         });
@@ -399,6 +427,8 @@ window.showCardDetail = function(card) {
       }
     }
 
+    safeSetText('cd-flavor', card.flavorText || (card.skill ? card.skill.description : ''));
+    
     // 修正履歴（Modifiers）の表示
     let modHTML = '';
     if (card.modifiers && card.modifiers.length > 0) {
@@ -426,11 +456,6 @@ window.showCardDetail = function(card) {
     textEl.innerHTML = mainText + kwHTML + modHTML;
   }
 
-  const flavorEl = document.getElementById('cd-flavor');
-  if (flavorEl) {
-    flavorEl.textContent = card.flavorText || (card.skill ? card.skill.description : '');
-  }
-  
   const closeBtn = document.getElementById('btn-close-detail');
   if (closeBtn) {
     closeBtn.onclick = () => { overlay.style.display = 'none'; };
@@ -549,7 +574,8 @@ function renderShields(state, selectedAttacker) {
     const shields = state.me.shields || [];
     shields.forEach(shield => {
       const el = document.createElement('div');
-      el.className = `shield-gem${shield.destroyed ? ' destroyed' : ''}`;
+    const rarityClass = shield.rarity ? ` rarity-${shield.rarity}` : ' rarity-1';
+    el.className = `shield-gem${shield.destroyed ? ' destroyed' : ''}${rarityClass}`;
       if (!shield.destroyed) {
         const dur = document.createElement('div');
         dur.className = 'shield-durability-overlay';
