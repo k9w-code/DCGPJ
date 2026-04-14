@@ -419,8 +419,11 @@ class GameEngine {
 
       if (result.shieldDestroyed) {
         opponent.shieldsDestroyed++;
-        const skillEvents = processShieldSkill(result.shield, opponent, player, this.cardMap, gs.logs);
-        this.processEvents(skillEvents, opponent, player);
+        gs.phase = 'shield_break_anim';
+        gs.pendingShieldBreak = {
+          shield: result.shield,
+          attackerId: playerId
+        };
       }
 
     } else if (targetInfo.type === 'direct') {
@@ -434,6 +437,23 @@ class GameEngine {
       attacker.hasActed = true;
     }
 
+    this.cleanupDeadUnits();
+    return this.getGameStateForClients();
+  }
+
+  resolvePendingShieldBreak() {
+    const gs = this.gameState;
+    if (gs.phase !== 'shield_break_anim' || !gs.pendingShieldBreak) return { error: 'Invalid state' };
+
+    const { shield, attackerId } = gs.pendingShieldBreak;
+    const player = gs.players[attackerId];
+    const opponent = Object.values(gs.players).find(p => p.id !== attackerId);
+
+    const skillEvents = processShieldSkill(shield, opponent, player, this.cardMap, gs.logs);
+    this.processEvents(skillEvents, opponent, player);
+
+    gs.phase = 'main';
+    gs.pendingShieldBreak = null;
     this.cleanupDeadUnits();
     return this.getGameStateForClients();
   }
@@ -621,6 +641,32 @@ class GameEngine {
     console.log(message);
   }
 
+  getSanitizedLogs(logs, viewerId) {
+    return logs.map(msg => {
+      if (!viewerId || !this.gameState) return msg;
+      
+      const playerNames = Object.values(this.gameState.players).map(p => ({ id: p.id, name: p.name }));
+      const opponent = playerNames.find(p => p.id !== viewerId);
+      
+      if (!opponent) return msg;
+
+      // 相手の行動によるログで秘匿が必要なものを置換
+      if (msg.includes(opponent.name)) {
+        // マリガンの新手札
+        msg = msg.replace(/\(新手札:.*?\)/, '(新手札: 非公開)');
+        // ドロー
+        if (msg.includes('をドロー')) {
+          msg = msg.replace(new RegExp(`📖 ${opponent.name}: .* をドロー`), `📖 ${opponent.name}: カード をドロー`);
+        }
+        // 捨てる
+        if (msg.includes('を捨てた')) {
+          msg = msg.replace(new RegExp(`🗑️ ${opponent.name}: .* を捨てた`), `🗑️ ${opponent.name}: カード を捨てた`);
+        }
+      }
+      return msg;
+    });
+  }
+
   getGameStateForClients() {
     const gs = this.gameState;
     if (!gs) return null;
@@ -642,9 +688,29 @@ class GameEngine {
     const opponentId = Object.keys(gs.players).find(id => id !== playerId);
     const opponent = gs.players[opponentId];
 
+    // シールドの秘匿化（未破壊のものは情報を隠す）
+    // AIプレイヤーには完全な情報を渡す（攻撃判定に必要）
+    const hiddenShields = player.isAI ? opponent.shields : opponent.shields.map(s => {
+      if (!s.destroyed) {
+        return {
+          id: s.id,
+          type: 'shield',
+          name: '???',
+          skill: null,
+          maxDurability: s.maxDurability,
+          currentDurability: '?',
+          rarity: 1,
+          destroyed: false
+        };
+      }
+      return s;
+    });
+
     return {
       ...this.getGameStateForClients(),
+      logs: this.getSanitizedLogs(gs.logs.slice(-50), playerId),
       pendingAbilitySource: gs.pendingAbilitySource,
+      pendingShieldBreak: gs.pendingShieldBreak,
       me: {
         id: player.id,
         name: player.name,
@@ -668,7 +734,7 @@ class GameEngine {
         board: opponent.board,
         sp: opponent.sp,
         tribeLevels: opponent.tribeLevels,
-        shields: opponent.shields, // 追加: AIがシールドの存在を認識できるようにする
+        shields: hiddenShields,
         totalShieldDurability: opponent.totalShieldDurability,
         life: calculateLife(opponent, gs),
         shieldsDestroyed: opponent.shieldsDestroyed,

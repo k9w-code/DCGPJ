@@ -222,7 +222,7 @@ class AIPlayer {
 
     // 1. リーサルチェック（仮想シールド耐久値で判定）
     const totalAtk = attackers.reduce((sum, a) => sum + (a.unit.currentAttack || 0), 0);
-    const virtualShieldDurability = virtualOpponentShields.reduce((sum, s) => sum + (s.destroyed ? 0 : s.durability), 0);
+    const virtualShieldDurability = virtualOpponentShields.reduce((sum, s) => sum + (s.destroyed ? 0 : (s.currentDurability || 0)), 0);
     const hasLethal = totalAtk >= virtualShieldDurability && virtualShieldDurability > 0;
 
     // 2. 攻撃解決ループ

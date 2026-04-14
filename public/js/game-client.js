@@ -431,6 +431,9 @@ function onPointerUp(e) {
 }
 
 window.handleCardPointerDown = function(e, index) {
+  // 右クリック等（ドラッグ以外）の時はドラッグ処理を行わずそのまま通す
+  if (e.button !== 0) return;
+
   const state = window.gameState;
   // 誤操作ガード: 自分の番でない、または待機フェーズ以外は入力を無視
   if (!state || state.currentPlayerId !== state.me.id || state.phase !== 'main') {
@@ -470,6 +473,9 @@ window.handleSlotClick = function(type, row, lane, e) {
 
   // 以下は targeting フェーズ以外（通常時）の処理
   if (type === 'unit_pointerdown') {
+    // 右クリックなど（左クリック以外）の場合はドラッグを開始せず詳細表示等の別処理に譲る
+    if (e.button !== 0) return;
+
     const unit = state.me.board[row][lane];
     if (!unit || !unit.canAttack) return;
     isDraggingAttack = true;

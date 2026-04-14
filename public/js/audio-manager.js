@@ -61,6 +61,12 @@ class SoundManager {
     masterGain.connect(this.mainGain);
 
     switch (type) {
+      case 'shield_break':
+        this._playSynthSound('square', 200, 50, 0.05, 0.5, masterGain, now);
+        this._playSynthSound('sawtooth', 300, 50, 0.05, 0.5, masterGain, now);
+        this._playSynthSound('sine', 100, 10, 0.01, 1.0, masterGain, now);
+        break;
+
       case 'click':
         this._playSynthSound('sine', 800, 400, 0.05, 0.1, masterGain, now);
         break;

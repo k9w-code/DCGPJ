@@ -131,6 +131,23 @@ async function loadAllData(options = {}) {
         condition: row.condition ? row.condition.trim() : ''
       });
     }
+
+    const trigger2 = row.trigger2;
+    const effect2 = row.effect2;
+    const valueStr2 = row.value2;
+    if (trigger2 && trigger2.trim() !== '' && trigger2.trim() !== 'none') {
+      abilities.push({
+        id: `${row.id}_ability2`,
+        trigger: trigger2.trim(),
+        effect: effect2 ? effect2.trim() : '',
+        value: isNaN(parseInt(valueStr2)) ? (valueStr2 ? valueStr2.trim() : '') : parseInt(valueStr2),
+        target: row.target2 ? row.target2.trim() : '',
+        text: '',
+        description: '',
+        condition: ''
+      });
+    }
+
     const firstAbility = abilities.length > 0 ? abilities[0] : {};
     
     // 数値データの安全なパース

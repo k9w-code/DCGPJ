@@ -87,7 +87,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
               if (target.currentHp <= 0) events.push({ type: 'ability_kill', target: target.instanceId });
             }
           });
-        } else if (trigger === 'on_play') {
+        } else if (trigger === 'on_play' && !abilityTargetId.includes('all')) {
           needsTarget = true;
         } else {
           const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value);
@@ -125,7 +125,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
               events.push({ type: 'ability_heal', source: unit.instanceId, target: target.instanceId, value: healed });
             }
           });
-        } else if (trigger === 'on_play') {
+        } else if (trigger === 'on_play' && !abilityTargetId.includes('all')) {
           needsTarget = true;
         } else {
           const targets = getAbilityTargets(abilityTargetId === 'enemy_unit_1' ? 'self_unit_1' : abilityTargetId, currentPlayer, opponentPlayer, value);
@@ -161,10 +161,10 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
         if (manualTarget) {
           manualTarget.currentAttack += value;
           logs.push(`⬆️ ${unit.name} のアビリティ発動！${manualTarget.name} 攻撃力+${value} (ATK: ${manualTarget.currentAttack})`);
-        } else if (trigger === 'on_play') {
+        } else if (trigger === 'on_play' && !abilityTargetId.includes('all')) {
           needsTarget = true;
         } else {
-          const targets = getAbilityTargets(targetId, currentPlayer, opponentPlayer, value);
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value);
           const target = targets.length > 0 ? targets[0] : unit;
           target.currentAttack += value;
           if (!target.modifiers) target.modifiers = [];
@@ -190,10 +190,10 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           if (!manualTarget.modifiers) manualTarget.modifiers = [];
           manualTarget.modifiers.push({ source: unit.name, type: 'hp', value: value });
           logs.push(`⬆️ ${unit.name} のアビリティ発動！${manualTarget.name} HP+${value} (HP: ${manualTarget.currentHp})`);
-        } else if (trigger === 'on_play') {
+        } else if (trigger === 'on_play' && !abilityTargetId.includes('all')) {
           needsTarget = true;
         } else {
-          const targets = getAbilityTargets(targetId, currentPlayer, opponentPlayer, value);
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value);
           const target = targets.length > 0 ? targets[0] : unit;
           target.currentHp += value;
           target.maxHp += value;
@@ -220,10 +220,10 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           if (!manualTarget.modifiers) manualTarget.modifiers = [];
           manualTarget.modifiers.push({ source: unit.name, type: 'atk', value: -value });
           logs.push(`⬇️ ${unit.name} のアビリティ発動！${manualTarget.name} の攻撃力を ${value} 減少 (ATK: ${manualTarget.currentAttack})`);
-        } else if (trigger === 'on_play') {
+        } else if (trigger === 'on_play' && !abilityTargetId.includes('all')) {
           needsTarget = true;
         } else {
-          const targets = getAbilityTargets(targetId, currentPlayer, opponentPlayer, value);
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value);
           targets.forEach(target => {
             target.currentAttack = Math.max(0, target.currentAttack - value);
             if (!target.modifiers) target.modifiers = [];
@@ -239,10 +239,10 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           if (!manualTarget.modifiers) manualTarget.modifiers = [];
           manualTarget.modifiers.push({ source: unit.name, type: 'hp', value: -value });
           logs.push(`⬇️ ${unit.name} のアビリティ発動！${manualTarget.name} のHPを ${value} 減少 (HP: ${manualTarget.currentHp})`);
-        } else if (trigger === 'on_play') {
+        } else if (trigger === 'on_play' && !abilityTargetId.includes('all')) {
           needsTarget = true;
         } else {
-          const targets = getAbilityTargets(targetId, currentPlayer, opponentPlayer, value);
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value);
           targets.forEach(target => {
             target.currentHp = Math.max(1, target.currentHp - value);
             if (!target.modifiers) target.modifiers = [];
@@ -254,29 +254,105 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
       }
       case 'destroy': {
         if (manualTarget) {
-          manualTarget.currentHp = 0;
-          logs.push(`☠️ ${unit.name} のアビリティ発動！${manualTarget.name} を破壊！`);
-          events.push({ type: 'ability_kill', target: manualTarget.instanceId });
-        } else if (trigger === 'on_play') {
+          if (manualTarget.endureActive) {
+            manualTarget.endureActive = false;
+            manualTarget.currentHp = 1;
+            manualTarget.keywords = manualTarget.keywords.filter(k => k !== 'endure');
+            logs.push(`💪 ${manualTarget.name} の不屈が発動！破壊を免れHP1で耐えた！`);
+          } else {
+            manualTarget.currentHp = 0;
+            logs.push(`☠️ ${unit.name} のアビリティ発動！${manualTarget.name} を破壊！`);
+            events.push({ type: 'ability_kill', target: manualTarget.instanceId });
+          }
+        } else if (trigger === 'on_play' && !abilityTargetId.includes('all')) {
           needsTarget = true;
         } else {
-          const targets = getAbilityTargets(targetId, currentPlayer, opponentPlayer, value);
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value);
           targets.forEach(target => {
-            target.currentHp = 0;
-            logs.push(`☠️ ${unit.name} のアビリティ発動！${target.name} を破壊！`);
-            events.push({ type: 'ability_kill', target: target.instanceId });
+            if (target.endureActive) {
+              target.endureActive = false;
+              target.currentHp = 1;
+              target.keywords = target.keywords.filter(k => k !== 'endure');
+              logs.push(`💪 ${target.name} の不屈が発動！破壊を免れHP1で耐えた！`);
+            } else {
+              target.currentHp = 0;
+              logs.push(`☠️ ${unit.name} のアビリティ発動！${target.name} を破壊！`);
+              events.push({ type: 'ability_kill', target: target.instanceId });
+            }
           });
         }
         break;
       }
-      case 'destroy_weakest': {
+      case 'destroy_weakest':
+      case 'destroy_lowest_hp': {
         const targets = getAbilityTargets('enemy_unit_all', currentPlayer, opponentPlayer);
         if (targets.length > 0) {
           targets.sort((a, b) => a.currentHp - b.currentHp);
-          const weakest = targets[0];
-          weakest.currentHp = 0;
-          logs.push(`☠️ ${unit.name} のアビリティ発動！最も弱き ${weakest.name} を破壊！`);
-          events.push({ type: 'ability_kill', target: weakest.instanceId });
+          const target = targets[0];
+          if (target.endureActive) {
+            target.endureActive = false;
+            target.currentHp = 1;
+            target.keywords = target.keywords.filter(k => k !== 'endure');
+            logs.push(`💪 ${target.name} の不屈が発動！破壊を免れHP1で耐えた！`);
+          } else {
+            target.currentHp = 0;
+            logs.push(`☠️ ${unit.name} の効果！最もHPが低い ${target.name} を破壊！`);
+            events.push({ type: 'ability_kill', target: target.instanceId });
+          }
+        }
+        break;
+      }
+      case 'destroy_highest_hp': {
+        const targets = getAbilityTargets('enemy_unit_all', currentPlayer, opponentPlayer);
+        if (targets.length > 0) {
+          targets.sort((a, b) => b.currentHp - a.currentHp);
+          const target = targets[0];
+          if (target.endureActive) {
+            target.endureActive = false;
+            target.currentHp = 1;
+            target.keywords = target.keywords.filter(k => k !== 'endure');
+            logs.push(`💪 ${target.name} の不屈が発動！破壊を免れHP1で耐えた！`);
+          } else {
+            target.currentHp = 0;
+            logs.push(`☠️ ${unit.name} の効果！最もHPが高い ${target.name} を破壊！`);
+            events.push({ type: 'ability_kill', target: target.instanceId });
+          }
+        }
+        break;
+      }
+      case 'destroy_highest_atk': {
+        const targets = getAbilityTargets('enemy_unit_all', currentPlayer, opponentPlayer);
+        if (targets.length > 0) {
+          targets.sort((a, b) => b.currentAttack - a.currentAttack);
+          const target = targets[0];
+          if (target.endureActive) {
+            target.endureActive = false;
+            target.currentHp = 1;
+            target.keywords = target.keywords.filter(k => k !== 'endure');
+            logs.push(`💪 ${target.name} の不屈が発動！破壊を免れHP1で耐えた！`);
+          } else {
+            target.currentHp = 0;
+            logs.push(`☠️ ${unit.name} の効果！最も攻撃力が高い ${target.name} を破壊！`);
+            events.push({ type: 'ability_kill', target: target.instanceId });
+          }
+        }
+        break;
+      }
+      case 'destroy_lowest_atk': {
+        const targets = getAbilityTargets('enemy_unit_all', currentPlayer, opponentPlayer);
+        if (targets.length > 0) {
+          targets.sort((a, b) => a.currentAttack - b.currentAttack);
+          const target = targets[0];
+          if (target.endureActive) {
+            target.endureActive = false;
+            target.currentHp = 1;
+            target.keywords = target.keywords.filter(k => k !== 'endure');
+            logs.push(`💪 ${target.name} の不屈が発動！破壊を免れHP1で耐えた！`);
+          } else {
+            target.currentHp = 0;
+            logs.push(`☠️ ${unit.name} の効果！最も攻撃力が低い ${target.name} を破壊！`);
+            events.push({ type: 'ability_kill', target: target.instanceId });
+          }
         }
         break;
       }
@@ -286,10 +362,10 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           manualTarget.canAttack = false;
           logs.push(`❄️ ${unit.name} のアビリティ発動！${manualTarget.name} を凍結！ (次ターン行動不可)`);
           events.push({ type: 'ability_freeze', target: manualTarget.instanceId });
-        } else if (trigger === 'on_play') {
+        } else if (trigger === 'on_play' && !abilityTargetId.includes('all')) {
           needsTarget = true;
         } else {
-          const targets = getAbilityTargets(targetId, currentPlayer, opponentPlayer, value);
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value);
           targets.forEach(target => {
             target.hasActed = true;
             target.canAttack = false;
@@ -303,10 +379,10 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
         if (manualTarget) {
           logs.push(`🔄 ${unit.name} のアビリティ発動！${manualTarget.name} を手札に戻す`);
           events.push({ type: 'ability_bounce', target: manualTarget.instanceId });
-        } else if (trigger === 'on_play') {
+        } else if (trigger === 'on_play' && !abilityTargetId.includes('all')) {
           needsTarget = true;
         } else {
-          const targets = getAbilityTargets(targetId, currentPlayer, opponentPlayer, value);
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value);
           targets.forEach(target => {
             logs.push(`🔄 ${unit.name} のアビリティ発動！${target.name} を手札に戻す`);
             events.push({ type: 'ability_bounce', target: target.instanceId });
@@ -319,10 +395,10 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           manualTarget.barrierActive = true;
           if (!manualTarget.keywords.includes('barrier')) manualTarget.keywords.push('barrier');
           logs.push(`🛡️ ${unit.name} のアビリティ発動！${manualTarget.name} にバリアを付与`);
-        } else if (trigger === 'on_play') {
+        } else if (trigger === 'on_play' && !abilityTargetId.includes('all') && abilityTargetId !== 'self') {
           needsTarget = true;
         } else {
-          const targets = getAbilityTargets(targetId, currentPlayer, opponentPlayer, value);
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value);
           targets.forEach(target => {
             target.barrierActive = true;
             if (!target.keywords.includes('barrier')) target.keywords.push('barrier');
@@ -361,6 +437,17 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
             targetShield.destroyed = true;
             events.push({ type: 'ability_shield_destroy', player: opponentPlayer.id, index: opponentPlayer.shields.indexOf(targetShield) });
           }
+        }
+        break;
+      }
+      case 'heal_shield': {
+        const shields = currentPlayer.shields;
+        let targetShield = shields.find(s => s.currentDurability < s.durability && !s.destroyed) || shields.find(s => s.destroyed) || shields[0];
+        if (targetShield) {
+          if (targetShield.destroyed) targetShield.destroyed = false;
+          targetShield.currentDurability += value;
+          logs.push(`🛡️ ${unit.name} のアビリティ発動！シールドを ${value} 回復！`);
+          events.push({ type: 'ability_shield_heal', player: currentPlayer.id, index: shields.indexOf(targetShield), value: value });
         }
         break;
       }
@@ -498,13 +585,20 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
       break;
     }
     case 'damage_all': {
-      for (const row of ROWS) {
-        for (let i = 0; i < NUM_LANES; i++) {
-          const target = opponentPlayer.board[row][i];
-          if (target) {
-            target.currentHp -= value;
-            logs.push(`🔥 スペル「${card.name}」: ${target.name} に ${value} ダメージ (HP: ${target.currentHp})`);
-            if (target.currentHp <= 0) events.push({ type: 'spell_kill', target: target.instanceId, row, lane: i });
+      // 全ユニット（味方含む）にダメージ
+      const allBoards = [
+        { board: currentPlayer.board, label: '味方' },
+        { board: opponentPlayer.board, label: '敵' }
+      ];
+      for (const { board } of allBoards) {
+        for (const row of ROWS) {
+          for (let i = 0; i < NUM_LANES; i++) {
+            const target = board[row][i];
+            if (target) {
+              target.currentHp -= value;
+              logs.push(`🔥 スペル「${card.name}」: ${target.name} に ${value} ダメージ (HP: ${target.currentHp})`);
+              if (target.currentHp <= 0) events.push({ type: 'spell_kill', target: target.instanceId, row, lane: i });
+            }
           }
         }
       }
@@ -542,26 +636,100 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
       const targetPlayer = targetId.includes('enemy') ? opponentPlayer : currentPlayer;
       if (targetRow && targetPlayer.board[targetRow] && targetLane !== null && targetPlayer.board[targetRow][targetLane]) {
         const target = targetPlayer.board[targetRow][targetLane];
-        logs.push(`☠️ スペル「${card.name}」: ${target.name} を破壊！`);
-        events.push({ type: 'spell_kill', target: target.instanceId, row: targetRow, lane: targetLane });
+        if (target.endureActive) {
+          target.endureActive = false;
+          target.currentHp = 1;
+          target.keywords = target.keywords.filter(k => k !== 'endure');
+          logs.push(`💪 スペル「${card.name}」による破壊を ${target.name} が不屈で耐えた！`);
+        } else {
+          logs.push(`☠️ スペル「${card.name}」: ${target.name} を破壊！`);
+          events.push({ type: 'spell_kill', target: target.instanceId, row: targetRow, lane: targetLane });
+        }
       }
       break;
     }
-    case 'destroy_weakest': {
-      let weakest = null;
-      let weakestRow = null;
-      let weakestLane = -1;
+    case 'destroy_weakest':
+    case 'destroy_lowest_hp': {
+      let target = null; let tRow = null; let tLane = -1;
       for (const row of ROWS) {
         for (let i = 0; i < NUM_LANES; i++) {
           const u = opponentPlayer.board[row][i];
-          if (u && (weakest === null || u.currentHp < weakest.currentHp)) {
-            weakest = u; weakestRow = row; weakestLane = i;
-          }
+          if (u && (target === null || u.currentHp < target.currentHp)) { target = u; tRow = row; tLane = i; }
         }
       }
-      if (weakest) {
-        logs.push(`☠️ スペル「${card.name}」: ${weakest.name}(HP:${weakest.currentHp}) を浄化！`);
-        events.push({ type: 'spell_kill', target: weakest.instanceId, row: weakestRow, lane: weakestLane });
+      if (target) {
+        if (target.endureActive) {
+          target.endureActive = false;
+          target.currentHp = 1;
+          target.keywords = target.keywords.filter(k => k !== 'endure');
+          logs.push(`💪 スペル「${card.name}」による破壊を ${target.name} が不屈で耐えた！`);
+        } else {
+          logs.push(`☠️ スペル「${card.name}」: 最もHPが低い ${target.name} を破壊！`);
+          events.push({ type: 'spell_kill', target: target.instanceId, row: tRow, lane: tLane });
+        }
+      }
+      break;
+    }
+    case 'destroy_highest_hp': {
+      let target = null; let tRow = null; let tLane = -1;
+      for (const row of ROWS) {
+        for (let i = 0; i < NUM_LANES; i++) {
+          const u = opponentPlayer.board[row][i];
+          if (u && (target === null || u.currentHp > target.currentHp)) { target = u; tRow = row; tLane = i; }
+        }
+      }
+      if (target) {
+        if (target.endureActive) {
+          target.endureActive = false;
+          target.currentHp = 1;
+          target.keywords = target.keywords.filter(k => k !== 'endure');
+          logs.push(`💪 スペル「${card.name}」による破壊を ${target.name} が不屈で耐えた！`);
+        } else {
+          logs.push(`☠️ スペル「${card.name}」: 最もHPが高い ${target.name} を破壊！`);
+          events.push({ type: 'spell_kill', target: target.instanceId, row: tRow, lane: tLane });
+        }
+      }
+      break;
+    }
+    case 'destroy_highest_atk': {
+      let target = null; let tRow = null; let tLane = -1;
+      for (const row of ROWS) {
+        for (let i = 0; i < NUM_LANES; i++) {
+          const u = opponentPlayer.board[row][i];
+          if (u && (target === null || u.currentAttack > target.currentAttack)) { target = u; tRow = row; tLane = i; }
+        }
+      }
+      if (target) {
+        if (target.endureActive) {
+          target.endureActive = false;
+          target.currentHp = 1;
+          target.keywords = target.keywords.filter(k => k !== 'endure');
+          logs.push(`💪 スペル「${card.name}」による破壊を ${target.name} が不屈で耐えた！`);
+        } else {
+          logs.push(`☠️ スペル「${card.name}」: 最も攻撃力が高い ${target.name} を破壊！`);
+          events.push({ type: 'spell_kill', target: target.instanceId, row: tRow, lane: tLane });
+        }
+      }
+      break;
+    }
+    case 'destroy_lowest_atk': {
+      let target = null; let tRow = null; let tLane = -1;
+      for (const row of ROWS) {
+        for (let i = 0; i < NUM_LANES; i++) {
+          const u = opponentPlayer.board[row][i];
+          if (u && (target === null || u.currentAttack < target.currentAttack)) { target = u; tRow = row; tLane = i; }
+        }
+      }
+      if (target) {
+        if (target.endureActive) {
+          target.endureActive = false;
+          target.currentHp = 1;
+          target.keywords = target.keywords.filter(k => k !== 'endure');
+          logs.push(`💪 スペル「${card.name}」による破壊を ${target.name} が不屈で耐えた！`);
+        } else {
+          logs.push(`☠️ スペル「${card.name}」: 最も攻撃力が低い ${target.name} を破壊！`);
+          events.push({ type: 'spell_kill', target: target.instanceId, row: tRow, lane: tLane });
+        }
       }
       break;
     }
@@ -701,6 +869,17 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
           targetShield.destroyed = true;
           events.push({ type: 'spell_shield_destroy', player: opponentPlayer.id, index: opponentPlayer.shields.indexOf(targetShield) });
         }
+      }
+      break;
+    }
+    case 'heal_shield': {
+      const shields = currentPlayer.shields;
+      let targetShield = shields.find(s => s.currentDurability < s.durability && !s.destroyed) || shields.find(s => s.destroyed) || shields[0];
+      if (targetShield) {
+        if (targetShield.destroyed) targetShield.destroyed = false;
+        targetShield.currentDurability += value;
+        logs.push(`🛡️ スペル「${card.name}」: シールドを ${value} 回復！`);
+        events.push({ type: 'spell_shield_heal', player: currentPlayer.id, index: shields.indexOf(targetShield), value: value });
       }
       break;
     }

@@ -81,7 +81,7 @@
         <div class="action-panel glass-panel">
           <div class="panel-subtitle">DIVINE CRYSTAL (COST: 1 SP)</div>
           <div class="crystal-buttons" id="tribe-raise-panel">
-            <!-- 繝昴ャ繝励い繝··蝣ｴ謇€ -->
+            <!-- ポップアップ・確認場所 -->
             <div id="crystal-confirm-popup" class="crystal-confirm-popup" style="display: none;">
               <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px;">
                 <div id="confirm-tribe-icon" style="width: 32px; height: 32px; background-size: contain; background-repeat: no-repeat;"></div>
@@ -144,6 +144,22 @@
           <div style="display: flex; gap: 20px; justify-content: center;">
             <button class="btn btn-primary" id="btn-shield-confirm" style="padding: 12px 30px; font-size: 18px;">攻撃実行</button>
             <button class="btn" id="btn-shield-cancel" style="padding: 12px 30px; font-size: 18px;">やめる</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- シールドブレイク演出オーバーレイ -->
+      <div class="overlay" id="shield-break-overlay" style="display: none; z-index: 20000; background: rgba(0,0,0,0.85);">
+        <div class="shield-break-modal" id="shield-break-modal">
+          <div class="sb-burst-effect"></div>
+          <h1 class="sb-title">SHIELD BREAK!</h1>
+          <div class="sb-content">
+            <div class="sb-card" id="sb-card-image"></div>
+            <div class="sb-info">
+              <h2 id="sb-card-name">Card Name</h2>
+              <div class="sb-skill-name">【トリガー】 <span id="sb-skill-name-text">Skill Name</span></div>
+              <div class="sb-skill-desc" id="sb-skill-desc">Skill Description</div>
+            </div>
           </div>
         </div>
       </div>

@@ -793,6 +793,32 @@ window.updateUI = function() {
       window.resultBgmPlayed = false;
     }
 
+    // --- シールドブレイク演出オーバーレイ ---
+    const sbOverlay = document.getElementById('shield-break-overlay');
+    if (sbOverlay) {
+      if (state.phase === 'shield_break_anim' && state.pendingShieldBreak) {
+        if (sbOverlay.style.display !== 'flex') {
+          const shield = state.pendingShieldBreak.shield;
+          document.getElementById('sb-card-name').textContent = shield.name;
+          document.getElementById('sb-skill-name-text').textContent = shield.skill ? shield.skill.name : '効果なし';
+          document.getElementById('sb-skill-desc').textContent = shield.skill ? shield.skill.desc : '';
+          
+          const sbCard = document.getElementById('sb-card-image');
+          if (sbCard) {
+            sbCard.style.backgroundImage = `url('/img/cards/${shield.id}.webp')`; // デフォルトフォールバック付き画像パス
+          }
+          sbOverlay.style.display = 'flex';
+          
+          if (window.audioManager) {
+            // SEを再生 (shield_breakが無ければ汎用ダメージ音等にフォールバック)
+            window.audioManager.playSE('shield_break');
+          }
+        }
+      } else {
+        sbOverlay.style.display = 'none';
+      }
+    }
+
     // --- ターゲット選択中オーバーレイ ---
     const instructionDiv = document.getElementById('targeting-instruction');
     if (instructionDiv) {

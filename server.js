@@ -361,12 +361,29 @@ io.on('connection', (socket) => {
       } else {
         sendGameStateToAll(room);
 
-        // AIのターンチェック
-        if (room.engine.gameState.phase === 'main') {
-          const currentId = room.engine.gameState.playerOrder[room.engine.gameState.currentPlayerIndex];
-          const currentPlayerObj = room.players.find(p => p.id === currentId);
-          if (currentPlayerObj && currentPlayerObj.isAI) {
-            setTimeout(() => executeAITurn(room, currentPlayerObj), 800);
+        if (room.engine.gameState.phase === 'shield_break_anim') {
+          setTimeout(() => {
+            if (room.engine && room.engine.gameState.phase === 'shield_break_anim') {
+              room.engine.resolvePendingShieldBreak();
+              sendGameStateToAll(room);
+              
+              if (room.engine.gameState.phase === 'main') {
+                const currentId = room.engine.gameState.playerOrder[room.engine.gameState.currentPlayerIndex];
+                const currentPlayerObj = room.players.find(p => p.id === currentId);
+                if (currentPlayerObj && currentPlayerObj.isAI) {
+                  setTimeout(() => executeAITurn(room, currentPlayerObj), 800);
+                }
+              }
+            }
+          }, 3000);
+        } else {
+          // AIのターンチェック
+          if (room.engine.gameState.phase === 'main') {
+            const currentId = room.engine.gameState.playerOrder[room.engine.gameState.currentPlayerIndex];
+            const currentPlayerObj = room.players.find(p => p.id === currentId);
+            if (currentPlayerObj && currentPlayerObj.isAI) {
+              setTimeout(() => executeAITurn(room, currentPlayerObj), 800);
+            }
           }
         }
       }
