@@ -36,6 +36,9 @@ function createPlayerState(playerId, playerName, isAI = false, avatar = '🤖') 
     graveyard: [],
     totalShieldDurability: 0,
     shieldsDestroyed: 0,
+    cardsPlayedThisTurn: 0,
+    friendlyDeathsThisTurn: 0,
+    spModifiers: 0,
   };
 }
 

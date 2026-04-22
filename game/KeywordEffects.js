@@ -6,12 +6,28 @@ const { NUM_LANES, ROWS } = require('./GameState');
 const KEYWORDS = {
   taunt: { id: 'taunt', name: '挑発', description: '挑発を持つユニットが前列にいる場合、相手は挑発ユニット以外を攻撃対象にできない', type: 'passive' },
   rush: { id: 'rush', name: '速攻', description: '場に出たターンから攻撃できる', type: 'passive' },
-  stealth: { id: 'stealth', name: '潜伏', description: '攻撃するまで相手の攻撃対象にならない', type: 'passive' },
+  stealth: { id: 'stealth', name: '潜伏', description: '攻撃するまで相手の攻撃対象、及び手動スペル・効果の対象にならない', type: 'passive' },
   double_strike: { id: 'double_strike', name: '連撃', description: '攻撃時に2回連続でダメージを与える', type: 'on_attack' },
   barrier: { id: 'barrier', name: '加護', description: '1度だけ受けるダメージを無効化する', type: 'on_damage' },
   endure: { id: 'endure', name: '不屈', description: '撃破時に1度だけHP1で復活する', type: 'on_death' },
   siege: { id: 'siege', name: '攻城', description: 'シールドに与えるダメージが2になる', type: 'passive' },
   comeback: { id: 'comeback', name: '逆転', description: 'シールド残り1枚以下の時に追加効果', type: 'conditional' },
+  lethal: { id: 'lethal', name: '必殺', description: '与えたダメージが1以上なら対象を即死させる', type: 'passive' },
+  crisis: { id: 'crisis', name: '背水', description: '自分のアバターライフが3以下の時に追加効果', type: 'conditional' },
+  snipe: { id: 'snipe', name: '狙撃', description: '前後列のルールを無視して任意の敵ユニットを攻撃できる', type: 'passive' },
+  resonance: { id: 'resonance', name: '共鳴', description: '自分がスペルカードをプレイするたびに追加効果', type: 'on_spell_play' },
+  silence: { id: 'silence', name: '沈黙', description: '対象ユニットの全キーワードとアビリティを無効化する', type: 'targeted' },
+  link: { id: 'link', name: '連携', description: 'このターン中に自分が他のカードをプレイしている場合、追加効果', type: 'conditional' },
+  vanguard: { id: 'vanguard', name: '先陣', description: '自分の前列がこのユニット1体のみの場合、追加効果', type: 'conditional' },
+  rearguard: { id: 'rearguard', name: '後衛', description: '自分の後列がこのユニット1体のみの場合、追加効果', type: 'conditional' },
+  spellshield: { id: 'spellshield', name: '魔盾', description: '相手の手動スペルや効果の対象にならない', type: 'passive' },
+  sacrifice: { id: 'sacrifice', name: '代償', description: '自身の他の味方ユニット1体を破壊しなければプレイできない', type: 'cost' },
+  echo: { id: 'echo', name: '残響', description: '場に出た時、SPが足りていれば自動でコストを支払い同名ユニットを出す', type: 'on_play' },
+  overload: { id: 'overload', name: '暴走', description: '強力なスタッツを持つが、次のターンの獲得SPが1減少する', type: 'on_turn_end' },
+  loner: { id: 'loner', name: '孤高', description: '自分の場に他の味方ユニットが存在しない場合、追加効果', type: 'conditional' },
+  avenger: { id: 'avenger', name: '復讐', description: 'このターン中に他の味方ユニットが破壊されている場合、追加効果', type: 'conditional' },
+  decay: { id: 'decay', name: '腐敗', description: '毎ターンの終了時、自身のHPが1減る', type: 'on_turn_end' },
+  legacy: { id: 'legacy', name: '遺言', description: '破壊された時に発動する', type: 'on_death' },
 };
 
 function parseKeywords(keywordStr) {
@@ -20,10 +36,6 @@ function parseKeywords(keywordStr) {
 }
 
 function getKeywordId(keyword) {
-  const match = keyword.match(/^(\w+?)_(\d+)$/);
-  if (match && match[1] === 'search') {
-    return { id: 'search', param: parseInt(match[2]) };
-  }
   const parts = keyword.split(':');
   if (parts[0] === 'awaken') {
     return { id: 'awaken', color: parts[1] || 'self', param: parseInt(parts[2]) || 7 };
@@ -73,6 +85,28 @@ function getTauntTargets(opponentBoard) {
  */
 function getValidAttackTargets(attackerRow, attackerLane, attackerUnit, opponentBoard, opponentShields) {
   const targets = [];
+
+  // SNIPE (狙撃) チェック: 狙撃を持つ場合、挑発や前後列のルールを無視して相手の全ユニット（潜伏以外）を対象にできる
+  if (hasKeyword(attackerUnit, 'snipe')) {
+    let hasValidUnitToSnipe = false;
+    for (const r of ['front', 'back']) {
+      for (const l of [0, 1, 2]) {
+        const u = opponentBoard[r][l];
+        if (u && !hasKeyword(u, 'stealth')) {
+          targets.push({ type: 'unit', row: r, lane: l, unit: u });
+          hasValidUnitToSnipe = true;
+        }
+      }
+    }
+    // ユニットが存在しない場合はシールドかダイレクトアタックへ回すため下の処理に合流させるが、
+    // ユニットがいるなら「どこでも攻撃できる」としてreturnする。
+    if (hasValidUnitToSnipe) {
+      // 狙撃であっても、相手の盤面にユニットがいなければシールド/ダイレクトになるだけなので、そこだけ共通処理とする。
+      // もし相手がシールドを張っていたらシールドも狙えるようにするか？ 基本的にはユニットのみ狙い撃つか、ユニットがいないならシールド。
+      // とりあえずユニット全てを返す（シールドを無視して裏を叩けるわけではなく、あくまで「ユニットならどこでも攻撃可能」とする）
+      return targets;
+    }
+  }
 
   // 1. 挑発チェック (挑発はグローバルに優先)
   const tauntTargets = getTauntTargets(opponentBoard);

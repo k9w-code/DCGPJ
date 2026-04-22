@@ -1,10 +1,66 @@
-id,name,description,type
-taunt,挑発,挑発を持つユニットが前列にいる場合、相手は挑発ユニット以外を攻撃対象にできない。,passive
-rush,速攻,場に出たターンから攻撃できる。,passive
-stealth,潜伏,攻撃するまで相手の攻撃対象にならない。,passive
-double_strike,連撃,攻撃時に2回連続でダメージを与える。,on_attack
-barrier,加護,1度だけ受けるダメージや破壊効果を無効化する。,on_damage
-endure,不屈,撃破時（HP0以下または破壊効果を受けた時）、1度だけHP1で生き残る。,on_death
-siege,攻城,シールドに与えるダメージが1ではなく2になる。,passive
-comeback,逆転,シールド残り1枚以下の時に発動可能な条件効果。,conditional
-awaken,覚醒,【登場時】効果を持つユニットがこれを持つ時、登場時に自分の神族レベルが7未満の場合、効果が発動せず不発になる。,on_play
+id,name,description,,1. キーワード (Keywords),,
+taunt,挑発,挑発を持つユニットが前列にいる場合、相手は挑発ユニット以外を攻撃対象にできない,,keywords 列にセミコロン（;）区切りで記入します。,,
+rush,速攻,場に出たターンから攻撃できる,,,,
+stealth,潜伏,攻撃するまで相手の攻撃対象、及びスペル・能力の効果対象にならない,,基本・戦闘系,,
+double_strike,連撃,攻撃時に2回連続でダメージを与える,,キーワード,説明,備考
+barrier,加護,1度だけ受けるダメージを無効化する,,taunt (挑発),前列にいる場合、相手はこのユニット以外攻撃不可。,
+endure,不屈,撃破時に1度だけHP1で復活する,,rush,場に出たターンから攻撃可能。,
+siege,攻城,シールドに与えるダメージが2になる,,stealth (潜伏),攻撃するまでターゲット（攻撃/スペル）に選ばれない。,
+comeback,逆転,自軍のシールド残り1枚以下の時に追加効果を得る,,double_strike,2回連続で攻撃を行う。,
+lethal,必殺,与えたダメージが1以上なら対象を破壊する,,barrier (加護),1度だけダメージを 0 にする。,
+crisis,背水,自分のライフが3以下の時に追加効果を得る,,endure (不屈),撃破時に1度だけ HP 1 で耐える。,
+snipe,狙撃,前後列のルールや挑発を無視して任意の敵ユニットを攻撃できる,,lethal (必殺),ダメージを与えた相手を即座に撃破。,
+resonance,共鳴,自分がスペルカードをプレイするたびに追加効果を得る,,snipe (狙撃),前後列ルールを無視して、潜伏以外のどこでも攻撃可能。,
+silence,沈黙,対象ユニットの全キーワードとアビリティを無効化する,,siege (攻城),シールドに与えるダメージが 2 倍になる。,
+link,連携,このターン中に自分が他のカードをプレイしている場合、追加効果を得る,,spellshield,相手のスペルや能力の対象に選ばれない。,
+vanguard,先陣,自分の前列がこのユニット1体のみの場合、追加効果を得る,,特殊条件・追加効果系,,
+rearguard,後衛,自分の後列がこのユニット1体のみの場合、追加効果を得る,,キーワード,説明,備考
+spellshield,魔盾,相手のスペル・能力の効果対象にならない,,comeback,自分のシールドが残り1枚以下の時に有効。,
+sacrifice,代償,自身の他の味方ユニット1体を破壊しなければプレイできない,,crisis (背水),自分のアバターライフが3以下の時に有効。,
+echo,残響,場に出た時、SPが足りていれば自動でコストを支払い同名ユニットを召喚する,,resonance,自分がスペルをプレイするたびに発動。,
+overload,暴走,次のターンの獲得SPが1減少する（暴走の効果は重複する）,,link (連携),このターンに他のカードを既にプレイしていると有効。,
+loner,孤高,自分の場に他の味方ユニットが存在しない場合、追加効果を得る,,vanguard (先陣),前列に自分のユニットがこの1体のみの時に有効。,
+avenger,復讐,このターン中に他の味方ユニットが破壊されている場合、追加効果を得る,,rearguard (後衛),後列に自分のユニットがこの1体のみの時に有効。,
+decay,腐敗,毎ターンの終了時、1ダメージを受ける,,loner (孤高),場に自分のユニットが他にいない時に有効。,
+legacy,遺言,破壊された時に発動する能力,,avenger (復讐),このターンに味方が撃破されている時に有効。,
+awaken,覚醒,指定された神族レベルが7以上になった時に追加効果を得る,,動的パラメータ系 (末尾に値を指定),,
+,,,,キーワード,説明,例
+,,,,search_N,登場時、山札から N 枚探して手札に加える。,search_1
+,,,,awaken:色:Lv,指定の色がLvに達した瞬間、アビリティが発動。,awaken:red:7
+,,,,sacrifice,他の味方1体を破壊してプレイ。,
+,,,,echo (残響),場に出た時、SPを払って同名トークンを出す。,
+,,,,,,
+,,,,1. 推奨される記述ルール,,
+,,,,「Effect（効果）」は動作のみを書き、「Target（対象）」に詳細な条件を書くスタイルを強く推奨します。,,
+,,,,,,
+,,,,推奨例: effect: destroy / target: enemy_unit_weakest,,
+,,,,非推奨例: effect: destroy_weakest / target: enemy (下位互換として動作はしますが、柔軟性に欠けます),,
+,,,,2. ターゲット識別子一覧 (Target),,
+,,,,ターゲット列に記述できるキーワードです。,,
+,,,,,,
+,,,,分類,指定キーワード,対象の内容
+,,,,基本,self,自身（プレイヤー）。ドローやSP操作用。
+,,,,enemy,相手（プレイヤー）。ドローやSP操作用。,
+,,,,self_unit_all,自分の全ユニット。,
+,,,,enemy_unit_all,相手の全ユニット。,
+,,,,self_unit_1,自分のランダムな1体（または手動選択）。,
+,,,,enemy_unit_1,相手のランダムな1体（または手動選択）。,
+,,,,HP基準,enemy_unit_weakest,相手のHPが最も低いユニット1体。
+,,,,enemy_unit_toughest,相手のHPが最も高いユニット1体。,
+,,,,self_unit_weakest,自分のHPが最も低いユニット1体。,
+,,,,ATK基準,enemy_unit_strongest,相手の攻撃力が最も高いユニット1体。
+,,,,enemy_unit_frailest,相手の攻撃力が最も低いユニット1体。,
+,,,,self_unit_strongest,自分の攻撃力が最も高いユニット1体。,
+,,,,コスト基準,enemy_unit_highest_cost,相手のコストが最も高いユニット1体。
+,,,,enemy_unit_lowest_cost,相手のコストが最も低いユニット1体。,
+,,,,3. 効果一覧 (Effect),,
+,,,,ターゲット識別子と自由に組み合わせて使用できます。,,
+,,,,,,
+,,,,効果名,内容,記述例 (敵の最弱を〜)
+,,,,damage,ダメージを与える（value分）。,"effect: damage, target: enemy_unit_weakest"
+,,,,destroy,破壊（HPを0にする）する。,"effect: destroy, target: enemy_unit_weakest"
+,,,,bounce,手札に戻す。,"effect: bounce, target: enemy_unit_highest_cost"
+,,,,buff_attack,攻撃力を上げる。,"effect: buff_attack, target: self_unit_strongest"
+,,,,buff_hp,最大HP/現在HPを上げる。,"effect: buff_hp, target: self_unit_weakest"
+,,,,freeze,凍結（1回休み）させる。,"effect: freeze, target: enemy_unit_strongest"
+,,,,silence,沈黙（アビリティ封印）させる。,"effect: silence, target: enemy_unit_all"

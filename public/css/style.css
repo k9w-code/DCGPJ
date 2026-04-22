@@ -2699,3 +2699,62 @@ body.targeting-mode {
   0%, 100% { transform: translateY(0) rotate(-5deg); }
   50% { transform: translateY(-10px) rotate(-3deg); }
 }
+
+/* --- カード詳細：召喚トークンセクション --- */
+.cd-token-section {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.cd-token-label {
+  font-size: 12px;
+  color: #a09880;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+.cd-token-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cd-token-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.cd-token-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--gold);
+  transform: translateX(5px);
+}
+.cd-token-icon {
+  width: 40px;
+  height: 40px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 4px;
+  margin-right: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.cd-token-name {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+.cd-token-stats {
+  display: flex;
+  gap: 10px;
+  font-family: var(--font-fantasy);
+  font-weight: 900;
+  font-size: 14px;
+}
+.cd-token-stats .atk { color: #f87171; }
+.cd-token-stats .hp { color: #4ade80; }
+

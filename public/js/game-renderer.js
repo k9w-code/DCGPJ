@@ -65,8 +65,8 @@ window.getCardImagePath = function(card) {
   else if (upperId.startsWith('T')) folder = 'token'; // トークン用
   
   return isShield
-    ? `/assets/images/shields/${cleanId.replace('SH', 'S')}.webp`
-    : `/assets/images/cards/${folder}/${cleanId}.webp`;
+    ? `/assets/images/shields/${cleanId.replace('SH', 'S')}.webp?v=2`
+    : `/assets/images/cards/${folder}/${cleanId}.webp?v=2`;
 };
 
 // 盤面描画
@@ -148,7 +148,7 @@ function renderPlayerBoard(state, selectedCard, selectedAttacker, onSlotClick) {
   const isMyTurn = state.currentPlayerId === state.me.id;
   
   // ターゲット選択フェーズかどうかを先に判定
-  const isTargeting = state.phase === 'targeting' && state.pendingAbilitySource && isMyTurn;
+  const isTargeting = state.phase === 'targeting' && state.pendingAbilitySource && (state.pendingAbilitySource.ownerId === state.me.id);
   if (isTargeting) {
     console.log('🎯 [RENDERER] Targeting phase detected! source:', JSON.stringify(state.pendingAbilitySource));
   }
@@ -385,19 +385,23 @@ window.showCardDetail = function(card) {
   const textEl = document.getElementById('cd-text');
   if (textEl) {
     let mainText = '';
-    if (card.abilities && card.abilities.length > 0) {
+    if (card.text) {
       mainText = `
         <div class="cd-abilities-list">
-          ${card.abilities.map(a => {
-            // 日本語テキストがあればそれを使い、なければ a.effect や card.text を検討
-            const displayAbilityText = (a.text && a.text !== a.effect) ? a.text : (card.text || a.effect || '');
-            return `
-              <div class="ability-item">
-                ${a.trigger && a.trigger !== 'none' ? `<span class="ability-trigger">${a.trigger.replace('on_', '').toUpperCase()}</span>` : ''}
-                ${displayAbilityText}
-              </div>
-            `;
-          }).join('')}
+          <div class="ability-item" style="border:none;">
+            ${(card.text || '').replace(/\\n/g, '<br>')}
+          </div>
+        </div>
+      `;
+    } else if (card.abilities && card.abilities.length > 0) {
+      mainText = `
+        <div class="cd-abilities-list">
+          ${card.abilities.map(a => `
+            <div class="ability-item">
+              ${a.trigger && a.trigger !== 'none' ? `<span class="ability-trigger">${a.trigger.replace('on_', '').toUpperCase()}</span>` : ''}
+              ${(a.text || a.effect || '').replace(/\\n/g, '<br>')}
+            </div>
+          `).join('')}
         </div>
       `;
     } else {
@@ -405,7 +409,7 @@ window.showCardDetail = function(card) {
       if (card.skill) {
         mainText = card.skill.text || '';
       } else {
-        mainText = card.text || card.abilityEffect || '';
+        mainText = (card.text || card.abilityEffect || '').replace(/\\n/g, '<br>');
       }
     }
 
@@ -414,7 +418,7 @@ window.showCardDetail = function(card) {
     if (card.barrierActive && !currentKws.includes('barrier')) currentKws.push('barrier');
     
     if (currentKws.length > 0) {
-      const validKws = currentKws.map(k => k.split(':')[0]).filter(k => (window.keywordMap && window.keywordMap[k]));
+      const validKws = currentKws.map(k => k.split(/[:_]/)[0]).filter(k => (window.keywordMap && window.keywordMap[k]));
       if (validKws.length > 0) {
         kwHTML = '<div style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.2);">';
         validKws.forEach(kw => {
@@ -454,6 +458,44 @@ window.showCardDetail = function(card) {
       mainText = mainText.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
     }
     textEl.innerHTML = mainText + kwHTML + modHTML;
+
+    // --- 召喚トークンセクションの追加 ---
+    const tokenAbilities = (card.abilities || []).filter(a => a.effect === 'summon_token');
+    if (tokenAbilities.length > 0) {
+      const tokenIds = [...new Set(tokenAbilities.map(a => a.tokenId || a.value))];
+      const tokenCards = tokenIds.map(id => (window.allCards || []).find(c => c.id === id)).filter(Boolean);
+
+      if (tokenCards.length > 0) {
+        const tokenSection = document.createElement('div');
+        tokenSection.className = 'cd-token-section';
+        tokenSection.innerHTML = `
+          <div class="cd-token-label">📦 召喚トークン (SUMMON TOKEN)</div>
+          <div class="cd-token-list">
+            ${tokenCards.map(tc => `
+              <div class="cd-token-item" data-token-id="${tc.id}">
+                <div class="cd-token-icon" style="background-image: url('${window.getCardImagePath(tc)}')"></div>
+                <div class="cd-token-name">${tc.name}</div>
+                <div class="cd-token-stats">
+                  <span class="atk">⚔️${tc.attack}</span>
+                  <span class="hp">❤️${tc.hp}</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        textEl.appendChild(tokenSection);
+
+        // クリックイベントの付与
+        tokenSection.querySelectorAll('.cd-token-item').forEach(item => {
+          item.onclick = (e) => {
+            e.stopPropagation();
+            const tid = item.dataset.tokenId;
+            const tc = (window.allCards || []).find(c => c.id === tid);
+            if (tc) window.showCardDetail(tc);
+          };
+        });
+      }
+    }
   }
 
   const closeBtn = document.getElementById('btn-close-detail');
@@ -822,7 +864,7 @@ window.updateUI = function() {
     // --- ターゲット選択中オーバーレイ ---
     const instructionDiv = document.getElementById('targeting-instruction');
     if (instructionDiv) {
-        if (state.phase === 'targeting' && state.currentPlayerId === state.me.id) {
+        if (state.phase === 'targeting' && state.pendingAbilitySource && state.pendingAbilitySource.ownerId === state.me.id) {
             const source = state.pendingAbilitySource;
             const name = source ? source.unitName : 'ユニット';
             const isSummon = source && (source.effect === 'summon_token' || (source.targetId && source.targetId.includes('empty')));

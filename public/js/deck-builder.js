@@ -52,6 +52,10 @@ async function loadData() {
   allShields = await shieldsRes.json();
   window.keywordMap = await keywordsRes.json();
   
+  // グローバル変数を更新
+  window.allCards = allCards;
+  window.allShields = allShields;
+  
   console.log('Data loaded:', { cards: allCards.length, shields: allShields.length });
   updateKeywordDropdown();
   loadDeckFromSlot(currentSaveSlot);
@@ -297,9 +301,8 @@ function getColorCSS(color) {
 // カード画像パスの取得は game-renderer.js の window.getCardImagePath を直接参照します
 
 function getShieldImagePath(shield) {
-  // artIdがあれば優先、なければidを使用
   const fileName = shield.artId || shield.id || 'unknown';
-  return `/assets/images/shields/${fileName}.webp`;
+  return `/assets/images/shields/${fileName}.webp?v=2`;
 }
 
 // 画像のフォールバック処理用（HTML生成時に onerror を付与）
@@ -497,23 +500,56 @@ function showPreview(type, data) {
       ? `<div class="preview-keywords">${data.keywords.map(kw => `<span class="kw-badge">${kw}</span>`).join('')}</div>` 
       : '';
 
-    // アビリティリストの表示 (複数能力対応)
+    // アビリティリストの表示 (複数能力対応。card.textが存在する場合は単一表示)
     let abilitiesHtml = '';
-    if (data.abilities && data.abilities.length > 0) {
+    if (data.text) {
+      abilitiesHtml = `
+        <div class="cd-abilities-list">
+          <div class="ability-item" style="border:none;">
+            ${data.text}
+          </div>
+        </div>
+      `;
+    } else if (data.abilities && data.abilities.length > 0) {
       abilitiesHtml = `
         <div class="cd-abilities-list">
           ${data.abilities.map(a => `
             <div class="ability-item">
               ${a.trigger && a.trigger !== 'none' ? `<span class="ability-trigger">${a.trigger.replace('on_', '').toUpperCase()}</span>` : ''}
-              ${a.text || a.effect || ''}
+              ${(a.text || a.effect || '').replace(/\\n/g, '<br>')}
             </div>
           `).join('')}
         </div>
       `;
-    } else if (data.text || data.abilityEffect) {
-      abilitiesHtml = `<div class="cd-abilities-list"><div class="ability-item">${data.text || data.abilityEffect}</div></div>`;
+    } else if (data.abilityEffect) {
+      abilitiesHtml = `<div class="cd-abilities-list"><div class="ability-item">${data.abilityEffect}</div></div>`;
     } else {
       abilitiesHtml = '<div class="ability-item" style="border:none;">アビリティを持たない。</div>';
+    }
+
+    // 召喚トークンセクションの追加 (プレビューパネル用)
+    let tokenHtml = '';
+    const tokenAbilities = (data.abilities || []).filter(a => a.effect === 'summon_token');
+    if (tokenAbilities.length > 0) {
+      const tokenIds = [...new Set(tokenAbilities.map(a => a.tokenId || a.value))];
+      const tokenCards = tokenIds.map(id => (window.allCards || []).find(c => c.id === id)).filter(Boolean);
+
+      if (tokenCards.length > 0) {
+        tokenHtml = `
+          <div class="preview-token-section" style="margin-top: 15px; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 10px;">
+            <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 8px;">📦 召喚トークン</div>
+            <div class="token-list">
+              ${tokenCards.map(tc => `
+                <div class="token-item" style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 4px; cursor: pointer; transition: background 0.2s;" onclick="const tc = (window.allCards || []).find(c => c.id === '${tc.id}'); if (tc) window.showCardDetail(tc);">
+                  <div style="width: 30px; height: 30px; background-image: url('${getCardImagePath(tc)}'); background-size: cover; border-radius: 2px;"></div>
+                  <div style="flex:1; font-size: 11px; font-weight: bold;">${tc.name}</div>
+                  <div style="font-size: 10px;">⚔️${tc.attack} ❤️${tc.hp}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
     }
 
     const flavorHtml = data.flavorText ? `<div class="preview-flavor">${data.flavorText}</div>` : '';
@@ -535,6 +571,7 @@ function showPreview(type, data) {
         ${keywordHtml}
         <div class="preview-desc">${abilitiesHtml}</div>
         ${flavorHtml}
+        ${tokenHtml}
       </div>
       
       <div class="preview-controls">

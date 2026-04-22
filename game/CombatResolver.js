@@ -22,6 +22,10 @@ function resolveUnitCombat(attacker, defender, logs) {
 
   // --- 第1撃処理 ---
   const actualAtkDamage = applyDamage(defender, atkDamage, logs);
+  if (actualAtkDamage > 0 && hasKeyword(attacker, 'lethal') && defender.currentHp > 0) {
+    defender.currentHp = 0;
+    logs.push(`☠️ ${attacker.name} の「必殺」が発動！ ${defender.name} は即死した！`);
+  }
   results.events.push({
     type: 'damage',
     source: attacker.instanceId,
@@ -45,6 +49,10 @@ function resolveUnitCombat(attacker, defender, logs) {
 
   // --- 反撃処理（通常攻撃なら相打ち、連撃で仕留めきれなかった場合も反撃を受ける） ---
   const actualCounterDamage = applyDamage(attacker, defDamage, logs);
+  if (actualCounterDamage > 0 && hasKeyword(defender, 'lethal') && attacker.currentHp > 0) {
+    attacker.currentHp = 0;
+    logs.push(`☠️ ${defender.name} の反撃「必殺」が発動！ ${attacker.name} は即死した！`);
+  }
   results.events.push({
     type: 'counter',
     source: defender.instanceId,
@@ -66,6 +74,10 @@ function resolveUnitCombat(attacker, defender, logs) {
   // --- 連撃の第2撃（1打目で倒せなかった場合のみ） ---
   if (isDoubleStrike && !isDefenderDeadFirstHit) {
     const actualSecondDamage = applyDamage(defender, atkDamage, logs);
+    if (actualSecondDamage > 0 && hasKeyword(attacker, 'lethal') && defender.currentHp > 0) {
+      defender.currentHp = 0;
+      logs.push(`☠️ ${attacker.name} の「必殺」(連撃2撃目)が発動！ ${defender.name} は即死した！`);
+    }
     results.events.push({
       type: 'damage',
       source: attacker.instanceId,
@@ -73,7 +85,7 @@ function resolveUnitCombat(attacker, defender, logs) {
       damage: actualSecondDamage,
       strike: 2,
     });
-    logs.push(`⚔️ ${attacker.name} 連撃2撃目 → ${defender.name} に ${actualSecondDamage} ダメージ`);
+    logs.push(`⚔️ ${attacker.name} 連撃2撃目 → ${defender.name} に ${actualSecondDamage} ダメージ (HP: ${defender.currentHp})`);
   }
 
   // 最終的な死亡判定をまとめて実行
@@ -115,18 +127,17 @@ function applyDamage(unit, damage, logs) {
  * @returns {boolean} 本当に死亡したか
  */
 function processUnitDeath(unit, logs) {
-  if (unit.currentHp > 0) return false;
-
-  // 不屈チェック
-  if (unit.endureActive) {
+  if (unit.endureActive && unit.currentHp <= 0) {
     unit.endureActive = false;
     unit.currentHp = 1;
-    unit.keywords = unit.keywords.filter(k => k !== 'endure');
-    logs.push(`💪 ${unit.name} の不屈が発動！HP1で復活！`);
-    return false;
+    // keywords 配列からも 'endure' を取り除く
+    if (unit.keywords) {
+      unit.keywords = unit.keywords.filter(k => k !== 'endure');
+    }
+    logs.push(`💪 ${unit.name} の「不屈」が発動！破壊を免れHP 1で耐えた！`);
+    return false; // 死亡していない
   }
-
-  return true;
+  return unit.currentHp <= 0;
 }
 
 /**

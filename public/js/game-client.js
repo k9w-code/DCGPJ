@@ -11,6 +11,15 @@ fetch('/api/keywords')
   })
   .catch(err => console.error('📚 [CLIENT] Keyword map load failed:', err));
 
+// === 全カードデータの取得 (for Token details in showCardDetail) ===
+fetch('/api/cards')
+  .then(res => res.json())
+  .then(data => {
+    window.allCards = data;
+    console.log('📚 [CLIENT] All cards loaded:', data.length, 'cards found.');
+  })
+  .catch(err => console.error('📚 [CLIENT] Cards load failed:', err));
+
 // === 通信の受け皿 (Handlers) を優先的に登録 ===
 // これにより、接続完了直後にデータが届いてもこぼさず受け取れます。
 
@@ -180,15 +189,8 @@ const manualHtml = `
 
 <div class="manual-section">
   <h3>5. 能力キーワード (Keywords)</h3>
-  <ul style="list-style: none; padding: 0;">
-    <li>🛡️ <b>挑発 (Taunt):</b> 前列にいる時、相手はこのユニット以外攻撃できません。</li>
-    <li>⚡ <b>速攻 (Rush):</b> 出したターンから攻撃可能です。</li>
-    <li>👤 <b>潜伏 (Stealth):</b> 攻撃するまで相手の攻撃対象になりません。</li>
-    <li>✨ <b>加護 (Barrier):</b> 1度だけダメージを無効化します。</li>
-    <li>💪 <b>不屈 (Endure):</b> 破壊される時、1度だけHP 1で耐えます。</li>
-    <li>🏰 <b>攻城 (Siege):</b> シールドへのダメージが 2 になります。</li>
-    <li>🩸 <b>吸命 (Drain):</b> ダメージを与えた時、自身のHPを最大 2 回復します。</li>
-    <li>🔄 <b>逆転 (Comeback):</b> 自身の残りシールドが 1 枚以下の時に真価を発揮します。</li>
+  <ul style="list-style: none; padding: 0; line-height: 1.6;" id="help-keyword-list">
+    <li>※データを読み込んでいます...</li>
   </ul>
 </div>
 `;
@@ -203,6 +205,19 @@ function showGameManual() {
     if (settingsOverlay) settingsOverlay.style.display = 'none';
     
     content.innerHTML = manualHtml;
+
+    // キーワード一覧を動的生成
+    const kwList = document.getElementById('help-keyword-list');
+    if (kwList && window.keywordMap) {
+      let kwHtml = '';
+      Object.values(window.keywordMap).forEach(kw => {
+         if (kw.name && kw.description) {
+            kwHtml += `<li style="margin-bottom: 6px;"><b>【${kw.name}】</b>: ${kw.description}</li>`;
+         }
+      });
+      kwList.innerHTML = kwHtml;
+    }
+
     overlay.style.display = 'flex';
     if (window.audioManager) window.audioManager.playSE('click');
   }

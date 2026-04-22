@@ -58,7 +58,18 @@ function loadLocalCSV(filename) {
   const filePath = path.join(__dirname, '..', 'data', filename);
   if (fs.existsSync(filePath)) {
     console.log(`[DataLoader] Local file found: ${filename}`);
-    const data = fs.readFileSync(filePath, 'utf8');
+    const buffer = fs.readFileSync(filePath);
+    
+    let data;
+    try {
+      // まずは UTF-8 でデコードを試みる（fatal: true で不正なバイトを検知）
+      data = new TextDecoder('utf-8', { fatal: true }).decode(buffer);
+    } catch (e) {
+      // UTF-8 で失敗した場合は Shift-JIS を試行
+      console.warn(`[DataLoader] UTF-8 decoding failed for ${filename}, falling back to Shift-JIS...`);
+      data = new TextDecoder('shift-jis').decode(buffer);
+    }
+
     return parse(data, {
       columns: true,
       skip_empty_lines: true,
@@ -135,16 +146,20 @@ async function loadAllData(options = {}) {
     const trigger2 = row.trigger2;
     const effect2 = row.effect2;
     const valueStr2 = row.value2;
-    if (trigger2 && trigger2.trim() !== '' && trigger2.trim() !== 'none') {
+    const target2 = row.target2;
+
+    // trigger2 が 'none' または空欄でも、effect2 があれば trigger1 を継承する
+    if ((trigger2 && trigger2.trim() !== '' && trigger2.trim() !== 'none') || (effect2 && effect2.trim() !== '')) {
+      const finalTrigger2 = (trigger2 && trigger2.trim() !== 'none' && trigger2.trim() !== '') ? trigger2.trim() : trigger.trim();
       abilities.push({
         id: `${row.id}_ability2`,
-        trigger: trigger2.trim(),
+        trigger: finalTrigger2,
         effect: effect2 ? effect2.trim() : '',
         value: isNaN(parseInt(valueStr2)) ? (valueStr2 ? valueStr2.trim() : '') : parseInt(valueStr2),
-        target: row.target2 ? row.target2.trim() : '',
-        text: '',
-        description: '',
-        condition: ''
+        target: target2 ? target2.trim() : '',
+        text: row.text2 ? row.text2.trim() : (row.text ? row.text.trim() : ''),
+        description: row.description2 || '',
+        condition: row.condition2 || ''
       });
     }
 
@@ -155,7 +170,7 @@ async function loadAllData(options = {}) {
     const attack = parseInt(row.atk || row.attack || row.攻撃力 || 0);
     const hp = parseInt(row.life || row.hp || row.体力 || 0);
     const rarity = parseInt(row.rarity || row.レアリティ || 1);
-    const deckLimit = parseInt(row.deck_limit || row.max_copies || row.枚数制限 || 3);
+    const deckLimit = parseInt(row.limit || row.deck_limit || row.max_copies || row.枚数制限 || 3);
     
     return {
       id: row.id,
@@ -179,9 +194,10 @@ async function loadAllData(options = {}) {
       // 新アビリティリスト
       abilities: abilities,
       
-      flavorText: row.description || row.flavor_text || '',
-      text: row.text || '',
+      flavorText: row.description || row.flavor_text || row.flavor || row.desc || row.フレーバーテキスト || row.説明 || '',
+      text: row.text || row.テキスト || row.ability_text || row.manual_text || '',
       maxCopies: isNaN(deckLimit) ? 3 : deckLimit,
+      expansion: row.expansion || 'basic',
     };
   });
 
@@ -190,21 +206,49 @@ async function loadAllData(options = {}) {
     const rarity = parseInt(row.rarity || row.レアリティ || 1);
     const life = parseInt(row.durability || row.life || row.hp || 1);
     
+    const abilities = [];
+    const effect1 = row.effect || 'none';
+    if (effect1 !== 'none') {
+      abilities.push({
+        id: `${row.id}_ability1`,
+        trigger: 'on_break',
+        effect: effect1,
+        value: isNaN(parseInt(row.value)) ? (row.value ? row.value.trim() : '') : parseInt(row.value),
+        target: row.target || 'self',
+        text: row.text || ''
+      });
+    }
+
+    const effect2 = row.effect2 || 'none';
+    if (effect2 !== 'none' && effect2 !== '') {
+      abilities.push({
+        id: `${row.id}_ability2`,
+        trigger: 'on_break',
+        effect: effect2,
+        value: isNaN(parseInt(row.value2)) ? (row.value2 ? row.value2.trim() : '') : parseInt(row.value2),
+        target: row.target2 || 'self',
+        text: row.text2 || ''
+      });
+    }
+
     return {
       id: row.id,
       type: 'shield',
       name: row.name,
       rarity: isNaN(rarity) ? 1 : rarity,
       durability: isNaN(life) ? 1 : life,
-      skill: {
-        id: `${row.id}_skill`,
+      abilities: abilities,
+      text: row.text || '', // トップレベルにも追加
+      // 過去のコードとの互換性のために skill オブジェクトもメインのアビリティで構築
+      skill: abilities.length > 0 ? {
+        id: abilities[0].id,
         name: row.name + 'のスキル',
-        effectType: row.effect || 'none',
-        effectValue: isNaN(parseInt(row.value)) ? (row.value ? row.value.trim() : '') : parseInt(row.value),
-        target: row.target || '',
+        effectType: abilities[0].effect,
+        effectValue: abilities[0].value,
+        target: abilities[0].target,
         text: row.text || '',
         description: row.description || ''
-      }
+      } : null
     };
   });
 
