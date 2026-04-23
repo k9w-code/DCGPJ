@@ -56,10 +56,11 @@ async function main() {
         const validEffects = [
           'damage','damage_all','damage_all_enemy','heal','heal_all',
           'draw','buff_attack','buff_attack_all','buff_hp','buff_hp_all',
-          'debuff_attack','debuff_hp','destroy','destroy_weakest','destroy_lowest_hp',
+          'debuff_attack','debuff_attack_all','debuff_hp','debuff_stats','destroy','destroy_weakest','destroy_lowest_hp',
           'destroy_highest_hp','destroy_highest_atk','destroy_lowest_atk',
-          'freeze','bounce','grant_barrier','drain','damage_shield','heal_shield',
-          'sp_gain','discard_random','summon_token'
+          'freeze','bounce','grant_barrier','grant_endure','drain','damage_shield','heal_shield',
+          'sp_gain','sp_loss','discard_random','summon_token','buff_stats',
+          'silence','steal_unit','reduce_cost_hand','echo_summon','sacrifice_destruction'
         ];
         if (!validEffects.includes(ab.effect)) {
           console.error(`❌ 不明なeffect: ${card.id} ${card.name} effect="${ab.effect}"`);

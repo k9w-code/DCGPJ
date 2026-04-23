@@ -388,6 +388,16 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
         });
         break;
       }
+      case 'debuff_attack_all': {
+        const targets = getAbilityTargets('enemy_unit_all', currentPlayer, opponentPlayer);
+        targets.forEach(target => {
+          target.currentAttack = Math.max(0, target.currentAttack - value);
+          if (!target.modifiers) target.modifiers = [];
+          target.modifiers.push({ source: unit.name, type: 'atk', value: -value });
+          logs.push(`⬇️ ${unit.name} のアビリティ発動！${target.name} の攻撃力を ${value} 減少 (ATK: ${target.currentAttack})`);
+        });
+        break;
+      }
       case 'debuff_attack': {
         if (manualTarget) {
           manualTarget.currentAttack = Math.max(0, manualTarget.currentAttack - value);

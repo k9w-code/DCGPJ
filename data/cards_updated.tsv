@@ -1,43 +1,153 @@
-id	art_id	name	color	rarity	cost	type	atk	life	keywords	trigger	effect	value	target	deck_limit	description	text	expansion
-R001	R001	フレイムソルジャー	red	1	1	unit	2	1						3	炎の兵士		base
-R002	R002	バーンメイジ	red	1	2	unit	2	2		on_play	damage	1	self	3	炎を操る魔術師		base
-R003	R003	ファイアドレイク	red	1	3	unit	3	3						3	灼熱の飛竜		base
-R004	R004	マグマゴーレム	red	1	4	unit	4	4	taunt					3	溶岩の巨人		base
-R005	R005	インフェルノドラゴン	red	1	5	unit	5	5		on_attack	damage	2	self	3	地獄の業炎竜		base
-R006	R006	フレイムバースト	red	1	2	spell						damage	3	self	3	炎の爆発		base
-R007	R007	ヘルファイア	red	1	5	spell						damage_all	2	self	3	全体炎上		base
-R008	R008	灼熱の刃	red	1	1	spell						buff_attack	2	self	3	武器に炎を纏わせる		base
-B001	B001	アクアスカウト	blue	1	1	unit	1	2						3	水の斥候		base
-B002	B002	アイスソーサラー	blue	1	2	unit	2	2		on_play	freeze	1	self	3	氷を操る魔術師		base
-B003	B003	シースネーク	blue	1	3	unit	3	2						3	海の蛇		base
-B004	B004	クリスタルゴーレム	blue	1	4	unit	3	5	barrier					3	水晶の巨人		base
-B005	B005	リバイアサン	blue	1	6	unit	6	6		on_play	return_hand	1	self	3	伝説の海竜		base
-B006	B006	アクアジェット	blue	1	2	spell						damage	2	self	3	水の噴射		base
-B007	B007	ブリザード	blue	1	4	spell						freeze_all	1	self	3	猛吹雪		base
-B008	B008	守護の結界	blue	1	3	spell						shield_all	1	self	3	身を守る魔法		base
-G001	G001	フォレストハンター	green	1	1	unit	2	1						3	森の狩人		base
-G002	G002	リーフドルイド	green	1	2	unit	1	3		on_play	sp_gain	1	self	3	森の司祭		base
-G003	G003	エルダーツリー	green	1	3	unit	2	5	taunt					3	長命の巨木		base
-G004	G004	ワイルドベア	green	1	4	unit	4	4						3	野生の熊		base
-G005	G005	ギガントアーム	green	1	6	unit	7	7		on_attack	buff_attack	2	self	3	巨大な腕		base
-G006	G006	大地の恵み	green	1	2	spell						sp_gain	2	self	3	大地のエネルギー		base
-G007	G007	森の咆哮	green	1	4	spell						buff_all	1	self	3	森の叫び		base
-G008	G008	再生の祈り	green	1	3	spell						heal_all	2	self	3	癒やしの祈祷		base
-W001	W001	ライトソルジャー	white	1	1	unit	2	2						3	光の兵士		base
-W002	W002	ホーリープリースト	white	1	2	unit	1	3		on_play	heal	2	self	3	聖なる神官		base
-W003	W003	スカイナイト	white	1	3	unit	3	3	speed					3	空飛ぶ騎士		base
-W004	W004	ガーディアン	white	1	4	unit	2	6	taunt					3	聖域の守護者		base
-W005	W005	アークエンジェル	white	1	6	unit	4	6		on_play	summon_token	T001	self	3	大天使		base
-W006	W006	ホーリーライト	white	1	2	spell						damage	2	self	3	聖なる光膜		base
-W007	W007	リザレクション	white	1	5	spell						resurrection	1	self	3	死者蘇生		base
-W008	W008	神の盾	white	1	3	spell						barrier_all	1	self	3	絶対防御		base
-K001	K001	スケルトン	black	1	1	unit	2	1						3	骸骨兵		base
-K002	K002	シャドウアサシン	black	1	2	unit	3	2	stealth					3	影の暗殺者		base
-K003	K003	ボーンナイト	black	1	3	unit	3	4	taunt					3	骨の騎士		base
-K004	K004	レイス	black	1	4	unit	2	4		on_death	debuff_attack	2	self	3	亡霊		base
-K005	K005	デーモンロード	black	1	7	unit	8	8		on_play	destroy	1	self	3	魔王		base
-K006	K006	ダークネス	black	1	2	spell						damage	3	self	3	闇の波動		base
-K007	K007	死の宣告	black	1	5	spell						destroy	1	self	3	不回避の死		base
-K008	K008	禁忌の儀式	black	 black	1	3	spell						draw	2	self	3	代償を伴うドロー		base
-WH005	WH005	アーク(TEST)	white	3	1	unit	4	6	---	on_play	summon_token	T001	self	3	検証用		EX1
-T001	T001	見習い騎士	white	1	0	unit	2	2	---	none	none			0	兵卒		EX1
+id	art_id	name	color	rarity	cost	type	limit	atk	life	keywords	trigger	effect	value	target	trigger2	effect2	value2	target2	description	text	expansion
+BK001	BK001	彷徨ぁE��魁Eblack	1	1	unit	3	1	1	legacy	on_death	discard_random	1	enemy					"現世に未練を残し、夜を飛�E霊体、E	【遺言】相手�E手札めE枚破棁E��Ebasic
+BK003	BK003	急降下する幽鬼	black	1	1	unit	3	1	1	rush									標的を見つけると猛スピ�Eドで襲ぁE��かる、E【速攻、Ebasic
+BK025	BK025	邪教�E儀弁Eblack	1	1	spell	3			sacrifice	on_play	destroy	1	self_unit_1	on_play	draw	2	self	闁E�E力を呼び覚ます禁忌�E儀式、E【代償】味方ユニッチE体を破壊し、E枚ドロー、Ebasic
+BK002	BK002	月夜�E悪霁Eblack	1	2	unit	3	3	3	"decay	legacy"	on_death	damage	1	enemy_unit_1					闁E��に乗じて命を奪ぁE��E【�E敗】【遺言】敵ユニッチE体に1ダメージ、Ebasic
+BK004	BK004	呪縛�E囚人	black	1	2	unit	3	1	3	taunt									魔方陣に縛り付けられ、盾として使われる、E【挑発、Ebasic
+BK005	BK005	路地裏�E暗殺老Eblack	3	2	unit	3	2	1	awaken:black:7	on_play	destroy	1	enemy_unit_weakest					闁E��紛れ、確実にターゲチE��を仕留める、E【覚�E:闁E��【登場時】敵のHP最低ユニットを破壊、Ebasic
+BK006	BK006	影縫ぁE�E魔導士	black	1	2	unit	3	2	2		on_play	discard_random	1	enemy					触れた老E��闁E�E底へ引き摺り込む、E【登場時】相手�E手札めE枚破棁E��Ebasic
+BK027	BK027	影の侵飁Eblack	2	2	spell	3			sacrifice	on_play	destroy	1	self_unit_1	on_play	sp_gain	4	self	忍�E寁E��影がすべてを飲み込む、E【代償】味方ユニッチE体を破壊し、SP+4、Ebasic
+BK007	BK007	燁E��る骸骨兵	black	2	3	unit	3	3	2	avenger	on_play	buff_attack	2	self_unit_1					怨念の炎で動く不死の兵士、E【復讐】【登場時】味方ユニッチE体�EATK+2、Ebasic
+BK008	BK008	死を告げる死祁Eblack	2	3	unit	3	3	3	legacy	on_death	damage	1	enemy_unit_1					砂時計�E砂が落ちる時、命が尽き果てる、E【遺言】敵ユニッチE体に1ダメージ、Ebasic
+BK009	BK009	骨と闁E�E合�E獣	black	1	3	unit	3	4	4	decay									様、E��死骸を繋ぎ合わせて作られた怪物、E【�E敗、Ebasic
+BK010	BK010	屋根伝いの妖魁Eblack	1	3	unit	3	2	3		on_play	draw	1	self					夜�E街を飛�E回り、獲物を探す、E【登場時、E枚ドロー、Ebasic
+BK024	BK024	廁E�Eの魔王	black	2	3	unit	3	3	3	legacy	on_death	destroy	1	enemy_unit_toughest					廁E�Eの中忁E��座す恐怖�E象徴、E【遺言】敵のHP最高ユニットを破壊、Ebasic
+BK011	BK011	剣の夜叉	black	3	4	unit	3	3	3	"rush	legacy"	on_death	damage	3	enemy_unit_1					闁E��で刁E��交差する、E【速攻】【遺言】敵ユニッチE体に3ダメージ、Ebasic
+BK013	BK013	髑髏�E槍使ぁEblack	1	4	unit	3	5	5	"decay	avenger"	on_play	damage	2	enemy_unit_1					無数の死骸を背に、槍を構える、E【�E敗】【復讐】敵ユニッチE体に2ダメージ、Ebasic
+BK014	BK014	黒鎧の重裁E�E	black	2	4	unit	3	3	5	"taunt	legacy"	on_death	discard_random	1	enemy					闁E�E金属で作られた重厚な鎧、E【挑発】【遺言】相手�E手札めE枚破棁E��Ebasic
+BK019	BK019	暗黒�E騎士	black	3	4	unit	3	4	4		on_play	destroy	1	enemy_unit_weakest					光を拒絶する老E�E黒鉄の騎士、E【登場時】敵のHP最低ユニットを破壊、Ebasic
+BK026	BK026	奈落への誘い	black	2	4	spell	3				on_play	discard_random	2	enemy					足允E��口を開ける底なし�E闁E��E相手�E手札めE枚破棁E��Ebasic
+BK015	BK015	夜を舞う姫	black	2	5	unit	3	6	4	endure	on_play	draw	1	self					星空を駁E��て夜を終わらせなぁE��E【不屈】【登場時、E枚ドロー、Ebasic
+BK016	BK016	紫炎�E呪術師	black	3	5	unit	3	5	5	avenger	on_play	damage	4	enemy_unit_1					紫の炎�E魂そのも�Eを燃めE��、E【復讐】【登場時】敵ユニッチE体に4ダメージ、Ebasic
+BK017	BK017	漁E���E魔剣士	black	1	5	unit	3	3	6	"taunt	lethal"									闁E�Eオーラを纏う恐るべき剣技、E【挑発】【忁E��、Ebasic
+BK023	BK023	月夜�E監視老Eblack	3	5	unit	3	4	6		on_play	discard_random	1	enemy					高い塔から夜�Eすべてを見下ろす、E【登場時】相手�E手札めE枚破棁E��Ebasic
+BK028	BK028	魂�E昁E��	black	3	4	spell	3				on_play	destroy	1	enemy_unit_1					無数の生贁E�E魂を天へ送る、E敵ユニッチE体を破壊、Ebasic
+BK018	BK018	闁E�E執行人	black	4	6	unit	3	7	4	rush	on_play	destroy	1	enemy_unit_1					裏社会で恐れられる非惁E�E暗殺老E��E【速攻】【登場時】敵ユニッチE体を破壊、Ebasic
+BK020	BK020	白銀の処刑�E	black	4	6	unit	3	7	6	"endure	siege"									血に染まる事�EなぁE��き�E、E【不屈】【攻城、Ebasic
+BK029	BK029	混沌�E入り口	black	4	6	spell	3				on_play	damage_all	5	all_units					深淵がすべてを飲み込む、E全ユニットに5ダメージ、Ebasic
+BK012	BK012	月下�E狼男	black	2	7	unit	3	6	4		on_play	damage_shield	1	enemy_shield					満月�E光を浴びて凶暴化する、E【登場時】敵シールドに1ダメージ、Ebasic
+BK021	BK021	古城�E剣姫	black	4	7	unit	3	6	4	rush	on_play	summon_token	T001						代、E��け継がれし古流剣術�E後継老E��E【速攻】【登場時】「古城�E護衛人」を召喚する、Ebasic
+BK022	BK022	深淵を歩く�E姫	black	3	7	unit	3	6	8	"taunt	legacy"	on_death	damage_all_enemy	3	enemy_unit_all					闁E�E中を優雁E��、そして致命皁E��舞う、E【挑発】【遺言】敵全ユニットに3ダメージ、Ebasic
+BK030	BK030	終焉の黒龍王ファフニール	black	4	9	unit	1	11	10	endure	on_play	damage_all_enemy	5	enemy_unit_all	on_play	discard_random	2	enemy	世界に終わりを告げる究極の闁E��、E【不屈】【登場時】敵全ユニットに5ダメージ。相手�E手札めE枚破棁E��Ebasic
+WH001	WH001	聖�Eの見習い剣士	white	1	1	unit	3	2	1										聖�Eで修行に励む若き剣士、E	basic
+WH002	WH002	聖�Eの斥倁Ewhite	1	1	unit	3	1	2										戦場で先陣を務める兵士、E	basic
+WH003	WH003	光�E盾兵	white	1	2	unit	3	1	2	barrier									光を宿す盾で身を守る兵士、E【加護、Ebasic
+WH004	WH004	聖�Eの天騎士	white	1	2	unit	3	1	2	awaken:white:7	on_play	destroy	1	enemy_unit_frailest					白ぁE��の鎧を纏う騎士、E【覚�E:光】【登場時】敵のATKが最も低いユニッチE体を破壊、Ebasic
+WH005	WH005	修道院の護り手	white	1	2	unit	3	2	1		on_play	buff_hp	1	self_unit_1					守るべきもののために力を尽くす、E【登場時】味方ユニッチE体�EHP+1、Ebasic
+WH006	WH006	聖鎖の騎士	white	1	2	unit	3	1	2		on_play	buff_attack	1	self_unit_1					聖なる鎖で敵を縛る騎士、E【登場時】味方ユニッチE体�EATK+1、Ebasic
+WH030	WH030	信仰の盾	white	1	2	spell	3				on_play	grant_barrier	1	self_unit_1					信仰のを守るための力、E味方ユニッチE体に加護を付与、Ebasic
+WH007	WH007	聖盾の守護老Ewhite	1	3	unit	3	2	4	"taunt	barrier"									巨大な白銀の盾で味方を守る、E【挑発】【加護、Ebasic
+WH008	WH008	黁E��の獣騎士	white	1	3	unit	3	2	4		on_play	buff_hp	1	self_unit_1					黁E��の鎧に身を包む獣の騎士、E【登場時】味方ユニッチE体�EHP+1、Ebasic
+WH009	WH009	銀翼の聖騎士	white	1	3	unit	3	3	2		on_play	buff_attack	1	self_unit_1					銀色の翼の鎧で戦場を駁E��る、E【登場時】味方ユニッチE体�EATK+1、Ebasic
+WH010	WH010	紁E�E乙女	white	2	3	unit	3	3	3	legacy	on_death	draw	1	self					聖�Eで暗躍する飛行魔導士、E【遺言、E枚ドロー、Ebasic
+WH029	WH029	聖域展開	white	2	3	spell	3				on_play	sp_gain	4	self					光�E祝福が力を与える、ESP+4、Ebasic
+WH028	WH028	光�E剣	white	2	4	spell	3				on_play	destroy	1	enemy_unit_frailest					光�E剣で罪を裁く、E敵のATK最低ユニットを破壊、Ebasic
+WH027	WH027	天罰の允Ewhite	2	4	spell	3				on_play	damage_all	2	all_units					天から落ちる裁きの雷。、E全ユニットに2ダメージ、Ebasic
+WH011	WH011	遺跡の戦乙女	white	2	4	unit	3	4	4		on_play	silence	1	enemy_unit_1					聖なる遺跡を守る斧使ぁE�E乙女、E【登場時】敵ユニッチE体を「沈黙」にする、Ebasic
+WH012	WH012	銀嶺の騎士団長	white	2	4	unit	3	3	5	"taunt	legacy"	on_death	damage	2	enemy_unit_1					騎士団を率ぁE��重裁E�E女騎士、E【挑発】【遺言】敵ユニッチE体に2ダメージ、Ebasic
+WH013	WH013	聖剣の騎士	white	3	4	unit	3	4	4		on_play	destroy	1	enemy_unit_frailest					光と共に敵を討つ白銀の聖騎士、E【登場時】敵のATKが最も低いユニッチE体を破壊、Ebasic
+WH024	WH024	聖域の光輝王	white	2	5	unit	3	5	4	barrier	on_play	buff_hp_all	1	self_unit_all					耀き�E中に立つ白ぁE��初�E王、E【加護】【登場時】味方全ユニット�EHP+1、Ebasic
+WH014	WH014	天弓�E天使	white	3	5	unit	3	5	5	"snipe	spellshield"									光�E矢で邪を封E��く翼の天使、E【狙撁E��【魔盾、Ebasic
+WH015	WH015	裁きの聖女	white	3	5	unit	3	6	4		on_attack	damage	2	enemy_unit_1					魔法陣と共に裁きを下す聖女、E【攻撁E��】敵ユニッチE体に2ダメージ、Ebasic
+WH016	WH016	聖剣の継承老Ewhite	3	5	unit	3	4	6	legacy	on_death	buff_attack	4	self_unit_1					聖剣と共に命を継ぐ騎士、E【遺言】味方ユニッチE体�EATK+4、Ebasic
+WH025	WH025	聖�Eの筁E��竜騎士	white	3	5	unit	3	4	5	taunt	on_play	buff_attack_all	1	self_unit_all					聖なる鎧で天を�EぁE��の竜騎士、E【挑発】【登場時】味方全ユニット�EATK+1、Ebasic
+WH017	WH017	聖�Eの大司敁Ewhite	2	6	unit	3	4	8		on_play	destroy	1	enemy_unit_strongest					大聖堂を統べる赤衣の大司教、E【登場時】敵のATKが最も高いユニッチE体を破壊、Ebasic
+WH018	WH018	聖�Eの祈祷師	white	3	6	unit	3	5	6		on_play	draw	2	self					燭台の光と共に奁E��を起こす、E【登場時、E枚ドロー、Ebasic
+WH019	WH019	紫晶の剣聁Ewhite	3	6	unit	3	7	6	6	on_attack	buff_stats	1	2					紫水晶の鎧を纏う流E��ぁE�E剣聖、E【攻撁E��】�E身のATKとHP+2、Ebasic
+WH023	WH023	聖王ソロモン	white	2	8	unit	3	3	3	"barrier	snipe"	on_play	summon_token	T002						王�Eを戴く白銀の聖王、E【加護】【狙撁E��【登場時】「真龍ヴァサーゴ」を召喚する、Ebasic
+WH020	WH020	聖法王の代行老Ewhite	3	7	unit	3	6	6	legacy	on_death	sp_gain	7	self					法王の代琁E��して光�E裁きを行う、E【遺言】SP+7、Ebasic
+WH021	WH021	神人の親衛隊長	white	4	7	unit	3	6	9	"taunt	legacy"	on_death	draw	2	self					禁断の聖域を護る神人のしもべ、E【挑発】【遺言、E枚ドロー、Ebasic
+WH022	WH022	白銀の英雁Ewhite	4	7	unit	3	9	6	rush	on_attack	silence	1	enemy_unit_1					荒野に立つ白銀の鎧の英雁E��E【速攻】【攻撁E��】敵ユニッチE体を「沈黙」にする、Ebasic
+WH026	WH026	創世竜ルミナリア	white	4	9	unit	1	9	12	barrier	on_play	buff_stats	2	self_unit_all	on_play	grant_barrier	1	self_unit_all	天空城を守る白銀の創世竜、E【加護】【登場時】味方全ユニット�EATKとHP+2。味方全ユニットに「加護」を付与、Ebasic
+T001	T001	古城�E護衛人	black	4	7	unit	0	4	6	taunt									護るべき主のために刁E��振るう、E【挑発、Ebasic
+T002	T002	真龍ヴァサーゴ	white	4	8	unit	0	7	7	spellshield									偽り�E名�EぁE��しか真名へと変化を遂げた、E【魔盾、Ebasic
+BL001	BL001	波打ち際�Eスライム	blue	1	1	unit	3	1	2										打ち寁E��た波から生まれた不思議な生命体、E	basic
+BL002	BL002	図書館の見習い魔道士	blue	1	1	unit	3	1	1	spellshield	on_play	draw	1	self					古斁E��の整琁E��忙しぁE��日、E【魔盾】【登場時、E枚ドロー、Ebasic
+BL003	BL003	深海の踊り孁Eblue	1	2	unit	3	1	2		on_play	debuff_attack	1	enemy_unit_weakest					水底で舞う美しぁE��、E【登場時】敵の最めEPが低いユニッチE体�EATK-1、Ebasic
+BL004	BL004	星読みの少女	blue	1	2	unit	3	2	1		on_play	draw	1	self					星�E軌道から未来を予測する、E【登場時、E枚ドロー、Ebasic
+BL005	BL005	魔術院の優等生	blue	1	2	unit	3	1	3		on_play	freeze	1	enemy_unit_1					飛�E級で魔術院を卒業した秀才、E【登場時】敵ユニッチE体を凍結、Ebasic
+BL006	BL006	紫翼の刁E�E	blue	1	3	unit	3	3	2	"spellshield	vanguard"	on_play	damage	2	enemy_unit_1					紫の翼で空を�EぁE���Eを振るう、E【魔盾】【�E陣】【登場時】敵ユニッチE体に2ダメージ、Ebasic
+BL007	BL007	書庫の護り手	blue	1	3	unit	3	3	3		on_play	freeze	1	enemy_unit_1					禁書への侵入老E��魔法�E鎖で捕縛する、E【登場時】敵ユニッチE体を凍結、Ebasic
+BL008	BL008	防衛魔導重裁E�E	blue	2	3	unit	3	2	4	taunt									魔力を込められた大盾は決して砕けなぁE��E【挑発】【登場時】敵ユニッチE体を凍結、Ebasic
+BL009	BL009	盾鱗�E人魁Eblue	1	3	unit	3	2	4	rearguard	on_play	debuff_attack	2	enemy_unit_1					水鏡の盾で仲間を守る、E【後衛】【登場時】敵ユニッチE体�EATK-2、Ebasic
+BL010	BL010	電撁E��ラゲ	blue	2	4	unit	3	4	4		on_play	damage	2	enemy_unit_1	sp_gain	4	self		深海の闁E��照らす危険な光、E【登場時】敵ユニッチE体に2ダメージ、Ebasic
+BL011	BL011	青衣の高位魔道士	blue	2	5	unit	3	4	4		on_play	draw	2	self					青き魔力を操り、戦場を支配する、E【登場時、E枚ドロー、Ebasic
+BL012	BL012	知識�E探求老Eblue	1	5	unit	3	4	4		on_play	draw	2	self					本に囲まれながら宙に浮く不思議な少女、E【登場時、E枚ドロー、Ebasic
+BL013	BL013	水晶杖�E見習い	blue	2	4	unit	3	3	5		on_play	grant_barrier	1	self_unit_1					杖に宿る魔力で奁E��を起こす、E【登場時】味方ユニッチE体に加護を付与、Ebasic
+BL014	BL014	重魔導�E器操老Eblue	2	4	unit	3	5	4		on_play	damage	2	enemy_unit_1					巨大な錨型�E魔導�E器を軽、E��振り回す、E【登場時】敵ユニッチE体に2ダメージ、Ebasic
+BL015	BL015	銀鱗�E海騎士	blue	3	5	unit	3	4	5		on_play	damage	3	enemy_unit_1					海風を�Eり裂く美しき騎士、E【登場時】敵ユニッチE体に3ダメージ、Ebasic
+BL016	BL016	氷刁E�E剣姫	blue	3	5	unit	3	5	5		on_play	silence		enemy_unit_1					全てを凍らせる氷の剣、E【登場時】敵ユニッチE体を沈黙させる、Ebasic
+BL017	BL017	蒼の魔道剣士	blue	2	5	unit	3	3	7	taunt									剣と魔法を高次允E��融合させた達人、E【挑発、Ebasic
+BL018	BL018	魔導狙撁E��	blue	3	6	unit	3	5	7		on_play	damage	4	enemy_unit_1					魔力を弾丸に変えて遠距離から撁E��抜く、E【登場時】敵ユニッチE体に4ダメージ、Ebasic
+BL019	BL019	禁書の守護老Eblue	3	6	unit	3	4	8		on_play	debuff_attack	3	enemy_unit_1					図書館の最深部で禁書を守り続ける、E【登場時】敵ユニッチE体�EATK-3、Ebasic
+BL020	BL020	深海の巨大クラーケン	blue	3	7	unit	3	8	6		on_play	destroy	1	enemy_unit_1					深海から現れた巨大な魔物、E【登場時】敵ユニッチE体を破壊、Ebasic
+BL021	BL021	深海龁Eblue	4	8	unit	3	8	8		on_play	draw	3	self					海を統べる巨大な龍、E【登場時、E枚ドロー、Ebasic
+BL022	BL022	海神�Eセイドン	blue	3	5	unit	3	5	5		on_play	bounce	1	enemy_unit_1					海そ�Eも�Eが意思を持った姿、E【登場時】敵ユニッチE体を手札に戻す、Ebasic
+BL023	BL023	暗黒龍�E急襲	blue	1	3	unit	3	3	3		on_play	draw	1	self					空からの一撁E��全てが終わる、E【登場時、E枚ドロー、Ebasic
+BL024	BL024	巨岩の海竁Eblue	4	6	unit	3	6	6	stealth	on_play	reduce_cost_hand	2	self					岩山のように巨大で硬ぁE��、E【潜伏】【登場時】手札1枚�Eコストを2下げる、Ebasic
+BL025	BL025	雷雨の召喁Eblue	2	3	spell	3				on_play	draw	2	self					稲妻を伴ぁE��を呼び起こす、E2枚ドロー、Ebasic
+BL026	BL026	蒼炎�E剣	blue	1	2	spell	3				on_play	damage	3	enemy_unit_1					青き炎を刁E��纏わせる、E敵ユニッチE体に3ダメージ、Ebasic
+BL027	BL027	黁E��の旋征Eblue	2	5	spell	3				on_play	draw	4	self					魔法�Eハ�Eプが奏でる奁E��の音色、E4枚ドロー、Ebasic
+BL028	BL028	大津波	blue	3	3	spell	3				on_play	bounce	1	enemy_unit_1					全てを飲み込む巨大な波、E敵ユニッチE体を手札に戻す、Ebasic
+BL029	BL029	時空断裁Eblue	4	8	spell	3				on_play	bounce	1	enemy_unit_all					宁E���E次允E��と刁E��裂く禁断の魔法、E敵全ユニットに手札に戻す、Ebasic
+BL030	BL030	深海蒼龍リヴァイアサン	blue	4	9	unit	1	9	12	stealth	on_play	damage_all_enemy	3	enemy_unit_all	on_play	draw	3	self	青き海を支配する伝説の龍王、E【潜伏】【登場時】敵全ユニットに3ダメージ、E枚ドロー、Ebasic
+GR001	GR001	森の修行僧	green	1	1	unit	3	1	2		on_play	sp_gain	1	self					森で鍛え上げられた身軽な体術、E【登場時】SP+1、Ebasic
+GR002	GR002	霊気�E拳士	green	1	1	unit	3	2	1										気脈を読み、一撁E��敵の急所を突く、E	basic
+GR003	GR003	森のエルフ弓�E	green	1	2	unit	3	2	3										百発百中の腕前を持つ森の守り手、E	basic
+GR004	GR004	風の妖精	green	1	2	unit	3	2	2	link	on_play	buff_hp	1	self_unit_1					風に乗って戦場を�E在に舞う、E【連携】【登場時】味方ユニッチE体�EHP+1、Ebasic
+GR005	GR005	森の吟遊詩人	green	1	2	unit	3	2	2		on_play	buff_attack	1	self_unit_1					ハ�Eプ�E音色が仲間を癒やす、E【登場時】味方ユニッチE体�EATK+1、Ebasic
+GR006	GR006	紫電の剣士	green	1	3	unit	3	4	4										森の奥深くに住�E孤高�E剣士、E	basic
+GR007	GR007	ルーン見習い	green	2	3	unit	3	2	4		on_play	sp_gain	2	self					古代のルーン斁E��で森の力を引き出す、E【登場時】SP+2、Ebasic
+GR008	GR008	茨の魔剣士	green	1	3	unit	3	3	2	"siege	snipe"									茨のように鋭く敵を�Eり裂く、E【攻城】【狙撁E��Ebasic
+GR009	GR009	深緑�E魔術師	green	1	3	unit	3	3	4		on_play	buff_hp_all	1	self_unit_all					森と一体化し、大地の魔力を操る、E【登場時】味方全ユニット�EHP+1、Ebasic
+GR010	GR010	風駁E��の乙女	green	2	4	unit	3	4	4	link	on_play	damage	2	enemy_unit_1					風よりも速く森を駁E��抜ける、E【連携】【登場時】敵ユニッチE体に2ダメージ、Ebasic
+GR011	GR011	妖精の盾騎士	green	2	4	unit	3	3	6	taunt									小さな体で大きな盾を構える、E【挑発、Ebasic
+GR012	GR012	大地の戦士	green	1	4	unit	3	5	5										大地の力を剣に宿して戦ぁE��E	basic
+GR013	GR013	金髪の森王孁Egreen	2	5	unit	3	4	6		on_play	buff_hp_all	1	self_unit_all					森を統べる誁E��高き王族、E【登場時】味方全ユニット�EHP+1、Ebasic
+GR014	GR014	太陽の近衛�E	green	3	5	unit	3	4	6	taunt									太陽の光を浴びて神聖に輝く鎧、E【挑発、Ebasic
+GR015	GR015	深紁E�E森剣士	green	2	5	unit	3	5	5		on_play	sp_gain	2	self					深緑�E剣閁E��敵を薙ぎ払ぁE��E【登場時】SP+3、Ebasic
+GR016	GR016	尖塔�E飛空威Egreen	3	6	unit	3	5	7		on_play	damage	2	enemy_unit_1					高所から奁E��をかける飛空部隊、E【登場時】敵ユニッチE体に2ダメージ、Ebasic
+GR017	GR017	豊穣の貴族剣士	green	2	6	unit	3	5	7		on_play	buff_hp	3	self_unit_1					森の恵みを守るために戦ぁE��族、E【登場時】味方ユニッチE体�EHP+3、Ebasic
+GR018	GR018	重裁E��騎士	green	2	6	unit	3	4	8	taunt	on_play	sp_gain	2	self					森の入り口を守る鉁E���E重裁E��士、E【挑発】【登場時】SP+2、Ebasic
+GR019	GR019	黒鉄の洞窟騎士	green	4	7	unit	3	7	8	endure									洞窟で鍛えられた強靭な肉体と剣、E【不屈、Ebasic
+GR020	GR020	スト�Eンアーマ�E	green	4	8	unit	3	7	8	taunt	on_play	buff_attack_all	2	self_unit_all					石の鎧がすべての攻撁E��弾き返す、E【挑発】【登場時】味方ユニッチE体�EATK+2、Ebasic
+GR021	GR021	古代の巨石兵	green	3	5	unit	3	5	5	siege									遺跡を守護し続ける巨大なゴーレム、E【攻城、Ebasic
+GR022	GR022	荒野の暴獣	green	3	5	unit	3	8	8	overload									立ち塞がるものを�Eて粉砕する、E【暴走、Ebasic
+GR023	GR023	アクアクリスタル竁Egreen	3	4	unit	3	3	5	endure									魔力を持つ美しぁE��晶の竜、E【不屈、Ebasic
+GR024	GR024	レヴィアタン	green	1	3	unit	3	3	3		on_play	damage	1	enemy_unit_1					渓谷に封印されてぁE��長大な怪蛁E��E【登場時】敵ユニッチE体に1ダメージ、Ebasic
+GR025	GR025	大地の怒り	green	2	4	spell	3				on_play	damage_all_enemy	2	enemy_unit_all					大地を揺るがし隕石を降らせる、E敵全ユニットに2ダメージ、Ebasic
+GR026	GR026	妖精の癒弾	green	1	2	spell	3				on_play	buff_hp	3	self_unit_1					きらめく音符が傷を癒めE��、E味方ユニッチE体�EHP+3、Ebasic
+GR027	GR027	生命の循環	green	3	4	spell	3				on_play	buff_hp_all	2	self_unit_all					森の魔力で傷つぁE��肉体を再生する、E味方全ユニット�EHP+2、Ebasic
+GR028	GR028	大自然の加護	green	2	4	spell	3				on_play	sp_gain	5	self					大ぁE��る�E然がもたらす�Eみ、ESP+5、Ebasic
+GR029	GR029	豊穣の祈り	green	3	3	spell	3				on_play	sp_gain	4	self					魔力の琁E��が大地を潤す、ESP+4、Ebasic
+GR030	GR030	創世�E巨緑竁Egreen	4	9	unit	1	10	11	siege	on_play	buff_hp_all	3	self_unit_all	on_play	sp_gain	4	self	自然を創り�Eした原�Eの大ぁE��る龍、E【攻城】【登場時】味方全ユニット�EHP+3。SP+4、Ebasic
+RE001	RE001	火花のインチEred	1	1	unit	3	1	1		on_play	damage	1	enemy_unit_1					小さな火種が世界を焼く、E【登場時】敵ユニッチE体に1ダメージ、Ebasic
+RE002	RE002	荒野の斥倁Ered	1	1	unit	3	1	1	rush									荒野を駁E��る斥候。突撃あるのみ、E【速攻、Ebasic
+RE003	RE003	屋根上�E忁Ered	1	1	unit	3	1	2										夜を照らす赤き炎、E	basic
+RE004	RE004	業火の術師	red	1	2	unit	3	2	2		on_play	damage	1	enemy_unit_1					制御不�Eの業火を放つ、E【登場時】敵ユニッチE体に1ダメージ、Ebasic
+RE005	RE005	鉁E��の闘士	red	1	2	unit	3	2	2	rush									赤き拳で敵を砕く、E【速攻、Ebasic
+RE006	RE006	双�Eの小鬼	red	1	2	unit	3	3	2										ぁE��か大空を焦がす存在、E	basic
+RE007	RE007	炎�Eの剣士	red	1	3	unit	3	4	4										炎�Eように舞う剣技、E	basic
+RE008	RE008	溶岩の精霁Ered	2	3	unit	3	4	2	rush									溶岩から生まれし速攻の化身、E【速攻、Ebasic
+RE009	RE009	紁E��の弓�E	red	2	3	unit	3	3	2		on_play	damage	2	enemy_unit_1					忁E��の炎矢を放つ、E【登場時】敵ユニッチE体に2ダメージ、Ebasic
+RE010	RE010	戦旗�E守護老Ered	1	3	unit	3	3	4	link	on_play	buff_attack	1	self_unit_1					戦旗を掲げ味方を鼓�Eする、E【連携】【登場時】味方ユニッチE体�EATK+1、Ebasic
+RE011	RE011	マグマゴーレム	red	2	4	unit	3	4	5	taunt									灼熱の肉体が全てを阻む、E【挑発、Ebasic
+RE012	RE012	紁E��の狂戦士	red	2	4	unit	3	5	3	crisis	on_play	buff_attack	3	this_unit					駁E��抜ける赤ぁE��妻、E【背水】【登場時】�E身のATK+3、Ebasic
+RE013	RE013	骸骨火祁Ered	2	4	unit	3	4	4		on_play	damage_all_enemy	1	enemy_unit_all					そ�E足音が大地を揺らす、E【登場時】敵全ユニットに1ダメージ、Ebasic
+RE014	RE014	インフェルノドラコン	red	3	5	unit	3	5	5		on_attack	damage	2	enemy_unit_1					地獁E�E业炎竜、E【攻撁E��】敵ユニッチE体に2ダメージ、Ebasic
+RE015	RE015	灼熱の鍛�E屁Ered	3	4	unit	3	5	4	crisis	on_play	damage	3	enemy_unit_1					炎と鉁E��打ち据える巨漢、E【背水】【登場時】敵ユニッチE体に3ダメージ、Ebasic
+RE016	RE016	紁E��の封E��Ered	3	5	unit	3	4	6	double_strike									薙ぎ払う炎が隣を焼く、E【連撁E��Ebasic
+RE017	RE017	煉獄の剣士	red	3	6	unit	3	7	4	"endure	legacy"	on_death	damage_all_enemy	2	enemy_unit_all					業火の中でも倒れなぁE��E【不屈】【遺言】敵全ユニットに2ダメージ、Ebasic
+RE018	RE018	紁E��の氷剣士	red	3	6	unit	3	6	6		on_play	damage	4	enemy_unit_1					相反する氷と炎を纏う、E【登場時】敵ユニッチE体に4ダメージ、Ebasic
+RE019	RE019	双剣の豪傁Ered	4	7	unit	3	7	7	rush	on_attack	damage	4	enemy_unit_1					全てを�Eり裂く双剣、E【速攻】【攻撁E��】敵ユニッチE体に4ダメージ、Ebasic
+RE020	RE020	趁E��星�E騎士	red	4	8	unit	3	8	8	siege	on_attack	damage_all_enemy	2	enemy_unit_all					現れた瞬間に世界を焼く、E【攻城】【攻撁E��】敵全ユニットに2ダメージ、Ebasic
+RE021	RE021	星砕きの封E��	red	4	5	unit	3	5	5	"siege	snipe"									そ�E一撁E�E前�Eを貫き後�Eを穿つ、E【攻城】【狙撁E��Ebasic
+RE022	RE022	灼天の剣姫	red	2	5	unit	3	5	4		on_play	buff_attack_all	1	self_unit_all					攻撁E��る度に世界が燃える、E【登場時】味方全ユニット�EATK+1、Ebasic
+RE023	RE023	妖魔�E炎精	red	1	3	unit	3	3	4	awaken	on_play	damage_all_enemy	2	enemy_unit_all					炎を操る小さな妖精、E【覚�E】【登場時】敵全ユニットに2ダメージ、Ebasic
+RE024	RE024	炎�E楽師	red	2	2	unit	3	1	3		on_play	buff_attack	2	self_unit_1					熱惁E�E音楽を奏でる、E【登場時】味方ユニッチE体�EATK+1、Ebasic
+RE025	RE025	原�Eの炎神ヴェスタ	red	4	9	unit	1	12	9	rush	on_play	damage_all_enemy	4	enemy_unit_all	on_play	buff_attack_all	2	self_unit_all	世界を創り世界を焼く原初�E炎、E【速攻】【登場時】敵全ユニットに4ダメージ。味方全ユニット�EATK+2、Ebasic
+RE026	RE026	灼熱の刁Ered	1	1	spell	3				on_play	damage	2	enemy_unit_1					武器に炎を纏わせる、E敵ユニッチE体に2ダメージ、Ebasic
+RE027	RE027	火炎放封Ered	2	2	spell	3				on_play	damage	3	enemy_unit_1					炎�E奔流が全てを飲み込む、E敵ユニッチE体に3ダメージ、Ebasic
+RE028	RE028	ヘルファイア	red	2	3	spell	3				on_play	damage_all_enemy	1	enemy_unit_all					炎�E竜巻が�Eてを焼き尽くす、E敵全ユニットに1ダメージ、Ebasic
+RE029	RE029	灼熱の審判	red	3	4	spell	3				on_play	damage	6	enemy_unit_1					獁E��が裁きを下す、E敵ユニッチE体に6ダメージ、Ebasic
+RE030	RE030	天罰の隕石	red	4	5	spell	3				on_play	damage_all	3	all_units					降り注ぐ滁E�Eの星、E全ユニットに3ダメージ、Ebasic

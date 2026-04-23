@@ -2758,3 +2758,62 @@ body.targeting-mode {
 .cd-token-stats .atk { color: #f87171; }
 .cd-token-stats .hp { color: #4ade80; }
 
+/* ========== スマホ・モバイル端末対応 ========== */
+
+/* 長押し時のデフォルトメニュー無効化（カード等） */
+.card-item, .card, .hand-card, .board-half, .tribe-badge, .avatar-frame, .mode-card {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* スマホ縦画面時の「横画面にしてください」オーバーレイ */
+.rotate-prompt {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--bg-primary);
+  color: #fff;
+  z-index: 9999999;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+/* 縦画面 (Portrait) で画面幅が狭い場合はゲーム本体を隠して警告を出す */
+@media screen and (max-width: 900px) and (orientation: portrait) {
+  #game-wrapper {
+    display: none !important;
+  }
+  #rotate-prompt {
+    display: flex !important;
+  }
+}
+
+/* デッキ構築画面のスマホ対応 */
+@media screen and (max-width: 900px) {
+  .deck-builder {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 400px auto;
+    height: auto;
+    min-height: 100vh;
+    padding: 10px;
+    overflow-y: auto;
+  }
+  
+  .card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .card-item {
+    min-height: 140px;
+  }
+  
+  .deck-list-container {
+    max-height: 300px;
+  }
+}
