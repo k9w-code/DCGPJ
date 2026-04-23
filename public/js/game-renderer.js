@@ -509,6 +509,16 @@ function attachCardDetailEvent(el, card) {
     e.preventDefault();
     window.showCardDetail(card);
   });
+
+  // モバイル向け長押し判定 (500ms)
+  let pressTimer;
+  el.addEventListener('touchstart', (e) => {
+    pressTimer = setTimeout(() => {
+      window.showCardDetail(card);
+    }, 500);
+  }, { passive: true });
+  el.addEventListener('touchend', () => clearTimeout(pressTimer));
+  el.addEventListener('touchmove', () => clearTimeout(pressTimer));
 }
 
 function renderPlayerInfo(state, selectedAttacker) {
