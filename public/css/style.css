@@ -2792,28 +2792,4 @@ body.targeting-mode {
   }
 }
 
-/* デッキ構築画面のスマホ対応 */
-@media screen and (max-width: 900px) {
-  .deck-builder {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 400px auto;
-    height: auto;
-    min-height: 100vh;
-    padding: 10px;
-    overflow-y: auto;
-  }
-  
-  .card-grid {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 10px;
-    padding: 10px;
-  }
 
-  .card-item {
-    min-height: 140px;
-  }
-  
-  .deck-list-container {
-    max-height: 300px;
-  }
-}

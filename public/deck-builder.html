@@ -7,7 +7,14 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <div class="deck-builder">
+  <div class="rotate-prompt" id="rotate-prompt">
+    <div style="font-size: 64px; margin-bottom: 20px;">📱🔄</div>
+    <div style="font-size: 24px; margin-bottom: 10px;">スマホを横向きにしてください</div>
+    <div style="font-size: 16px; color: #a09880;">Please rotate your device to landscape</div>
+  </div>
+  <div class="game-wrapper" id="game-wrapper" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; overflow: hidden; background: #000;">
+    <div class="game-container" id="game-container" style="width: 1920px; height: 1080px; position: relative; transform-origin: 0 0;">
+  <div class="deck-builder" style="height: 1080px;">
     <!-- 左ペイン: カード詳細プレビュー -->
     <div class="preview-panel panel">
       <div id="preview-content" class="preview-content empty">
@@ -164,9 +171,31 @@
     </div>
   </div>
 
+    </div>
+  </div>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/audio-manager.js"></script>
   <script src="/js/game-renderer.js"></script>
   <script src="/js/deck-builder.js"></script>
+  <script>
+    function resizeGame() {
+      const container = document.getElementById('game-container');
+      if (!container) return;
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      const scaleX = windowWidth / 1920;
+      const scaleY = windowHeight / 1080;
+      const scale = Math.min(scaleX, scaleY);
+      container.style.transform = `scale(${scale})`;
+      container.style.position = 'absolute';
+      container.style.left = `${(windowWidth - 1920 * scale) / 2}px`;
+      container.style.top = `${(windowHeight - 1080 * scale) / 2}px`;
+      container.style.transformOrigin = '0 0';
+    }
+    window.addEventListener('resize', resizeGame);
+    window.addEventListener('load', resizeGame);
+    document.addEventListener('DOMContentLoaded', resizeGame);
+    resizeGame();
+  </script>
 </body>
 </html>
