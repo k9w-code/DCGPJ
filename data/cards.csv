@@ -99,7 +99,7 @@ RE007,RE007,紅蓮の重装騎士,red,1,4,unit,3,4,4,taunt,legacy,on_death,draw,
 RE008,RE008,氷花の剣士,red,1,4,unit,3,3,5,lethal,,,,,,,,,凍てつく雪原に咲き誇る、一輪の熱き刃。,【必殺】,basic
 RE009,RE009,月夜の狩人,red,1,4,unit,3,3,5,snipe,on_attack,damage,2,enemy_unit_1,,,,,静寂を切り裂き、放たれた矢は月明かりを穿つ。,【狙撃】【攻撃時】敵ユニット1体に2ダメージ。,basic
 RE010,RE010,戦旗の防人,red,1,3,unit,3,3,2,,on_play,draw,1,self,,,,,果てなき砂漠を守り抜く、揺るぎない鋼の意志。,【登場時】1枚ドロー。,basic
-RE011,RE011,灼熱の巨神,red,1,5,unit,3,4,5,siege,on_attack,buff_attack,2,this_unit,,,,,大地を割り砕き、怒りの业火が顕現する。,【攻城】【攻撃時】このユニットのATK+2。,basic
+RE011,RE011,灼熱の巨神,red,1,5,unit,3,4,5,siege,on_attack,buff_attack,2,this_unit,,,,,大地を割り砕き、怒りの業火が顕現する。,【攻城】【攻撃時】このユニットのATK+2。,basic
 RE012,RE012,蒼炎の貴婦人,red,1,4,unit,3,4,4,link,on_play,buff_attack,1,self_unit_all,,,,,青き炎が、刃向かう者の魂を静かに焦がす。,【連携】【登場時】全味方ユニットのATK+1。,basic
 RE013,RE013,煉獄の骸将,red,1,5,unit,3,6,4,,on_play,damage_all_enemy,1,enemy_unit_all,,,,,尽きぬ怨念が炎となり、生者を冥府へと誘う。,【登場時】敵全ユニットに1ダメージ。,basic
 RE014,RE014,滅亡の影竜,red,1,7,unit,3,6,5,,on_play,damage_all,4,unit_all,,,,,天を震わす咆哮が、空を絶望の黒に染め上げる。,【登場時】全ユニットに4ダメージ。,basic
