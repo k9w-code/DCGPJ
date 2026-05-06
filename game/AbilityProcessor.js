@@ -1,11 +1,11 @@
 const { NUM_LANES, ROWS, forEachUnit, calculateLife, createUnitInstance } = require('./GameState');
 const { hasKeyword, getKeywordParam, getKeywordId } = require('./KeywordEffects');
 
-// ヘルパー: ユニット群から特定の条件で「候補」をリストアップする
+// \u30d8\u30eb\u30d1\u30fc: \u30e6\u30cb\u30c3\u30c8\u7fa4\u304b\u3089\u7279\u5b9a\u306e\u6761\u4ef6\u3067\u300c\u5019\u88dc\u300d\u3092\u30ea\u30b9\u30c8\u30a2\u30c3\u30d7\u3059\u308b
 function selectByCriteria(units, criteria, mode) {
   if (units.length === 0) return [];
   
-  // まず指定基準（HP, ATK, Cost）の最適値を見つける
+  // \u307e\u305a\u6307\u5b9a\u57fa\u6e96\uff08HP, ATK, Cost\uff09\u306e\u6700\u9069\u5024\u3092\u898b\u3064\u3051\u308b
   let bestVal = (mode === 'min') ? Infinity : -Infinity;
   units.forEach(u => {
     let val;
@@ -19,7 +19,7 @@ function selectByCriteria(units, criteria, mode) {
 
   if (bestVal === Infinity || bestVal === -Infinity) return [];
 
-  // 最適値と一致するユニットをすべて返す（タイを維持）
+  // \u6700\u9069\u5024\u3068\u4e00\u81f4\u3059\u308b\u30e6\u30cb\u30c3\u30c8\u3092\u3059\u3079\u3066\u8fd4\u3059\uff08\u30bf\u30a4\u3092\u7dad\u6301\uff09
   return units.filter(u => {
     let val;
     if (criteria === 'hp') val = u.currentHp;
@@ -29,7 +29,7 @@ function selectByCriteria(units, criteria, mode) {
   });
 }
 
-// ヘルパー: 対象指定識別子に基づいてターゲットを取得
+// \u30d8\u30eb\u30d1\u30fc: \u5bfe\u8c61\u6307\u5b9a\u8b58\u5225\u5b50\u306b\u57fa\u3065\u3044\u3066\u30bf\u30fc\u30b2\u30c3\u30c8\u3092\u53d6\u5f97
 function getAbilityTargets(targetId, currentPlayer, opponentPlayer, value, unit) {
   const isEnemyTarget = targetId.startsWith('enemy_unit_');
   
@@ -51,19 +51,19 @@ function getAbilityTargets(targetId, currentPlayer, opponentPlayer, value, unit)
     case 'all_units':
       return [...selfUnits, ...enemyUnits];
     
-    // HP基準
+    // HP\u57fa\u6e96
     case 'enemy_unit_weakest': candidates = selectByCriteria(enemyUnits, 'hp', 'min'); break;
     case 'enemy_unit_toughest': candidates = selectByCriteria(enemyUnits, 'hp', 'max'); break;
     case 'self_unit_weakest': candidates = selectByCriteria(selfUnits, 'hp', 'min'); break;
     case 'self_unit_toughest': candidates = selectByCriteria(selfUnits, 'hp', 'max'); break;
 
-    // 攻撃力基準
+    // \u653b\u6483\u529b\u57fa\u6e96
     case 'enemy_unit_strongest': candidates = selectByCriteria(enemyUnits, 'atk', 'max'); break;
     case 'enemy_unit_frailest': candidates = selectByCriteria(enemyUnits, 'atk', 'min'); break;
     case 'self_unit_strongest': candidates = selectByCriteria(selfUnits, 'atk', 'max'); break;
     case 'self_unit_frailest': candidates = selectByCriteria(selfUnits, 'atk', 'min'); break;
 
-    // コスト基準
+    // \u30b3\u30b9\u30c8\u57fa\u6e96
     case 'enemy_unit_highest_cost': candidates = selectByCriteria(enemyUnits, 'cost', 'max'); break;
     case 'enemy_unit_lowest_cost': candidates = selectByCriteria(enemyUnits, 'cost', 'min'); break;
     case 'self_unit_highest_cost': candidates = selectByCriteria(selfUnits, 'cost', 'max'); break;
@@ -71,22 +71,22 @@ function getAbilityTargets(targetId, currentPlayer, opponentPlayer, value, unit)
 
     case 'self': return [currentPlayer];
     case 'enemy': return [opponentPlayer];
-    case 'this_unit': return unit ? [unit] : []; // 自身を対象にする
+    case 'this_unit': return unit ? [unit] : []; // \u81ea\u8eab\u3092\u5bfe\u8c61\u306b\u3059\u308b
     case 'enemy_shield': return opponentPlayer.shields.filter(s => !s.destroyed).slice(0, 1);
     default: return [];
   }
 
-  // 相手ユニットを対象とする場合、魔盾 (spellshield) を持つユニットを候補からから除外
-  // 全体効果（ターゲットIDに 'all' が含まれる場合）は、魔盾（Spellshield）や潜伏（Stealth）を無視する
+  // \u76f8\u624b\u30e6\u30cb\u30c3\u30c8\u3092\u5bfe\u8c61\u3068\u3059\u308b\u5834\u5408\u3001\u9b54\u76fe (spellshield) \u3092\u6301\u3064\u30e6\u30cb\u30c3\u30c8\u3092\u5019\u88dc\u304b\u3089\u304b\u3089\u9664\u5916
+  // \u5168\u4f53\u52b9\u679c\uff08\u30bf\u30fc\u30b2\u30c3\u30c8ID\u306b 'all' \u304c\u542b\u307e\u308c\u308b\u5834\u5408\uff09\u306f\u3001\u9b54\u76fe\uff08Spellshield\uff09\u3084\u6f5c\u4f0f\uff08Stealth\uff09\u3092\u7121\u8996\u3059\u308b
   const isAreaEffect = targetId.includes('all');
 
   if (isEnemyTarget && !isAreaEffect) {
     candidates = candidates.filter(u => !hasKeyword(u, 'spellshield'));
   }
 
-  // 1体指定系（_1, weakest等）で候補が複数の場合、ここでは全員返して呼び出し側(processAbility)で判断させる
-  // ただし、単体のランダム1体 (enemy_unit_1等) の場合は、歴史的な互換性としてここで1つ選ぶ場合もあるが、
-  // 最新の「タイなら選択」ルールを優先し、一旦候補リストの状態を維持して返す
+  // 1\u4f53\u6307\u5b9a\u7cfb\uff08_1, weakest\u7b49\uff09\u3067\u5019\u88dc\u304c\u8907\u6570\u306e\u5834\u5408\u3001\u3053\u3053\u3067\u306f\u5168\u54e1\u8fd4\u3057\u3066\u547c\u3073\u51fa\u3057\u5074(processAbility)\u3067\u5224\u65ad\u3055\u305b\u308b
+  // \u305f\u3060\u3057\u3001\u5358\u4f53\u306e\u30e9\u30f3\u30c0\u30e01\u4f53 (enemy_unit_1\u7b49) \u306e\u5834\u5408\u306f\u3001\u6b74\u53f2\u7684\u306a\u4e92\u63db\u6027\u3068\u3057\u3066\u3053\u3053\u30671\u3064\u9078\u3076\u5834\u5408\u3082\u3042\u308b\u304c\u3001
+  // \u6700\u65b0\u306e\u300c\u30bf\u30a4\u306a\u3089\u9078\u629e\u300d\u30eb\u30fc\u30eb\u3092\u512a\u5148\u3057\u3001\u4e00\u65e6\u5019\u88dc\u30ea\u30b9\u30c8\u306e\u72b6\u614b\u3092\u7dad\u6301\u3057\u3066\u8fd4\u3059
   return candidates;
 }
 
@@ -103,10 +103,16 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
     const ability = abilities[i];
     if (ability.trigger !== trigger || !ability.effect) continue;
 
-    // 条件のチェック（既存の keywords 列から取得）
+    // 沈黙状態なら全アビリティを発動させない
+    if (unit.silenced) {
+      console.log(`[Ability] ${unit.name} is silenced, skipping ability.`);
+      continue;
+    }
+
+    // \u6761\u4ef6\u306e\u30c1\u30a7\u30c3\u30af\uff08\u65e2\u5b58\u306e keywords \u5217\u304b\u3089\u53d6\u5f97\uff09
     let conditionMet = true;
     
-    // on_play の場合、keywords に awaken があればそれをレベル条件として扱う
+    // on_play \u306e\u5834\u5408\u3001keywords \u306b awaken \u304c\u3042\u308c\u3070\u305d\u308c\u3092\u30ec\u30d9\u30eb\u6761\u4ef6\u3068\u3057\u3066\u6271\u3046
     if (trigger === 'on_play') {
       const awakenKw = unit.keywords && unit.keywords.find(k => k.startsWith('awaken'));
       if (awakenKw) {
@@ -122,12 +128,12 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
         }
         if (currentLv < kw.param) {
           conditionMet = false;
-          logs.push(`⚠️ ${unit.name} は神族レベル条件（${awakenKw}）を満たしていないため、効果は発動しませんでした`);
+          logs.push(`\u26a0\ufe0f ${unit.name} \u306f\u795e\u65cf\u30ec\u30d9\u30eb\u6761\u4ef6\uff08${awakenKw}\uff09\u3092\u6e80\u305f\u3057\u3066\u3044\u306a\u3044\u305f\u3081\u3001\u52b9\u679c\u306f\u767a\u52d5\u3057\u307e\u305b\u3093\u3067\u3057\u305f`);
         }
       }
     }
     
-    // 代償 (Sacrifice) のチェック
+    // \u4ee3\u511f (Sacrifice) \u306e\u30c1\u30a7\u30c3\u30af
     if (trigger === 'on_play' && i === startIndex && (targetRow === null || targetRow === undefined)) {
       if (hasKeyword(unit, 'sacrifice')) {
         let alliesCount = 0;
@@ -144,7 +150,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
       }
     }
 
-    // 残響 (Echo) のチェック
+    // \u6b8b\u97ff (Echo) \u306e\u30c1\u30a7\u30c3\u30af
     if (trigger === 'on_play' && i === startIndex && (targetRow === null || targetRow === undefined)) {
       if (hasKeyword(unit, 'echo') && currentPlayer.sp >= unit.cost) {
         let hasEmptySlot = false;
@@ -165,7 +171,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
       }
     }
 
-    // その他のキーワード条件（link, crisis等）
+    // \u305d\u306e\u4ed6\u306e\u30ad\u30fc\u30ef\u30fc\u30c9\u6761\u4ef6\uff08link, crisis\u7b49\uff09
     const condKeys = ['link', 'crisis', 'vanguard', 'rearguard', 'loner', 'avenger'];
     const activeCondKw = unit.keywords && unit.keywords.find(k => condKeys.includes(getKeywordId(k).id));
     if (activeCondKw) {
@@ -202,7 +208,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
       else if (cond === 'avenger' && currentPlayer.friendlyDeathsThisTurn === 0) conditionMet = false;
 
       if (!conditionMet) {
-        logs.push(`⚠️ ${unit.name} の「${cond}」条件を満たしていないため発動しません`);
+        logs.push(`\u26a0\ufe0f ${unit.name} \u306e\u300c${cond}\u300d\u6761\u4ef6\u3092\u6e80\u305f\u3057\u3066\u3044\u306a\u3044\u305f\u3081\u767a\u52d5\u3057\u307e\u305b\u3093`);
       }
     }
 
@@ -212,7 +218,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
     const value = ability.value;
     const abilityTargetId = ability.target || 'enemy_unit_1';
 
-    // 配置 (on_play) 直後は targetRow/Lane は配置場所を指すため、フェーズが targeting かつ手動トリガーでない限り、これらをアビリティの対象とはみなさない
+    // \u914d\u7f6e (on_play) \u76f4\u5f8c\u306f targetRow/Lane \u306f\u914d\u7f6e\u5834\u6240\u3092\u6307\u3059\u305f\u3081\u3001\u30d5\u30a7\u30fc\u30ba\u304c targeting \u304b\u3064\u624b\u52d5\u30c8\u30ea\u30ac\u30fc\u3067\u306a\u3044\u9650\u308a\u3001\u3053\u308c\u3089\u3092\u30a2\u30d3\u30ea\u30c6\u30a3\u306e\u5bfe\u8c61\u3068\u306f\u307f\u306a\u3055\u306a\u3044
     const manualTarget = (targetRow !== undefined && targetRow !== null && targetLane !== undefined && targetLane !== null && gameState.phase === 'targeting') 
       ? (abilityTargetId.includes('self') ? currentPlayer.board[targetRow][targetLane] : opponentPlayer.board[targetRow][targetLane])
       : null;
@@ -222,23 +228,23 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
         const { applyDamage } = require('./CombatResolver');
         if (manualTarget) {
           const actualDamage = applyDamage(manualTarget, value, logs);
-          logs.push(`🔥 ${unit.name} のアビリティ発動！${manualTarget.name} に ${actualDamage} ダメージ (HP: ${manualTarget.currentHp})`);
+          logs.push(`\ud83d\udd25 ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${manualTarget.name} \u306b ${actualDamage} \u30c0\u30e1\u30fc\u30b8 (HP: ${manualTarget.currentHp})`);
           events.push({ type: 'ability_damage', source: unit.instanceId, target: manualTarget.instanceId, damage: actualDamage });
           if (manualTarget.currentHp <= 0) events.push({ type: 'ability_kill', target: manualTarget.instanceId });
         } else {
           const { applyDamage } = require('./CombatResolver');
-          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // シールドスキルの場合はユニットなし
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
           if (targets.length === 1) {
             const target = targets[0];
             const actualDamage = applyDamage(target, value, logs);
-            logs.push(`🔥 ${unit.name} のアビリティ発動！${target.name} に ${actualDamage} ダメージ (HP: ${target.currentHp})`);
+            logs.push(`\ud83d\udd25 ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u306b ${actualDamage} \u30c0\u30e1\u30fc\u30b8 (HP: ${target.currentHp})`);
             events.push({ type: 'ability_damage', source: unit.instanceId, target: target.instanceId, damage: actualDamage });
             if (target.currentHp <= 0) events.push({ type: 'ability_kill', target: target.instanceId });
           } else if (targets.length > 1) {
             needsTarget = true;
             targetId = abilityTargetId;
           } else if (abilityTargetId !== 'all_units' && !abilityTargetId.includes('all')) {
-            logs.push(`⚠️ ${unit.name} のアビリティ：有効な対象（魔盾なし）がいないため不発に終わりました`);
+            logs.push(`\u26a0\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\uff1a\u5bfe\u8c61\u304c\u9b54\u76fe\uff08Spellshield\uff09\u3067\u5b88\u3089\u308c\u3066\u3044\u308b\u304b\u3001\u6709\u52b9\u306a\u5bfe\u8c61\u304c\u3044\u306a\u3044\u305f\u3081\u4e0d\u767a\u306b\u7d42\u308f\u308a\u307e\u3057\u305f`);
           }
         }
         break;
@@ -250,7 +256,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
         const targets = getAbilityTargets(tType, currentPlayer, opponentPlayer);
         targets.forEach(target => {
           const actualDamage = applyDamage(target, value, logs);
-          logs.push(`🔥 ${unit.name} のアビリティ発動！${target.name} に ${actualDamage} ダメージ (HP: ${target.currentHp})`);
+          logs.push(`\ud83d\udd25 ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u306b ${actualDamage} \u30c0\u30e1\u30fc\u30b8 (HP: ${target.currentHp})`);
           events.push({ type: 'ability_damage', source: unit.instanceId, target: target.instanceId, damage: actualDamage });
           if (target.currentHp <= 0) events.push({ type: 'ability_kill', target: target.instanceId });
         });
@@ -260,7 +266,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
         if (manualTarget) {
           const healed = Math.min(value, manualTarget.maxHp - manualTarget.currentHp);
           manualTarget.currentHp += healed;
-          logs.push(`💚 ${unit.name} のアビリティ発動！${manualTarget.name} を ${healed} 回復 (HP: ${manualTarget.currentHp})`);
+          logs.push(`\ud83d\udc9a ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${manualTarget.name} \u3092 ${healed} \u56de\u5fa9 (HP: ${manualTarget.currentHp})`);
           events.push({ type: 'ability_heal', source: unit.instanceId, target: manualTarget.instanceId, value: healed });
         } else {
           const targetSpec = (abilityTargetId === 'enemy_unit_1' || abilityTargetId === 'enemy_unit') ? 'self_unit_1' : abilityTargetId;
@@ -270,7 +276,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
             const target = targets[0];
             const healed = Math.min(value, target.maxHp - target.currentHp);
             target.currentHp += healed;
-            logs.push(`💚 ${unit.name} のアビリティ発動！${target.name} を ${healed} 回復 (HP: ${target.currentHp})`);
+            logs.push(`\ud83d\udc9a ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u3092 ${healed} \u56de\u5fa9 (HP: ${target.currentHp})`);
             events.push({ type: 'ability_heal', source: unit.instanceId, target: target.instanceId, value: healed });
           } else if (targets.length > 1) {
             needsTarget = true;
@@ -285,14 +291,14 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           const healed = Math.min(value, target.maxHp - target.currentHp);
           if (healed > 0) {
             target.currentHp += healed;
-            logs.push(`💚 ${unit.name} のアビリティ発動！${target.name} を ${healed} 回復 (HP: ${target.currentHp})`);
+            logs.push(`\ud83d\udc9a ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u3092 ${healed} \u56de\u5fa9 (HP: ${target.currentHp})`);
             events.push({ type: 'ability_heal', source: unit.instanceId, target: target.instanceId, value: healed });
           }
         });
         break;
       }
       case 'draw': {
-        logs.push(`📖 ${unit.name} のアビリティ発動！${value} 枚ドロー`);
+        logs.push(`\ud83d\udcd6 ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${value} \u679a\u30c9\u30ed\u30fc`);
         events.push({ type: 'ability_draw', player: currentPlayer.id, count: value });
         break;
       }
@@ -301,7 +307,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           manualTarget.currentAttack += value;
           if (!manualTarget.modifiers) manualTarget.modifiers = [];
           manualTarget.modifiers.push({ source: unit.name, type: 'atk', value: value });
-          logs.push(`⬆️ ${unit.name} のアビリティ発動！${manualTarget.name} 攻撃力+${value} (ATK: ${manualTarget.currentAttack})`);
+          logs.push(`\u2b06\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${manualTarget.name} \u653b\u6483\u529b+${value} (ATK: ${manualTarget.currentAttack})`);
         } else {
           const targets = abilityTargetId === 'this_unit' ? [unit] : getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value);
           if (targets.length === 1) {
@@ -309,7 +315,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
             target.currentAttack += value;
             if (!target.modifiers) target.modifiers = [];
             target.modifiers.push({ source: unit.name, type: 'atk', value: value });
-            logs.push(`⬆️ ${unit.name} のアビリティ発動！${target.name} 攻撃力+${value} (ATK: ${target.currentAttack})`);
+            logs.push(`\u2b06\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u653b\u6483\u529b+${value} (ATK: ${target.currentAttack})`);
           } else if (targets.length > 1) {
             needsTarget = true;
             targetId = abilityTargetId;
@@ -323,7 +329,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           target.currentAttack += value;
           if (!target.modifiers) target.modifiers = [];
           target.modifiers.push({ source: unit.name, type: 'atk', value: value });
-          logs.push(`⬆️ ${unit.name} のアビリティ発動！${target.name} 攻撃力+${value} (ATK: ${target.currentAttack})`);
+          logs.push(`\u2b06\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u653b\u6483\u529b+${value} (ATK: ${target.currentAttack})`);
         });
         break;
       }
@@ -333,7 +339,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           manualTarget.maxHp += value;
           if (!manualTarget.modifiers) manualTarget.modifiers = [];
           manualTarget.modifiers.push({ source: unit.name, type: 'hp', value: value });
-          logs.push(`⬆️ ${unit.name} のアビリティ発動！${manualTarget.name} HP+${value} (HP: ${manualTarget.currentHp})`);
+          logs.push(`\u2b06\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${manualTarget.name} HP+${value} (HP: ${manualTarget.currentHp})`);
         } else {
           const targets = abilityTargetId === 'this_unit' ? [unit] : getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value);
           if (targets.length === 1) {
@@ -342,7 +348,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
             target.maxHp += value;
             if (!target.modifiers) target.modifiers = [];
             target.modifiers.push({ source: unit.name, type: 'hp', value: value });
-            logs.push(`⬆️ ${unit.name} のアビリティ発動！${target.name} HP+${value} (HP: ${target.currentHp})`);
+            logs.push(`\u2b06\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} HP+${value} (HP: ${target.currentHp})`);
           } else if (targets.length > 1) {
             needsTarget = true;
             targetId = abilityTargetId;
@@ -358,7 +364,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           if (!manualTarget.modifiers) manualTarget.modifiers = [];
           manualTarget.modifiers.push({ source: unit.name, type: 'atk', value: value });
           manualTarget.modifiers.push({ source: unit.name, type: 'hp', value: value });
-          logs.push(`⬆️ ${unit.name} のアビリティ発動！${manualTarget.name} ATK/HP+${value} (ATK: ${manualTarget.currentAttack}, HP: ${manualTarget.currentHp})`);
+          logs.push(`\u2b06\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${manualTarget.name} ATK/HP+${value} (ATK: ${manualTarget.currentAttack}, HP: ${manualTarget.currentHp})`);
         } else {
           const targets = abilityTargetId === 'this_unit' ? [unit] : getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value);
           if (targets.length === 1) {
@@ -369,7 +375,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
             if (!target.modifiers) target.modifiers = [];
             target.modifiers.push({ source: unit.name, type: 'atk', value: value });
             target.modifiers.push({ source: unit.name, type: 'hp', value: value });
-            logs.push(`⬆️ ${unit.name} のアビリティ発動！${target.name} ATK/HP+${value} (ATK: ${target.currentAttack}, HP: ${target.currentHp})`);
+            logs.push(`\u2b06\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} ATK/HP+${value} (ATK: ${target.currentAttack}, HP: ${target.currentHp})`);
           } else if (targets.length > 1) {
             needsTarget = true;
             targetId = abilityTargetId;
@@ -384,7 +390,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           target.maxHp += value;
           if (!target.modifiers) target.modifiers = [];
           target.modifiers.push({ source: unit.name, type: 'hp', value: value });
-          logs.push(`⬆️ ${unit.name} のアビリティ発動！${target.name} HP+${value} (HP: ${target.currentHp})`);
+          logs.push(`\u2b06\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} HP+${value} (HP: ${target.currentHp})`);
         });
         break;
       }
@@ -394,7 +400,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           target.currentAttack = Math.max(0, target.currentAttack - value);
           if (!target.modifiers) target.modifiers = [];
           target.modifiers.push({ source: unit.name, type: 'atk', value: -value });
-          logs.push(`⬇️ ${unit.name} のアビリティ発動！${target.name} の攻撃力を ${value} 減少 (ATK: ${target.currentAttack})`);
+          logs.push(`\u2b07\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u306e\u653b\u6483\u529b\u3092 ${value} \u6e1b\u5c11 (ATK: ${target.currentAttack})`);
         });
         break;
       }
@@ -403,15 +409,15 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           manualTarget.currentAttack = Math.max(0, manualTarget.currentAttack - value);
           if (!manualTarget.modifiers) manualTarget.modifiers = [];
           manualTarget.modifiers.push({ source: unit.name, type: 'atk', value: -value });
-          logs.push(`⬇️ ${unit.name} のアビリティ発動！${manualTarget.name} の攻撃力を ${value} 減少 (ATK: ${manualTarget.currentAttack})`);
+          logs.push(`\u2b07\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${manualTarget.name} \u306e\u653b\u6483\u529b\u3092 ${value} \u6e1b\u5c11 (ATK: ${manualTarget.currentAttack})`);
         } else {
-          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // シールドスキルの場合はユニットなし
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
           if (targets.length === 1) {
             const target = targets[0];
             target.currentAttack = Math.max(0, target.currentAttack - value);
             if (!target.modifiers) target.modifiers = [];
             target.modifiers.push({ source: unit.name, type: 'atk', value: -value });
-            logs.push(`⬇️ ${unit.name} のアビリティ発動！${target.name} の攻撃力を ${value} 減少 (ATK: ${target.currentAttack})`);
+            logs.push(`\u2b07\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u306e\u653b\u6483\u529b\u3092 ${value} \u6e1b\u5c11 (ATK: ${target.currentAttack})`);
           } else if (targets.length > 1) {
             needsTarget = true;
             targetId = abilityTargetId;
@@ -425,13 +431,13 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           target.currentHp = Math.max(0, target.currentHp - value);
           if (!target.modifiers) target.modifiers = [];
           target.modifiers.push({ source: unit.name, type: 'hp', value: -value });
-          logs.push(`⬇️ ${unit.name} のアビリティ発動！${target.name} のHPを ${value} 減少 (HP: ${target.currentHp})`);
+          logs.push(`\u2b07\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u306eHP\u3092 ${value} \u6e1b\u5c11 (HP: ${target.currentHp})`);
           
           if (target.currentHp <= 0) {
             const isReallyDead = processUnitDeath(target, logs);
             if (isReallyDead) {
               events.push({ type: 'ability_kill', target: target.instanceId });
-              logs.push(`💀 ${target.name} は生命力を失い撃破された！`);
+              logs.push(`\ud83d\udc80 ${target.name} \u306f\u751f\u547d\u529b\u3092\u5931\u3044\u6483\u7834\u3055\u308c\u305f\uff01`);
             }
           }
         };
@@ -441,7 +447,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
         } else if (trigger === 'on_play' && !abilityTargetId.includes('all')) {
           needsTarget = true;
         } else {
-          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // シールドスキルの場合はユニットなし
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
           targets.forEach(target => processDebuffHp(target));
         }
         break;
@@ -454,13 +460,13 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           if (!target.modifiers) target.modifiers = [];
           target.modifiers.push({ source: unit.name, type: 'atk', value: -value });
           target.modifiers.push({ source: unit.name, type: 'hp', value: -value });
-          logs.push(`⬇️ ${unit.name} のアビリティ発動！${target.name} の攻撃力/HPを ${value} 減少 (ATK: ${target.currentAttack}, HP: ${target.currentHp})`);
+          logs.push(`\u2b07\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u306e\u653b\u6483\u529b/HP\u3092 ${value} \u6e1b\u5c11 (ATK: ${target.currentAttack}, HP: ${target.currentHp})`);
           
           if (target.currentHp <= 0) {
             const isReallyDead = processUnitDeath(target, logs);
             if (isReallyDead) {
               events.push({ type: 'ability_kill', target: target.instanceId });
-              logs.push(`💀 ${target.name} は生命力を失い撃破された！`);
+              logs.push(`\ud83d\udc80 ${target.name} \u306f\u751f\u547d\u529b\u3092\u5931\u3044\u6483\u7834\u3055\u308c\u305f\uff01`);
             }
           }
         };
@@ -468,7 +474,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
         if (manualTarget) {
           processDebuffStats(manualTarget);
         } else {
-          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // シールドスキルの場合はユニットなし
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
           if (targets.length === 1) {
             processDebuffStats(targets[0]);
           } else if (targets.length > 1) {
@@ -484,17 +490,17 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           const isDead = processUnitDeath(manualTarget, logs);
           if (isDead) {
             manualTarget.currentHp = 0;
-            logs.push(`☠️ ${unit.name} のアビリティ発動！${manualTarget.name} を破壊！`);
+            logs.push(`\u2620\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${manualTarget.name} \u3092\u7834\u58ca\uff01`);
             events.push({ type: 'ability_kill', target: manualTarget.instanceId });
           }
         } else {
-          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // シールドスキルの場合はユニットなし
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
           if (targets.length === 1) {
             const target = targets[0];
             const isDead = processUnitDeath(target, logs);
             if (isDead) {
               target.currentHp = 0;
-              logs.push(`☠️ ${unit.name} のアビリティ発動！${target.name} を破壊！`);
+              logs.push(`\u2620\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u3092\u7834\u58ca\uff01`);
               events.push({ type: 'ability_kill', target: target.instanceId });
             }
           } else if (targets.length > 1) {
@@ -537,15 +543,15 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
              if (valid) {
                targetToDestroy = manualTarget;
              } else {
-               logs.push(`⚠️ 選択されたターゲットは条件を満たしていません。効果は不発となりました。`);
+               logs.push(`\u26a0\ufe0f \u9078\u629e\u3055\u308c\u305f\u30bf\u30fc\u30b2\u30c3\u30c8\u306f\u6761\u4ef6\u3092\u6e80\u305f\u3057\u3066\u3044\u307e\u305b\u3093\u3002\u52b9\u679c\u306f\u4e0d\u767a\u3068\u306a\u308a\u307e\u3057\u305f\u3002`);
                break;
              }
           } else if (trigger === 'on_play' || trigger === 'activate') {
              needsTarget = true;
-             targetId = 'enemy_unit_1'; // クライアント側に敵を選択可能と伝える
+             targetId = 'enemy_unit_1'; // \u30af\u30e9\u30a4\u30a2\u30f3\u30c8\u5074\u306b\u6575\u3092\u9078\u629e\u53ef\u80fd\u3068\u4f1d\u3048\u308b
              break;
           } else {
-             // ターン終了時等のタイブレークは左上から優先（安定ソートの第1候補）
+             // \u30bf\u30fc\u30f3\u7d42\u4e86\u6642\u7b49\u306e\u30bf\u30a4\u30d6\u30ec\u30fc\u30af\u306f\u5de6\u4e0a\u304b\u3089\u512a\u5148\uff08\u5b89\u5b9a\u30bd\u30fc\u30c8\u306e\u7b2c1\u5019\u88dc\uff09
              targetToDestroy = candidates[0];
           }
         }
@@ -555,8 +561,8 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           const isDead = processUnitDeath(targetToDestroy, logs);
           if (isDead) {
             targetToDestroy.currentHp = 0;
-            const detailStr = isLowestHp ? '最もHPが低い' : isHighestHp ? '最もHPが高い' : isHighestAtk ? '最も攻撃力が高い' : '最も攻撃力が低い';
-            logs.push(`☠️ ${unit.name} の効果！${detailStr} ${targetToDestroy.name} を破壊！`);
+            const detailStr = isLowestHp ? '\u6700\u3082HP\u304c\u4f4e\u3044' : isHighestHp ? '\u6700\u3082HP\u304c\u9ad8\u3044' : isHighestAtk ? '\u6700\u3082\u653b\u6483\u529b\u304c\u9ad8\u3044' : '\u6700\u3082\u653b\u6483\u529b\u304c\u4f4e\u3044';
+            logs.push(`\u2620\ufe0f ${unit.name} \u306e\u52b9\u679c\uff01${detailStr} ${targetToDestroy.name} \u3092\u7834\u58ca\uff01`);
             events.push({ type: 'ability_kill', target: targetToDestroy.instanceId });
           }
         }
@@ -567,16 +573,16 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           manualTarget.hasActed = true;
           manualTarget.canAttack = false;
           manualTarget.frozen = true;
-          logs.push(`❄️ ${unit.name} のアビリティ発動！${manualTarget.name} を凍結！ (次ターン行動不可)`);
+          logs.push(`\u2744\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${manualTarget.name} \u3092\u51cd\u7d50\uff01 (\u6b21\u30bf\u30fc\u30f3\u884c\u52d5\u4e0d\u53ef)`);
           events.push({ type: 'ability_freeze', target: manualTarget.instanceId });
         } else {
-          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // シールドスキルの場合はユニットなし
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
           if (abilityTargetId.includes('all')) {
             targets.forEach(target => {
               target.hasActed = true;
               target.canAttack = false;
               target.frozen = true;
-              logs.push(`❄️ ${unit.name} のアビリティ発動！${target.name} を凍結！`);
+              logs.push(`\u2744\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u3092\u51cd\u7d50\uff01`);
               events.push({ type: 'ability_freeze', target: target.instanceId });
             });
           } else if (targets.length === 1) {
@@ -584,7 +590,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
             target.hasActed = true;
             target.canAttack = false;
             target.frozen = true;
-            logs.push(`❄️ ${unit.name} のアビリティ発動！${target.name} を凍結！ (次ターン行動不可)`);
+            logs.push(`\u2744\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u3092\u51cd\u7d50\uff01 (\u6b21\u30bf\u30fc\u30f3\u884c\u52d5\u4e0d\u53ef)`);
             events.push({ type: 'ability_freeze', target: target.instanceId });
           } else if (targets.length > 1) {
             needsTarget = true;
@@ -595,19 +601,19 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
       }
       case 'bounce': {
         if (manualTarget) {
-          logs.push(`🔄 ${unit.name} のアビリティ発動！${manualTarget.name} を手札に戻す`);
+          logs.push(`\ud83d\udd04 ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${manualTarget.name} \u3092\u624b\u672d\u306b\u623b\u3059`);
           events.push({ type: 'ability_bounce', target: manualTarget.instanceId });
         } else {
-          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // シールドスキルの場合はユニットなし
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
           if (abilityTargetId.includes('all')) {
-            // 全体バウンスの処理
+            // \u5168\u4f53\u30d0\u30a6\u30f3\u30b9\u306e\u51e6\u7406
             targets.forEach(target => {
-              logs.push(`🔄 ${unit.name} の効果！${target.name} を手札に戻す`);
+              logs.push(`\ud83d\udd04 ${unit.name} \u306e\u52b9\u679c\uff01${target.name} \u3092\u624b\u672d\u306b\u623b\u3059`);
               events.push({ type: 'ability_bounce', target: target.instanceId });
             });
           } else if (targets.length === 1) {
             const target = targets[0];
-            logs.push(`🔄 ${unit.name} のアビリティ発動！${target.name} を手札に戻す`);
+            logs.push(`\ud83d\udd04 ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u3092\u624b\u672d\u306b\u623b\u3059`);
             events.push({ type: 'ability_bounce', target: target.instanceId });
           } else if (targets.length > 1) {
             needsTarget = true;
@@ -620,14 +626,14 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
         if (manualTarget) {
           manualTarget.barrierActive = true;
           if (!manualTarget.keywords.includes('barrier')) manualTarget.keywords.push('barrier');
-          logs.push(`🛡️ ${unit.name} のアビリティ発動！${manualTarget.name} に加護を付与`);
+          logs.push(`\ud83d\udee1\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${manualTarget.name} \u306b\u52a0\u8b77\u3092\u4ed8\u4e0e`);
         } else {
-          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // シールドスキルの場合はユニットなし
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
           if (targets.length === 1) {
             const target = targets[0];
             target.barrierActive = true;
             if (!target.keywords.includes('barrier')) target.keywords.push('barrier');
-            logs.push(`🛡️ ${unit.name} のアビリティ発動！${target.name} に加護を付与`);
+            logs.push(`\ud83d\udee1\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u306b\u52a0\u8b77\u3092\u4ed8\u4e0e`);
           } else if (targets.length > 1) {
             needsTarget = true;
             targetId = abilityTargetId;
@@ -639,14 +645,14 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
         if (manualTarget) {
           manualTarget.endureActive = true;
           if (!manualTarget.keywords.includes('endure')) manualTarget.keywords.push('endure');
-          logs.push(`💪 ${unit.name} のアビリティ発動！${manualTarget.name} に不屈を付与`);
+          logs.push(`\ud83d\udcaa ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${manualTarget.name} \u306b\u4e0d\u5c48\u3092\u4ed8\u4e0e`);
         } else {
-          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // シールドスキルの場合はユニットなし
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
           if (targets.length === 1) {
             const target = targets[0];
             target.endureActive = true;
             if (!target.keywords.includes('endure')) target.keywords.push('endure');
-            logs.push(`💪 ${unit.name} のアビリティ発動！${target.name} に不屈を付与`);
+            logs.push(`\ud83d\udcaa ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u306b\u4e0d\u5c48\u3092\u4ed8\u4e0e`);
           } else if (targets.length > 1) {
             needsTarget = true;
             targetId = abilityTargetId;
@@ -658,7 +664,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
         const targets = manualTarget ? [manualTarget] : getAbilityTargets(targetId, currentPlayer, opponentPlayer, value);
         targets.forEach(target => {
           target.currentHp -= value;
-          logs.push(`🩸 ${unit.name} のアビリティ発動！${target.name} から ${value} 吸収`);
+          logs.push(`\ud83e\ude78 ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u304b\u3089 ${value} \u5438\u53ce`);
           if (target.currentHp <= 0) events.push({ type: 'ability_kill', target: target.instanceId });
           
           const allies = [];
@@ -667,7 +673,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
             allies.sort((a, b) => a.currentHp - b.currentHp);
             const healed = Math.min(value, allies[0].maxHp - allies[0].currentHp);
             allies[0].currentHp += healed;
-            logs.push(`💚 ${allies[0].name} を ${healed} 回復`);
+            logs.push(`\ud83d\udc9a ${allies[0].name} \u3092 ${healed} \u56de\u5fa9`);
             events.push({ type: 'ability_heal', source: unit.instanceId, target: allies[0].instanceId, value: healed });
           }
         });
@@ -678,7 +684,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
         if (availableShields.length > 0) {
           const targetShield = availableShields[0];
           targetShield.currentDurability -= value;
-          logs.push(`💥 ${unit.name} のアビリティ発動！敵のシールドに直接 ${value} ダメージ`);
+          logs.push(`\ud83d\udca5 ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01\u6575\u306e\u30b7\u30fc\u30eb\u30c9\u306b\u76f4\u63a5 ${value} \u30c0\u30e1\u30fc\u30b8`);
           if (targetShield.currentDurability <= 0) {
             targetShield.currentDurability = 0;
             targetShield.destroyed = true;
@@ -693,30 +699,30 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
         if (targetShield) {
           if (targetShield.destroyed) targetShield.destroyed = false;
           targetShield.currentDurability += value;
-          logs.push(`🛡️ ${unit.name} のアビリティ発動！シールドを ${value} 回復！`);
+          logs.push(`\ud83d\udee1\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01\u30b7\u30fc\u30eb\u30c9\u3092 ${value} \u56de\u5fa9\uff01`);
           events.push({ type: 'ability_shield_heal', player: currentPlayer.id, index: shields.indexOf(targetShield), value: value });
         }
         break;
       }
       case 'sp_gain': {
         const targetPlayer = (abilityTargetId === 'enemy' || abilityTargetId === 'opponent') ? opponentPlayer : currentPlayer;
-        const targetName = targetPlayer === currentPlayer ? '自分' : '相手';
+        const targetName = targetPlayer === currentPlayer ? '\u81ea\u5206' : '\u76f8\u624b';
         targetPlayer.sp += value;
-        logs.push(`💰 ${unit.name} のアビリティ発動！${targetName}の SP+${value} (現在: ${targetPlayer.sp})`);
+        logs.push(`\ud83d\udcb0 ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${targetName}\u306e SP+${value} (\u73fe\u5728: ${targetPlayer.sp})`);
         break;
       }
       case 'sp_loss': {
         const targetPlayer = (abilityTargetId === 'enemy' || abilityTargetId === 'opponent') ? opponentPlayer : currentPlayer;
-        const targetName = targetPlayer === currentPlayer ? '自分' : '相手';
+        const targetName = targetPlayer === currentPlayer ? '\u81ea\u5206' : '\u76f8\u624b';
         targetPlayer.sp = Math.max(0, targetPlayer.sp - value);
-        logs.push(`⚠️ ${unit.name} のアビリティ発動！${targetName}の SP-${value} (現在: ${targetPlayer.sp})`);
+        logs.push(`\u26a0\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${targetName}\u306e SP-${value} (\u73fe\u5728: ${targetPlayer.sp})`);
         break;
       }
       case 'discard_random': {
         for (let i = 0; i < value && opponentPlayer.hand.length > 0; i++) {
           const idx = Math.floor(Math.random() * opponentPlayer.hand.length);
           const discarded = opponentPlayer.hand.splice(idx, 1)[0];
-          logs.push(`✋ ${unit.name} のアビリティ発動！相手の手札を破棄 (${discarded.name})`);
+          logs.push(`\u270b ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01\u76f8\u624b\u306e\u624b\u672d\u3092\u7834\u68c4 (${discarded.name})`);
           events.push({ type: 'ability_discard', player: opponentPlayer.id });
         }
         break;
@@ -726,13 +732,13 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           const idx = Math.floor(Math.random() * currentPlayer.hand.length);
           const targetCard = currentPlayer.hand[idx];
           targetCard.cost = Math.max(0, targetCard.cost - value);
-          logs.push(`✨ ${unit.name} の効果！手札の「${targetCard.name}」のコストが ${value} 下がった (現在: ${targetCard.cost})`);
+          logs.push(`\u2728 ${unit.name} \u306e\u52b9\u679c\uff01\u624b\u672d\u306e\u300c${targetCard.name}\u300d\u306e\u30b3\u30b9\u30c8\u304c ${value} \u4e0b\u304c\u3063\u305f (\u73fe\u5728: ${targetCard.cost})`);
         }
         break;
       }
       case 'steal_unit': {
         if (manualTarget && manualTarget.instanceId) {
-          // 相手の盤面から削除
+          // \u76f8\u624b\u306e\u76e4\u9762\u304b\u3089\u524a\u9664
           let removed = false;
           let stoleFrom = null;
           for (const r of ROWS) {
@@ -746,23 +752,23 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
             }
           }
           if (removed && stoleFrom) {
-            // 自分の空きスロットを探す
+            // \u81ea\u5206\u306e\u7a7a\u304d\u30b9\u30ed\u30c3\u30c8\u3092\u63a2\u3059
             let moved = false;
             for (const r of ROWS) {
               for (let i = 0; i < NUM_LANES; i++) {
                 if (!currentPlayer.board[r][i]) {
-                  stoleFrom.ownerId = currentPlayer.id; // 所有権変更
+                  stoleFrom.ownerId = currentPlayer.id; // \u6240\u6709\u6a29\u5909\u66f4
                   currentPlayer.board[r][i] = stoleFrom;
                   moved = true;
-                  logs.push(`🧲 ${unit.name} のアビリティ発動！相手の ${stoleFrom.name} を強奪して自分の盤面に引きずり込んだ！`);
+                  logs.push(`\ud83e\uddf2 ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01\u76f8\u624b\u306e ${stoleFrom.name} \u3092\u5f37\u596a\u3057\u3066\u81ea\u5206\u306e\u76e4\u9762\u306b\u5f15\u304d\u305a\u308a\u8fbc\u3093\u3060\uff01`);
                   break;
                 }
               }
               if (moved) break;
             }
             if (!moved) {
-              // 空きマスがない場合は不発（相手の盤面に一瞬で戻すか、墓地に送るか。安全のためここでは元に戻す）
-              logs.push(`⚠️ 空きマスがないため強奪失敗`);
+              // \u7a7a\u304d\u30de\u30b9\u304c\u306a\u3044\u5834\u5408\u306f\u4e0d\u767a\uff08\u76f8\u624b\u306e\u76e4\u9762\u306b\u4e00\u77ac\u3067\u623b\u3059\u304b\u3001\u5893\u5730\u306b\u9001\u308b\u304b\u3002\u5b89\u5168\u306e\u305f\u3081\u3053\u3053\u3067\u306f\u5143\u306b\u623b\u3059\uff09
+              logs.push(`\u26a0\ufe0f \u7a7a\u304d\u30de\u30b9\u304c\u306a\u3044\u305f\u3081\u5f37\u596a\u5931\u6557`);
               // (To be strictly safe we would put them back, but let's assume UI forced a target or empty check. Actually if no space, we just kill it)
               stoleFrom.currentHp = 0;
               events.push({ type: 'ability_kill', target: stoleFrom.instanceId });
@@ -780,13 +786,13 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           target.barrierActive = false;
           target.stealthActive = false;
           target.endureActive = false;
-          target.frozen = false; // 凍結解除
-          logs.push(`😶 ${unit.name} のアビリティ発動！${target.name} は「沈黙」し、すべての能力を失った！`);
+          target.frozen = false; // \u51cd\u7d50\u89e3\u9664
+          logs.push(`\ud83d\ude36 ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u306f\u300c\u6c88\u9ed9\u300d\u3057\u3001\u3059\u3079\u3066\u306e\u80fd\u529b\u3092\u5931\u3063\u305f\uff01`);
         };
         if (manualTarget) {
           processSilence(manualTarget);
         } else {
-          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // シールドスキルの場合はユニットなし
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
           if (abilityTargetId.includes('all')) {
             targets.forEach(t => processSilence(t));
           } else if (targets.length === 1) {
@@ -803,9 +809,9 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
         const tokenCard = cardMap[tokenId];
         if (!tokenCard) break;
 
-        // 召喚場所が未確定の場合、プレイヤーに入力を促す（全トリガー共通）
+        // \u53ec\u559a\u5834\u6240\u304c\u672a\u78ba\u5b9a\u306e\u5834\u5408\u3001\u30d7\u30ec\u30a4\u30e4\u30fc\u306b\u5165\u529b\u3092\u4fc3\u3059\uff08\u5168\u30c8\u30ea\u30ac\u30fc\u5171\u901a\uff09
         if (!targetRow || targetLane === undefined || targetLane === null) {
-          // 少なくとも1つは空きスロットがあるか確認
+          // \u5c11\u306a\u304f\u3068\u30821\u3064\u306f\u7a7a\u304d\u30b9\u30ed\u30c3\u30c8\u304c\u3042\u308b\u304b\u78ba\u8a8d
           let hasEmptySlot = false;
           ['front', 'back'].forEach(r => {
             for (let i = 0; i < NUM_LANES; i++) {
@@ -814,21 +820,21 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           });
 
           if (hasEmptySlot) {
-            console.log(`🎯 [AbilityProcessor] summon_token: Requesting target for ${unit.name} (${trigger})`);
+            console.log(`\ud83c\udfaf [AbilityProcessor] summon_token: Requesting target for ${unit.name} (${trigger})`);
             needsTarget = true;
             targetId = 'empty_slot';
-            // ターゲット要求時は即座に結果を返し、入力を待つ
+            // \u30bf\u30fc\u30b2\u30c3\u30c8\u8981\u6c42\u6642\u306f\u5373\u5ea7\u306b\u7d50\u679c\u3092\u8fd4\u3057\u3001\u5165\u529b\u3092\u5f85\u3064
             return { events, needsTarget, targetId, effect: 'summon_token', originalAbility: ability };
           } else {
-            logs.push(`⚠️ ${unit.name} の効果！しかし場に空きがなく召喚に失敗しました`);
+            logs.push(`\u26a0\ufe0f ${unit.name} \u306e\u52b9\u679c\uff01\u3057\u304b\u3057\u5834\u306b\u7a7a\u304d\u304c\u306a\u304f\u53ec\u559a\u306b\u5931\u6557\u3057\u307e\u3057\u305f`);
             break;
           }
         }
 
-        // 召喚場所が確定している場合（解決フェーズ）
+        // \u53ec\u559a\u5834\u6240\u304c\u78ba\u5b9a\u3057\u3066\u3044\u308b\u5834\u5408\uff08\u89e3\u6c7a\u30d5\u30a7\u30fc\u30ba\uff09
         if (!currentPlayer.board[targetRow][targetLane]) {
           const tokenInstance = createUnitInstance(tokenCard, currentPlayer.id);
-          tokenInstance.hasActed = true; // 出したターンは基本的に攻撃不可
+          tokenInstance.hasActed = true; // \u51fa\u3057\u305f\u30bf\u30fc\u30f3\u306f\u57fa\u672c\u7684\u306b\u653b\u6483\u4e0d\u53ef
           currentPlayer.board[targetRow][targetLane] = tokenInstance;
           events.push({
             type: 'ability_summon',
@@ -837,21 +843,21 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
             row: targetRow,
             lane: targetLane
           });
-          logs.push(`✨ ${unit.name} の効果: ${tokenCard.name} を召喚しました`);
+          logs.push(`\u2728 ${unit.name} \u306e\u52b9\u679c: ${tokenCard.name} \u3092\u53ec\u559a\u3057\u307e\u3057\u305f`);
         }
         break;
       }
       default: {
-        logs.push(`⚠️ 未実装のアビリティ効果: ${effect}`);
+        logs.push(`\u26a0\ufe0f \u672a\u5b9f\u88c5\u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u52b9\u679c: ${effect}`);
         break;
       }
     }
     if (needsTarget) {
-      // targetIdが未設定の場合、ability.target から自動設定
+      // targetId\u304c\u672a\u8a2d\u5b9a\u306e\u5834\u5408\u3001ability.target \u304b\u3089\u81ea\u52d5\u8a2d\u5b9a
       if (!targetId) {
         targetId = abilityTargetId;
       }
-      console.log(`🎯 [AbilityProcessor] Target requested for ${effect}, targetId: ${targetId}`);
+      console.log(`\ud83c\udfaf [AbilityProcessor] Target requested for ${effect}, targetId: ${targetId}`);
       return { events, needsTarget, targetId, effect, originalAbility: ability, abilityIndex: i };
     }
   }
@@ -869,17 +875,17 @@ function processSearch(unit, playerState, cardMap, logs) {
   }
 
   if (revealed.length === 0) {
-    logs.push(`🔍 ${unit.name} の探索${searchCount}: 山札にカードがありません`);
+    logs.push(`\ud83d\udd0d ${unit.name} \u306e\u63a2\u7d22${searchCount}: \u5c71\u672d\u306b\u30ab\u30fc\u30c9\u304c\u3042\u308a\u307e\u305b\u3093`);
     return;
   }
 
-  logs.push(`🔍 ${unit.name} の探索${searchCount}: ${revealed.map(r => r.card.name).join(', ')} を確認`);
+  logs.push(`\ud83d\udd0d ${unit.name} \u306e\u63a2\u7d22${searchCount}: ${revealed.map(r => r.card.name).join(', ')} \u3092\u78ba\u8a8d`);
 
   revealed.sort((a, b) => b.card.cost - a.card.cost);
   const chosen = revealed[0];
   playerState.deck.splice(chosen.index, 1);
   playerState.hand.push({ ...chosen.card });
-  logs.push(`🔍 ${unit.name} の探索: ${chosen.card.name} を手札に加えた`);
+  logs.push(`\ud83d\udd0d ${unit.name} \u306e\u63a2\u7d22: ${chosen.card.name} \u3092\u624b\u672d\u306b\u52a0\u3048\u305f`);
 
   return { revealed, chosen: chosen.card };
 }
@@ -901,7 +907,7 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
     const value = ability.value;
     const abilityTargetId = ability.target || 'enemy_unit_1';
 
-    // 手動ターゲット（プレイヤーがクリックした対象）の判定
+    // \u624b\u52d5\u30bf\u30fc\u30b2\u30c3\u30c8\uff08\u30d7\u30ec\u30a4\u30e4\u30fc\u304c\u30af\u30ea\u30c3\u30af\u3057\u305f\u5bfe\u8c61\uff09\u306e\u5224\u5b9a
     const manualTarget = (targetRow !== undefined && targetRow !== null && targetLane !== undefined && targetLane !== null && gameState.phase === 'targeting') 
       ? (abilityTargetId.includes('self') ? currentPlayer.board[targetRow][targetLane] : opponentPlayer.board[targetRow][targetLane])
       : null;
@@ -911,20 +917,20 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
         const { applyDamage } = require('./CombatResolver');
         if (manualTarget) {
           const actualDamage = applyDamage(manualTarget, value, logs);
-          logs.push(`🔥 スペル「${card.name}」: ${manualTarget.name} に ${actualDamage} ダメージ (HP: ${manualTarget.currentHp})`);
+          logs.push(`\ud83d\udd25 \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${manualTarget.name} \u306b ${actualDamage} \u30c0\u30e1\u30fc\u30b8 (HP: ${manualTarget.currentHp})`);
           events.push({ type: 'spell_damage', source: card.id, target: manualTarget.instanceId, damage: actualDamage });
           if (manualTarget.currentHp <= 0) events.push({ type: 'spell_kill', target: manualTarget.instanceId, row: targetRow, lane: targetLane });
         } else {
-          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // シールドスキルの場合はユニットなし
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
           if (targets.length === 0) {
-            logs.push(`💨 スペル「${card.name}」: 有効な対象がいないため不発`);
+            logs.push(`\ud83d\udca8 \u30b9\u30da\u30eb\u300c${card.name}\u300d: \u5bfe\u8c61\u304c\u9b54\u76fe\uff08Spellshield\uff09\u3067\u5b88\u3089\u308c\u3066\u3044\u308b\u304b\u3001\u6709\u52b9\u306a\u5bfe\u8c61\u304c\u3044\u306a\u3044\u305f\u3081\u4e0d\u767a\u306b\u7d42\u308f\u308a\u307e\u3057\u305f`);
           } else if (targets.length > 1) {
             needsTarget = true;
             targetId = abilityTargetId;
           } else {
             const target = targets[0];
             const actualDamage = applyDamage(target, value, logs);
-            logs.push(`🔥 スペル「${card.name}」: ${target.name} に ${actualDamage} ダメージ (HP: ${target.currentHp})`);
+            logs.push(`\ud83d\udd25 \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${target.name} \u306b ${actualDamage} \u30c0\u30e1\u30fc\u30b8 (HP: ${target.currentHp})`);
             events.push({ type: 'spell_damage', source: card.id, target: target.instanceId, damage: actualDamage });
             if (target.currentHp <= 0) events.push({ type: 'spell_kill', target: target.instanceId });
           }
@@ -936,7 +942,7 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
         const targets = getAbilityTargets('all_units', currentPlayer, opponentPlayer);
         targets.forEach(target => {
           const actualDamage = applyDamage(target, value, logs);
-          logs.push(`🔥 スペル「${card.name}」: ${target.name} に ${actualDamage} ダメージ`);
+          logs.push(`\ud83d\udd25 \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${target.name} \u306b ${actualDamage} \u30c0\u30e1\u30fc\u30b8`);
           events.push({ type: 'spell_damage', source: card.id, target: target.instanceId, damage: actualDamage });
           if (target.currentHp <= 0) events.push({ type: 'spell_kill', target: target.instanceId });
         });
@@ -947,7 +953,7 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
         const targets = getAbilityTargets('enemy_unit_all', currentPlayer, opponentPlayer);
         targets.forEach(target => {
           const actualDamage = applyDamage(target, value, logs);
-          logs.push(`🔥 スペル「${card.name}」: ${target.name} に ${actualDamage} ダメージ`);
+          logs.push(`\ud83d\udd25 \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${target.name} \u306b ${actualDamage} \u30c0\u30e1\u30fc\u30b8`);
           events.push({ type: 'spell_damage', source: card.id, target: target.instanceId, damage: actualDamage });
           if (target.currentHp <= 0) events.push({ type: 'spell_kill', target: target.instanceId });
         });
@@ -955,7 +961,7 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
       }
       case 'draw': {
         events.push({ type: 'spell_draw', player: currentPlayer.id, count: value });
-        logs.push(`📖 スペル「${card.name}」: ${value} 枚ドロー`);
+        logs.push(`\ud83d\udcd6 \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${value} \u679a\u30c9\u30ed\u30fc`);
         break;
       }
       case 'reduce_cost_hand': {
@@ -963,7 +969,7 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
           const idx = Math.floor(Math.random() * currentPlayer.hand.length);
           const targetCard = currentPlayer.hand[idx];
           targetCard.cost = Math.max(0, targetCard.cost - value);
-          logs.push(`✨ スペル「${card.name}」発動！手札の「${targetCard.name}」のコストが ${value} 下がった (現在: ${targetCard.cost})`);
+          logs.push(`\u2728 \u30b9\u30da\u30eb\u300c${card.name}\u300d\u767a\u52d5\uff01\u624b\u672d\u306e\u300c${targetCard.name}\u300d\u306e\u30b3\u30b9\u30c8\u304c ${value} \u4e0b\u304c\u3063\u305f (\u73fe\u5728: ${targetCard.cost})`);
         }
         break;
       }
@@ -975,19 +981,19 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
               if (!currentPlayer.board[r][j]) {
                 manualTarget.ownerId = currentPlayer.id;
                 currentPlayer.board[r][j] = manualTarget;
-                // 元の場所を消去（opponentPlayerのボードから探す）
+                // \u5143\u306e\u5834\u6240\u3092\u6d88\u53bb\uff08opponentPlayer\u306e\u30dc\u30fc\u30c9\u304b\u3089\u63a2\u3059\uff09
                 forEachUnit(opponentPlayer.board, (u, row, lane) => {
                   if (u && u.instanceId === manualTarget.instanceId) opponentPlayer.board[row][lane] = null;
                 });
                 moved = true;
-                logs.push(`🧲 スペル「${card.name}」発動！相手の ${manualTarget.name} を強奪した！`);
+                logs.push(`\ud83e\uddf2 \u30b9\u30da\u30eb\u300c${card.name}\u300d\u767a\u52d5\uff01\u76f8\u624b\u306e ${manualTarget.name} \u3092\u5f37\u596a\u3057\u305f\uff01`);
                 break;
               }
             }
             if (moved) break;
           }
           if (!moved) {
-            logs.push(`⚠️ 空きマスがないため強奪失敗`);
+            logs.push(`\u26a0\ufe0f \u7a7a\u304d\u30de\u30b9\u304c\u306a\u3044\u305f\u3081\u5f37\u596a\u5931\u6557`);
             manualTarget.currentHp = 0;
             events.push({ type: 'spell_kill', target: manualTarget.instanceId });
           }
@@ -1001,17 +1007,23 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
         const processSilence = (target) => {
           target.keywords = [];
           target.abilities = [];
+          target.silenced = true; // 沈黙フラグをセット
+          // デフォルト能力フィールドも無効化
+          target.abilityTrigger = null;
+          target.abilityEffect = null;
+          target.abilityValue = 0;
+
           target.barrierActive = false;
           target.stealthActive = false;
           target.endureActive = false;
-          logs.push(`😶 スペル「${card.name}」発動！${target.name} は「沈黙」し、能力を失った！`);
+          logs.push(`\ud83d\ude36 \u30b9\u30da\u30eb\u300c${card.name}\u300d\u767a\u52d5\uff01${target.name} \u306f\u300c\u6c88\u9ed9\u300d\u3057\u3001\u80fd\u529b\u3092\u5931\u3063\u305f\uff01`);
         };
         if (manualTarget) {
           processSilence(manualTarget);
         } else {
-          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // シールドスキルの場合はユニットなし
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
           if (targets.length === 0) {
-            logs.push(`💨 スペル「${card.name}」: 対象無し`);
+            logs.push(`\ud83d\udca8 \u30b9\u30da\u30eb\u300c${card.name}\u300d: \u5bfe\u8c61\u7121\u3057`);
           } else if (targets.length > 1) {
             needsTarget = true;
             targetId = abilityTargetId;
@@ -1025,14 +1037,14 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
         if (manualTarget) {
           const healed = Math.min(value, manualTarget.maxHp - manualTarget.currentHp);
           manualTarget.currentHp += healed;
-          logs.push(`💚 スペル「${card.name}」: ${manualTarget.name} を ${healed} 回復`);
+          logs.push(`\ud83d\udc9a \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${manualTarget.name} \u3092 ${healed} \u56de\u5fa9`);
         } else {
           const targets = getAbilityTargets(abilityTargetId === 'enemy_unit_1' ? 'self_unit_1' : abilityTargetId, currentPlayer, opponentPlayer, value);
           if (targets.length === 1) {
             const target = targets[0];
             const healed = Math.min(value, target.maxHp - target.currentHp);
             target.currentHp += healed;
-            logs.push(`💚 スペル「${card.name}」: ${target.name} を ${healed} 回復`);
+            logs.push(`\ud83d\udc9a \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${target.name} \u3092 ${healed} \u56de\u5fa9`);
           } else if (targets.length > 1) {
             needsTarget = true;
             targetId = abilityTargetId;
@@ -1044,21 +1056,21 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
         if (manualTarget) {
           manualTarget.hasActed = true;
           manualTarget.canAttack = false;
-          logs.push(`❄️ スペル「${card.name}」: ${manualTarget.name} を凍結！`);
+          logs.push(`\u2744\ufe0f \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${manualTarget.name} \u3092\u51cd\u7d50\uff01`);
           events.push({ type: 'spell_freeze', target: manualTarget.instanceId });
         } else {
-          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // シールドスキルの場合はユニットなし
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
           if (abilityTargetId.includes('all')) {
             targets.forEach(target => {
               target.hasActed = true;
               target.canAttack = false;
-              logs.push(`❄️ スペル効果！${target.name} を凍結！`);
+              logs.push(`\u2744\ufe0f \u30b9\u30da\u30eb\u52b9\u679c\uff01${target.name} \u3092\u51cd\u7d50\uff01`);
               events.push({ type: 'spell_freeze', target: target.instanceId });
             });
           } else if (targets.length === 1) {
             targets[0].hasActed = true;
             targets[0].canAttack = false;
-            logs.push(`❄️ スペル「${card.name}」: ${targets[0].name} を凍結！`);
+            logs.push(`\u2744\ufe0f \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${targets[0].name} \u3092\u51cd\u7d50\uff01`);
             events.push({ type: 'spell_freeze', target: targets[0].instanceId });
           } else if (targets.length > 1) {
             needsTarget = true;
@@ -1073,17 +1085,17 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
           const isDead = processUnitDeath(manualTarget, logs);
           if (isDead) {
             manualTarget.currentHp = 0;
-            logs.push(`☠️ スペル「${card.name}」: ${manualTarget.name} を破壊！`);
+            logs.push(`\u2620\ufe0f \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${manualTarget.name} \u3092\u7834\u58ca\uff01`);
             events.push({ type: 'spell_kill', target: manualTarget.instanceId });
           }
         } else {
-          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // シールドスキルの場合はユニットなし
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
           if (abilityTargetId.includes('all')) {
             targets.forEach(target => {
               const isDead = processUnitDeath(target, logs);
               if (isDead) {
                 target.currentHp = 0;
-                logs.push(`☠️ スペル効果！${target.name} を破壊！`);
+                logs.push(`\u2620\ufe0f \u30b9\u30da\u30eb\u52b9\u679c\uff01${target.name} \u3092\u7834\u58ca\uff01`);
                 events.push({ type: 'spell_kill', target: target.instanceId });
               }
             });
@@ -1092,7 +1104,7 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
             const isDead = processUnitDeath(target, logs);
             if (isDead) {
               target.currentHp = 0;
-              logs.push(`☠️ スペル「${card.name}」: ${target.name} を破壊！`);
+              logs.push(`\u2620\ufe0f \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${target.name} \u3092\u7834\u58ca\uff01`);
               events.push({ type: 'spell_kill', target: target.instanceId });
             }
           } else if (targets.length > 1) {
@@ -1106,7 +1118,7 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
       case 'destroy_highest_hp':
       case 'destroy_highest_atk':
       case 'destroy_lowest_atk': {
-        // 統合ターゲットシステムへの互換性のための処理
+        // \u7d71\u5408\u30bf\u30fc\u30b2\u30c3\u30c8\u30b7\u30b9\u30c6\u30e0\u3078\u306e\u4e92\u63db\u6027\u306e\u305f\u3081\u306e\u51e6\u7406
         const targets = getAbilityTargets('enemy_unit_all', currentPlayer, opponentPlayer);
         if (targets.length === 0) break;
         let bestVal = (effect.includes('lowest') || effect.includes('frailest')) ? Infinity : -Infinity;
@@ -1120,7 +1132,7 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
         
         if (candidates.length === 1) {
           candidates[0].currentHp = 0;
-          logs.push(`☠️ スペル「${card.name}」: ${candidates[0].name} を破壊！`);
+          logs.push(`\u2620\ufe0f \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${candidates[0].name} \u3092\u7834\u58ca\uff01`);
           events.push({ type: 'spell_kill', target: candidates[0].instanceId });
         } else if (candidates.length > 1) {
           needsTarget = true;
@@ -1131,11 +1143,11 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
       case 'buff_attack': {
         if (manualTarget) {
           manualTarget.currentAttack += value;
-          logs.push(`⬆️ スペル「${card.name}」: ${manualTarget.name} 攻撃力+${value}`);
+          logs.push(`\u2b06\ufe0f \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${manualTarget.name} \u653b\u6483\u529b+${value}`);
         } else if (abilityTargetId.includes('all')) {
           const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer);
           targets.forEach(t => t.currentAttack += value);
-          logs.push(`⬆️ スペル「${card.name}」: 全ユニット 攻撃力+${value}`);
+          logs.push(`\u2b06\ufe0f \u30b9\u30da\u30eb\u300c${card.name}\u300d: \u5168\u30e6\u30cb\u30c3\u30c8 \u653b\u6483\u529b+${value}`);
         } else {
           needsTarget = true;
           targetId = abilityTargetId;
@@ -1146,7 +1158,7 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
         if (manualTarget) {
           manualTarget.currentHp += value;
           manualTarget.maxHp += value;
-          logs.push(`⬆️ スペル「${card.name}」: ${manualTarget.name} HP+${value}`);
+          logs.push(`\u2b06\ufe0f \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${manualTarget.name} HP+${value}`);
         } else if (abilityTargetId.includes('all')) {
           const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer);
           targets.forEach(t => { t.currentHp += value; t.maxHp += value; });
@@ -1161,7 +1173,7 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
           manualTarget.currentAttack += value;
           manualTarget.currentHp += value;
           manualTarget.maxHp += value;
-          logs.push(`⬆️ スペル「${card.name}」: ${manualTarget.name} ATK/HP+${value}`);
+          logs.push(`\u2b06\ufe0f \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${manualTarget.name} ATK/HP+${value}`);
         } else {
           needsTarget = true;
           targetId = abilityTargetId;
@@ -1172,7 +1184,7 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
         if (manualTarget) {
           manualTarget.barrierActive = true;
           if (!manualTarget.keywords.includes('barrier')) manualTarget.keywords.push('barrier');
-          logs.push(`🛡️ スペル「${card.name}」: ${manualTarget.name} に加護を付与`);
+          logs.push(`\ud83d\udee1\ufe0f \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${manualTarget.name} \u306b\u52a0\u8b77\u3092\u4ed8\u4e0e`);
         } else {
           needsTarget = true;
           targetId = abilityTargetId;
@@ -1182,14 +1194,14 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
       case 'drain': {
         if (manualTarget) {
           manualTarget.currentHp -= value;
-          logs.push(`🩸 スペル「${card.name}」: ${manualTarget.name} から ${value} 吸収`);
+          logs.push(`\ud83e\ude78 \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${manualTarget.name} \u304b\u3089 ${value} \u5438\u53ce`);
           const allies = [];
           forEachUnit(currentPlayer.board, u => { if (u.currentHp < u.maxHp) allies.push(u); });
           if (allies.length > 0) {
             allies.sort((a, b) => a.currentHp - b.currentHp);
             const healed = Math.min(value, allies[0].maxHp - allies[0].currentHp);
             allies[0].currentHp += healed;
-            logs.push(`💚 ${allies[0].name} を ${healed} 回復`);
+            logs.push(`\ud83d\udc9a ${allies[0].name} \u3092 ${healed} \u56de\u5fa9`);
           }
         } else {
           needsTarget = true;
@@ -1206,7 +1218,7 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
             tokenInstance.hasActed = true;
             currentPlayer.board[targetRow][targetLane] = tokenInstance;
             events.push({ type: 'spell_summon', player: currentPlayer.id, unit: tokenInstance, row: targetRow, lane: targetLane });
-            logs.push(`⚔️ スペル効果！「${tokenInstance.name}」を召喚しました`);
+            logs.push(`\u2694\ufe0f \u30b9\u30da\u30eb\u52b9\u679c\uff01\u300c${tokenInstance.name}\u300d\u3092\u53ec\u559a\u3057\u307e\u3057\u305f`);
           } else {
             needsTarget = true;
             targetId = 'self_board_empty';
@@ -1217,38 +1229,38 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
       case 'sp_gain': {
         const targetPlayer = (abilityTargetId === 'enemy' || abilityTargetId === 'opponent') ? opponentPlayer : currentPlayer;
         targetPlayer.sp += value;
-        logs.push(`💰 スペル「${card.name}」: ${targetPlayer.name}の SP+${value}`);
+        logs.push(`\ud83d\udcb0 \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${targetPlayer.name}\u306e SP+${value}`);
         break;
       }
       case 'sp_loss': {
         const targetPlayer = (abilityTargetId === 'enemy' || abilityTargetId === 'opponent') ? opponentPlayer : currentPlayer;
         targetPlayer.sp = Math.max(0, targetPlayer.sp - value);
-        logs.push(`⚠️ スペル「${card.name}」: ${targetPlayer.name}の SP-${value}`);
+        logs.push(`\u26a0\ufe0f \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${targetPlayer.name}\u306e SP-${value}`);
         break;
       }
       case 'discard_random': {
         for (let j = 0; j < value && opponentPlayer.hand.length > 0; j++) {
           const idx = Math.floor(Math.random() * opponentPlayer.hand.length);
           const discarded = opponentPlayer.hand.splice(idx, 1)[0];
-          logs.push(`✋ スペル「${card.name}」: 相手の手札を破棄 (${discarded.name})`);
+          logs.push(`\u270b \u30b9\u30da\u30eb\u300c${card.name}\u300d: \u76f8\u624b\u306e\u624b\u672d\u3092\u7834\u68c4 (${discarded.name})`);
           events.push({ type: 'spell_discard', player: opponentPlayer.id });
         }
         break;
       }
       case 'bounce': {
         if (manualTarget) {
-          logs.push(`🔄 スペル「${card.name}」: ${manualTarget.name} を手札に戻す`);
+          logs.push(`\ud83d\udd04 \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${manualTarget.name} \u3092\u624b\u672d\u306b\u623b\u3059`);
           events.push({ type: 'spell_bounce', target: manualTarget.instanceId });
         } else {
-          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // シールドスキルの場合はユニットなし
+          const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
           if (abilityTargetId.includes('all')) {
-            // 全体バウンス
+            // \u5168\u4f53\u30d0\u30a6\u30f3\u30b9
             targets.forEach(target => {
-              logs.push(`🔄 スペル効果！${target.name} を手札に戻す`);
+              logs.push(`\ud83d\udd04 \u30b9\u30da\u30eb\u52b9\u679c\uff01${target.name} \u3092\u624b\u672d\u306b\u623b\u3059`);
               events.push({ type: 'spell_bounce', target: target.instanceId });
             });
           } else if (targets.length === 1) {
-            logs.push(`🔄 スペル「${card.name}」: ${targets[0].name} を手札に戻す`);
+            logs.push(`\ud83d\udd04 \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${targets[0].name} \u3092\u624b\u672d\u306b\u623b\u3059`);
             events.push({ type: 'spell_bounce', target: targets[0].instanceId });
           } else if (targets.length > 1) {
             needsTarget = true;
@@ -1262,7 +1274,7 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
         if (availableShields.length > 0) {
           const targetShield = availableShields[0];
           targetShield.currentDurability -= value;
-          logs.push(`💥 スペル「${card.name}」: 敵のシールドに直接 ${value} ダメージ`);
+          logs.push(`\ud83d\udca5 \u30b9\u30da\u30eb\u300c${card.name}\u300d: \u6575\u306e\u30b7\u30fc\u30eb\u30c9\u306b\u76f4\u63a5 ${value} \u30c0\u30e1\u30fc\u30b8`);
           if (targetShield.currentDurability <= 0) {
             targetShield.currentDurability = 0;
             targetShield.destroyed = true;
@@ -1277,7 +1289,7 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
         if (targetShield) {
           if (targetShield.destroyed) targetShield.destroyed = false;
           targetShield.currentDurability += value;
-          logs.push(`🛡️ スペル「${card.name}」: シールドを ${value} 回復！`);
+          logs.push(`\ud83d\udee1\ufe0f \u30b9\u30da\u30eb\u300c${card.name}\u300d: \u30b7\u30fc\u30eb\u30c9\u3092 ${value} \u56de\u5fa9\uff01`);
           events.push({ type: 'spell_shield_heal', player: currentPlayer.id, index: shields.indexOf(targetShield), value: value });
         }
         break;
@@ -1285,7 +1297,7 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
       case 'debuff_attack': {
         if (manualTarget) {
           manualTarget.currentAttack = Math.max(0, manualTarget.currentAttack - value);
-          logs.push(`⬇️ スペル「${card.name}」: ${manualTarget.name} の攻撃力 -${value}`);
+          logs.push(`\u2b07\ufe0f \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${manualTarget.name} \u306e\u653b\u6483\u529b -${value}`);
         } else {
           needsTarget = true;
           targetId = abilityTargetId;
@@ -1293,7 +1305,7 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
         break;
       }
       default:
-        logs.push(`⚠️ 未実装のスペル効果: ${effect}`);
+        logs.push(`\u26a0\ufe0f \u672a\u5b9f\u88c5\u306e\u30b9\u30da\u30eb\u52b9\u679c: ${effect}`);
     }
 
     if (needsTarget) {
@@ -1322,55 +1334,55 @@ function processShieldSkill(shield, currentPlayer, opponentPlayer, cardMap, logs
     const targetId = ability.target || 'self';
     const events = [];
 
-    // ターゲット判定の共通化 (self / enemy / opponent)
+    // \u30bf\u30fc\u30b2\u30c3\u30c8\u5224\u5b9a\u306e\u5171\u901a\u5316 (self / enemy / opponent)
     const targetPlayer = (targetId === 'enemy' || targetId === 'opponent' || targetId === 'enemy_hand') ? opponentPlayer : currentPlayer;
     const isSelf = targetPlayer === currentPlayer;
-    const targetName = isSelf ? '自分' : '相手';
-    const abilityName = shield.name + (abilities.length > 1 ? ` (効果${index + 1})` : 'のスキル');
+    const targetName = isSelf ? '\u81ea\u5206' : '\u76f8\u624b';
+    const abilityName = shield.name + (abilities.length > 1 ? ` (\u52b9\u679c${index + 1})` : '\u306e\u30b9\u30ad\u30eb');
     const abilityTargetId = targetId;
 
     switch (effectType) {
       case 'none':
-        if (abilities.length === 1) logs.push(`🛡️ シールドスキル「${abilityName}」: 効果なし`);
+        if (abilities.length === 1) logs.push(`\ud83d\udee1\ufe0f \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: \u52b9\u679c\u306a\u3057`);
         break;
       
-      // ドロー処理の統合
+      // \u30c9\u30ed\u30fc\u51e6\u7406\u306e\u7d71\u5408
       case 'draw':
       case 'enemy_draw':
         events.push({ type: 'shield_skill_draw', player: targetPlayer.id, count: value });
-        logs.push(`📖 シールドスキル「${abilityName}」: ${targetName}が ${value} 枚ドロー`);
+        logs.push(`\ud83d\udcd6 \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: ${targetName}\u304c ${value} \u679a\u30c9\u30ed\u30fc`);
         break;
 
-      // 手札破棄処理の統合
+      // \u624b\u672d\u7834\u68c4\u51e6\u7406\u306e\u7d71\u5408
       case 'discard':
       case 'discard_random':
       case 'discard_self':
         for (let i = 0; i < value && targetPlayer.hand.length > 0; i++) {
           const idx = Math.floor(Math.random() * targetPlayer.hand.length);
           const discarded = targetPlayer.hand.splice(idx, 1)[0];
-          logs.push(`✋ シールドスキル「${abilityName}」: ${targetName}の ${discarded.name} を捨てさせた`);
+          logs.push(`\u270b \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: ${targetName}\u306e ${discarded.name} \u3092\u6368\u3066\u3055\u305b\u305f`);
           events.push({ type: 'ability_discard', player: targetPlayer.id });
         }
         break;
 
-      // SP操作の共通化
+      // SP\u64cd\u4f5c\u306e\u5171\u901a\u5316
       case 'sp_gain':
         targetPlayer.sp += value;
-        logs.push(`💰 シールドスキル「${abilityName}」: ${targetName}の SP+${value} (合計: ${targetPlayer.sp})`);
+        logs.push(`\ud83d\udcb0 \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: ${targetName}\u306e SP+${value} (\u5408\u8a08: ${targetPlayer.sp})`);
         break;
       case 'sp_loss':
         targetPlayer.sp = Math.max(0, targetPlayer.sp - value);
-        logs.push(`⚠️ シールドスキル「${abilityName}」: ${targetName}の SP-${value} (合計: ${targetPlayer.sp})`);
+        logs.push(`\u26a0\ufe0f \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: ${targetName}\u306e SP-${value} (\u5408\u8a08: ${targetPlayer.sp})`);
         break;
 
-      // 回復・バフ処理の汎用化
+      // \u56de\u5fa9\u30fb\u30d0\u30d5\u51e6\u7406\u306e\u6c4e\u7528\u5316
       case 'heal_all_ally':
       case 'heal_all':
         forEachUnit(targetPlayer.board, unit => {
           const healed = Math.min(value, unit.maxHp - unit.currentHp);
           if (healed > 0) {
             unit.currentHp += healed;
-            logs.push(`💚 シールドスキル「${abilityName}」: ${unit.name} を ${healed} 回復`);
+            logs.push(`\ud83d\udc9a \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: ${unit.name} \u3092 ${healed} \u56de\u5fa9`);
           }
         });
         break;
@@ -1381,7 +1393,7 @@ function processShieldSkill(shield, currentPlayer, opponentPlayer, cardMap, logs
           unit.currentHp += value;
           unit.maxHp += value;
         });
-        logs.push(`⬆️ シールドスキル「${abilityName}」: ${targetName}全ユニットのHP+${value}`);
+        logs.push(`\u2b06\ufe0f \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: ${targetName}\u5168\u30e6\u30cb\u30c3\u30c8\u306eHP+${value}`);
         break;
 
       case 'buff_attack_all_ally':
@@ -1389,35 +1401,35 @@ function processShieldSkill(shield, currentPlayer, opponentPlayer, cardMap, logs
         forEachUnit(targetPlayer.board, unit => {
           unit.currentAttack += value;
         });
-        logs.push(`⬆️ シールドスキル「${abilityName}」: ${targetName}全ユニットの攻撃力+${value}`);
+        logs.push(`\u2b06\ufe0f \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: ${targetName}\u5168\u30e6\u30cb\u30c3\u30c8\u306e\u653b\u6483\u529b+${value}`);
         break;
 
-      // ダメージ・破壊処理の汎用化
+      // \u30c0\u30e1\u30fc\u30b8\u30fb\u7834\u58ca\u51e6\u7406\u306e\u6c4e\u7528\u5316
       case 'damage':
       case 'damage_all_enemy':
       case 'damage_all_ally':
         forEachUnit(targetPlayer.board, (target, row, lane) => {
           target.currentHp -= value;
-          logs.push(`🔥 シールドスキル「${abilityName}」: ${target.name} に ${value} ダメージ`);
+          logs.push(`\ud83d\udd25 \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: ${target.name} \u306b ${value} \u30c0\u30e1\u30fc\u30b8`);
           if (target.currentHp <= 0) events.push({ type: 'shield_skill_kill', target: target.instanceId, row, lane });
         });
         break;
 
       case 'damage_all':
-        // 両方のボードにダメージ
+        // \u4e21\u65b9\u306e\u30dc\u30fc\u30c9\u306b\u30c0\u30e1\u30fc\u30b8
         [currentPlayer, opponentPlayer].forEach(p => {
           forEachUnit(p.board, (u, r, l) => {
             u.currentHp -= value;
             if (u.currentHp <= 0) events.push({ type: 'shield_skill_kill', target: u.instanceId, row: r, lane: l });
           });
         });
-        logs.push(`💥 シールドスキル「${abilityName}」: 全ユニットに ${value} ダメージ`);
+        logs.push(`\ud83d\udca5 \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: \u5168\u30e6\u30cb\u30c3\u30c8\u306b ${value} \u30c0\u30e1\u30fc\u30b8`);
         break;
 
-      case 'damage_self': // 以前の互換性用
+      case 'damage_self': // \u4ee5\u524d\u306e\u4e92\u63db\u6027\u7528
         forEachUnit(currentPlayer.board, (ally, row, lane) => {
           ally.currentHp -= value;
-          logs.push(`💥 シールドスキル「${abilityName}」: ${ally.name} に ${value} ダメージ (デメリット)`);
+          logs.push(`\ud83d\udca5 \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: ${ally.name} \u306b ${value} \u30c0\u30e1\u30fc\u30b8 (\u30c7\u30e1\u30ea\u30c3\u30c8)`);
           if (ally.currentHp <= 0) events.push({ type: 'shield_skill_kill', target: ally.instanceId, row, lane });
         });
         break;
@@ -1427,11 +1439,11 @@ function processShieldSkill(shield, currentPlayer, opponentPlayer, cardMap, logs
       case 'destroy_weakest_enemy':
       case 'destroy_strongest':
       case 'destroy_strongest_enemy': {
-        const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // シールドスキルの場合はユニットなし
+        const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
         targets.forEach(target => {
           if (target.instanceId) {
             target.currentHp = 0;
-            logs.push(`☠️ シールドスキル「${abilityName}」: ${target.name} を破壊！`);
+            logs.push(`\u2620\ufe0f \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: ${target.name} \u3092\u7834\u58ca\uff01`);
             events.push({ type: 'ability_kill', target: target.instanceId });
           }
         });
@@ -1443,10 +1455,10 @@ function processShieldSkill(shield, currentPlayer, opponentPlayer, cardMap, logs
       case 'bounce_lowest_enemy':
       case 'bounce_highest':
       case 'bounce_highest_enemy': {
-        const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // シールドスキルの場合はユニットなし
+        const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
         targets.forEach(target => {
           if (target.instanceId) {
-            logs.push(`🔄 シールドスキル「${abilityName}」: ${target.name} を手札に戻した`);
+            logs.push(`\ud83d\udd04 \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: ${target.name} \u3092\u624b\u672d\u306b\u623b\u3057\u305f`);
             events.push({ 
               type: 'ability_bounce', 
               target: target.instanceId,
@@ -1463,7 +1475,7 @@ function processShieldSkill(shield, currentPlayer, opponentPlayer, cardMap, logs
           unit.barrierActive = true;
           if (!unit.keywords.includes('barrier')) unit.keywords.push('barrier');
         });
-        logs.push(`🛡️ シールドスキル「${abilityName}」: ${targetName}全ユニットに加護を付与`);
+        logs.push(`\ud83d\udee1\ufe0f \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: ${targetName}\u5168\u30e6\u30cb\u30c3\u30c8\u306b\u52a0\u8b77\u3092\u4ed8\u4e0e`);
         break;
 
       case 'summon_token': {
@@ -1481,7 +1493,7 @@ function processShieldSkill(shield, currentPlayer, opponentPlayer, cardMap, logs
                 tokenInstance.hasActed = true;
                 targetPlayer.board[row][i] = tokenInstance;
                 events.push({ type: 'ability_summon', player: targetPlayer.id, unit: tokenInstance, row, lane: i });
-                logs.push(`⚔️ シールドスキル「${abilityName}」: ${targetName}に「${tokenInstance.name}」を召喚`);
+                logs.push(`\u2694\ufe0f \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: ${targetName}\u306b\u300c${tokenInstance.name}\u300d\u3092\u53ec\u559a`);
                 spawnedCount++;
               }
             }
@@ -1494,7 +1506,7 @@ function processShieldSkill(shield, currentPlayer, opponentPlayer, cardMap, logs
         Object.keys(targetPlayer.tribeLevels).forEach(color => {
           targetPlayer.tribeLevels[color] += value;
         });
-        logs.push(`🌟 シールドスキル「${abilityName}」: ${targetName}全神族レベル+${value}`);
+        logs.push(`\ud83c\udf1f \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: ${targetName}\u5168\u795e\u65cf\u30ec\u30d9\u30eb+${value}`);
         break;
 
       case 'freeze_all_enemy':
@@ -1504,7 +1516,7 @@ function processShieldSkill(shield, currentPlayer, opponentPlayer, cardMap, logs
           unit.canAttack = false;
           events.push({ type: 'ability_freeze', target: unit.instanceId });
         });
-        logs.push(`❄️ シールドスキル「${abilityName}」: ${targetName}の全ユニットを凍結！`);
+        logs.push(`\u2744\ufe0f \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: ${targetName}\u306e\u5168\u30e6\u30cb\u30c3\u30c8\u3092\u51cd\u7d50\uff01`);
         break;
 
       case 'damage_shield': {
@@ -1512,7 +1524,7 @@ function processShieldSkill(shield, currentPlayer, opponentPlayer, cardMap, logs
         if (available.length > 0) {
           const targetShield = available[0];
           targetShield.currentDurability -= value;
-          logs.push(`💥 シールドスキル「${abilityName}」: ${targetName}のシールドに ${value} ダメージ！`);
+          logs.push(`\ud83d\udca5 \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: ${targetName}\u306e\u30b7\u30fc\u30eb\u30c9\u306b ${value} \u30c0\u30e1\u30fc\u30b8\uff01`);
           if (targetShield.currentDurability <= 0) {
             targetShield.currentDurability = 0;
             targetShield.destroyed = true;
@@ -1529,7 +1541,7 @@ function processShieldSkill(shield, currentPlayer, opponentPlayer, cardMap, logs
           const target = units[Math.floor(Math.random() * units.length)];
           target.endureActive = true;
           if (!target.keywords.includes('endure')) target.keywords.push('endure');
-          logs.push(`💪 シールドスキル「${abilityName}」: ${targetName}の ${target.name} に「不屈」を付与`);
+          logs.push(`\ud83d\udcaa \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: ${targetName}\u306e ${target.name} \u306b\u300c\u4e0d\u5c48\u300d\u3092\u4ed8\u4e0e`);
         }
         break;
       }
@@ -1539,7 +1551,7 @@ function processShieldSkill(shield, currentPlayer, opponentPlayer, cardMap, logs
           unit.currentHp += value;
           unit.maxHp += value;
         });
-        logs.push(`💖 シールドスキル「${abilityName}」: 敵全ユニットのHP+${value} (デメリット)`);
+        logs.push(`\ud83d\udc96 \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: \u6575\u5168\u30e6\u30cb\u30c3\u30c8\u306eHP+${value} (\u30c7\u30e1\u30ea\u30c3\u30c8)`);
         break;
 
       case 'self_freeze_random':
@@ -1549,12 +1561,12 @@ function processShieldSkill(shield, currentPlayer, opponentPlayer, cardMap, logs
           const target = allies[Math.floor(Math.random() * allies.length)];
           target.hasActed = true;
           target.canAttack = false;
-          logs.push(`❄️ シールドスキル「${abilityName}」: ${target.name} が凍結！ (デメリット)`);
+          logs.push(`\u2744\ufe0f \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u300c${abilityName}\u300d: ${target.name} \u304c\u51cd\u7d50\uff01 (\u30c7\u30e1\u30ea\u30c3\u30c8)`);
           events.push({ type: 'ability_freeze', target: target.instanceId });
         }
         break;
       default:
-        logs.push(`⚠️ 未実装のシールドスキル効果: ${effectType}`);
+        logs.push(`\u26a0\ufe0f \u672a\u5b9f\u88c5\u306e\u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u52b9\u679c: ${effectType}`);
     }
     allEvents.push(...events);
   });

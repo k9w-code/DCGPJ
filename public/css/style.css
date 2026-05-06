@@ -1,9 +1,9 @@
-/* style.css - DCG 驛｢譏ｴ�ｽ邵ｺ蟶ｷ�ｹ譎冗樟郢晢ｽｻ驛｢譎｢�ｽ�ｬ驛｢�ｧ�ｽ�､髴托ｽｺ�ｽ�ｰ髯滂ｿｽ�ｽ*/
+/* style.css - DCG 鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驍ｵ・ｺ陝ｶ・ｷ・ｽ・ｹ隴主・讓滄Δ譎｢・ｽ・ｻ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｬ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・､鬮ｴ謇假ｽｽ・ｺ・ｽ・ｽ・ｽ・ｰ鬮ｯ貊ゑｽｿ・ｽ・ｽ・ｽ*/
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap');
 
 :root {
-  /* === 騾ｾ讚�ｼ顔ｸｺ�ｪ郢敖郢晢ｽｼ郢ｧ�ｯ郢晁ｼ斐＜郢晢ｽｳ郢ｧ�ｿ郢ｧ�ｸ郢晢ｽｼ 郢ｧ�ｫ郢晢ｽｩ郢晢ｽｼ郢昜ｻ｣ﾎ樒ｹ晢ｿｽ繝ｨ === */
+  /* === 鬨ｾ・ｾ隶夲ｿｽ・ｼ鬘費ｽｸ・ｺ・ｽ・ｪ驛｢謨鳴驛｢譎｢・ｽ・ｼ驛｢・ｧ・ｽ・ｯ驛｢譎・ｽｼ譁撰ｼ憺Δ譎｢・ｽ・ｳ驛｢・ｧ・ｽ・ｿ驛｢・ｧ・ｽ・ｸ驛｢譎｢・ｽ・ｼ 驛｢・ｧ・ｽ・ｫ驛｢譎｢・ｽ・ｩ驛｢譎｢・ｽ・ｼ驛｢譏懶ｽｻ・｣・取ｨ抵ｽｹ譎｢・ｿ・ｽ郢晢ｽｨ === */
   --bg-primary: #030712;
   --bg-secondary: #0a0f1f;
   --bg-card: #111827;
@@ -51,7 +51,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ========== 髯ｷ闌ｨ�ｽ�ｱ鬯ｨ�ｾ陞｢�ｹ邵ｺ諷包ｽｹ譎｢�ｽ�ｳ驛｢譎�ｺ｢郢晢ｽｻ驛｢譎樔ｺゑｾ趣ｽｦ驛｢譏ｴ�ｽ========== */
+/* ========== 鬮ｯ・ｷ髣鯉ｽｨ・ｽ・ｽ・ｽ・ｱ鬯ｯ・ｨ・ｽ・ｾ髯橸ｽ｢・ｽ・ｹ驍ｵ・ｺ隲ｷ蛹・ｽｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴趣ｿｽ・ｺ・｢驛｢譎｢・ｽ・ｻ鬩幢ｽ｢隴取ｨ費ｽｺ繧托ｽｾ雜｣・ｽ・ｦ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ========== */
 
 .btn {
   padding: 10px 24px;
@@ -126,7 +126,7 @@ h1, h2, h3 {
   letter-spacing: 1px;
 }
 
-/* ========== 驛｢譎｢�ｽ�ｭ驛｢譎∽ｾｭ郢晢ｽｻ ========== */
+/* ========== 鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｭ鬩幢ｽ｢隴寂或・ｾ・ｭ驛｢譎｢・ｽ・ｻ ========== */
 
 .lobby-container {
   max-width: 640px;
@@ -233,7 +233,7 @@ h1, h2, h3 {
   border-color: var(--border-glow);
 }
 
-/* ========== 驛｢譏ｴ�ｽ郢晢ｽ｣驛｢�ｧ�ｽ�ｭ髫ｶ蝣､霍晢ｿｽ�ｯ郢晢ｽｻ(3驛｢譎擾ｽ｣�ｹ邵ｺ�ｽ�ｹ譎｢�ｽ�ｳ髯具ｽｻ�ｽ�ｷ髫ｴ�ｽ�ｽ�ｰ) ========== */
+/* ========== 鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・｣鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｭ鬮ｫ・ｶ陜｣・､髴肴劼・ｿ・ｽ・ｽ・ｯ驛｢譎｢・ｽ・ｻ(3鬩幢ｽ｢隴取得・ｽ・｣・ｽ・ｹ驍ｵ・ｺ・ｽ・ｽ・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬮ｯ蜈ｷ・ｽ・ｻ・ｽ・ｽ・ｽ・ｷ鬮ｫ・ｴ・ｽ・ｽ・ｽ・ｽ・ｽ・ｰ) ========== */
 .deck-builder {
   display: grid;
   grid-template-columns: 320px 1fr 320px;
@@ -255,7 +255,7 @@ h1, h2, h3 {
   gap: 15px;
 }
 
-/* 驛｢�ｧ�ｽ�ｪ驛｢譎｢�ｽ�ｼ驛｢譎樊束隴ｴ蟶ｷ�ｹ�ｧ�ｽ�ｫ驛｢譎｢�ｽ�ｩ驛｢譎｢�ｽ�ｼ驛｢譎�ｽｼ譁絶襖驛｢譎｢�ｽ�ｫ驛｢�ｧ�ｽ�ｿ */
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｪ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴取ｨ頑據髫ｴ・ｴ陝ｶ・ｷ・ｽ・ｹ・ｽ・ｧ・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｩ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴趣ｿｽ・ｽ・ｼ隴∫ｵｶ隘夜ｩ幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ */
 .color-filter-bar {
   display: flex;
   gap: 10px;
@@ -284,7 +284,7 @@ h1, h2, h3 {
 .orb-inner.white { background: var(--white-card); box-shadow: 0 0 8px var(--white-card); }
 .orb-inner.black { background: var(--black-card); box-shadow: 0 0 8px var(--black-card); }
 
-/* 驛｢譎�ｱ抵ｾ取凵謦戊嵯譏ｴﾎｨ驛｢�ｧ�ｽ�｣驛｢譎｢�ｽ�ｫ驛｢�ｧ�ｽ�ｿ */
+/* 鬩幢ｽ｢隴趣ｿｽ・ｱ謚ｵ・ｾ蜿門・隰ｦ謌雁ｵｯ隴擾ｽｴ・趣ｽｨ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｣鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ */
 .type-cost-filters {
   display: flex;
   gap: 20px;
@@ -315,7 +315,7 @@ h1, h2, h3 {
   box-shadow: 0 4px 12px var(--accent-glow);
 }
 
-/* 驛｢�ｧ�ｽ�ｫ驛｢譎｢�ｽ�ｼ驛｢譎擾ｽｳ�ｨ邵ｺ蝣､�ｹ譎｢�ｽ�ｪ驛｢譏ｴ�ｽ郢晢ｽｩ驛｢譎｢�ｽ�ｻ驛｢�ｧ�ｽ�｢驛｢�ｧ�ｽ�､驛｢譏ｴ�ｽ�趣ｿｽ */
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴取得・ｽ・ｳ・ｽ・ｨ驍ｵ・ｺ陜｣・､・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｪ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・ｩ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｻ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｢鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・､鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ・ｽ雜｣・ｿ・ｽ */
 .card-grid {
   flex: 1;
   overflow-y: auto;
@@ -327,7 +327,7 @@ h1, h2, h3 {
 }
 .card-item {
   aspect-ratio: 3/4;
-  min-height: 200px; /* 驍ｵ�ｦ隴�ｽｹ陷ｷ莉｣�ｽ鬩･髦ｪ竊醍ｹｧ鄙ｫ�帝ｫｦ�ｲ雎�ｽ｢ */
+  min-height: 200px; /* 鬩搾ｽｵ・ｽ・ｦ髫ｴ・ｽ・ｽ・ｹ髯ｷ・ｷ闔会ｽ｣・ｽ・ｽ鬯ｩ・･鬮ｦ・ｪ遶企・・ｹ・ｧ驗呻ｽｫ・ｽ蟶晢ｽｫ・ｦ・ｽ・ｲ髮趣ｿｽ・ｽ・｢ */
   border-radius: 12px;
   background-size: cover;
   background-position: center;
@@ -355,7 +355,7 @@ h1, h2, h3 {
   justify-content: flex-end;
 }
 
-/* 驛｢�ｧ�ｽ�ｳ驛｢�ｧ�ｽ�ｹ驛｢譏懶ｽｺ蛹�ｽｽ�ｸ�ｽ�ｸ驛｢�ｧ�ｽ�｢驛｢�ｧ�ｽ�､驛｢�ｧ�ｽ�ｳ驛｢譎｢�ｽ�ｳ郢晢ｽｻ闔��･隰�ｽｿ髣包ｽｳ陞ゑｿｽ�ｽ�ｼ郢晢ｽｻ*/
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴乗・・ｽ・ｺ陋ｹ・ｽ・ｽ・ｽ・ｽ・ｸ・ｽ・ｽ・ｽ・ｸ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｢鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・､鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ驛｢譎｢・ｽ・ｻ髣費ｿｽ・ｽ・･髫ｰ・ｽ・ｽ・ｿ鬮｣蛹・ｽｽ・ｳ髯槭ｑ・ｿ・ｽ・ｽ・ｽ・ｽ・ｼ驛｢譎｢・ｽ・ｻ*/
 .grid-cost {
   position: absolute;
   top: 8px; right: 8px;
@@ -401,7 +401,7 @@ h1, h2, h3 {
   opacity: 0.9;
 }
 
-/* 髣厄ｽｫ隴取得�ｽ�ｭ陋滂ｽ･邵ｺ蟶ｷ�ｹ譎｢�ｽ�ｭ驛｢譏ｴ�ｽ郢晢ｽｨ */
+/* 鬮｣蜴・ｽｽ・ｫ髫ｴ蜿門ｾ暦ｿｽ・ｽ・ｽ・ｭ髯区ｻゑｽｽ・･驍ｵ・ｺ陝ｶ・ｷ・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｭ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・ｨ */
 .save-slots {
   display: flex;
   gap: 6px;
@@ -435,7 +435,7 @@ h1, h2, h3 {
 }
 .btn-save-deck:hover { opacity: 1; transform: scale(1.1); }
 
-/* 鬨ｾ蛹�ｽｽ�ｻ髯ｷ蜑�ｽｸ鄙ｫﾎｨ驛｢�ｧ�ｽ�ｩ驛｢譎｢�ｽ�ｼ驛｢譎｢�ｽ�ｫ驛｢譎�ｿｽ郢晢ｽ｣驛｢�ｧ�ｽ�ｯ */
+/* 鬯ｨ・ｾ陋ｹ・ｽ・ｽ・ｽ・ｽ・ｻ鬮ｯ・ｷ陷托ｿｽ・ｽ・ｸ驗呻ｽｫ・趣ｽｨ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｩ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｿｽ・ｿ・ｽ驛｢譎｢・ｽ・｣鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｯ */
 .card-item.no-image {
   background: linear-gradient(135deg, #1f2937 0%, #111827 100%) !important;
   display: flex; align-items: center; justify-content: center;
@@ -462,7 +462,7 @@ h1, h2, h3 {
 }
 .saved-flash { animation: flashSuccess 0.6s ease-out; }
 
-/* 驛｢譏ｴ�ｽ郢晢ｽ｣驛｢�ｧ�ｽ�ｭ驛｢譎｢�ｽ�ｪ驛｢�ｧ�ｽ�ｹ驛｢譏懶ｽｺ�･郢晢ｽｻ驛｢�ｧ�ｽ�ｫ驛｢譎｢�ｽ�ｼ驛｢譏ｴ�ｽ*/
+/* 鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・｣鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｭ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｪ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴乗・・ｽ・ｺ・ｽ・･驛｢譎｢・ｽ・ｻ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ*/
 .deck-entry {
   display: flex;
   align-items: center;
@@ -478,7 +478,7 @@ h1, h2, h3 {
 .de-name { flex: 1; font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .de-copies { font-size: 14px; font-weight: 700; color: var(--gold); }
 
-/* 驛｢�ｧ�ｽ�ｷ驛｢譎｢�ｽ�ｼ驛｢譎｢�ｽ�ｫ驛｢譎擾ｽｳ�ｨ邵ｺ譎会ｽｹ�ｧ�ｽ�ｯ驛｢�ｧ�ｽ�ｷ驛｢譎｢�ｽ�ｧ驛｢譎｢�ｽ�ｳ */
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｷ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴取得・ｽ・ｳ・ｽ・ｨ驍ｵ・ｺ隴惹ｼ夲ｽｽ・ｹ・ｽ・ｧ・ｽ・ｽ・ｽ・ｯ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｷ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｧ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ */
 .shield-list-section {
   padding: 15px;
   border-top: 1px solid var(--border-subtle);
@@ -509,7 +509,7 @@ h1, h2, h3 {
   width: 100%;
 }
 
-/* 驛｢譎丞ｹｲ�取ｨ抵ｽｹ譎∽ｾｭ�守､ｼ�ｹ譎｢�ｽ�ｼ驛｢譎｢�ｽ�ｪ驛｢譎�ｽｼ譁撰ｼ憺Δ�ｧ�ｽ�､驛｢譎｢�ｽ�ｳ */
+/* 鬩幢ｽ｢隴惹ｸ橸ｽｹ・ｲ・ｽ蜿厄ｽｨ謚ｵ・ｽ・ｹ隴寂或・ｾ・ｭ・ｽ螳茨ｽ､・ｼ・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｪ鬩幢ｽ｢隴趣ｿｽ・ｽ・ｼ隴∵腸・ｼ諞ｺﾎ費ｿｽ・ｧ・ｽ・ｽ・ｽ・､鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ */
 .preview-stats .ps-atk, .preview-stats .ps-hp {
   background: rgba(0,0,0,0.4);
   padding: 5px 15px;
@@ -531,7 +531,7 @@ h1, h2, h3 {
   font-size: 11px;
   border: 1px solid rgba(139, 92, 246, 0.3);
 }
-/* ========== 驛｢�ｧ�ｽ�ｲ驛｢譎｢�ｽ�ｼ驛｢譎∵ｱ橸ｿｽ�ｾ髫ｰ魃会ｽｽ�ｦ鬨ｾ蛹�ｽｽ�ｻ鬯ｮ�ｱ�ｽ�｢ (UI Overhaul) ========== */
+/* ========== 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｲ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴寂扱・ｱ讖ｸ・ｿ・ｽ・ｽ・ｾ鬮ｫ・ｰ鬲・ｼ夲ｽｽ・ｽ・ｽ・ｦ鬯ｨ・ｾ陋ｹ・ｽ・ｽ・ｽ・ｽ・ｻ鬯ｯ・ｮ・ｽ・ｱ・ｽ・ｽ・ｽ・｢ (UI Overhaul) ========== */
 
 body {
   margin: 0; padding: 0;
@@ -546,12 +546,9 @@ body {
   top: 0; left: 0;
   width: 100vw; height: 100vh;
   overflow: hidden;
-  background: #000;
+  background: url('/assets/images/background/epic_fantasy_board.png') no-repeat center center fixed;
+  background-size: cover;
   color: #fff;
-  background:
-    radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 60%),
-    radial-gradient(circle at 50% 30%, #1a1e46 0%, #050811 100%);
-  background-blend-mode: screen;
 }
 
 .game-container {
@@ -568,7 +565,7 @@ body {
 .center-area { grid-column: 2; }
 .right-side { grid-column: 3; }
 
-/* 郢ｧ�ｪ郢晢ｽｼ郢晁��ｽ郢晢ｽｬ郢ｧ�､髫補悪�ｴ�ｽ郢ｧ蛛ｵ縺堤ｹ晢ｽｪ郢晢ｿｽ繝ｩ郢晁ｼ釆溽ｹ晢ｽｼ邵ｺ荵晢ｽ蛾ｫｯ�､陞滓じ��邵ｲ竏晢ｿｽ鬮ｱ�｢邵ｺ�ｫ鬩溷調�ｽ�ｮ */
+/* 驛｢・ｧ・ｽ・ｪ驛｢譎｢・ｽ・ｼ驛｢譎・ｿｽ・ｽ・ｽ驛｢譎｢・ｽ・ｬ驛｢・ｧ・ｽ・､鬮ｫ陬懈が・ｽ・ｴ・ｽ・ｽ驛｢・ｧ陋幢ｽｵ邵ｺ蝣､・ｹ譎｢・ｽ・ｪ驛｢譎｢・ｿ・ｽ郢晢ｽｩ驛｢譎・ｽｼ驥・ｺｽ・ｹ譎｢・ｽ・ｼ驍ｵ・ｺ闕ｵ譎｢・ｽ陋ｾ・ｫ・ｯ・ｽ・､髯樊ｻ薙§・ｽ・ｽ驍ｵ・ｲ遶乗劼・ｿ・ｽ鬯ｮ・ｱ・ｽ・｢驍ｵ・ｺ・ｽ・ｫ鬯ｩ貅ｷ隱ｿ・ｽ・ｽ・ｽ・ｮ */
 .overlay {
   grid-column: 1 / span 3;
   grid-row: 1;
@@ -577,7 +574,7 @@ body {
   z-index: 10000;
 }
 
-/* ==== 驛｢�ｧ�ｽ�ｵ驛｢�ｧ�ｽ�､驛｢譎擾ｽｳ�ｨ邵ｺ鬘費ｽｹ譎｢�ｽ�ｪ驛｢�ｧ�ｽ�｢髯ｷ闌ｨ�ｽ�ｱ鬯ｨ�ｾ郢晢ｽｻ==== */
+/* ==== 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｵ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・､鬩幢ｽ｢隴取得・ｽ・ｳ・ｽ・ｨ驍ｵ・ｺ鬯倩ｲｻ・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｪ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｢鬮ｯ・ｷ髣鯉ｽｨ・ｽ・ｽ・ｽ・ｱ鬯ｯ・ｨ・ｽ・ｾ驛｢譎｢・ｽ・ｻ==== */
 .side-area {
   position: relative;
   z-index: 100;
@@ -600,7 +597,7 @@ body {
   border-radius: 16px;
 }
 
-/* ==== 驛｢�ｧ�ｽ�｢驛｢譎�ｿｽ邵ｺ�｡驛｢譎｢�ｽ�ｼ郢晢ｽｻ隴擾ｽｴ邵ｺ蟶ｷ�ｹ譏ｴ�ｽ郢晢ｽｻ驛｢�ｧ�ｽ�ｿ驛｢�ｧ�ｽ�ｹ驛｢�ｧ�ｽ�ｨ驛｢譎｢�ｽ�ｪ驛｢�ｧ�ｽ�｢ ==== */
+/* ==== 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｢鬩幢ｽ｢隴趣ｿｽ・ｿ・ｽ驍ｵ・ｺ・ｽ・｡鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ驛｢譎｢・ｽ・ｻ髫ｴ謫ｾ・ｽ・ｴ驍ｵ・ｺ陝ｶ・ｷ・ｽ・ｹ隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・ｻ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｨ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｪ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｢ ==== */
 .avatar-block {
   display: flex; gap: 30px; align-items: center; position: relative;
   width: 100%;
@@ -608,7 +605,7 @@ body {
   padding: 10px;
 }
 .player-block { flex-direction: row-reverse; }
-.opponent-block { flex-direction: row; }
+.opponent-block { flex-direction: row; margin-left: -30px; }
 
 .avatar-frame {
   width: 140px; height: 140px;
@@ -622,7 +619,7 @@ body {
   z-index: 5;
 }
 
-/* 陜玲ｫ�ｽｻ�｢邵ｺ蜷ｶ�矩ｬｲ豕鯉ｽｰ蠑ｱﾎ懃ｹ晢ｽｳ郢ｧ�ｰ */
+/* 髯懃軸・ｫ・ｽ・ｽ・ｻ・ｽ・｢驍ｵ・ｺ陷ｷ・ｶ・ｽ遏ｩ・ｬ・ｲ雎暮ｯ会ｽｽ・ｰ陟托ｽｱ・取㏍・ｹ譎｢・ｽ・ｳ驛｢・ｧ・ｽ・ｰ */
 .avatar-frame::before {
   content: '';
   position: absolute;
@@ -651,13 +648,25 @@ body {
 
 .avatar-life {
   position: absolute;
-  bottom: -5px; right: -5px;
-  width: 70px; height: 70px;
+  bottom: -10px; right: -10px;
+  width: 84px; height: 84px;
   background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="%23e11d48" d="M50,90L15,50C-5,30 20,-10 50,20C80,-10 105,30 85,50Z"/><path fill="none" stroke="%23ffeeb0" stroke-width="4" d="M50,86L18,48C1,31 22,-3 50,23C78,-3 99,31 82,48Z"/></svg>') center/cover;
   display: flex; align-items: center; justify-content: center;
   z-index: 10;
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.6));
+  filter: drop-shadow(0 0 15px rgba(225, 29, 72, 0.5)) drop-shadow(0 8px 16px rgba(0,0,0,0.8));
   animation: pulse-heart 2.5s ease-in-out infinite;
+}
+
+.avatar-life.damaged {
+  animation: damage-shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+  filter: drop-shadow(0 0 25px rgba(255, 0, 0, 0.9)) drop-shadow(0 8px 16px rgba(0,0,0,0.8));
+}
+
+@keyframes damage-shake {
+  10%, 90% { transform: translate3d(-2px, 0, 0) scale(1.1); }
+  20%, 80% { transform: translate3d(4px, 0, 0) scale(1.1); }
+  30%, 50%, 70% { transform: translate3d(-6px, 0, 0) scale(1.1); color: #ff0000; }
+  40%, 60% { transform: translate3d(6px, 0, 0) scale(1.1); }
 }
 
 @keyframes pulse-heart {
@@ -669,10 +678,10 @@ body {
 
 .life-value {
   font-family: var(--font-fantasy);
-  font-size: 28px; font-weight: 900;
+  font-size: 34px; font-weight: 900;
   color: #fff;
-  text-shadow: 0 0 5px #000, 0 2px 4px #000;
-  margin-top: -6px; /* 郢昜ｸ奇ｿｽ郢晏現�ｽ闕ｳ�ｭ陞滂ｽｮ邵ｺ�ｫ陷ｷ蛹ｻ�冗ｸｺ蟶呻ｽ� */
+  text-shadow: 0 0 10px rgba(255,0,0,0.8), 0 2px 4px #000;
+  margin-top: -6px; /* 驛｢譏懶ｽｸ螂・ｽｿ・ｽ驛｢譎冗樟・ｽ・ｽ髣包ｽｳ・ｽ・ｭ髯樊ｻゑｽｽ・ｮ驍ｵ・ｺ・ｽ・ｫ髯ｷ・ｷ陋ｹ・ｻ・ｽ蜀暦ｽｸ・ｺ陝ｶ蜻ｻ・ｽ・ｽ */
   letter-spacing: -1px;
 }
 
@@ -690,7 +699,7 @@ body {
 .status-row { display: flex; gap: 10px; font-size: 14px; font-weight: 700; color: #aaa; }
 .player-block .status-row { justify-content: flex-end; }
 
-/* ==== 騾ｾ讓企�郢晢ｽｬ郢晏生ﾎ晞勗�ｨ驕会ｽｺ (HUD) ==== */
+/* ==== 鬨ｾ・ｾ隶謎ｼ・ｿｽ驛｢譎｢・ｽ・ｬ驛｢譎冗函・取辨蜍暦ｿｽ・ｨ鬩穂ｼ夲ｽｽ・ｺ (HUD) ==== */
 .tribe-hud {
   display: flex; gap: 6px; margin-top: 10px;
 }
@@ -706,7 +715,7 @@ body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.5);
   display: flex; align-items: center; justify-content: center;
 }
-/* 郢晄ｧｭﾎ懃ｹｧ�ｬ郢晢ｽｳ騾包ｽｻ鬮ｱ�｢ */
+/* 驛｢譎・ｽｧ・ｭ・取㏍・ｹ・ｧ・ｽ・ｬ驛｢譎｢・ｽ・ｳ鬨ｾ蛹・ｽｽ・ｻ鬯ｮ・ｱ・ｽ・｢ */
 .mulligan-panel {
   width: 90%;
   max-width: 1000px;
@@ -759,14 +768,14 @@ body {
 }
 .tribe-badge .level-text {
   font-family: var(--font-fantasy);
-  font-size: 28px; font-weight: 900; color: #fff;
+  font-size: 34px; font-weight: 900; color: #fff;
   text-shadow: 0 0 4px #000, 0 0 8px #000;
   pointer-events: none;
   display: none;
 }
 .tribe-badge.active .level-text { display: flex; }
 
-/* 騾ｾ讓企�郢晢ｽｬ郢晏生ﾎ晉ｹｧ�｢郢晢ｿｽ�ｽ郢ｧ�ｲ郢晢ｽｼ郢ｧ�ｸ�ｽ蛹ｻ�らｸｺ蠍ｺ�ｽ�ｿ騾包ｽｨ邵ｺ蜷ｶ�玖撻�ｴ陷ｷ闌ｨ�ｼ�ｽ */
+/* 鬨ｾ・ｾ隶謎ｼ・ｿｽ驛｢譎｢・ｽ・ｬ驛｢譎冗函・取刮・ｹ・ｧ・ｽ・｢驛｢譎｢・ｿ・ｽ・ｽ・ｽ驛｢・ｧ・ｽ・ｲ驛｢譎｢・ｽ・ｼ驛｢・ｧ・ｽ・ｸ・ｽ・ｽ陋ｹ・ｻ・ｽ繧会ｽｸ・ｺ陟搾ｽｺ・ｽ・ｽ・ｽ・ｿ鬨ｾ蛹・ｽｽ・ｨ驍ｵ・ｺ陷ｷ・ｶ・ｽ邇匁捗・ｽ・ｴ髯ｷ・ｷ髣鯉ｽｨ・ｽ・ｼ・ｽ・ｽ */
 .tribe-progress-container {
   position: absolute; bottom: -4px; width: 40px; height: 4px;
   background: rgba(0,0,0,0.5); border-radius: 2px;
@@ -778,7 +787,7 @@ body {
   transition: width 0.3s ease;
 }
 
-/* 髯橸ｽｻ隶灘ｲｩ縺趣ｿｽ�ｧ髯具ｽｻ�ｽ�･驛｢�ｧ�ｽ�ｫ驛｢譎｢�ｽ�ｩ驛｢譎｢�ｽ�ｼ */
+/* 鬮ｯ讖ｸ・ｽ・ｻ髫ｶ轣假ｽｲ・ｩ邵ｺ雜｣・ｿ・ｽ・ｽ・ｧ鬮ｯ蜈ｷ・ｽ・ｻ・ｽ・ｽ・ｽ・･鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｩ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ */
 .tribe-badge {
   width: 50px; height: 50px;
   background-size: contain; background-repeat: no-repeat; background-position: center;
@@ -788,7 +797,7 @@ body {
   margin-bottom: 5px;
 }
 .tribe-badge .level-text {
-  font-size: 28px; font-weight: 900; color: #fff;
+  font-size: 34px; font-weight: 900; color: #fff;
   text-shadow: 0 0 4px #000, 0 0 8px #000;
   pointer-events: none;
   font-family: var(--font-fantasy);
@@ -800,15 +809,15 @@ body {
 .tribe-white { color: #f1f5f9; }
 .tribe-black { color: #a78bfa; }
 
-/* 髣碑惱逎ｯ蜈ｱ髫ｲ�､�ｧ鬩搾ｽｯ�ｭ髫ｰ謔ｶ�ｼ陜捺ｻゑｽｽ�ｮ�ｵ鬯ｮ�ｫ陞ｳ莠･鬟ｭ驍ｵ�ｺ�ｫ鬩募∞�ｽ�ｻ鬮ｯ�ｦ鬲�ｼ夲ｽｽ�ｼ郢晢ｽｻ*/
+/* 鬮｣遒第Τ騾趣ｽｯ陷茨ｽｱ鬮ｫ・ｲ・ｽ・､・ｽ・ｧ鬯ｩ謳ｾ・ｽ・ｯ・ｽ・ｭ鬮ｫ・ｰ隰費ｽｶ・ｽ・ｼ髯懈瑳・ｻ繧托ｽｽ・ｽ・ｽ・ｮ・ｽ・ｵ鬯ｯ・ｮ・ｽ・ｫ髯橸ｽｳ闔�・･鬯滂ｽｭ鬩搾ｽｵ・ｽ・ｺ・ｽ・ｫ鬯ｩ蜍溪・・ｽ・ｽ・ｽ・ｻ鬯ｮ・ｯ・ｽ・ｦ鬯ｲ・ｽ・ｼ螟ｲ・ｽ・ｽ・ｽ・ｼ驛｢譎｢・ｽ・ｻ*/
 .crystal-orb { display: none; }
 
-/* 驛｢�ｧ�ｽ�ｷ驛｢譎｢�ｽ�ｼ驛｢譎｢�ｽ�ｫ驛｢譎擾ｽｳ�ｨ郢晢ｽｧ驛｢�ｧ�ｽ�｣驛｢�ｧ�ｽ�ｹ驛｢譎丞ｹｲ�取ｨ抵ｽｹ�ｧ�ｽ�､郢晢ｽｻ郢晢ｽｻVG鬯ｯ螟ｲ�ｽ�ｨ郢晢ｽｻ郢晢ｽｻ*/
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｷ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴取得・ｽ・ｳ・ｽ・ｨ驛｢譎｢・ｽ・ｧ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｣鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴惹ｸ橸ｽｹ・ｲ・ｽ蜿厄ｽｨ謚ｵ・ｽ・ｹ・ｽ・ｧ・ｽ・ｽ・ｽ・､驛｢譎｢・ｽ・ｻ驛｢譎｢・ｽ・ｻVG鬯ｯ・ｯ陞滂ｽｲ・ｽ・ｽ・ｽ・ｨ驛｢譎｢・ｽ・ｻ驛｢譎｢・ｽ・ｻ*/
 .shields-display { 
   display: flex; gap: 15px; margin-top: 10px;
   min-height: 100px;
   align-items: center;
-  padding: 15px; /* 髯具ｽｻ�ｽ�､髯橸ｽｳ陞溯揄�ｼ諛茨ｽｲ�ｺ驛｢�ｧ髮区ｩｸ�ｽ�ｺ郢晢ｽｻ�ｽ�｡驛｢�ｧ闕ｵ譏ｶ陞ｺ驛｢�ｧ遶丞｣ｹ�ｽ驛｢譏懶ｽｻ�｣郢晢ｽｧ驛｢�ｧ�ｽ�｣驛｢譎｢�ｽ�ｳ驛｢�ｧ�ｽ�ｰ */
+  padding: 15px; /* 鬮ｯ蜈ｷ・ｽ・ｻ・ｽ・ｽ・ｽ・､鬮ｯ讖ｸ・ｽ・ｳ髯樊ｺｯ謠・ｿｽ・ｼ隲幄肩・ｽ・ｲ・ｽ・ｺ鬩幢ｽ｢・ｽ・ｧ鬮ｮ蛹ｺ・ｩ・ｸ・ｽ・ｽ・ｽ・ｺ驛｢譎｢・ｽ・ｻ・ｽ・ｽ・ｽ・｡鬩幢ｽ｢・ｽ・ｧ髣包ｽｵ隴擾ｽｶ髯橸ｽｺ鬩幢ｽ｢・ｽ・ｧ驕ｶ荳橸ｽ｣・ｹ・ｽ・ｽ鬩幢ｽ｢隴乗・・ｽ・ｻ・ｽ・｣驛｢譎｢・ｽ・ｧ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｣鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｰ */
   border-radius: 12px;
   transition: all 0.3s ease;
 }
@@ -860,7 +869,7 @@ body {
   z-index: 2;
 }
 
-/* ==== 髣包ｽｳ�ｽ�ｭ髯樊ｻゑｽｽ�ｮ3D鬨ｾ�ｶ�ｽ�､鬯ｮ�ｱ�ｽ�｢ ==== */
+/* ==== 鬮｣蛹・ｽｽ・ｳ・ｽ・ｽ・ｽ・ｭ鬮ｯ讓奇ｽｻ繧托ｽｽ・ｽ・ｽ・ｮ3D鬯ｨ・ｾ・ｽ・ｶ・ｽ・ｽ・ｽ・､鬯ｯ・ｮ・ｽ・ｱ・ｽ・ｽ・ｽ・｢ ==== */
 .center-area {
   display: flex;
   flex-direction: column;
@@ -872,9 +881,9 @@ body {
 }
 .battlefield-container {
   flex: 1;
-  perspective: 1600px; /* 1200 -> 1600 驍ｵ�ｺ�ｽ�ｫ驍ｵ�ｺ陷会ｽｱ遯ｶ�ｻ驛｢譏懶ｽｻ�｣郢晢ｽｻ驛｢�ｧ�ｽ�ｹ驛｢�ｧ髮区ｩｸ�ｽ�ｼ�ｽ�ｷ驛｢�ｧ遶丞､ｲ�ｽ�ｽ */
+  perspective: 1600px; /* 1200 -> 1600 鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｫ鬩搾ｽｵ・ｽ・ｺ髯ｷ莨夲ｽｽ・ｱ驕ｯ・ｶ・ｽ・ｻ鬩幢ｽ｢隴乗・・ｽ・ｻ・ｽ・｣驛｢譎｢・ｽ・ｻ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢・ｽ・ｧ鬮ｮ蛹ｺ・ｩ・ｸ・ｽ・ｽ・ｽ・ｼ・ｽ・ｽ・ｽ・ｷ鬩幢ｽ｢・ｽ・ｧ驕ｶ荳橸ｽ､・ｲ・ｽ・ｽ・ｽ・ｽ */
   display: flex; align-items: center; justify-content: center;
-  margin-top: -200px; /* -160px -> -200px 驍ｵ�ｺ�ｽ�ｫ驍ｵ�ｺ陷会ｽｱ遯ｶ�ｻ驍ｵ�ｺ髴郁ｲｻ�ｽ閾･�ｸ�ｺ�ｽ�ｫ髣包ｽｳ鬯�､ｧ�ｩ�ｿ驍ｵ�ｺ�ｽ�ｸ */
+  margin-top: -200px; /* -160px -> -200px 鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｫ鬩搾ｽｵ・ｽ・ｺ髯ｷ莨夲ｽｽ・ｱ驕ｯ・ｶ・ｽ・ｻ鬩搾ｽｵ・ｽ・ｺ鬮ｴ驛・ｽｲ・ｻ・ｽ・ｽ髢ｾ・･・ｽ・ｸ・ｽ・ｺ・ｽ・ｽ・ｽ・ｫ鬮｣蛹・ｽｽ・ｳ鬯ｯ・ｽ・､・ｧ・ｽ・ｩ・ｽ・ｿ鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｸ */
   transition: margin-top 0.4s ease;
 }
 .battlefield-3d {
@@ -903,9 +912,9 @@ body {
 }
 .board-half {
   display: grid;
-  grid-template-rows: repeat(2, 224px); /* 繧ｫ繝ｼ繝峨�鬮倥＆蛻�ｒ遒ｺ菫� */
+  grid-template-rows: repeat(2, 224px); /* 郢ｧ・ｫ郢晢ｽｼ郢晏ｳｨ・ｽ鬯ｮ蛟･・・崕・ｽ・帝￡・ｺ闖ｫ・ｽ */
   gap: 20px;
-  min-height: 470px; /* 2蛻� + gap 蛻� */
+  min-height: 470px; /* 2陋ｻ・ｽ + gap 陋ｻ・ｽ */
 }
 #targeting-instruction {
     position: fixed;
@@ -917,7 +926,7 @@ body {
     align-items: center;
     justify-content: center;
     z-index: 10000;
-    pointer-events: none !important; /* 繧ｯ繝ｪ繝�け繧帝城℃縺輔○繧区怙驥崎ｦ∬ｨｭ螳� */
+    pointer-events: none !important; /* 郢ｧ・ｯ郢晢ｽｪ郢晢ｿｽ縺醍ｹｧ蟶敖蝓寂с邵ｺ霈披雷郢ｧ蛹ｺ諤咎ｩ･蟠趣ｽｦ竏ｬ・ｨ・ｭ陞ｳ・ｽ */
 }
 
 .targeting-message {
@@ -940,11 +949,11 @@ body {
     to { opacity: 1.0; transform: scale(1.05); }
 }
 #opponent-board {
-  grid-template-areas: "back" "front"; /* 逶ｸ謇九�荳翫′蠕悟�縲∽ｸ九′蜑榊� */
+  grid-template-areas: "back" "front"; /* 騾ｶ・ｸ隰・ｹ晢ｿｽ闕ｳ鄙ｫ窶ｲ陟墓ぁ・ｽ邵ｲ竏ｽ・ｸ荵昶ｲ陷第ｦ奇ｿｽ */
   margin-bottom: 25px;
 }
 #player-board {
-  grid-template-areas: "front" "back"; /* 閾ｪ蛻��荳翫′蜑榊�縲∽ｸ九′蠕悟� */
+  grid-template-areas: "front" "back"; /* 髢ｾ・ｪ陋ｻ・ｽ・ｽ闕ｳ鄙ｫ窶ｲ陷第ｦ奇ｿｽ邵ｲ竏ｽ・ｸ荵昶ｲ陟墓ぁ・ｽ */
   margin-top: 25px;
 }
 .board-row {
@@ -955,7 +964,7 @@ body {
 .opponent-half { position: relative; z-index: 10; transform-style: preserve-3d; }
 .player-half { position: relative; z-index: 10; transform-style: preserve-3d; }
 
-/* 繧ｰ繝ｪ繝�ラ繧ｨ繝ｪ繧｢縺ｮ蜑ｲ繧雁ｽ薙※ */
+/* 郢ｧ・ｰ郢晢ｽｪ郢晢ｿｽ繝ｩ郢ｧ・ｨ郢晢ｽｪ郢ｧ・｢邵ｺ・ｮ陷托ｽｲ郢ｧ髮・ｽｽ阮吮ｻ */
 .opponent-back { grid-area: back; }
 .opponent-front { grid-area: front; }
 .player-front { grid-area: front; }
@@ -964,9 +973,10 @@ body {
 .board-slot {
   width: 160px; height: 224px;
   border-radius: 12px;
-  background: rgba(8, 12, 28, 0.7);
-  border: 1px solid rgba(184, 134, 11, 0.15);
-  box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 0 8px rgba(184, 134, 11, 0.05);
+  background: rgba(8, 12, 28, 0.85);
+  border: 2px solid rgba(184, 134, 11, 0.4);
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 0 15px rgba(184, 134, 11, 0.2);
+  backdrop-filter: blur(6px);
   position: relative;
   transition: all 0.3s ease;
 }
@@ -1004,7 +1014,7 @@ body {
   to { box-shadow: 0 0 40px rgba(34, 197, 94, 0.8); border-color: rgba(34, 197, 94, 1); }
 }
 
-/* 驛｢譎｢ｽｦ驛｢譏懶ｽｹ譏ｴﾎ暮Δ譎冗樟邵ｺ蜥ｲｹ譎｢ｽｼ驛｢譏ｴｽ*/
+/* 鬩幢ｽ｢隴趣ｽ｢・ｽ・ｦ鬩幢ｽ｢隴乗・・ｽ・ｹ隴擾ｽｴ・取坩ﾎ碑ｭ主・讓滄し・ｺ陷･・ｲ・ｹ隴趣ｽ｢・ｽ・ｼ鬩幢ｽ｢隴擾ｽｴ・ｽ*/
 .unit-card {
   width: 100%; height: 100%; position: absolute; top: 0; left: 0;
   touch-action: none; user-select: none;
@@ -1029,9 +1039,9 @@ body {
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   box-shadow: 0 5px 15px rgba(0,0,0,0.6);
   position: relative;
-  border: none; /* clip-path 驍ｵｺｽｮ驍ｵｺ雋∞ｽｽ border 驍ｵｺｽｯ髴取ｻゑｽｽ｡髯ｷ莨夲ｽｽｹ驍ｵｲ遶乗亢ｽ鬯ｩ蟶吶≦ box-shadow 驍ｵｺｽｧ驍ｵｺｽｿ驍ｵｺ陝ｶ蜻ｻｽｽ */
+  border: none; /* clip-path 鬩搾ｽｵ・ｺ・ｽ・ｮ鬩搾ｽｵ・ｺ髮銀・・ｽ・ｽ border 鬩搾ｽｵ・ｺ・ｽ・ｯ鬮ｴ蜿厄ｽｻ繧托ｽｽ・ｽ・｡鬮ｯ・ｷ闔ｨ螟ｲ・ｽ・ｽ・ｹ鬩搾ｽｵ・ｲ驕ｶ荵嶺ｺ｢・ｽ鬯ｯ・ｩ陝ｶ蜷ｶ竕ｦ box-shadow 鬩搾ｽｵ・ｺ・ｽ・ｧ鬩搾ｽｵ・ｺ・ｽ・ｿ鬩搾ｽｵ・ｺ髯晢ｽｶ陷ｻ・ｻ・ｽ・ｽ */
 }
-/* 驍ｵｺｽ｡驛｢ｧ郢晢ｽｻ隨ｽｲ驍ｵｺｽｨ髫ｴ蟶ｷ逕･隲ｷｽｸｺｽｪ驛｢譎｢ｽ｡驛｢ｧｽｿ驛｢譎｢ｽｪ驛｢譏ｴｽ邵ｺ鬘梧ｱ櫁ｬ疲ｻゑｽｽｷｽ･ */
+/* 鬩搾ｽｵ・ｺ・ｽ・｡鬩幢ｽ｢・ｧ驛｢譎｢・ｽ・ｻ髫ｨ・ｽ・ｲ鬩搾ｽｵ・ｺ・ｽ・ｨ鬮ｫ・ｴ陝ｶ・ｷ騾包ｽ･髫ｲ・ｷ・ｽ・ｸ・ｺ・ｽ・ｪ鬩幢ｽ｢隴趣ｽ｢・ｽ・｡鬩幢ｽ｢・ｧ・ｽ・ｿ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｪ鬩幢ｽ｢隴擾ｽｴ・ｽ驍ｵ・ｺ鬯俶｢ｧ・ｱ讚・ｽｬ逍ｲ・ｻ繧托ｽｽ・ｽ・ｷ・ｽ・･ */
 .unit-stats .atk::before, .unit-stats .hp::before {
     content: ''; position: absolute; inset: 2px;
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
@@ -1050,7 +1060,7 @@ body {
 }
 .unit-stats .val { margin-top: 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
-/* ==== 髫ｰｽ邇ｫｽ (髫ｰｽｽ隲橸ｽｾ驛｢譎｢ｽｬ驛｢ｧｽ､驛｢ｧｽ｢驛｢ｧｽｦ驛｢譎冗樟郢晢ｽｻJS驍ｵｺｽｧ鬮ｫｱｽｿ髫ｰｨｽｴ驍ｵｲｽ驛｡S驍ｵｺｽｯ髯憺屮ｽｺ髫ｴ蟷｢ｽｬ髫ｴｫ) ==== */
+/* ==== 鬮ｫ・ｰ・ｽ驍・ｽｫ・ｽ (鬮ｫ・ｰ・ｽ・ｽ髫ｲ讖ｸ・ｽ・ｾ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｬ鬩幢ｽ｢・ｧ・ｽ・､鬩幢ｽ｢・ｧ・ｽ・｢鬩幢ｽ｢・ｧ・ｽ・ｦ鬩幢ｽ｢隴主・讓滄Δ譎｢・ｽ・ｻJS鬩搾ｽｵ・ｺ・ｽ・ｧ鬯ｮ・ｫ・ｱ・ｽ・ｿ鬮ｫ・ｰ・ｨ・ｽ・ｴ鬩搾ｽｵ・ｲ・ｽ鬩幢ｽ｡S鬩搾ｽｵ・ｺ・ｽ・ｯ鬮ｯ諞ｺ螻ｮ・ｽ・ｺ鬮ｫ・ｴ陝ｷ・｢・ｽ・ｬ鬮ｫ・ｴ・ｫ) ==== */
 .hand-area-wrapper {
   position: absolute; bottom: -180px; left: 0; width: 100%; height: 260px;
   display: flex; justify-content: center; align-items: flex-end;
@@ -1077,7 +1087,7 @@ body {
 .hand-card:hover { border-color: #cbd5e1; box-shadow: 0 -10px 40px rgba(255,255,255,0.3); z-index: 300 !important; }
 .hand-card.selected { border-color: #fbbf24; box-shadow: 0 0 50px rgba(251, 191, 36, 0.6); }
 
-/* ==== 髯ｷ�ｿ�ｽ�ｳ髯句ｹ｢�ｽ�ｴUI ==== */
+/* ==== 鬮ｯ・ｷ・ｽ・ｿ・ｽ・ｽ・ｽ・ｳ鬮ｯ蜿･・ｹ・｢・ｽ・ｽ・ｽ・ｴUI ==== */
 .right-side {
   gap: 15px;
   display: flex;
@@ -1094,8 +1104,8 @@ body {
 }
 
 .log-panel {
-  flex: 1; /* 髫ｹ�ｿ闕ｵ譎｢�ｽ鬘費ｽｸ�ｺ�ｽ�ｮ驛｢�ｧ�ｽ�ｹ驛｢譎擾ｽ｣�ｹ郢晢ｽｻ驛｢�ｧ�ｽ�ｹ驛｢�ｧ陋幢ｽｵ隨假ｿｽ�ｸ�ｺ�ｽ�ｹ驍ｵ�ｺ�ｽ�ｦ髣厄ｽｴ�ｽ�ｿ驍ｵ�ｺ郢晢ｽｻ*/
-  min-height: 0; /* 驛｢譎�ｽｼ驥�ｨ抵ｽｹ譏ｴ�ｽ邵ｺ驢搾ｽｹ�ｧ�ｽ�ｹ驛｢�ｧ�ｽ�ｳ驛｢譎｢�ｽ�ｳ驛｢譏ｴ�ｽ郢晢ｽｪ髯ｷﾂ郢晢ｽｻ邵ｲ蟶昴＠�ｽ�ｮ髯晢ｿｽ�ｸ讒ｫ�ｺ�ｽ螯呻ｿｽ�ｽ驍ｵ�ｺ�ｽ�ｫ驍ｵ�ｺ陷ｷ�ｶ�ｽ�ｽ */
+  flex: 1; /* 鬮ｫ・ｹ・ｽ・ｿ髣包ｽｵ隴趣ｽ｢・ｽ・ｽ鬯倩ｲｻ・ｽ・ｸ・ｽ・ｺ・ｽ・ｽ・ｽ・ｮ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴取得・ｽ・｣・ｽ・ｹ驛｢譎｢・ｽ・ｻ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢・ｽ・ｧ髯句ｹ｢・ｽ・ｵ髫ｨ蛛・ｽｿ・ｽ・ｽ・ｸ・ｽ・ｺ・ｽ・ｽ・ｽ・ｹ鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｦ鬮｣蜴・ｽｽ・ｴ・ｽ・ｽ・ｽ・ｿ鬩搾ｽｵ・ｽ・ｺ驛｢譎｢・ｽ・ｻ*/
+  min-height: 0; /* 鬩幢ｽ｢隴趣ｿｽ・ｽ・ｼ鬩･・ｽ・ｨ謚ｵ・ｽ・ｹ隴擾ｽｴ・ｽ・ｽ驍ｵ・ｺ鬩｢謳ｾ・ｽ・ｹ・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・ｪ鬮ｯ・ｷ・つ驛｢譎｢・ｽ・ｻ驍ｵ・ｲ陝ｶ譏ｴ・�・ｽ・ｽ・ｽ・ｮ鬮ｯ譎｢・ｿ・ｽ・ｽ・ｸ隶抵ｽｫ・ｽ・ｺ・ｽ・ｽ陞ｯ蜻ｻ・ｿ・ｽ・ｽ・ｽ鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｫ鬩搾ｽｵ・ｽ・ｺ髯ｷ・ｷ・ｽ・ｶ・ｽ・ｽ・ｽ・ｽ */
   display: flex;
   flex-direction: column;
   padding: 15px;
@@ -1145,13 +1155,13 @@ body {
   border: 3px solid #fff;
 }
 
-/* 騾ｾ讓企�郢晢ｽｬ郢晏生ﾎ晉ｹｧ�｢郢晢ｿｽ�ｽ驕抵ｽｺ髫ｱ髦ｪ�ｽ郢晢ｿｽ�ｽ郢ｧ�｢郢晢ｿｽ�ｽ (隰ｾ�ｹ陜滂ｿｽ豐ｿ) */
+/* 鬨ｾ・ｾ隶謎ｼ・ｿｽ驛｢譎｢・ｽ・ｬ驛｢譎冗函・取刮・ｹ・ｧ・ｽ・｢驛｢譎｢・ｿ・ｽ・ｽ・ｽ鬩墓慣・ｽ・ｺ鬮ｫ・ｱ鬮ｦ・ｪ・ｽ・ｽ驛｢譎｢・ｿ・ｽ・ｽ・ｽ驛｢・ｧ・ｽ・｢驛｢譎｢・ｿ・ｽ・ｽ・ｽ (髫ｰ・ｾ・ｽ・ｹ髯懈ｻゑｽｿ・ｽ雎撰ｽｿ) */
 .crystal-confirm-popup {
   position: absolute;
   bottom: 85px;
   left: 50%;
   transform: translateX(-50%);
-  width: 280px; /* 邵ｺ霈費ｽ臥ｸｺ�ｫ陟趣ｿｽ�｡郢ｧ�ｽ */
+  width: 280px; /* 驍ｵ・ｺ髴郁ｲｻ・ｽ閾･・ｸ・ｺ・ｽ・ｫ髯溯ｶ｣・ｿ・ｽ・ｽ・｡驛｢・ｧ・ｽ・ｽ */
   background: rgba(10, 15, 30, 0.98);
   border: 1px solid var(--accent);
   border-radius: 12px;
@@ -1162,13 +1172,13 @@ body {
 }
 
 .crystal-confirm-popup p {
-  font-size: 13px; /* 陝�ｻ｣��陝�ｸ奇ｼ�ｸｺ荳奇ｼ�邵ｺ�ｦ1髯ｦ蠕娯�陷ｿ蠑ｱ竏ｪ郢ｧ鄙ｫ��ｸｺ蜷ｶ�･邵ｺ蜷ｶ�� */
+  font-size: 13px; /* 髯晢ｿｽ・ｻ・｣・ｽ・ｽ髯晢ｿｽ・ｸ螂・ｽｼ・ｽ・ｸ・ｺ闕ｳ螂・ｽｼ・ｽ驍ｵ・ｺ・ｽ・ｦ1鬮ｯ・ｦ陟募ｨｯ・ｽ髯ｷ・ｿ陟托ｽｱ遶擾ｽｪ驛｢・ｧ驗呻ｽｫ・ｽ・ｽ・ｸ・ｺ陷ｷ・ｶ・ｽ・･驍ｵ・ｺ陷ｷ・ｶ・ｽ・ｽ */
   margin-bottom: 15px;
   color: #fff;
   font-weight: bold;
   line-height: 1.4;
   text-align: center;
-  white-space: nowrap; /* 1髯ｦ蠕後帝勗�ｨ驕会ｽｺ */
+  white-space: nowrap; /* 1鬮ｯ・ｦ陟募ｾ個蟶晏距・ｽ・ｨ鬩穂ｼ夲ｽｽ・ｺ */
 }
 
 .popup-actions {
@@ -1208,7 +1218,7 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* 鬮ｯ�｣陜滂ｽｶ郢晢ｽｻ騾｡�ｪ隰�玄�ｼ豕鯉ｿｽ */
+/* 鬯ｮ・ｯ・ｽ・｣髯懈ｻゑｽｽ・ｶ驛｢譎｢・ｽ・ｻ鬨ｾ・｡・ｽ・ｪ髫ｰ・ｽ邇・ｿｽ・ｼ雎暮ｯ会ｽｿ・ｽ */
 #turn-order-overlay {
   display: flex !important;
   align-items: center;
@@ -1269,7 +1279,7 @@ body {
   box-shadow: 0 0 30px rgba(212, 160, 23, 0.5), 0 0 60px rgba(212, 160, 23, 0.2);
 }
 
-/* ==== 驛｢譎｢�ｽ�｢驛｢譎｢�ｽ�ｼ驛｢譏ｶ縺朱Δ譎｢�ｽ�ｫ (驛｢�ｧ�ｽ�ｫ驛｢譎｢�ｽ�ｼ驛｢譎∵ｭ難ｿｽ�ｩ�ｽ�ｳ鬩肴得�ｽ�ｰ) ==== */
+/* ==== 鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・｢鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴擾ｽｶ邵ｺ譛ｱﾎ碑ｭ趣ｽ｢・ｽ・ｽ・ｽ・ｫ (鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴寂扱・ｭ髮｣・ｿ・ｽ・ｽ・ｩ・ｽ・ｽ・ｽ・ｳ鬯ｩ閧ｴ蠕暦ｿｽ・ｽ・ｽ・ｰ) ==== */
 .card-detail-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px);
   z-index: 10001 !important; display: flex; align-items: center; justify-content: center;
@@ -1286,7 +1296,7 @@ body {
   background-size: cover; background-position: center;
   border: 4px solid #fff; box-shadow: 0 20px 50px #000;
 }
-/* 髫ｨ�ｨ郢晢ｽｻ驛｢譎�鯵邵ｺ�｡驛｢譎｢�ｽ�ｳ */
+/* 鬮ｫ・ｨ・ｽ・ｨ驛｢譎｢・ｽ・ｻ鬩幢ｽ｢隴趣ｿｽ魃ｵ驍ｵ・ｺ・ｽ・｡鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ */
 .cd-close-btn {
   position: absolute; top: -20px; right: -20px;
   width: 50px; height: 50px; background: #e11d48;
@@ -1298,10 +1308,10 @@ body {
 }
 
 /* ============================================================ */
-/* 鬮ｴ謇假ｽｽ�ｽ髯ｷ�ｽ: BGM驛｢�ｧ�ｽ�ｻ驛｢譎｢�ｽ�ｬ驛｢�ｧ�ｽ�ｯ驛｢�ｧ�ｽ�ｿ驛｢譎｢�ｽ�ｼ & 驛｢譏ｴ�ｽ郢晢ｽ｣驛｢�ｧ�ｽ�ｭ髫ｶ蝣､霍晢ｿｽ�ｯ陝ｲ�ｨ邵ｺ�ｽ�ｹ�ｧ�ｽ�､驛｢�ｧ�ｽ�ｳ驛｢譎｢�ｽ�ｳ鬨ｾ蛹�ｽｽ�ｨ */
+/* 鬯ｮ・ｴ隰・∞・ｽ・ｽ・ｽ・ｽ鬮ｯ・ｷ・ｽ・ｽ: BGM鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｻ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｬ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｯ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ & 鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・｣鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｭ鬮ｫ・ｶ陜｣・､髴肴劼・ｿ・ｽ・ｽ・ｯ髯晢ｽｲ・ｽ・ｨ驍ｵ・ｺ・ｽ・ｽ・ｽ・ｹ・ｽ・ｧ・ｽ・ｽ・ｽ・､鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬯ｨ・ｾ陋ｹ・ｽ・ｽ・ｽ・ｽ・ｨ */
 /* ============================================================ */
 
-/* 驛｢譏ｴ�ｽ郢晢ｽ｣驛｢�ｧ�ｽ�ｭ髫ｶ蝣､霍晢ｿｽ�ｯ髢ｾ�･陋ｻ�､鬯ｮ�ｱ�ｽ�｢驍ｵ�ｺ�ｽ�ｮ驛｢�ｧ�ｽ�ｫ驛｢譎｢�ｽ�ｩ驛｢譎｢�ｽ�ｼ驛｢譎�ｽｼ譁絶襖驛｢譎｢�ｽ�ｫ驛｢�ｧ�ｽ�ｿ驛｢譎｢�ｽ�ｻ驛｢�ｧ�ｽ�ｪ驛｢譎｢�ｽ�ｼ驛｢譏ｴ�ｽ*/
+/* 鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・｣鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｭ鬮ｫ・ｶ陜｣・､髴肴劼・ｿ・ｽ・ｽ・ｯ鬮｢・ｾ・ｽ・･髯具ｽｻ・ｽ・､鬯ｯ・ｮ・ｽ・ｱ・ｽ・ｽ・ｽ・｢鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｮ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｩ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴趣ｿｽ・ｽ・ｼ隴∫ｵｶ隘夜ｩ幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｻ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｪ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ*/
 .color-filter-bar {
   display: flex; gap: 12px; margin-bottom: 20px;
 }
@@ -1318,10 +1328,10 @@ body {
 .color-orb[data-color="green"] { background-image: url('/assets/images/icon/divine/green.png'); }
 .color-orb[data-color="white"] { background-image: url('/assets/images/icon/divine/white.png'); }
 .color-orb[data-color="black"] { background-image: url('/assets/images/icon/divine/black.png'); }
-/* 陞ｻ讓環�ｧ郢ｧ�ｪ郢晢ｽｼ郢晄じ�ｽ髯ｦ�ｨ驕会ｽｺ郢ｧ蜻域剰怏�ｹ陋ｹ�ｽ */
+/* 髯橸ｽｻ隶鍋腸ﾂ・ｽ・ｧ驛｢・ｧ・ｽ・ｪ驛｢譎｢・ｽ・ｼ驛｢譎・§・ｽ・ｽ鬮ｯ・ｦ・ｽ・ｨ鬩穂ｼ夲ｽｽ・ｺ驛｢・ｧ陷ｻ蝓淞蜑ｰ諤擾ｿｽ・ｹ髯具ｽｹ・ｽ・ｽ */
 .color-orb .orb-inner { display: block; }
 
-/* 驛｢譎丞ｹｲ�取ｨ抵ｽｹ譎∽ｾｭ�守､ｼ�ｹ譎｢�ｽ�ｼ鬨ｾ蛹�ｽｽ�ｨ驛｢�ｧ�ｽ�ｳ驛｢�ｧ�ｽ�ｹ驛｢譎冗樟郢晢ｽｰ驛｢譏ｴ�ｽ邵ｺ�ｽ */
+/* 鬩幢ｽ｢隴惹ｸ橸ｽｹ・ｲ・ｽ蜿厄ｽｨ謚ｵ・ｽ・ｹ隴寂或・ｾ・ｭ・ｽ螳茨ｽ､・ｼ・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬯ｨ・ｾ陋ｹ・ｽ・ｽ・ｽ・ｽ・ｨ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴主・讓滄Δ譎｢・ｽ・ｰ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驍ｵ・ｺ・ｽ・ｽ */
 .preview-cost {
   width: 64px; height: 64px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
@@ -1331,7 +1341,7 @@ body {
   flex-shrink: 0;
 }
 
-/* 鬮ｫ�ｪ�ｽ�ｭ髯橸ｽｳ陞｢�ｹ�守坩�ｹ譎｢�ｽ�ｼ驛｢譏ｶ縺朱Δ譎｢�ｽ�ｫ驍ｵ�ｺ�ｽ�ｮBGM驛｢�ｧ�ｽ�ｻ驛｢譎｢�ｽ�ｬ驛｢�ｧ�ｽ�ｯ驛｢�ｧ�ｽ�ｿ驛｢譎｢�ｽ�ｼ */
+/* 鬯ｮ・ｫ・ｽ・ｪ・ｽ・ｽ・ｽ・ｭ鬮ｯ讖ｸ・ｽ・ｳ髯橸ｽ｢・ｽ・ｹ・ｽ螳亥擠・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴擾ｽｶ邵ｺ譛ｱﾎ碑ｭ趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｮBGM鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｻ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｬ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｯ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ */
 .bgm-selector {
   display: flex; gap: 10px; justify-content: space-between; margin-top: 10px;
 }
@@ -1350,7 +1360,7 @@ body {
 
 .setting-item span { font-size: 14px; color: #fff; font-weight: bold; }
 
-/* 髫ｶﾂ隲幢ｿｽ�ｽ�ｴ�ｽ�｢驛｢譎�ｽｼ譁絶襖驛｢譎｢�ｽ�ｫ驛｢�ｧ�ｽ�ｿ驛｢譎�ｿｽ郢晢ｽｻ */
+/* 鬮ｫ・ｶ・つ髫ｲ蟷｢・ｿ・ｽ・ｽ・ｽ・ｽ・ｴ・ｽ・ｽ・ｽ・｢鬩幢ｽ｢隴趣ｿｽ・ｽ・ｼ隴∫ｵｶ隘夜ｩ幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ鬩幢ｽ｢隴趣ｿｽ・ｿ・ｽ驛｢譎｢・ｽ・ｻ */
 .search-filter-bar {
   display: flex; gap: 15px; margin-top: 15px; padding: 10px;
   background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);
@@ -1367,7 +1377,7 @@ body {
 .glass-select { flex: 1; cursor: pointer; }
 .glass-select option { background: #1a1a1a; color: #fff; }
 
-/* 驛｢�ｧ�ｽ�ｹ驛｢譎｢�ｽ�ｩ驛｢�ｧ�ｽ�､驛｢譏ｶ縺朱Δ譎｢�ｽ�ｼ */
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｩ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・､鬩幢ｽ｢隴擾ｽｶ邵ｺ譛ｱﾎ碑ｭ趣ｽ｢・ｽ・ｽ・ｽ・ｼ */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -1379,7 +1389,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 18px; height: 18px; background: var(--accent); border-radius: 50%; border: 2px solid #fff; cursor: pointer; box-shadow: 0 0 10px var(--accent);
 }
 
-/* 驛｢�ｧ�ｽ�ｻ驛｢�ｧ�ｽ�ｰ驛｢譎｢�ｽ�｡驛｢譎｢�ｽ�ｳ驛｢譎冗樟邵ｺ諷包ｽｹ譎｢�ｽ�ｳ驛｢譎冗樟�取ｺｽ�ｹ譎｢�ｽ�ｼ驛｢譎｢�ｽ�ｫ (髯区ｺｷ豸ｵ遶�ｽｬ雋�ｽｯ�ｽ�ｨ�ｽ�ｭ髯橸ｽｳ陞｢�ｹ遶企��ｸ�ｺ�ｽ�ｩ) */
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｻ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｰ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・｡鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴主・讓滄し・ｺ隲ｷ蛹・ｽｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴主・讓滂ｿｽ蜿厄ｽｺ・ｽ・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ (鬮ｯ蛹ｺ・ｺ・ｷ雎ｸ・ｵ驕ｶ・ｽ・ｽ・ｬ髮具ｿｽ・ｽ・ｯ・ｽ・ｽ・ｽ・ｨ・ｽ・ｽ・ｽ・ｭ鬮ｯ讖ｸ・ｽ・ｳ髯橸ｽ｢・ｽ・ｹ驕ｶ莨・ｿｽ・ｽ・ｸ・ｽ・ｺ・ｽ・ｽ・ｽ・ｩ) */
 .segmented-control {
   display: flex; background: rgba(255,255,255,0.05); border-radius: 8px; padding: 2px;
 }
@@ -1388,7 +1398,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .btn-tiny.active { background: var(--accent); color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
 
-/* 驛｢譎渉�･�取刮�ｹ譎会ｽ､�ｼ陋ｻ�､鬯ｮ�ｱ�ｽ�｢ */
+/* 鬩幢ｽ｢隴取ｸ可・ｽ・･・ｽ蜿門旭・ｽ・ｹ隴惹ｼ夲ｽｽ・､・ｽ・ｼ髯具ｽｻ・ｽ・､鬯ｯ・ｮ・ｽ・ｱ・ｽ・ｽ・ｽ・｢ */
 .help-overlay { z-index: 300000 !important; }
 .help-panel { width: 800px; height: 700px; display: flex; flex-direction: column; padding: 40px; }
 .help-scroll-area { 
@@ -1398,7 +1408,7 @@ input[type="range"]::-webkit-slider-thumb {
 .help-item h3 { color: var(--accent); font-size: 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
 .help-item p { font-size: 15px; line-height: 1.6; color: rgba(255,255,255,0.8); }
 .help-scroll-area::-webkit-scrollbar { width: 6px; }
-/* 驛｢�ｧ�ｽ�｢驛｢譎�ｿｽ邵ｺ�｡驛｢譎｢�ｽ�ｼ */
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｢鬩幢ｽ｢隴趣ｿｽ・ｿ・ｽ驍ｵ・ｺ・ｽ・｡鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ */
 .player-avatar-wrapper {
   position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;
 }
@@ -1411,7 +1421,7 @@ input[type="range"]::-webkit-slider-thumb {
   position: absolute; bottom: -5px; right: 0; transform: scale(0.8);
 }
 
-/* 髫ｰ�ｽ邇�ｫ��ｽ�ｸ�ｺ�ｽ�ｮ驛｢�ｧ�ｽ�ｹ驛｢譏ｴ�ｽ郢晢ｽｻ驛｢�ｧ�ｽ�ｿ驛｢�ｧ�ｽ�ｹ鬮ｯ�ｦ�ｽ�ｨ鬩穂ｼ夲ｽｽ�ｺ */
+/* 鬮ｫ・ｰ・ｽ・ｽ驍・ｿｽ・ｫ・ｽ・ｽ・ｽ・ｽ・ｸ・ｽ・ｺ・ｽ・ｽ・ｽ・ｮ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・ｻ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬯ｮ・ｯ・ｽ・ｦ・ｽ・ｽ・ｽ・ｨ鬯ｩ遨ゑｽｼ螟ｲ・ｽ・ｽ・ｽ・ｺ */
 .unit-stats { display: flex; gap: 4px; padding: 2px; }
 .stat-badge {
   flex: 1; display: flex; align-items: center; justify-content: center; gap: 2px;
@@ -1421,7 +1431,7 @@ input[type="range"]::-webkit-slider-thumb {
 .atk-badge { border: 1px solid #ef4444; color: #fca5a5; }
 .hp-badge { border: 1px solid #10b981; color: #6ee7b7; }
 
-/* 驛｢�ｧ�ｽ�ｹ驛｢譎擾ｽ｣�ｹ�取刮�ｹ�ｧ�ｽ�ｫ驛｢譎｢�ｽ�ｼ驛｢譎�ｿｽ騾｡鮃ｹ蜍暦ｿｽ�ｨ鬩穂ｼ夲ｽｽ�ｺ */
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴取得・ｽ・｣・ｽ・ｹ・ｽ蜿門旭・ｽ・ｹ・ｽ・ｧ・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴趣ｿｽ・ｿ・ｽ鬨ｾ・｡魄・ｽｹ陷肴圜・ｿ・ｽ・ｽ・ｨ鬯ｩ遨ゑｽｼ螟ｲ・ｽ・ｽ・ｽ・ｺ */
 .spell-status {
   margin-top: auto; display: flex; align-items: center; justify-content: center;
   background: rgba(139, 92, 246, 0.3); border: 1px solid var(--accent); border-radius: 4px; padding: 4px;
@@ -1429,10 +1439,10 @@ input[type="range"]::-webkit-slider-thumb {
 .spell-icon-main { font-size: 16px; margin-right: 4px; filter: drop-shadow(0 0 5px var(--accent)); }
 .spell-label { font-size: 10px; font-weight: bold; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
 
-/* 驛｢�ｧ�ｽ�ｫ驛｢譎｢�ｽ�ｼ驛｢譎∵ｭ難ｿｽ�ｩ�ｽ�ｳ鬩肴得�ｽ�ｰ驛｢譎｢�ｽ�｢驛｢譎｢�ｽ�ｼ驛｢譏ｶ縺朱Δ譎｢�ｽ�ｫ驍ｵ�ｺ�ｽ�ｮ髯橸ｽｻ隶灘ｲｩ縺趣ｿｽ�ｧ */
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴寂扱・ｭ髮｣・ｿ・ｽ・ｽ・ｩ・ｽ・ｽ・ｽ・ｳ鬯ｩ閧ｴ蠕暦ｿｽ・ｽ・ｽ・ｰ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・｢鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴擾ｽｶ邵ｺ譛ｱﾎ碑ｭ趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｮ鬮ｯ讖ｸ・ｽ・ｻ髫ｶ轣假ｽｲ・ｩ邵ｺ雜｣・ｿ・ｽ・ｽ・ｧ */
 .cd-attributes { display: flex; gap: 8px; margin-top: 5px; }
 .cd-color-icon { width: 32px; height: 32px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)); }
-#cd-color { display: none; } /* 髫ｴ魃会ｽｽ�ｧ髫ｴ螟ｲ�ｽ�･驍ｵ�ｺ�ｽ�ｮ驛｢譏ｴ�ｽ邵ｺ蜀暦ｽｹ�ｧ�ｽ�ｹ驛｢譎槭Γ�ｽ�｡�ｽ�ｨ鬩穂ｼ夲ｽｽ�ｺ驛｢�ｧ陝ｶ譎乗★驍ｵ�ｺ陷ｷ�ｶ隨ｳ�ｽ�ｹ�ｧ遶丞｣ｹ�ｽ髫ｰ證ｦ�ｽ�ｪ鬩励ｑ�ｽ�ｮ驍ｵ�ｲ遶丞｣ｺ遨宣し�ｺ雋�･�ｽHTML髯句ｹ｢�ｽ�ｴ驍ｵ�ｺ�ｽ�ｧ鬮ｫ�ｱ�ｽ�ｿ髫ｰ�ｨ�ｽ�ｴ */
+#cd-color { display: none; } /* 鬮ｫ・ｴ鬲・ｼ夲ｽｽ・ｽ・ｽ・ｧ鬮ｫ・ｴ陞滂ｽｲ・ｽ・ｽ・ｽ・･鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｮ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驍ｵ・ｺ陷證ｦ・ｽ・ｹ・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴取ｧｭﾎ難ｿｽ・ｽ・ｽ・｡・ｽ・ｽ・ｽ・ｨ鬯ｩ遨ゑｽｼ螟ｲ・ｽ・ｽ・ｽ・ｺ鬩幢ｽ｢・ｽ・ｧ髯晢ｽｶ隴惹ｹ冷・鬩搾ｽｵ・ｽ・ｺ髯ｷ・ｷ・ｽ・ｶ髫ｨ・ｳ・ｽ・ｽ・ｽ・ｹ・ｽ・ｧ驕ｶ荳橸ｽ｣・ｹ・ｽ・ｽ鬮ｫ・ｰ隴会ｽｦ・ｽ・ｽ・ｽ・ｪ鬯ｩ蜉ｱ・托ｿｽ・ｽ・ｽ・ｮ鬩搾ｽｵ・ｽ・ｲ驕ｶ荳橸ｽ｣・ｺ驕ｨ螳｣縺暦ｿｽ・ｺ髮具ｿｽﾂ・･・ｽ・ｽHTML鬮ｯ蜿･・ｹ・｢・ｽ・ｽ・ｽ・ｴ鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｧ鬯ｮ・ｫ・ｽ・ｱ・ｽ・ｽ・ｽ・ｿ鬮ｫ・ｰ・ｽ・ｨ・ｽ・ｽ・ｽ・ｴ */
 .cd-close-btn:hover {
   transform: scale(1.1); background: #fb7185;
   box-shadow: 0 0 25px rgba(225, 29, 72, 0.9);
@@ -1460,7 +1470,7 @@ input[type="range"]::-webkit-slider-thumb {
 .cd-type-tags { display: flex; gap: 10px; margin-bottom: 30px; }
 .cd-type-tag { font-size: 20px; padding: 5px 20px; background: rgba(255,255,255,0.1); border-radius: 20px; border: 1px solid #fff; }
 
-/* 鬨ｾ�ｾ隶謎ｼ�ｿｽ驛｢�ｧ�ｽ�ｿ驛｢�ｧ�ｽ�ｰ/驛｢�ｧ�ｽ�｢驛｢�ｧ�ｽ�､驛｢�ｧ�ｽ�ｳ驛｢譎｢�ｽ�ｳ */
+/* 鬯ｨ・ｾ・ｽ・ｾ髫ｶ隰趣ｽｼ・ｽ・ｿ・ｽ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｰ/鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｢鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・､鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ */
 .cd-color-tag {
   display: flex; align-items: center; gap: 8px;
   font-size: 20px; padding: 5px 20px;
@@ -1481,7 +1491,7 @@ input[type="range"]::-webkit-slider-thumb {
 .cd-flavor-text { font-style: italic; color: #94a3b8; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 20px; font-size: 20px; }
 .btn-close-modal { position: absolute; top: -20px; right: -20px; width: 60px; height: 60px; border-radius: 50%; font-size: 16px; background: #e11d48; border: 3px solid #fff; z-index: 10; cursor: pointer; }
 
-/* 髫ｴ魃会ｽｽ�｢髯晢ｿｽﾂ�･邵ｺ諷包ｽｹ譎｢�ｽ�ｳ驛｢譎�ｺ｢郢晢ｽｻ驛｢譎樔ｺゑｾ趣ｽｦ驛｢譎∬か�ｽ�ｼ陋ｹ�ｻ郢晢ｽｻ驛｢譎｢�ｽ�ｪ驛｢�ｧ�ｽ�ｬ驛｢譎｢�ｽ�ｳ驛｢�ｧ郢晢ｽｻ�取㏍�ｹ�ｧ�ｽ�ｶ驛｢譎｢�ｽ�ｫ驛｢譎∬か�ｽ�ｼ陝ｲ�ｨ郢晢ｽｻ髣包ｽｳ鬯�､ｧ�ｶ讙趣ｽｸ�ｺ陜｣�ｺ�ｽ�ｿ隴趣ｿｽ莠憺ｨｾ蛹�ｽｽ�ｨ */
+/* 鬮ｫ・ｴ鬲・ｼ夲ｽｽ・ｽ・ｽ・｢鬮ｯ譎｢・ｿ・ｽ・つ・ｽ・･驍ｵ・ｺ隲ｷ蛹・ｽｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴趣ｿｽ・ｺ・｢驛｢譎｢・ｽ・ｻ鬩幢ｽ｢隴取ｨ費ｽｺ繧托ｽｾ雜｣・ｽ・ｦ鬩幢ｽ｢隴寂握縺具ｿｽ・ｽ・ｽ・ｼ髯具ｽｹ・ｽ・ｻ驛｢譎｢・ｽ・ｻ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｪ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｬ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢・ｽ・ｧ驛｢譎｢・ｽ・ｻ・ｽ蜿悶渚・ｽ・ｹ・ｽ・ｧ・ｽ・ｽ・ｽ・ｶ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴寂握縺具ｿｽ・ｽ・ｽ・ｼ髯晢ｽｲ・ｽ・ｨ驛｢譎｢・ｽ・ｻ鬮｣蛹・ｽｽ・ｳ鬯ｯ・ｽ・､・ｧ・ｽ・ｶ隶呵ｶ｣・ｽ・ｸ・ｽ・ｺ髯懶ｽ｣・ｽ・ｺ・ｽ・ｽ・ｽ・ｿ髫ｴ雜｣・ｿ・ｽ闔�諞ｺ・ｨ・ｾ陋ｹ・ｽ・ｽ・ｽ・ｽ・ｨ */
 .overlay {
   position: fixed; inset: 0;
   display: flex; align-items: center; justify-content: center;
@@ -1568,14 +1578,17 @@ input[type="range"]::-webkit-slider-thumb {
   to { filter: drop-shadow(0 0 40px rgba(212, 175, 55, 1)); }
 }
 
-/* 謾ｻ謦�泙蜊ｰ縺ｮ繧ｰ繝ｭ繝ｼ蜉ｹ譫� */
+/* 隰ｾ・ｻ隰ｦ・ｽ豕呵怺・ｰ邵ｺ・ｮ郢ｧ・ｰ郢晢ｽｭ郢晢ｽｼ陷会ｽｹ隴ｫ・ｽ */
 #attack-arrow-line {
-  stroke-dasharray: 20;
-  animation: dashArrayAnim 1s linear infinite;
+  stroke-width: 14;
+  stroke-linecap: round;
+  stroke-dasharray: 40, 30;
+  filter: drop-shadow(0 0 12px rgba(244, 63, 94, 0.9));
+  animation: attackArrowDash 0.6s linear infinite;
 }
 
-@keyframes dashArrayAnim {
-  from { stroke-dashoffset: 40; }
+@keyframes attackArrowDash {
+  from { stroke-dashoffset: 70; }
   to { stroke-dashoffset: 0; }
 }
 
@@ -1645,7 +1658,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 .cd-info-area {
   flex: 1;
-  padding: 40px 25px; /* 30px -> 25px 縺ｫ縺輔ｉ縺ｫ蜑頑ｸ� */
+  padding: 40px 25px; /* 30px -> 25px 邵ｺ・ｫ邵ｺ霈費ｽ臥ｸｺ・ｫ陷鷹�托ｽｸ・ｽ */
   display: flex;
   flex-direction: column;
   gap: 25px;
@@ -1666,7 +1679,7 @@ input[type="range"]::-webkit-slider-thumb {
   background: var(--accent);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 28px; font-weight: 900; font-family: var(--font-fantasy);
+  font-size: 34px; font-weight: 900; font-family: var(--font-fantasy);
   border: 2px solid #fff;
   box-shadow: 0 0 10px rgba(255,255,255,0.3);
 }
@@ -1742,7 +1755,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 .cd-text-box {
   background: rgba(0,0,0,0.3);
-  padding: 16px; /* 20px -> 16px 縺ｫ縺輔ｉ縺ｫ蜑頑ｸ� */
+  padding: 16px; /* 20px -> 16px 邵ｺ・ｫ邵ｺ霈費ｽ臥ｸｺ・ｫ陷鷹�托ｽｸ・ｽ */
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.05);
   margin-top: auto;
@@ -1788,7 +1801,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .side-spacer { flex: 1; }
 
-/* 驛｢譏懶ｽｸ闔橸ｽｦ驛｢譎擾ｽｳ�ｨ邵ｺ蜥ｲ�ｹ譎｢�ｽ�ｼ驛｢譎擾ｽｳ�ｨ郢晢ｽｻ驛｢�ｧ�ｽ�ｪ驛｢譎｢�ｽ�ｼ驛｢譎�ｿｽ郢晢ｽｻ驛｢譎｢�ｽ�ｬ驛｢�ｧ�ｽ�､鬨ｾ蛹�ｽｽ�ｨ郢晢ｽｻ陜捺ｺｽ謔幃垳蝣､豢ｸ�つ�ｽ�ｽ髯晢ｿｽ�ｽ�ｾ髯滂ｽ｢隲幢ｽｶ�ｽ�ｼ郢晢ｽｻ*/
+/* 鬩幢ｽ｢隴乗・・ｽ・ｸ髣疲ｩｸ・ｽ・ｦ鬩幢ｽ｢隴取得・ｽ・ｳ・ｽ・ｨ驍ｵ・ｺ陷･・ｲ・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴取得・ｽ・ｳ・ｽ・ｨ驛｢譎｢・ｽ・ｻ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｪ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴趣ｿｽ・ｿ・ｽ驛｢譎｢・ｽ・ｻ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｬ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・､鬯ｨ・ｾ陋ｹ・ｽ・ｽ・ｽ・ｽ・ｨ驛｢譎｢・ｽ・ｻ髯懈瑳・ｺ・ｽ隰泌ｹ・楜陜｣・､雎｢・ｸ・ｽ縺､ﾂ・ｽ・ｽ・ｽ・ｽ鬮ｯ譎｢・ｿ・ｽ・ｽ・ｽ・ｽ・ｾ鬮ｯ貊ゑｽｽ・｢髫ｲ蟷｢・ｽ・ｶ・ｽ・ｽ・ｽ・ｼ驛｢譎｢・ｽ・ｻ*/
 .hand-card .card-overlay {
   background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
   padding: 10px;
@@ -1816,7 +1829,7 @@ input[type="range"]::-webkit-slider-thumb {
   box-shadow: 0 0 20px rgba(34, 197, 94, 0.6) !important;
 }
 .unit-card.acted { opacity: 0.8; filter: grayscale(0.3) brightness(0.9); }
-.unit-name { display: none; } /* 鬨ｾ�ｶ�ｽ�､鬯ｮ�ｱ�ｽ�｢驍ｵ�ｺ�ｽ�ｧ驍ｵ�ｺ�ｽ�ｯ髯ｷ�ｷ隶朱｡披�髣包ｽｳ陝�雜｣�ｽ�ｦ郢晢ｽｻ*/
+.unit-name { display: none; } /* 鬯ｨ・ｾ・ｽ・ｶ・ｽ・ｽ・ｽ・､鬯ｯ・ｮ・ｽ・ｱ・ｽ・ｽ・ｽ・｢鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｧ鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｯ鬮ｯ・ｷ・ｽ・ｷ髫ｶ譛ｱ・｡謚ｫ・ｽ鬮｣蛹・ｽｽ・ｳ髯晢ｿｽ髮懶ｽ｣・ｽ・ｽ・ｽ・ｦ驛｢譎｢・ｽ・ｻ*/
 
 .keywords-display { 
     position: absolute; top: 10px; left: 0; right: 0;
@@ -1869,13 +1882,20 @@ input[type="range"]::-webkit-slider-thumb {
   gap: 0;
 }
 .hand-card {
-  margin: 0 -10px; /* 鬯ｩ�･鬮ｦ�ｪ遶企��ｹ�ｧ驗呻ｽｫ�ｽ螳夲ｽｭ蟠｢ﾂ髯晢ｿｽ豐∬恆讓抵ｽｸ�ｺ�ｽ�ｫ驍ｵ�ｺ陷会ｽｱ�つ遶乗劼�ｽ�ｽ髦ｮ蜷ｮ陞ｺ驛｢�ｧ鬮ｮ竏ｵ�ｽ髯橸ｽｳ陞｢�ｹ�ｽ螳壽包ｿｽ�ｪ髯ｷ蛹ｻ�ｽ*/
-  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), z-index 0s, filter 0.3s;
+  margin: 0 -5px;
+  transition: transform 0.2s cubic-bezier(0.165, 0.84, 0.44, 1), z-index 0s, filter 0.2s;
   cursor: pointer;
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
 }
 .hand-card:hover {
-  filter: drop-shadow(0 15px 30px rgba(0,0,0,0.8));
+  transform: scale(1.3) translateY(-25px);
+  filter: drop-shadow(0 15px 30px rgba(0,0,0,0.8)) drop-shadow(0 0 15px rgba(218, 165, 32, 0.5));
+  z-index: 100;
+}
+.hand-card.selected, .hand-card.dragging {
+  transform: scale(1.1) translateY(-10px);
+  filter: drop-shadow(0 0 20px var(--gold)) drop-shadow(0 10px 20px rgba(0,0,0,0.8));
+  border-radius: 12px;
 }
 
 /* Empty slots */
@@ -1911,7 +1931,7 @@ input[type="range"]::-webkit-slider-thumb {
 ::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
 
-/* ==== 驛｢譎擾ｽｳ�ｨ�主ｸｷ�ｹ譏ｴ�ｽ邵ｺ蛛ｵ�ｽ郢晢ｽｻ郢晢ｽｩ驛｢譎｢�ｽ�ｭ驛｢譏ｴ�ｽ郢晢ｽｻ鬨ｾ蛹�ｽｽ�ｨ驛｢�ｧ�ｽ�ｹ驛｢�ｧ�ｽ�ｿ驛｢�ｧ�ｽ�､驛｢譎｢�ｽ�ｫ ==== */
+/* ==== 鬩幢ｽ｢隴取得・ｽ・ｳ・ｽ・ｨ・ｽ荳ｻ・ｸ・ｷ・ｽ・ｹ隴擾ｽｴ・ｽ・ｽ驍ｵ・ｺ陋幢ｽｵ・ｽ・ｽ驛｢譎｢・ｽ・ｻ驛｢譎｢・ｽ・ｩ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｭ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・ｻ鬯ｨ・ｾ陋ｹ・ｽ・ｽ・ｽ・ｽ・ｨ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・､鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ ==== */
 .hand-card.dragging {
   opacity: 0.5;
   filter: grayscale(0.5);
@@ -1926,7 +1946,7 @@ input[type="range"]::-webkit-slider-thumb {
   filter: drop-shadow(0 20px 40px rgba(0,0,0,0.8));
 }
 
-/* 鬮ｫ�ｪ�ｽ�ｭ髯橸ｽｳ陞｢�ｹ�守坩�ｹ譎｢�ｽ�ｼ驛｢謨鳴驛｢譎｢�ｽ�ｫ */
+/* 鬯ｮ・ｫ・ｽ・ｪ・ｽ・ｽ・ｽ・ｭ鬮ｯ讖ｸ・ｽ・ｳ髯橸ｽ｢・ｽ・ｹ・ｽ螳亥擠・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隰ｨ魑ｴﾂ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ */
 .settings-overlay {
   z-index: 200000 !important;
   background: rgba(0, 0, 0, 0.4);
@@ -1962,7 +1982,7 @@ input[type="range"]::-webkit-slider-thumb {
   color: #fff;
 }
 
-/* 繧ｿ繝ｼ繝ｳ髢句ｧ区ｼ泌� */
+/* 郢ｧ・ｿ郢晢ｽｼ郢晢ｽｳ鬮｢蜿･・ｧ蛹ｺ・ｼ豕鯉ｿｽ */
 .turn-splash {
   position: fixed;
   top: 45%; left: 50%;
@@ -1995,7 +2015,7 @@ input[type="range"]::-webkit-slider-thumb {
   display: flex; flex-direction: column; gap: 15px; margin-top: 30px;
 }
 
-/* 驛｢�ｧ�ｽ�｢驛｢�ｧ�ｽ�ｿ驛｢譏ｴ�ｽ邵ｺ驢搾ｽｹ�ｧ�ｽ�｢驛｢譎｢�ｽ�ｭ驛｢譎｢�ｽ�ｼ */
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｢鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驍ｵ・ｺ鬩｢謳ｾ・ｽ・ｹ・ｽ・ｧ・ｽ・ｽ・ｽ・｢鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｭ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ */
 .attack-arrow-svg {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   pointer-events: none; z-index: 5000;
@@ -2011,7 +2031,7 @@ input[type="range"]::-webkit-slider-thumb {
   to { stroke-dashoffset: 0; }
 }
 
-/* 髫ｰ�ｾ�ｽ�ｻ髫ｰ�ｦ郢晢ｽｻ陟趣ｿｽ螯呻ｿｽ�ｽ驛｢譎｢�ｽ�ｦ驛｢譏懶ｽｹ譏ｴﾎ暮Δ譎冗樟郢晢ｽｻ髯滓汚�ｽ�ｷ鬮ｫ�ｱ�ｽ�ｿ */
+/* 鬮ｫ・ｰ・ｽ・ｾ・ｽ・ｽ・ｽ・ｻ鬮ｫ・ｰ・ｽ・ｦ驛｢譎｢・ｽ・ｻ髯溯ｶ｣・ｿ・ｽ陞ｯ蜻ｻ・ｿ・ｽ・ｽ・ｽ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｦ鬩幢ｽ｢隴乗・・ｽ・ｹ隴擾ｽｴ・取坩ﾎ碑ｭ主・讓滄Δ譎｢・ｽ・ｻ鬮ｯ貊捺ｱ夲ｿｽ・ｽ・ｽ・ｷ鬯ｮ・ｫ・ｽ・ｱ・ｽ・ｽ・ｽ・ｿ */
 .unit-card.can-act {
   cursor: grab !important;
   position: relative;
@@ -2106,7 +2126,7 @@ input[type="range"]::-webkit-slider-thumb {
   color: #d4c8a8;
   font-size: 13px;
   line-height: 1.6;
-  letter-spacing: -0.03em; /* 譁�ｭ鈴俣繧偵＆繧峨↓隧ｰ繧√ｋ */
+  letter-spacing: -0.03em; /* 隴・ｿｽ・ｭ驤ｴ菫｣郢ｧ蛛ｵ・・ｹｧ蟲ｨ竊馴圦・ｰ郢ｧ竏夲ｽ・*/
   margin-top: 10px;
   white-space: pre-wrap;
   text-shadow: 0 1px 2px rgba(0,0,0,0.5);
@@ -2122,7 +2142,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 3px;
 }
 
-/* 郢ｧ�ｷ郢晢ｽｼ郢晢ｽｫ郢晁��ｽ�ｴ陞｢鬆托ｽｼ豕鯉ｿｽ */
+/* 驛｢・ｧ・ｽ・ｷ驛｢譎｢・ｽ・ｼ驛｢譎｢・ｽ・ｫ驛｢譎・ｿｽ・ｽ・ｽ・ｽ・ｴ髯橸ｽ｢鬯・汚・ｽ・ｼ雎暮ｯ会ｽｿ・ｽ */
 #shield-break-overlay {
   display: flex; align-items: center; justify-content: center;
   background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px);
@@ -2142,7 +2162,7 @@ input[type="range"]::-webkit-slider-thumb {
   100% { transform: translate(1px, -1px); }
 }
 
-/* 郢ｧ�ｹ郢ｧ�ｭ郢晢ｽｫ騾具ｽｺ陷榊｢難ｽｼ豕鯉ｿｽ */
+/* 驛｢・ｧ・ｽ・ｹ驛｢・ｧ・ｽ・ｭ驛｢譎｢・ｽ・ｫ鬨ｾ蜈ｷ・ｽ・ｺ髯ｷ讎奇ｽ｢髮｣・ｽ・ｼ雎暮ｯ会ｽｿ・ｽ */
 #skill-trigger-overlay {
   display: flex; align-items: center; justify-content: center;
 }
@@ -2165,7 +2185,7 @@ input[type="range"]::-webkit-slider-thumb {
   100% { transform: skewX(-15deg) translateX(100%); opacity: 0; }
 }
 
-/* 郢ｧ�ｿ郢晢ｽｼ郢ｧ�ｲ郢晢ｿｽ繝ｨ隰厄ｿｽ�ｮ螢ｹﾎ皮ｹ晢ｽｼ郢晢ｿｽ */
+/* 驛｢・ｧ・ｽ・ｿ驛｢譎｢・ｽ・ｼ驛｢・ｧ・ｽ・ｲ驛｢譎｢・ｿ・ｽ郢晢ｽｨ髫ｰ蜴・ｽｿ・ｽ・ｽ・ｮ陞｢・ｹ・守坩・ｹ譎｢・ｽ・ｼ驛｢譎｢・ｿ・ｽ */
 body.targeting-mode {
   cursor: crosshair;
 }
@@ -2190,7 +2210,7 @@ body.targeting-mode {
   50% { box-shadow: 0 0 25px rgba(59, 130, 246, 0.8); }
   100% { box-shadow: 0 0 10px rgba(59, 130, 246, 0.4); }
 }
-/* ======== 郢昴�繝｣郢ｧ�ｭ隶堤距�ｯ繝ｻUI郢ｧ�ｪ郢晢ｽｼ郢晁�繝ｻ郢晏ｸ吶�郢晢ｽｫ ======== */
+/* ======== 驛｢譏ｴ・ｽ郢晢ｽ｣驛｢・ｧ・ｽ・ｭ髫ｶ蝣､霍晢ｿｽ・ｯ郢晢ｽｻUI驛｢・ｧ・ｽ・ｪ驛｢譎｢・ｽ・ｼ驛｢譎・ｿｽ郢晢ｽｻ驛｢譎擾ｽｸ蜷ｶ・ｽ驛｢譎｢・ｽ・ｫ ======== */
 
 .tabs {
   display: flex;
@@ -2308,7 +2328,7 @@ body.targeting-mode {
   animation: errorPulse 1.5s infinite;
   border-color: var(--danger) !important;
 }
-/* 繧｢繝舌ち繝ｼ驕ｸ謚槭ヱ繝ｬ繝�ヨ */
+/* 郢ｧ・｢郢晁・縺｡郢晢ｽｼ鬩包ｽｸ隰壽ｧｭ繝ｱ郢晢ｽｬ郢晢ｿｽ繝ｨ */
 .avatar-palette {
   display: flex;
   gap: 8px;
@@ -2360,10 +2380,10 @@ body.targeting-mode {
   line-height: 1.8em;
 }
 
-/* Chrome逕ｨ繝ｬ繧､繧｢繧ｦ繝郁｣懷ｼｷ */
+/* Chrome騾包ｽｨ郢晢ｽｬ郢ｧ・､郢ｧ・｢郢ｧ・ｦ郢晞メ・｣諛ｷ・ｼ・ｷ */
 .mulligan-panel { min-height: 480px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; }
 
-/* 謇区惆荳企剞遐ｴ譽�せ繧ｿ繧､繝ｫ (APPENDED) */
+/* 隰・玄諠・叉莨∝応驕撰ｽｴ隴ｽ・ｽ縺帷ｹｧ・ｿ郢ｧ・､郢晢ｽｫ (APPENDED) */
 .discard-overlay {
   z-index: 6000;
   background: radial-gradient(circle at center, rgba(30, 10, 10, 0.9) 0%, rgba(0, 0, 0, 0.98) 100%);
@@ -2411,7 +2431,7 @@ body.targeting-mode {
   color: rgba(255, 255, 255, 0.4);
 }
 
-/* 繝ｦ繝九ャ繝磯�鄂ｮ蜿ｯ閭ｽ繧ｨ繝ｪ繧｢縺ｮ繝上う繝ｩ繧､繝� */
+/* 郢晢ｽｦ郢昜ｹ昴Ε郢晉｣ｯ・ｽ驗ゑｽｮ陷ｿ・ｯ髢ｭ・ｽ郢ｧ・ｨ郢晢ｽｪ郢ｧ・｢邵ｺ・ｮ郢昜ｸ翫≧郢晢ｽｩ郢ｧ・､郢晢ｿｽ */
 .can-place {
     border: 3px solid #60a5fa !important;
     box-shadow: 0 0 20px rgba(96, 165, 250, 0.6), inset 0 0 10px rgba(96, 165, 250, 0.3) !important;
@@ -2426,7 +2446,7 @@ body.targeting-mode {
     100% { box-shadow: 0 0 10px rgba(96, 165, 250, 0.4); }
 }
 
-/* 繧ｹ繝壹Ν繧ｿ繝ｼ繧ｲ繝�ヨ繝上う繝ｩ繧､繝� */
+/* 郢ｧ・ｹ郢晏｣ｹﾎ晉ｹｧ・ｿ郢晢ｽｼ郢ｧ・ｲ郢晢ｿｽ繝ｨ郢昜ｸ翫≧郢晢ｽｩ郢ｧ・､郢晢ｿｽ */
 .can-spell-target {
     border: 3px solid #c084fc !important;
     box-shadow: 0 0 20px rgba(192, 132, 252, 0.6), inset 0 0 10px rgba(192, 132, 252, 0.3) !important;
@@ -2434,7 +2454,7 @@ body.targeting-mode {
     cursor: pointer !important;
 }
 
-/* 繝峨Λ繝�げ荳ｭ縺ｮ蝗櫁ｻ｢陬懈ｭ｣ (繝�げ繝ｬ繝ｼ繝我ｿｮ豁｣) */
+/* 郢晏ｳｨﾎ帷ｹ晢ｿｽ縺定叉・ｭ邵ｺ・ｮ陜玲ｫ・ｽｻ・｢髯ｬ諛茨ｽｭ・｣ (郢晢ｿｽ縺堤ｹ晢ｽｬ郢晢ｽｼ郢晄・・ｿ・ｮ雎・ｽ｣) */
 .drag-ghost {
     transform: rotate(0deg) scale(1.1) !important;
     box-shadow: 0 15px 45px rgba(0,0,0,0.8) !important;
@@ -2444,10 +2464,10 @@ body.targeting-mode {
 }
 
 /* -------------------------------------------------------------------------- */
-/*  UI/UX 蠑ｷ蛹�: 繝上う繝ｩ繧､繝医→繝峨Λ繝�げ貍泌� (螳悟�蠕ｩ譌ｧ迚�)  */
+/*  UI/UX 陟托ｽｷ陋ｹ・ｽ: 郢昜ｸ翫≧郢晢ｽｩ郢ｧ・､郢晏現竊堤ｹ晏ｳｨﾎ帷ｹ晢ｿｽ縺定ｲ肴ｳ鯉ｿｽ (陞ｳ謔滂ｿｽ陟包ｽｩ隴鯉ｽｧ霑夲ｿｽ)  */
 /* -------------------------------------------------------------------------- */
 
-/* 繝峨Λ繝�げ荳ｭ縺ｮ繧ｫ繝ｼ繝牙ｧｿ蜍｢陬懈ｭ｣�医∪縺｣縺吶＄蜑阪ｒ蜷代￥繧医≧縺ｫ菫ｮ豁｣�� */
+/* 郢晏ｳｨﾎ帷ｹ晢ｿｽ縺定叉・ｭ邵ｺ・ｮ郢ｧ・ｫ郢晢ｽｼ郢晉甥・ｧ・ｿ陷搾ｽ｢髯ｬ諛茨ｽｭ・｣・ｽ蛹ｻ竏ｪ邵ｺ・｣邵ｺ蜷ｶ・・恆髦ｪ・定惺莉｣・･郢ｧ蛹ｻ竕ｧ邵ｺ・ｫ闖ｫ・ｮ雎・ｽ｣・ｽ・ｽ */
 .drag-ghost {
     transform: rotate(0deg) scale(1.1) !important;
     box-shadow: 0 15px 45px rgba(0,0,0,0.8) !important;
@@ -2456,7 +2476,7 @@ body.targeting-mode {
     z-index: 10000;
 }
 
-/* 繝ｦ繝九ャ繝磯�鄂ｮ蜿ｯ閭ｽ繧ｨ繝ｪ繧｢縺ｮ繝上う繝ｩ繧､繝� (髱�) */
+/* 郢晢ｽｦ郢昜ｹ昴Ε郢晉｣ｯ・ｽ驗ゑｽｮ陷ｿ・ｯ髢ｭ・ｽ郢ｧ・ｨ郢晢ｽｪ郢ｧ・｢邵ｺ・ｮ郢昜ｸ翫≧郢晢ｽｩ郢ｧ・､郢晢ｿｽ (鬮ｱ・ｽ) */
 .can-place {
     border: 3px solid #60a5fa !important;
     box-shadow: 0 0 20px rgba(96, 165, 250, 0.6), inset 0 0 10px rgba(96, 165, 250, 0.3) !important;
@@ -2472,7 +2492,7 @@ body.targeting-mode {
     100% { box-shadow: 0 0 10px rgba(96, 165, 250, 0.4); }
 }
 
-/* 繧ｿ繝ｼ繧ｲ繝�ヨ驕ｸ謚樊凾縺ｮ繝上う繝ｩ繧､繝� (驥題牡轤ｹ貊�) */
+/* 郢ｧ・ｿ郢晢ｽｼ郢ｧ・ｲ郢晢ｿｽ繝ｨ鬩包ｽｸ隰壽ｨ雁・邵ｺ・ｮ郢昜ｸ翫≧郢晢ｽｩ郢ｧ・､郢晢ｿｽ (鬩･鬘檎横霓､・ｹ雋奇ｿｽ) */
 .can-target {
     border: 5px solid #fbbf24 !important;
     box-shadow: 0 0 25px #fbbf24, inset 0 0 15px rgba(251,191,36,0.5) !important;
@@ -2488,14 +2508,14 @@ body.targeting-mode {
     100% { transform: scale(1); box-shadow: 0 0 15px #fbbf24; }
 }
 
-/* 繝槭え繧ｹ繧ｪ繝ｼ繝舌�譎ゅ�蠑ｷ隱ｿ */
+/* 郢晄ｧｭ縺育ｹｧ・ｹ郢ｧ・ｪ郢晢ｽｼ郢晁・・ｽ隴弱ｅ・ｽ陟托ｽｷ髫ｱ・ｿ */
 .is-hovered {
     background: rgba(255, 255, 255, 0.1) !important;
     border-color: rgba(255, 255, 255, 0.5) !important;
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
 }
 
-/* 謾ｻ謦�凾縺ｮ繝ｭ繝�け繧ｪ繝ｳ蟇ｾ雎｡ (襍､) */
+/* 隰ｾ・ｻ隰ｦ・ｽ蜃ｾ邵ｺ・ｮ郢晢ｽｭ郢晢ｿｽ縺醍ｹｧ・ｪ郢晢ｽｳ陝・ｽｾ髮趣ｽ｡ (隘搾ｽ､) */
 .is-locked-on {
     border: 4px solid #ef4444 !important;
     box-shadow: 0 0 25px rgba(239, 68, 68, 0.6), inset 0 0 15px rgba(239, 68, 68, 0.4) !important;
@@ -2518,7 +2538,7 @@ body.targeting-mode {
     border-radius: 20px;
     border: 1px solid var(--gold);
 }
-/* ======== 繝ｪ繧ｶ繝ｫ繝育判髱｢ (DEFEAT/VICTORY) 繝励Ξ繝溘い繝�貍泌� ======== */
+/* ======== 郢晢ｽｪ郢ｧ・ｶ郢晢ｽｫ郢晁ご蛻､鬮ｱ・｢ (DEFEAT/VICTORY) 郢晏干ﾎ樒ｹ晄ｺ倥＞郢晢ｿｽ雋肴ｳ鯉ｿｽ ======== */
 .result-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -2564,7 +2584,7 @@ body.targeting-mode {
     100% { transform: scale(1) translateY(0); opacity: 1; }
 }
 
-/* 繧ｷ繝ｼ繝ｫ繝峨ず繧ｧ繝�縺ｮ繝ｬ繧｢繝ｪ繝�ぅ蛻･貍泌� */
+/* 郢ｧ・ｷ郢晢ｽｼ郢晢ｽｫ郢晏ｳｨ縺夂ｹｧ・ｧ郢晢ｿｽ邵ｺ・ｮ郢晢ｽｬ郢ｧ・｢郢晢ｽｪ郢晢ｿｽ縺・崕・･雋肴ｳ鯉ｿｽ */
 .shield-gem.rarity-1 { border: 2px solid #e2e8f0; box-shadow: 0 0 5px rgba(255,255,255,0.2); }
 .shield-gem.rarity-2 { border: 2.5px solid #3b82f6; box-shadow: 0 0 12px rgba(59, 130, 246, 0.5); }
 .shield-gem.rarity-3 { border: 3px solid #ef4444; box-shadow: 0 0 18px rgba(239, 68, 68, 0.7); animation: majesticGlow 3s infinite alternate; }
@@ -2578,12 +2598,12 @@ body.targeting-mode {
   animation: none !important;
 }
 
-/* デッキ構築グリッド用のレアリティ演出 */
+/* 繝・ャ繧ｭ讒狗ｯ峨げ繝ｪ繝・ラ逕ｨ縺ｮ繝ｬ繧｢繝ｪ繝・ぅ貍泌・ */
 .grid-item.rarity-2 { border: 2px solid #3b82f6 !important; box-shadow: 0 0 10px rgba(59, 130, 246, 0.3) !important; }
 .grid-item.rarity-3 { border: 2.5px solid #ef4444 !important; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4) !important; }
 .grid-item.rarity-4 { border: 3px solid #d4a017 !important; box-shadow: 0 0 20px rgba(212, 160, 23, 0.5) !important; }
 
-/* ==== シールドブレイクカットイン演出 ==== */
+/* ==== 繧ｷ繝ｼ繝ｫ繝峨ヶ繝ｬ繧､繧ｯ繧ｫ繝・ヨ繧､繝ｳ貍泌・ ==== */
 .shield-break-modal {
   display: flex;
   flex-direction: column;
@@ -2700,7 +2720,7 @@ body.targeting-mode {
   50% { transform: translateY(-10px) rotate(-3deg); }
 }
 
-/* --- カード詳細：召喚トークンセクション --- */
+/* --- 繧ｫ繝ｼ繝芽ｩｳ邏ｰ・壼小蝟壹ヨ繝ｼ繧ｯ繝ｳ繧ｻ繧ｯ繧ｷ繝ｧ繝ｳ --- */
 .cd-token-section {
   margin-top: 20px;
   padding-top: 15px;
@@ -2758,16 +2778,16 @@ body.targeting-mode {
 .cd-token-stats .atk { color: #f87171; }
 .cd-token-stats .hp { color: #4ade80; }
 
-/* ========== スマホ・モバイル端末対応 ========== */
+/* ========== 繧ｹ繝槭・繝ｻ繝｢繝舌う繝ｫ遶ｯ譛ｫ蟇ｾ蠢・========== */
 
-/* 長押し時のデフォルトメニュー無効化（カード等） */
+/* 髟ｷ謚ｼ縺玲凾縺ｮ繝・ヵ繧ｩ繝ｫ繝医Γ繝九Η繝ｼ辟｡蜉ｹ蛹厄ｼ医き繝ｼ繝臥ｭ会ｼ・*/
 .card-item, .card, .hand-card, .board-half, .tribe-badge, .avatar-frame, .mode-card {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
 }
 
-/* スマホ縦画面時の「横画面にしてください」オーバーレイ */
+/* 繧ｹ繝槭・邵ｦ逕ｻ髱｢譎ゅ・縲梧ｨｪ逕ｻ髱｢縺ｫ縺励※縺上□縺輔＞縲阪が繝ｼ繝舌・繝ｬ繧､ */
 .rotate-prompt {
   display: none;
   position: fixed;
@@ -2782,7 +2802,7 @@ body.targeting-mode {
   font-family: 'Noto Sans JP', sans-serif;
 }
 
-/* 縦画面 (Portrait) で画面幅が狭い場合はゲーム本体を隠して警告を出す */
+/* 邵ｦ逕ｻ髱｢ (Portrait) 縺ｧ逕ｻ髱｢蟷・′迢ｭ縺・�ｴ蜷医・繧ｲ繝ｼ繝�譛ｬ菴薙ｒ髫�縺励※隴ｦ蜻翫ｒ蜃ｺ縺・*/
 @media screen and (max-width: 900px) and (orientation: portrait) {
   #game-wrapper {
     display: none !important;
@@ -2793,3 +2813,868 @@ body.targeting-mode {
 }
 
 
+
+
+/* Status Badges Enhancement */
+.status-badge {
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: var(--font-fantasy);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+.status-badge span {
+  color: #fff;
+  font-weight: 900;
+  font-size: 14px;
+  margin-left: 4px;
+}
+
+
+/* Player/Opponent Differentiation */
+.player-block .avatar-info {
+  background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.1));
+  border-right: 2px solid rgba(37, 99, 235, 0.3);
+  padding: 10px 15px;
+  border-radius: 8px;
+}
+.opponent-block .avatar-info {
+  background: linear-gradient(-90deg, transparent, rgba(220, 38, 38, 0.1));
+  border-left: 2px solid rgba(220, 38, 38, 0.3);
+  padding: 10px 15px;
+  border-radius: 8px;
+}
+
+
+@keyframes card-drop-anim {
+  0% { transform: scale(1.2) translateY(-20px); opacity: 0; filter: drop-shadow(0 20px 20px rgba(0,0,0,0.8)); }
+  100% { transform: scale(1) translateY(0); opacity: 1; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
+}
+.card-just-dropped {
+  animation: card-drop-anim 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+
+/* ================================================================
+   VFX ENGINE — 演出用CSSアニメーション定義
+   vfx-engine.js が参照する全クラスをここで定義する
+   ================================================================ */
+
+/* --- ダメージ数値ポップアップ --- */
+.damage-number {
+  position: absolute;
+  font-family: var(--font-fantasy);
+  font-weight: 900;
+  font-size: 36px;
+  pointer-events: none;
+  z-index: 15100;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.9), 0 0 12px currentColor;
+  animation: dmgPopUp 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  transform: translate(-50%, 0);
+}
+.dmg-damage { color: #f43f5e; }
+.dmg-heal   { color: #22c55e; }
+.dmg-blocked { color: #94a3b8; font-size: 24px; }
+
+@keyframes dmgPopUp {
+  0%   { opacity: 1; transform: translate(-50%, 0) scale(0.5); }
+  20%  { opacity: 1; transform: translate(-50%, -20px) scale(1.3); }
+  60%  { opacity: 1; transform: translate(-50%, -50px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -80px) scale(0.8); }
+}
+
+/* --- ユニット被弾フラッシュ --- */
+.unit-hit-flash {
+  animation: hitFlashAnim 0.4s ease-out;
+}
+.unit-hit-red    { box-shadow: inset 0 0 40px rgba(239, 68, 68, 0.8), 0 0 30px rgba(239, 68, 68, 0.6) !important; }
+.unit-hit-white  { box-shadow: inset 0 0 40px rgba(226, 232, 240, 0.8), 0 0 30px rgba(226, 232, 240, 0.6) !important; }
+.unit-hit-purple { box-shadow: inset 0 0 40px rgba(139, 92, 246, 0.8), 0 0 30px rgba(139, 92, 246, 0.6) !important; }
+.unit-hit-gold   { box-shadow: inset 0 0 40px rgba(212, 160, 23, 0.9), 0 0 30px rgba(212, 160, 23, 0.7) !important; }
+
+@keyframes hitFlashAnim {
+  0%   { filter: brightness(3) saturate(2); }
+  100% { filter: brightness(1) saturate(1); }
+}
+
+/* --- ユニットシェイク --- */
+.unit-shake {
+  animation: unitShakeAnim 0.3s ease-out;
+}
+@keyframes unitShakeAnim {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(-6px) rotate(-2deg); }
+  40%  { transform: translateX(6px) rotate(2deg); }
+  60%  { transform: translateX(-4px) rotate(-1deg); }
+  80%  { transform: translateX(3px) rotate(0.5deg); }
+  100% { transform: translateX(0) rotate(0); }
+}
+
+/* --- 死亡シェイク + フェードアウト --- */
+.unit-death-shake {
+  animation: deathShake 0.3s ease-out;
+}
+.unit-dying {
+  animation: deathFadeOut 0.5s ease-in forwards;
+}
+@keyframes deathShake {
+  0%   { transform: translate(0, 0) rotate(0); }
+  15%  { transform: translate(-8px, 2px) rotate(-3deg); }
+  30%  { transform: translate(8px, -2px) rotate(3deg); }
+  45%  { transform: translate(-6px, 4px) rotate(-2deg); }
+  60%  { transform: translate(6px, -1px) rotate(2deg); }
+  75%  { transform: translate(-3px, 2px) rotate(-1deg); }
+  100% { transform: translate(0, 0) rotate(0); }
+}
+@keyframes deathFadeOut {
+  0%   { opacity: 1; transform: scale(1); filter: brightness(1); }
+  30%  { opacity: 0.8; transform: scale(1.05); filter: brightness(1.5) saturate(0); }
+  100% { opacity: 0; transform: scale(0.3) translateY(20px); filter: brightness(2) saturate(0) blur(4px); }
+}
+
+/* --- 衝撃波リング --- */
+.impact-burst {
+  position: absolute;
+  width: 80px; height: 80px;
+  border: 3px solid #f43f5e;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.2);
+  pointer-events: none;
+  z-index: 15200;
+  animation: impactExpand 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+@keyframes impactExpand {
+  0%   { transform: translate(-50%, -50%) scale(0.2); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+}
+
+/* --- アビリティ発動グロウ --- */
+.unit-ability-flash {
+  animation: abilityPulse 0.8s ease-out;
+}
+@keyframes abilityPulse {
+  0%   { box-shadow: 0 0 0 0 var(--ability-glow, #d4a017); filter: brightness(1); }
+  30%  { box-shadow: 0 0 40px 10px var(--ability-glow, #d4a017); filter: brightness(1.6); }
+  60%  { box-shadow: 0 0 25px 5px var(--ability-glow, #d4a017); filter: brightness(1.2); }
+  100% { box-shadow: 0 0 0 0 transparent; filter: brightness(1); }
+}
+
+/* --- 召喚フラッシュ --- */
+.summon-flash {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle, var(--summon-color, #d4a017) 0%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 5;
+  animation: summonBurst 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+@keyframes summonBurst {
+  0%   { opacity: 0; transform: scale(0.5); }
+  25%  { opacity: 0.9; transform: scale(1.2); }
+  100% { opacity: 0; transform: scale(2); }
+}
+
+/* --- ユニット出現アニメーション --- */
+.unit-appear {
+  animation: unitAppear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+@keyframes unitAppear {
+  0%   { opacity: 0; transform: scale(0.3) translateY(30px); filter: blur(8px) brightness(2); }
+  50%  { opacity: 1; transform: scale(1.1) translateY(-5px); filter: blur(0) brightness(1.3); }
+  100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0) brightness(1); }
+}
+
+/* --- 画面揺れ --- */
+.screen-shake {
+  animation: screenShake 0.4s ease-out;
+}
+@keyframes screenShake {
+  0%   { transform: translate(0, 0); }
+  10%  { transform: translate(-8px, 4px); }
+  20%  { transform: translate(8px, -4px); }
+  30%  { transform: translate(-6px, 6px); }
+  40%  { transform: translate(6px, -2px); }
+  50%  { transform: translate(-4px, 4px); }
+  60%  { transform: translate(4px, -3px); }
+  70%  { transform: translate(-2px, 2px); }
+  80%  { transform: translate(2px, -1px); }
+  90%  { transform: translate(-1px, 1px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* --- 不屈 (Endure) ラベル --- */
+.endure-label {
+  position: absolute;
+  font-family: var(--font-fantasy);
+  font-size: 28px;
+  font-weight: 900;
+  color: #fbbf24;
+  text-shadow: 0 0 15px rgba(251, 191, 36, 0.9), 0 2px 4px rgba(0,0,0,0.8);
+  pointer-events: none;
+  z-index: 15300;
+  transform: translate(-50%, 0);
+  animation: endurePopUp 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  letter-spacing: 4px;
+}
+@keyframes endurePopUp {
+  0%   { opacity: 0; transform: translate(-50%, 10px) scale(0.5); }
+  15%  { opacity: 1; transform: translate(-50%, -5px) scale(1.3); }
+  40%  { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -30px) scale(0.9); }
+}
+
+/* --- 共鳴 (Resonance) 波紋 --- */
+.resonance-ring {
+  position: absolute;
+  width: 60px; height: 60px;
+  border: 2px solid #818cf8;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.3);
+  pointer-events: none;
+  z-index: 15100;
+  animation: resonanceExpand 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+@keyframes resonanceExpand {
+  0%   { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(4); opacity: 0; }
+}
+
+.resonance-label {
+  position: absolute;
+  font-family: var(--font-fantasy);
+  font-size: 32px;
+  font-weight: 900;
+  color: #a78bfa;
+  text-shadow: 0 0 20px rgba(167, 139, 250, 0.9), 0 2px 4px rgba(0,0,0,0.8);
+  pointer-events: none;
+  z-index: 15300;
+  transform: translate(-50%, 0);
+  animation: resonanceLabelAnim 2s ease-out forwards;
+  letter-spacing: 8px;
+}
+@keyframes resonanceLabelAnim {
+  0%   { opacity: 0; transform: translate(-50%, 10px) scale(0.6); letter-spacing: 20px; }
+  15%  { opacity: 1; transform: translate(-50%, 0) scale(1.1); letter-spacing: 8px; }
+  60%  { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -20px) scale(0.95); }
+}
+
+/* --- シールドヒット / ブレイクラベル --- */
+.shield-hit-label {
+  position: absolute;
+  font-family: var(--font-fantasy);
+  font-size: 36px;
+  font-weight: 900;
+  color: #f59e0b;
+  text-shadow: 0 0 15px rgba(245, 158, 11, 0.8), 0 3px 6px rgba(0,0,0,0.9);
+  pointer-events: none;
+  z-index: 15400;
+  transform: translate(-50%, 0);
+  animation: shieldHitPopUp 1.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  letter-spacing: 3px;
+}
+.shield-break-label {
+  color: #ef4444 !important;
+  font-size: 42px !important;
+  text-shadow: 0 0 20px rgba(239, 68, 68, 0.9), 0 0 40px rgba(239, 68, 68, 0.5), 0 3px 6px rgba(0,0,0,0.9) !important;
+  animation: shieldBreakPopUp 1.4s cubic-bezier(0.23, 1, 0.32, 1) forwards !important;
+}
+@keyframes shieldHitPopUp {
+  0%   { opacity: 0; transform: translate(-50%, 0) scale(0.5); }
+  15%  { opacity: 1; transform: translate(-50%, -10px) scale(1.2); }
+  50%  { opacity: 1; transform: translate(-50%, -15px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -40px) scale(0.8); }
+}
+@keyframes shieldBreakPopUp {
+  0%   { opacity: 0; transform: translate(-50%, 0) scale(0.3); }
+  10%  { opacity: 1; transform: translate(-50%, -10px) scale(1.5); }
+  25%  { opacity: 1; transform: translate(-50%, -15px) scale(1); }
+  50%  { opacity: 1; transform: translate(-50%, -15px) scale(1.05); }
+  100% { opacity: 0; transform: translate(-50%, -50px) scale(0.9); }
+}
+
+/* --- アビリティ発動ラベル --- */
+.ability-trigger-label {
+  position: absolute;
+  font-family: var(--font-fantasy);
+  font-size: 20px;
+  font-weight: 900;
+  color: #e2e8f0;
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.7) 20%, rgba(0,0,0,0.7) 80%, transparent);
+  padding: 6px 24px;
+  pointer-events: none;
+  z-index: 15300;
+  transform: translate(-50%, 0);
+  white-space: nowrap;
+  animation: abilityLabelAnim 1.8s ease-out forwards;
+  letter-spacing: 2px;
+  border-left: 3px solid var(--accent);
+  border-right: 3px solid var(--accent);
+}
+@keyframes abilityLabelAnim {
+  0%   { opacity: 0; transform: translate(-50%, 10px) scale(0.8); }
+  10%  { opacity: 1; transform: translate(-50%, 0) scale(1.05); }
+  60%  { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -15px) scale(0.95); }
+}
+
+/* --- SP回復パルス --- */
+.sp-gain-pulse {
+  animation: spGainPulseAnim 0.6s ease-out;
+}
+@keyframes spGainPulseAnim {
+  0%   { filter: brightness(1); transform: scale(1); }
+  30%  { filter: brightness(1.5) drop-shadow(0 0 10px rgba(59, 130, 246, 0.8)); transform: scale(1.08); }
+  100% { filter: brightness(1); transform: scale(1); }
+}
+
+/* --- SP回復数値ポップアップ --- */
+.sp-gain-number {
+  position: absolute;
+  font-family: var(--font-fantasy);
+  font-size: 24px;
+  font-weight: 900;
+  color: #60a5fa;
+  text-shadow: 0 0 12px rgba(96, 165, 250, 0.9), 0 2px 4px rgba(0,0,0,0.8);
+  pointer-events: none;
+  z-index: 15100;
+  transform: translate(-50%, 0);
+  animation: spGainPopUp 1.2s ease-out forwards;
+}
+@keyframes spGainPopUp {
+  0%   { opacity: 0; transform: translate(-50%, 0) scale(0.5); }
+  20%  { opacity: 1; transform: translate(-50%, -10px) scale(1.2); }
+  60%  { opacity: 1; transform: translate(-50%, -25px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -45px) scale(0.8); }
+}
+
+/* --- ターンスプラッシュ フェードIN/OUT --- */
+.splash-fade-in {
+  animation: splashFadeIn 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+.splash-fade-out {
+  animation: splashFadeOut 0.5s ease-in forwards;
+}
+@keyframes splashFadeIn {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.7); filter: blur(15px); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: blur(0); }
+}
+@keyframes splashFadeOut {
+  0%   { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: blur(0); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.3); filter: blur(8px); }
+}
+
+/* ターンスプラッシュ色分け（victory=自ターン, enemy=相手ターン） */
+.turn-splash-victory .splash-content {
+  background: linear-gradient(to right, transparent, rgba(37, 99, 235, 0.3), transparent);
+  color: #93c5fd;
+  text-shadow: 0 0 30px rgba(59, 130, 246, 0.8), 0 0 60px rgba(59, 130, 246, 0.4), 0 4px 8px rgba(0,0,0,0.9);
+}
+.turn-splash-enemy .splash-content {
+  background: linear-gradient(to right, transparent, rgba(220, 38, 38, 0.3), transparent);
+  color: #fca5a5;
+  text-shadow: 0 0 30px rgba(239, 68, 68, 0.8), 0 0 60px rgba(239, 68, 68, 0.4), 0 4px 8px rgba(0,0,0,0.9);
+}
+
+/* --- ロックオン表示（攻撃矢印先端） --- */
+.is-locked-on {
+  outline: 3px solid rgba(239, 68, 68, 0.9) !important;
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.7), inset 0 0 15px rgba(239, 68, 68, 0.3) !important;
+  animation: lockedOnPulse 0.8s infinite alternate;
+}
+@keyframes lockedOnPulse {
+  0%   { outline-width: 3px; box-shadow: 0 0 20px rgba(239, 68, 68, 0.6); }
+  100% { outline-width: 5px; box-shadow: 0 0 35px rgba(239, 68, 68, 0.9); }
+}
+
+/* --- ホバー表示（カードドラッグ中） --- */
+.is-hovered {
+  outline: 2px solid rgba(59, 130, 246, 0.7) !important;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5) !important;
+  background: rgba(59, 130, 246, 0.1) !important;
+}
+
+/* --- バリア / 不屈 / ステルス 視覚バッジ --- */
+.has-barrier { box-shadow: 0 0 12px rgba(226, 232, 240, 0.5), inset 0 0 8px rgba(226, 232, 240, 0.2); }
+.has-endure  { box-shadow: 0 0 12px rgba(251, 191, 36, 0.4), inset 0 0 8px rgba(251, 191, 36, 0.15); }
+.is-stealth  { opacity: 0.6; filter: saturate(0.6) brightness(0.85); }
+
+.card-badges {
+  position: absolute;
+  top: 4px; right: 4px;
+  display: flex;
+  gap: 2px;
+  z-index: 6;
+}
+.badge {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(2px);
+}
+
+/* --- ステータスバフ/デバフ色 --- */
+.val.stat-buffed   { color: #22c55e !important; text-shadow: 0 0 6px rgba(34, 197, 94, 0.6); }
+.val.stat-debuffed { color: #f43f5e !important; text-shadow: 0 0 6px rgba(244, 63, 94, 0.6); }
+
+/* --- 手札のプレイ不可表示 --- */
+.hand-card.unplayable {
+  filter: grayscale(0.7) brightness(0.6);
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.hand-card.unplayable:hover {
+  transform: none;
+  filter: grayscale(0.7) brightness(0.6);
+  z-index: auto !important;
+}
+
+/* --- 破棄選択 --- */
+.selected-to-discard {
+  outline: 3px solid #f43f5e !important;
+  box-shadow: 0 0 20px rgba(244, 63, 94, 0.6) !important;
+  filter: brightness(0.7) saturate(0.5);
+}
+
+/* --- 勝利/敗北 リザルトの演出強化 --- */
+.result-overlay.victory {
+  background: radial-gradient(circle at center, rgba(37, 99, 235, 0.15) 0%, rgba(0,0,0,0.9) 70%) !important;
+}
+.result-overlay.defeat {
+  background: radial-gradient(circle at center, rgba(220, 38, 38, 0.1) 0%, rgba(0,0,0,0.9) 70%) !important;
+}
+.result-title {
+  font-family: var(--font-fantasy);
+  font-size: 100px;
+  font-weight: 900;
+  letter-spacing: 15px;
+  margin-bottom: 30px;
+}
+.victory .result-title {
+  background: linear-gradient(to bottom, #fff 20%, var(--gold) 50%, #b8860b 80%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.8));
+  animation: winGlow 2s infinite alternate;
+}
+.defeat .result-title {
+  background: linear-gradient(to bottom, #94a3b8 20%, #475569 50%, #1e293b 80%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.result-content {
+  font-family: var(--font-fantasy);
+  font-size: 24px;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 3px;
+}
+
+/* --- ターゲット選択指示テキスト --- */
+#targeting-instruction {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 99998;
+  pointer-events: none;
+}
+.targeting-message {
+  text-align: center;
+  padding: 20px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+  font-family: var(--font-fantasy);
+  font-size: 28px;
+  color: #fbbf24;
+  text-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
+  letter-spacing: 3px;
+  animation: targetInstructionPulse 2s infinite alternate;
+}
+@keyframes targetInstructionPulse {
+  0%   { text-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
+  100% { text-shadow: 0 0 25px rgba(251, 191, 36, 0.9); }
+}
+
+/* --- 修正履歴(Modifiers)の表示 --- */
+.cd-modifiers-container {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(255,255,255,0.15);
+}
+.cd-modifiers-title {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.modifier-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  margin-bottom: 4px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 4px;
+  font-size: 13px;
+}
+.modifier-source { color: #94a3b8; }
+.modifier-value.plus  { color: #22c55e; font-weight: bold; }
+.modifier-value.minus { color: #f43f5e; font-weight: bold; }
+
+/* --- 召喚トークンセクション --- */
+.cd-token-section {
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.cd-token-label {
+  font-size: 14px;
+  color: #d4c8a8;
+  font-weight: 800;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+.cd-token-list {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.cd-token-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.05);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.cd-token-item:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: var(--gold);
+  box-shadow: 0 0 10px rgba(184, 134, 11, 0.3);
+}
+.cd-token-icon {
+  width: 36px; height: 36px;
+  border-radius: 6px;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.cd-token-name {
+  font-size: 13px;
+  font-weight: bold;
+  color: #e2e8f0;
+}
+.cd-token-stats {
+  font-size: 12px;
+  color: #94a3b8;
+  display: flex;
+  gap: 8px;
+}
+
+
+/* ================================================================
+   SHIELD BREAK モーダル — リッチ演出
+   ================================================================ */
+
+/* --- オーバーレイ基盤 --- */
+#shield-break-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(12px);
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+#shield-break-overlay.sb-enter {
+  animation: sbOverlayEnter 0.5s ease-out forwards;
+}
+#shield-break-overlay.sb-exit {
+  animation: sbOverlayExit 0.4s ease-in forwards;
+}
+@keyframes sbOverlayEnter {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes sbOverlayExit {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* --- モーダル本体 --- */
+.shield-break-modal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  z-index: 2;
+  animation: sbModalBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+@keyframes sbModalBounce {
+  0%   { opacity: 0; transform: scale(0.5) translateY(60px); }
+  60%  { opacity: 1; transform: scale(1.05) translateY(-10px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* --- バーストリング（破壊衝撃波） --- */
+.sb-burst-ring {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border: 3px solid rgba(239, 68, 68, 0.6);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  pointer-events: none;
+  animation: sbBurstExpand 1.2s cubic-bezier(0.23, 1, 0.32, 1) 0.3s forwards;
+}
+.sb-burst-ring-2 {
+  width: 500px;
+  height: 500px;
+  border-color: rgba(245, 158, 11, 0.4);
+  animation-delay: 0.5s;
+}
+@keyframes sbBurstExpand {
+  0%   { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+}
+
+/* --- タイトル「SHIELD BREAK!」 --- */
+.sb-title {
+  font-family: var(--font-fantasy);
+  font-size: 64px;
+  font-weight: 900;
+  letter-spacing: 12px;
+  text-align: center;
+  background: linear-gradient(180deg, #fef3c7 0%, #f59e0b 40%, #d97706 70%, #92400e 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 30px rgba(245, 158, 11, 0.6)) drop-shadow(0 4px 12px rgba(0,0,0,0.8));
+  animation: sbTitlePulse 2s infinite alternate;
+  position: relative;
+  z-index: 3;
+}
+@keyframes sbTitlePulse {
+  0%   { filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.4)) drop-shadow(0 4px 12px rgba(0,0,0,0.8)); }
+  100% { filter: drop-shadow(0 0 50px rgba(245, 158, 11, 0.9)) drop-shadow(0 4px 12px rgba(0,0,0,0.8)); }
+}
+
+/* --- カード表示エリア --- */
+.sb-content {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  position: relative;
+  z-index: 3;
+}
+
+/* --- カードフリップ --- */
+.sb-card-wrapper {
+  width: 220px;
+  height: 310px;
+  perspective: 1200px;
+  cursor: pointer;
+}
+.sb-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+}
+.sb-card-wrapper.flipped .sb-card-inner {
+  transform: rotateY(180deg);
+}
+
+.sb-card-back,
+.sb-card-front {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  backface-visibility: hidden;
+  overflow: hidden;
+}
+
+/* カード裏面 */
+.sb-card-back {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e293b 100%);
+  border: 3px solid rgba(212, 160, 23, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 40px rgba(212, 160, 23, 0.3), inset 0 0 60px rgba(0,0,0,0.5);
+}
+.sb-card-back::before {
+  content: '🛡️';
+  font-size: 64px;
+  filter: drop-shadow(0 0 20px rgba(212, 160, 23, 0.6));
+  animation: sbCardBackPulse 2s infinite alternate;
+}
+@keyframes sbCardBackPulse {
+  0%   { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}
+.sb-card-back::after {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 2px solid rgba(212, 160, 23, 0.25);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+/* カード表面（イラスト） */
+.sb-card-front {
+  transform: rotateY(180deg);
+  background-size: cover;
+  background-position: center;
+  border: 3px solid rgba(212, 160, 23, 0.8);
+  box-shadow: 0 0 50px rgba(212, 160, 23, 0.5), 0 20px 60px rgba(0,0,0,0.6);
+}
+.sb-card-front::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.6) 100%);
+  pointer-events: none;
+}
+
+/* --- シールド情報パネル --- */
+.sb-info {
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: sbInfoSlideIn 0.6s ease-out 0.8s both;
+}
+@keyframes sbInfoSlideIn {
+  0%   { opacity: 0; transform: translateX(30px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+.sb-card-name {
+  font-family: var(--font-fantasy);
+  font-size: 32px;
+  font-weight: 900;
+  color: #fef3c7;
+  text-shadow: 0 0 20px rgba(245, 158, 11, 0.5), 0 2px 8px rgba(0,0,0,0.8);
+  letter-spacing: 3px;
+  margin: 0;
+}
+
+.sb-trigger-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.sb-trigger-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 16px;
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+  color: #fff;
+  font-family: var(--font-fantasy);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  border-radius: 6px;
+  box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.sb-trigger-effect {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #d4a017;
+  font-weight: 700;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+}
+
+/* --- ヒントテキスト --- */
+.sb-hint {
+  font-family: var(--font-fantasy);
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 3px;
+  text-align: center;
+  animation: sbHintPulse 2s infinite alternate;
+  position: relative;
+  z-index: 3;
+}
+@keyframes sbHintPulse {
+  0%   { opacity: 0.3; }
+  100% { opacity: 0.7; }
+}
+
+/* --- 背景パーティクル（純CSS） --- */
+#shield-break-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(239, 68, 68, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(245, 158, 11, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(212, 160, 23, 0.08) 0%, transparent 40%);
+  animation: sbBgShimmer 3s infinite alternate;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes sbBgShimmer {
+  0%   { opacity: 0.5; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1.05); }
+}
+
+/* --- 金色の破片散乱アニメーション --- */
+#shield-break-overlay::after {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+  background-image:
+    radial-gradient(2px 2px at 10% 20%, rgba(245, 158, 11, 0.8), transparent),
+    radial-gradient(2px 2px at 30% 60%, rgba(212, 160, 23, 0.6), transparent),
+    radial-gradient(3px 3px at 50% 40%, rgba(253, 224, 71, 0.7), transparent),
+    radial-gradient(2px 2px at 70% 80%, rgba(245, 158, 11, 0.5), transparent),
+    radial-gradient(2px 2px at 90% 30%, rgba(212, 160, 23, 0.6), transparent),
+    radial-gradient(3px 3px at 15% 75%, rgba(253, 224, 71, 0.5), transparent),
+    radial-gradient(2px 2px at 85% 55%, rgba(245, 158, 11, 0.7), transparent),
+    radial-gradient(2px 2px at 40% 15%, rgba(212, 160, 23, 0.5), transparent);
+  background-size: 300px 300px;
+  animation: sbParticles 8s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes sbParticles {
+  0%   { transform: translate(0, 0); }
+  100% { transform: translate(-150px, 150px); }
+}
+
+@keyframes pulse-orb { from { transform: scale(1); filter: brightness(1); } to { transform: scale(1.05); filter: brightness(1.2); } }
+
+.sp-orb-display { transition: all 0.3s ease; }
+.sp-orb-display:hover { transform: scale(1.1) rotate(5deg); filter: brightness(1.3); }

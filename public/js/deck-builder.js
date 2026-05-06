@@ -2,6 +2,17 @@
 'use strict';
 
 const socket = io();
+
+// セッション復旧の試行
+const persistentSessionId = localStorage.getItem('dcg_session_id');
+if (persistentSessionId) {
+  socket.emit('reconnect_session', { sessionId: persistentSessionId });
+}
+
+socket.on('session_reconnected', (data) => {
+  console.log('✅ セッションが復旧しました:', data);
+});
+
 const sessionId = sessionStorage.getItem('sessionId');
 
 // BGM再生
@@ -338,7 +349,21 @@ function loadDeckFromSlot(slotIndex) {
     if (raw) {
       const data = JSON.parse(raw);
       deck = data.deck || {};
-      selectedShields = data.selectedShields || [];
+      
+      // 無効なカードデータ（CSVから削除・変更されたID）が残っていれば自動的に削除
+      let deckCleaned = false;
+      for (const id in deck) {
+        if (!allCards.find(c => c.id === id)) {
+          delete deck[id];
+          deckCleaned = true;
+        }
+      }
+      if (deckCleaned) {
+        console.warn('[DECK] Removed invalid/deleted cards from saved deck.');
+      }
+
+      // 無効なシールドデータも除去
+      selectedShields = (data.selectedShields || []).filter(id => allShields.some(s => s.id === id));
     } else {
       deck = {};
       selectedShields = [];
@@ -696,25 +721,30 @@ function renderShieldSlotsList() {
     if (i < selectedShields.length) {
       const shield = allShields.find(s => s.id === selectedShields[i]);
       
-      const controls = document.createElement('div');
-      controls.className = 'shield-reorder-controls';
-      controls.innerHTML = `
-        <button class="btn-arrow btn-up" ${i === 0 ? 'disabled' : ''}>▲</button>
-        <button class="btn-arrow btn-down" ${i === selectedShields.length - 1 ? 'disabled' : ''}>▼</button>
-      `;
-      
-      const content = document.createElement('div');
-      content.style.flex = '1';
-      content.style.cursor = 'pointer';
-      content.innerHTML = `<span>${shield.name}</span><span style="font-size:12px;color:var(--text-dim);margin-left:8px;">耐久${shield.durability}</span>`;
-      content.addEventListener('click', () => showPreview('shield', shield));
-      
-      controls.querySelector('.btn-up').addEventListener('click', (e) => { e.stopPropagation(); moveShield(i, -1); });
-      controls.querySelector('.btn-down').addEventListener('click', (e) => { e.stopPropagation(); moveShield(i, 1); });
-      
-      el.appendChild(controls);
-      el.appendChild(content);
-      el.classList.add('filled');
+      if (shield) {
+        const controls = document.createElement('div');
+        controls.className = 'shield-reorder-controls';
+        controls.innerHTML = `
+          <button class="btn-arrow btn-up" ${i === 0 ? 'disabled' : ''}>▲</button>
+          <button class="btn-arrow btn-down" ${i === selectedShields.length - 1 ? 'disabled' : ''}>▼</button>
+        `;
+        
+        const content = document.createElement('div');
+        content.style.flex = '1';
+        content.style.cursor = 'pointer';
+        content.innerHTML = `<span>${shield.name}</span><span style="font-size:12px;color:var(--text-dim);margin-left:8px;">耐久${shield.durability}</span>`;
+        content.addEventListener('click', () => showPreview('shield', shield));
+        
+        controls.querySelector('.btn-up').addEventListener('click', (e) => { e.stopPropagation(); moveShield(i, -1); });
+        controls.querySelector('.btn-down').addEventListener('click', (e) => { e.stopPropagation(); moveShield(i, 1); });
+        
+        el.appendChild(controls);
+        el.appendChild(content);
+        el.classList.add('filled');
+      } else {
+        el.innerHTML = `<span style="color:#ef4444;font-size:13px;">不明なシールド (ID: ${selectedShields[i]})</span>`;
+        el.classList.add('error-slot');
+      }
     } else {
       el.innerHTML = `<span style="color:var(--text-dim);font-size:13px;">空のシールド枠</span>`;
       el.classList.add('empty-slot');

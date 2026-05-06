@@ -155,6 +155,30 @@ io.on('connection', (socket) => {
   });
 
   // ルーム作成
+  
+  // セッションの復旧（ページ遷移時のソケット更新）
+  socket.on('reconnect_session', (data) => {
+    if (!data.sessionId) return;
+    const session = sessions.get(data.sessionId);
+    if (session) {
+      const room = rooms.get(session.roomId);
+      if (room) {
+        sessionId = data.sessionId;
+        currentRoom = session.roomId;
+        socket.join(currentRoom);
+        
+        // プレイヤーのソケットを最新のものに更新
+        const player = room.players[session.playerIndex];
+        if (player) {
+          player.socket = socket;
+          console.log(`🔄 セッション復旧: ${player.name} (Room: ${currentRoom})`);
+        }
+        
+        socket.emit('session_reconnected', { roomId: currentRoom, playerIndex: session.playerIndex });
+      }
+    }
+  });
+
   socket.on('create_room', (data) => {
     const roomId = `room_${Date.now()}`;
     sessionId = generateSessionId();
@@ -295,15 +319,19 @@ io.on('connection', (socket) => {
     player.mulliganDone = true;
 
     if (room.players.every(p => p.mulliganDone)) {
+      console.log(`🏠 [SERVER] All players finished mulligan. Starting turn... CurrentId=${room.engine.gameState.playerOrder[0]}`);
       room.engine.gameState.phase = 'main';
       room.engine.startTurn();
+      console.log(`✅ [SERVER] startTurn called. Player SP: ${room.engine.gameState.players[room.engine.gameState.playerOrder[0]].sp}`);
       sendGameStateToAll(room);
 
-      // 先攻がAIならAIターン開始
+      // 先攻の判定とAIターンの開始
       const currentId = room.engine.gameState.playerOrder[room.engine.gameState.currentPlayerIndex];
       const currentPlayerObj = room.players.find(p => p.id === currentId);
       if (currentPlayerObj && currentPlayerObj.isAI) {
-        setTimeout(() => executeAITurn(room, currentPlayerObj), 1200);
+        console.log(`🤖 [SERVER] First player ${currentPlayerObj.name} is AI. Starting AI turn...`);
+        // アニメーション等の表示時間を考慮して少し遅延させて開始
+        setTimeout(() => executeAITurn(room, currentPlayerObj), 1500);
       }
     } else {
       socket.emit('waiting_mulligan');
@@ -341,6 +369,19 @@ io.on('connection', (socket) => {
         case 'discard_cards':
           result = room.engine.discardCards(player.id, data.cardIndices);
           break;
+        
+        case 'resolve_shield_break':
+          result = room.engine.resolvePendingShieldBreak();
+          // 手動解決後、もしAIのターンなら思考を再開させる
+          setTimeout(() => {
+            const gs = room.engine.gameState;
+            const currentId = gs.playerOrder[gs.currentPlayerIndex];
+            const aiPlayer = room.players.find(p => p.id === currentId);
+            if (aiPlayer && aiPlayer.isAI && gs.phase === 'main') {
+              executeAITurn(room, aiPlayer);
+            }
+          }, 500);
+          break;
         case 'surrender':
           result = room.engine.surrender(player.id);
           break;
@@ -360,32 +401,7 @@ io.on('connection', (socket) => {
         sendGameStateToAll(room);
       } else {
         sendGameStateToAll(room);
-
-        if (room.engine.gameState.phase === 'shield_break_anim') {
-          setTimeout(() => {
-            if (room.engine && room.engine.gameState.phase === 'shield_break_anim') {
-              room.engine.resolvePendingShieldBreak();
-              sendGameStateToAll(room);
-              
-              if (room.engine.gameState.phase === 'main') {
-                const currentId = room.engine.gameState.playerOrder[room.engine.gameState.currentPlayerIndex];
-                const currentPlayerObj = room.players.find(p => p.id === currentId);
-                if (currentPlayerObj && currentPlayerObj.isAI) {
-                  setTimeout(() => executeAITurn(room, currentPlayerObj), 800);
-                }
-              }
-            }
-          }, 3000);
-        } else {
-          // AIのターンチェック
-          if (room.engine.gameState.phase === 'main') {
-            const currentId = room.engine.gameState.playerOrder[room.engine.gameState.currentPlayerIndex];
-            const currentPlayerObj = room.players.find(p => p.id === currentId);
-            if (currentPlayerObj && currentPlayerObj.isAI) {
-              setTimeout(() => executeAITurn(room, currentPlayerObj), 800);
-            }
-          }
-        }
+        handlePostActionPhase(room);
       }
     } catch (err) {
       console.error(`💥 [SERVER] Fatal error in server_action:`, err);
@@ -428,8 +444,26 @@ function startGame(room) {
 
   // 通知: ゲーム開始 → ゲーム画面へ遷移を促す
   for (const p of room.players) {
-    if (!p.isAI && p.socket) {
+    if (p.socket) {
       p.socket.emit('game_started', { roomId: room.roomId });
+    }
+  }
+
+  // 全員がマリガン完了（AI vs AI等）の場合、直ちにメインフェーズへ
+  const allMulliganDone = room.players.every(p => p.mulliganDone);
+  console.log(`[startGame] All mulligan done: ${allMulliganDone}`);
+
+  if (allMulliganDone) {
+    room.engine.gameState.phase = 'main';
+    const firstTurnState = room.engine.startTurn();
+    console.log(`[startGame] AI match: First turn started. SP: ${room.engine.gameState.players[room.engine.gameState.playerOrder[0]].sp}`);
+    sendGameStateToAll(room);
+    
+    const currentId = room.engine.gameState.playerOrder[room.engine.gameState.currentPlayerIndex];
+    const currentPlayerObj = room.players.find(p => p.id === currentId);
+    if (currentPlayerObj && currentPlayerObj.isAI) {
+      console.log(`[startGame] Scheduling first AI turn for ${currentPlayerObj.name}`);
+      setTimeout(() => executeAITurn(room, currentPlayerObj), 2000);
     }
   }
 }
@@ -475,15 +509,17 @@ function executeAITurn(room, aiPlayerObj) {
             return;
         }
 
+        if (result && result.error) {
+          console.warn(`⚠️ [SERVER] AI Action Failed: ${result.error}`, action);
+          // エラーによる無限ループを防ぐため、AIのターンを強制終了
+          room.engine.endTurn(aiPlayerObj.id);
+        }
+
         // 4. 実行結果を全プレイヤーに同期
         sendGameStateToAll(room);
 
-        // 5. アクション実行後、まだ AI の手番（またはアビリティ処理中）なら次の一手を実行
-        const nextState = room.engine.getGameStateForClients();
-        if (nextState.currentPlayerId === aiPlayerObj.id && nextState.phase !== 'game_over') {
-          // 少し間を置いて再帰的に呼び出し
-          setTimeout(() => executeAITurn(room, aiPlayerObj), 1000);
-        }
+        // 5. フェーズ遷移やAIの連続行動を処理
+        handlePostActionPhase(room);
       } catch (innerErr) {
         console.error(`💥 [SERVER] AI Action Execution Error:`, innerErr);
       }
@@ -494,15 +530,61 @@ function executeAITurn(room, aiPlayerObj) {
   }
 }
 
+// アクション後のフェーズ管理（AIの再帰呼び出しやアニメーション解決）
+function handlePostActionPhase(room) {
+  const gs = room.engine.gameState;
+  if (!gs || gs.phase === 'game_over') return;
+
+  const currentId = gs.playerOrder[gs.currentPlayerIndex];
+  const currentPlayerObj = room.players.find(p => p.id === currentId);
+
+  console.log(`⏱️ [SERVER] handlePostActionPhase: Phase=${gs.phase}, CurrentPlayer=${currentPlayerObj ? currentPlayerObj.name : 'Unknown'}`);
+
+  if (gs.phase === 'shield_break_anim') {
+    // シールドブレイク演出中：一定時間後に自動解決してメインフェーズへ
+    setTimeout(() => {
+      if (room.engine && room.engine.gameState.phase === 'shield_break_anim') {
+        room.engine.resolvePendingShieldBreak();
+        sendGameStateToAll(room);
+        handlePostActionPhase(room);
+      }
+    }, 4000);
+  } else if (gs.phase === 'main' || gs.phase === 'targeting') {
+    // 現在のプレイヤーがAIなら次の一手
+    if (currentPlayerObj && currentPlayerObj.isAI) {
+      setTimeout(() => executeAITurn(room, currentPlayerObj), 1200);
+    }
+  } else if (gs.phase === 'discarding') {
+    // 手札調整フェーズ：AIならランダムに捨てる
+    if (currentPlayerObj && currentPlayerObj.isAI) {
+      setTimeout(() => {
+        const player = gs.players[currentPlayerObj.id];
+        if (!player) return;
+        const needed = player.hand.length - 7;
+        if (needed > 0) {
+          const indices = [];
+          for (let i = 0; i < needed; i++) indices.push(i);
+          room.engine.discardCards(currentPlayerObj.id, indices);
+          sendGameStateToAll(room);
+        }
+        handlePostActionPhase(room);
+      }, 1000);
+    }
+  }
+}
+
 // ゲーム状態送信
 function sendGameStateToAll(room) {
   if (!room.engine) return;
+  // アニメーションイベントは一度だけ取り出して全プレイヤーに配布
+  const animationEvents = room.engine.flushAnimationEvents();
   for (const p of room.players) {
     if (p.socket && p.socket.connected) {
       try {
         const view = room.engine.getPlayerView(p.id);
+        view.animationEvents = animationEvents; // 全プレイヤーに同じイベントを配布
         const sanitizedView = JSON.parse(JSON.stringify(view));
-        console.log(`📡 [SERVER] Broadcast game_state to ${p.name}`);
+        console.log(`📡 [SERVER] Broadcast game_state to ${p.name} (animEvents: ${animationEvents.length})`);
         p.socket.emit('game_state', sanitizedView);
       } catch (e) {
         console.error(`💥 [SERVER] Failed to send state to ${p.name}:`, e.message);

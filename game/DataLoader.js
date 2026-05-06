@@ -62,10 +62,10 @@ function loadLocalCSV(filename) {
     
     let data;
     try {
-      // まずは UTF-8 でデコードを試みる（fatal: true で不正なバイトを検知）
+      // \u307e\u305a\u306f UTF-8 \u3067\u30c7\u30b3\u30fc\u30c9\u3092\u8a66\u307f\u308b\uff08fatal: true \u3067\u4e0d\u6b63\u306a\u30d0\u30a4\u30c8\u3092\u691c\u77e5\uff09
       data = new TextDecoder('utf-8', { fatal: true }).decode(buffer);
     } catch (e) {
-      // UTF-8 で失敗した場合は Shift-JIS を試行
+      // UTF-8 \u3067\u5931\u6557\u3057\u305f\u5834\u5408\u306f Shift-JIS \u3092\u8a66\u884c
       console.warn(`[DataLoader] UTF-8 decoding failed for ${filename}, falling back to Shift-JIS...`);
       data = new TextDecoder('shift-jis').decode(buffer);
     }
@@ -89,30 +89,30 @@ async function loadAllData(options = {}) {
 
   if (forceSync) {
     console.log('[DataLoader] Force fetching from spreadsheets and updating local files...');
-    // 同期モード: URLから取得し、成功したものをローカルに保存
+    // \u540c\u671f\u30e2\u30fc\u30c9: URL\u304b\u3089\u53d6\u5f97\u3057\u3001\u6210\u529f\u3057\u305f\u3082\u306e\u3092\u30ed\u30fc\u30ab\u30eb\u306b\u4fdd\u5b58
     const [cData, sData, kData] = await Promise.all([
       fetchRawData(CARDS_URL),
       fetchRawData(SHIELDS_URL),
       fetchRawData(KEYWORDS_URL),
     ]);
     
-    // 保存
+    // \u4fdd\u5b58
     saveLocalCSV('cards.csv', cData);
     saveLocalCSV('shields.csv', sData);
     saveLocalCSV('keywords.csv', kData);
     
-    // パース
+    // \u30d1\u30fc\u30b9
     cardsRaw = parse(cData, { columns: true, skip_empty_lines: true, trim: true, relax_column_count: true, bom: true });
     shieldsRaw = parse(sData, { columns: true, skip_empty_lines: true, trim: true, relax_column_count: true, bom: true });
     keywordsRaw = parse(kData, { columns: true, skip_empty_lines: true, trim: true, relax_column_count: true, bom: true });
   } else {
-    // 通常モード: ローカル優先、なければURL
+    // \u901a\u5e38\u30e2\u30fc\u30c9: \u30ed\u30fc\u30ab\u30eb\u512a\u5148\u3001\u306a\u3051\u308c\u3070URL
     cardsRaw = loadLocalCSV('cards.csv') || await fetchCSV(CARDS_URL);
     shieldsRaw = loadLocalCSV('shields.csv') || await fetchCSV(SHIELDS_URL);
     keywordsRaw = loadLocalCSV('keyword_master.csv') || loadLocalCSV('keywords.csv') || await fetchCSV(KEYWORDS_URL);
   }
 
-  // キーワードマスタ
+  // \u30ad\u30fc\u30ef\u30fc\u30c9\u30de\u30b9\u30bf
   const keywordMap = {};
   for (const row of keywordsRaw) {
     if (!row.id) continue;
@@ -123,7 +123,7 @@ async function loadAllData(options = {}) {
     };
   }
 
-  // カードデータの構築
+  // \u30ab\u30fc\u30c9\u30c7\u30fc\u30bf\u306e\u69cb\u7bc9
   const cards = cardsRaw.filter(row => row.id).map(row => {
     const abilities = [];
     const trigger = row.ability_trigger || row.trigger;
@@ -148,7 +148,7 @@ async function loadAllData(options = {}) {
     const valueStr2 = row.value2;
     const target2 = row.target2;
 
-    // trigger2 が 'none' または空欄でも、effect2 があれば trigger1 を継承する
+    // trigger2 \u304c 'none' \u307e\u305f\u306f\u7a7a\u6b04\u3067\u3082\u3001effect2 \u304c\u3042\u308c\u3070 trigger1 \u3092\u7d99\u627f\u3059\u308b
     if ((trigger2 && trigger2.trim() !== '' && trigger2.trim() !== 'none') || (effect2 && effect2.trim() !== '')) {
       const finalTrigger2 = (trigger2 && trigger2.trim() !== 'none' && trigger2.trim() !== '') ? trigger2.trim() : trigger.trim();
       abilities.push({
@@ -165,12 +165,12 @@ async function loadAllData(options = {}) {
 
     const firstAbility = abilities.length > 0 ? abilities[0] : {};
     
-    // 数値データの安全なパース
-    const cost = parseInt(row.cost || row.コスト || 0);
-    const attack = parseInt(row.atk || row.attack || row.攻撃力 || 0);
-    const hp = parseInt(row.life || row.hp || row.体力 || 0);
-    const rarity = parseInt(row.rarity || row.レアリティ || 1);
-    const deckLimit = parseInt(row.limit || row.deck_limit || row.max_copies || row.枚数制限 || 3);
+    // \u6570\u5024\u30c7\u30fc\u30bf\u306e\u5b89\u5168\u306a\u30d1\u30fc\u30b9
+    const cost = parseInt(row.cost || row.\u30b3\u30b9\u30c8 || 0);
+    const attack = parseInt(row.atk || row.attack || row.\u653b\u6483\u529b || 0);
+    const hp = parseInt(row.life || row.hp || row.\u4f53\u529b || 0);
+    const rarity = parseInt(row.rarity || row.\u30ec\u30a2\u30ea\u30c6\u30a3 || 1);
+    const deckLimit = parseInt(row.limit || row.deck_limit || row.max_copies || row.\u679a\u6570\u5236\u9650 || 3);
     
     return {
       id: row.id,
@@ -180,30 +180,30 @@ async function loadAllData(options = {}) {
       color: row.color ? row.color.split(',')[0].trim() : 'neutral',
       rarity: isNaN(rarity) ? 1 : rarity,
       type: row.type || 'unit',
-      isToken: isNaN(deckLimit) || deckLimit === 0, // 制限0ならトークン
+      isToken: isNaN(deckLimit) || deckLimit === 0, // \u5236\u96500\u306a\u3089\u30c8\u30fc\u30af\u30f3
       cost: isNaN(cost) ? 0 : cost,
       attack: isNaN(attack) ? 0 : attack,
       hp: isNaN(hp) ? 0 : hp,
       keywords: row.keywords ? row.keywords.split(',').map(k => k.trim()).filter(k => k) : [],
       
-      // 旧実装との互換性
+      // \u65e7\u5b9f\u88c5\u3068\u306e\u4e92\u63db\u6027
       abilityTrigger: firstAbility.trigger || 'none',
       abilityEffect: firstAbility.effect || '',
       abilityValue: isNaN(parseInt(firstAbility.value)) ? (firstAbility.value || '') : parseInt(firstAbility.value),
       
-      // 新アビリティリスト
+      // \u65b0\u30a2\u30d3\u30ea\u30c6\u30a3\u30ea\u30b9\u30c8
       abilities: abilities,
       
-      flavorText: row.description || row.flavor_text || row.flavor || row.desc || row.フレーバーテキスト || row.説明 || '',
-      text: row.text || row.テキスト || row.ability_text || row.manual_text || '',
+      flavorText: row.description || row.flavor_text || row.flavor || row.desc || row.\u30d5\u30ec\u30fc\u30d0\u30fc\u30c6\u30ad\u30b9\u30c8 || row.\u8aac\u660e || '',
+      text: row.text || row.\u30c6\u30ad\u30b9\u30c8 || row.ability_text || row.manual_text || '',
       maxCopies: isNaN(deckLimit) ? 3 : deckLimit,
       expansion: row.expansion || 'basic',
     };
   });
 
-  // シールドデータの構築（ターゲット指定と表示テキスト追加）
+  // \u30b7\u30fc\u30eb\u30c9\u30c7\u30fc\u30bf\u306e\u69cb\u7bc9\uff08\u30bf\u30fc\u30b2\u30c3\u30c8\u6307\u5b9a\u3068\u8868\u793a\u30c6\u30ad\u30b9\u30c8\u8ffd\u52a0\uff09
   const shields = shieldsRaw.filter(row => row.id).map(row => {
-    const rarity = parseInt(row.rarity || row.レアリティ || 1);
+    const rarity = parseInt(row.rarity || row.\u30ec\u30a2\u30ea\u30c6\u30a3 || 1);
     const life = parseInt(row.durability || row.life || row.hp || 1);
     
     const abilities = [];
@@ -233,16 +233,17 @@ async function loadAllData(options = {}) {
 
     return {
       id: row.id,
+      artId: row.art_id || row.id,
       type: 'shield',
       name: row.name,
       rarity: isNaN(rarity) ? 1 : rarity,
       durability: isNaN(life) ? 1 : life,
       abilities: abilities,
-      text: row.text || '', // トップレベルにも追加
-      // 過去のコードとの互換性のために skill オブジェクトもメインのアビリティで構築
+      text: row.text || '', // \u30c8\u30c3\u30d7\u30ec\u30d9\u30eb\u306b\u3082\u8ffd\u52a0
+      // \u904e\u53bb\u306e\u30b3\u30fc\u30c9\u3068\u306e\u4e92\u63db\u6027\u306e\u305f\u3081\u306b skill \u30aa\u30d6\u30b8\u30a7\u30af\u30c8\u3082\u30e1\u30a4\u30f3\u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u3067\u69cb\u7bc9
       skill: abilities.length > 0 ? {
         id: abilities[0].id,
-        name: row.name + 'のスキル',
+        name: row.name + '\u306e\u30b9\u30ad\u30eb',
         effectType: abilities[0].effect,
         effectValue: abilities[0].value,
         target: abilities[0].target,

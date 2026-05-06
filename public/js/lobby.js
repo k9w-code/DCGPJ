@@ -92,6 +92,7 @@ socket.on('room_list', (roomItems) => {
 
 // ルーム作成完了
 socket.on('room_created', (data) => {
+    localStorage.setItem('dcg_session_id', data.sessionId);
   sessionStorage.setItem('sessionId', data.sessionId);
   sessionStorage.setItem('playerId', data.playerId);
   sessionStorage.setItem('roomId', data.roomId);
@@ -101,6 +102,7 @@ socket.on('room_created', (data) => {
 
 // ルーム参加完了
 socket.on('room_joined', (data) => {
+    localStorage.setItem('dcg_session_id', data.sessionId);
   sessionStorage.setItem('sessionId', data.sessionId);
   sessionStorage.setItem('playerId', data.playerId);
   sessionStorage.setItem('roomId', data.roomId);

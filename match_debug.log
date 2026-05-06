@@ -1,13 +1,280 @@
-🎮 ゲーム開始！先攻: Player_B, 後攻: Player_A
-📖 Player_B: 初期手札 4 枚ドロー
+🎮 ゲーム開始！先攻: Player_A, 後攻: Player_B
 📖 Player_A: 初期手札 4 枚ドロー
+📖 Player_B: 初期手札 4 枚ドロー
 ✅ Player_A: マリガンなし (キープ)
 ✅ Player_B: マリガンなし (キープ)
-
-═══ ターン 1 - Player_B ═══
-📖 Player_B: 先攻1ターン目のためドローなし
-💰 Player_B: SP+3 (SP: 3)
-⏭️ Player_B: ターン終了
+🔍 [GameEngine] startTurn: player=Player_A, id=p1, isFirstTurn=true, gs.isFirstTurn={"p1":true,"p2":true}
 
 ═══ ターン 1 - Player_A ═══
-💀 Player_A: デッキ切れ！敗北！
+📖 Player_A: 先攻1ターン目のためドローなし
+💰 [GameEngine] Player_A: SP+4 (Base:4, Current SP: 4, isFirstTurn:true, turn:1)
+⬆️ Player_A: whiteの神族レベル+1 (Lv.1, SP: 3)
+⬆️ Player_A: whiteの神族レベル+1 (Lv.2, SP: 2)
+⬆️ Player_A: whiteの神族レベル+1 (Lv.3, SP: 1)
+⬆️ Player_A: whiteの神族レベル+1 (Lv.4, SP: 0)
+⏭️ Player_A: ターン終了
+🔍 [GameEngine] startTurn: player=Player_B, id=p2, isFirstTurn=true, gs.isFirstTurn={"p1":false,"p2":true}
+
+═══ ターン 1 - Player_B ═══
+📖 Player_B: 月夜の狩人 をドロー
+💰 [GameEngine] Player_B: SP+4 (Base:4, Current SP: 4, isFirstTurn:true, turn:1)
+⬆️ Player_B: redの神族レベル+1 (Lv.1, SP: 3)
+🃏 Player_B: 宵闇の暗殺者 を前列レーン2に配置 (SP: 2)
+🛡️ 宵闇の暗殺者 がシールド「禁忌の注入」を攻撃！(耐久: 1 → 0)
+💥 シールド「禁忌の注入」破壊！スキル「なし」発動！
+⏭️ Player_B: ターン終了
+🔍 [GameEngine] startTurn: player=Player_A, id=p1, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 2 - Player_A ═══
+📖 Player_A: 聖鎖の騎士 をドロー
+💰 [GameEngine] Player_A: SP+3 (Base:3, Current SP: 3, isFirstTurn:false, turn:2)
+🃏 Player_A: 紅の乙女 を前列レーン2に配置 (SP: 0)
+📖 紅の乙女 のアビリティ発動！1 枚ドロー
+⏭️ Player_A: ターン終了
+🔍 [GameEngine] startTurn: player=Player_B, id=p2, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 2 - Player_B ═══
+📖 Player_B: 灼熱の巨神 をドロー
+💰 [GameEngine] Player_B: SP+3 (Base:3, Current SP: 5, isFirstTurn:false, turn:2)
+⬆️ Player_B: redの神族レベル+1 (Lv.2, SP: 4)
+⬆️ Player_B: redの神族レベル+1 (Lv.3, SP: 3)
+⬆️ Player_B: redの神族レベル+1 (Lv.4, SP: 2)
+⬆️ Player_B: redの神族レベル+1 (Lv.5, SP: 1)
+⚔️ 宵闇の暗殺者(ATK1) → 紅の乙女 に 1 ダメージ (HP: 2)
+🔄 紅の乙女(ATK2) 反撃 → 宵闇の暗殺者 に 2 ダメージ (HP: -1)
+💀 宵闇の暗殺者 が場から除去された
+⏭️ Player_B: ターン終了
+🔍 [GameEngine] startTurn: player=Player_A, id=p1, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 3 - Player_A ═══
+📖 Player_A: 銀翼の騎士 をドロー
+💰 [GameEngine] Player_A: SP+3 (Base:3, Current SP: 3, isFirstTurn:false, turn:3)
+🃏 Player_A: 銀翼の騎士 を前列レーン1に配置 (SP: 0)
+⚠️ p1 のアクション回数が上限に達したため、強制終了します。
+⏭️ Player_A: ターン終了
+🔍 [GameEngine] startTurn: player=Player_B, id=p2, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 3 - Player_B ═══
+📖 Player_B: 紅花の若武者 をドロー
+💰 [GameEngine] Player_B: SP+3 (Base:3, Current SP: 4, isFirstTurn:false, turn:3)
+🃏 Player_B: 紅花の若武者 を前列レーン2に配置 (SP: 1)
+⏭️ Player_B: ターン終了
+🔍 [GameEngine] startTurn: player=Player_A, id=p1, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 4 - Player_A ═══
+📖 Player_A: 聖剣の継承者 をドロー
+💰 [GameEngine] Player_A: SP+3 (Base:3, Current SP: 3, isFirstTurn:false, turn:4)
+🃏 Player_A: 聖鎖の騎士 を前列レーン3に配置 (SP: 1)
+⚠️ p1 のアクション回数が上限に達したため、強制終了します。
+⏭️ Player_A: ターン終了
+🔍 [GameEngine] startTurn: player=Player_B, id=p2, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 4 - Player_B ═══
+📖 Player_B: 焔の皇女 をドロー
+💰 [GameEngine] Player_B: SP+3 (Base:3, Current SP: 4, isFirstTurn:false, turn:4)
+🃏 Player_B: 氷花の剣士 を前列レーン1に配置 (SP: 0)
+👁️ 紅花の若武者 が潜伏を解除！
+⚔️ 紅花の若武者(ATK4) → 紅の乙女 に 4 ダメージ (HP: -2)
+🔄 紅の乙女(ATK2) 反撃 → 紅花の若武者 に 2 ダメージ (HP: 0)
+💀 紅の乙女 が場から除去された
+💀 紅花の若武者 が場から除去された
+⏭️ Player_B: ターン終了
+🔍 [GameEngine] startTurn: player=Player_A, id=p1, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 5 - Player_A ═══
+📖 Player_A: 紫晶の剣豪 をドロー
+💰 [GameEngine] Player_A: SP+3 (Base:3, Current SP: 4, isFirstTurn:false, turn:5)
+🃏 Player_A: 教会の守護騎士 を前列レーン2に配置 (SP: 0)
+⚔️ 銀翼の騎士(ATK2) → 氷花の剣士 に 2 ダメージ (HP: 3)
+🔄 氷花の剣士(ATK3) 反撃 → 銀翼の騎士 に 3 ダメージ (HP: 0)
+💀 銀翼の騎士 が場から除去された
+🛡️ 聖鎖の騎士 がシールド「禁忌の注入」を攻撃！(耐久: 1 → 0)
+💥 シールド「禁忌の注入」破壊！スキル「なし」発動！
+⏭️ Player_A: ターン終了
+🔍 [GameEngine] startTurn: player=Player_B, id=p2, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 5 - Player_B ═══
+📖 Player_B: 轟雷の魔導士 をドロー
+💰 [GameEngine] Player_B: SP+3 (Base:3, Current SP: 3, isFirstTurn:false, turn:5)
+🃏 Player_B: 焔の皇女 を前列レーン2に配置 (SP: 0)
+⚠️ 焔の皇女 は神族レベル条件（awaken:red:7）を満たしていないため、効果は発動しませんでした
+☠️ 氷花の剣士 の「必殺」が発動！ 教会の守護騎士 は即死した！
+⚔️ 氷花の剣士(ATK3) → 教会の守護騎士 に 3 ダメージ (HP: 0)
+🔄 教会の守護騎士(ATK3) 反撃 → 氷花の剣士 に 3 ダメージ (HP: 0)
+⚠️ p2 のアクション回数が上限に達したため、強制終了します。
+💀 教会の守護騎士 が場から除去された
+💀 氷花の剣士 が場から除去された
+⏭️ Player_B: ターン終了
+🔍 [GameEngine] startTurn: player=Player_A, id=p1, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 6 - Player_A ═══
+📖 Player_A: 聖域展開 をドロー
+💰 [GameEngine] Player_A: SP+3 (Base:3, Current SP: 3, isFirstTurn:false, turn:6)
+⬆️ Player_A: whiteの神族レベル+1 (Lv.5, SP: 2)
+⬆️ Player_A: whiteの神族レベル+1 (Lv.6, SP: 1)
+🛡️ 聖鎖の騎士 がシールド「血の福音」を攻撃！(耐久: 1 → 0)
+💥 シールド「血の福音」破壊！スキル「なし」発動！
+⏭️ Player_A: ターン終了
+🔍 [GameEngine] startTurn: player=Player_B, id=p2, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 6 - Player_B ═══
+📖 Player_B: 桜舞の剣士 をドロー
+💰 [GameEngine] Player_B: SP+3 (Base:3, Current SP: 3, isFirstTurn:false, turn:6)
+🃏 Player_B: 轟雷の魔導士 を前列レーン1に配置 (SP: 0)
+🔥 轟雷の魔導士 のアビリティ発動！聖鎖の騎士 に 3 ダメージ (HP: -1)
+💀 聖鎖の騎士 が場から除去された
+🛡️ 焔の皇女 がシールド「血の福音」を攻撃！(耐久: 1 → 0)
+💥 シールド「血の福音」破壊！スキル「なし」発動！
+⏭️ Player_B: ターン終了
+🔍 [GameEngine] startTurn: player=Player_A, id=p1, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 7 - Player_A ═══
+📖 Player_A: 聖都の司教 をドロー
+💰 [GameEngine] Player_A: SP+3 (Base:3, Current SP: 4, isFirstTurn:false, turn:7)
+🤖 Player_A: 手札上限超過。自動で破棄します。
+🗑️ Player_A: 聖域展開 を捨てた
+⏭️ Player_A: ターン終了
+🔍 [GameEngine] startTurn: player=Player_B, id=p2, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 7 - Player_B ═══
+📖 Player_B: お転婆な看板娘 をドロー
+💰 [GameEngine] Player_B: SP+3 (Base:3, Current SP: 3, isFirstTurn:false, turn:7)
+🃏 Player_B: お転婆な看板娘 を前列レーン3に配置 (SP: 1)
+⚠️ お転婆な看板娘 の「link」条件を満たしていないため発動しません
+🛡️ 轟雷の魔導士 がシールド「誓いの残り火」を攻撃！(耐久: 1 → 0)
+💥 シールド「誓いの残り火」破壊！スキル「誓いの残り火のスキル」発動！
+❌ AIエラー (p2): アクション不可. アクション: {"type":"attack","attackerRow":"front","attackerLane":1,"targetInfo":{"type":"shield","id":"S011","name":"地脈より溢れし獄禍"}}
+⚠️ p2 のアクション回数が上限に達したため、強制終了します。
+⏭️ Player_B: ターン終了
+🔍 [GameEngine] startTurn: player=Player_A, id=p1, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 8 - Player_A ═══
+📖 Player_A: 聖都の見習い剣士 をドロー
+💰 [GameEngine] Player_A: SP+3 (Base:3, Current SP: 7, isFirstTurn:false, turn:8)
+🃏 Player_A: 裁きの聖女 を前列レーン2に配置 (SP: 2)
+🃏 Player_A: 聖都の見習い剣士 を前列レーン1に配置 (SP: 1)
+⏭️ Player_A: ターン終了
+🔍 [GameEngine] startTurn: player=Player_B, id=p2, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 8 - Player_B ═══
+📖 Player_B: 業火の術師 をドロー
+💰 [GameEngine] Player_B: SP+3 (Base:3, Current SP: 4, isFirstTurn:false, turn:8)
+🃏 Player_B: 月夜の狩人 を後列レーン2に配置 (SP: 0)
+⚔️ 轟雷の魔導士(ATK1) → 聖都の見習い剣士 に 1 ダメージ (HP: 1)
+🔄 聖都の見習い剣士(ATK1) 反撃 → 轟雷の魔導士 に 1 ダメージ (HP: 1)
+⚔️ 焔の皇女(ATK3) → 裁きの聖女 に 3 ダメージ (HP: 1)
+🔄 裁きの聖女(ATK6) 反撃 → 焔の皇女 に 6 ダメージ (HP: -3)
+💀 焔の皇女 が場から除去された
+🛡️ お転婆な看板娘 がシールド「地脈より溢れし獄禍」を攻撃！(耐久: 3 → 2)
+⏭️ Player_B: ターン終了
+🔍 [GameEngine] startTurn: player=Player_A, id=p1, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 9 - Player_A ═══
+📖 Player_A: 聖都の祈祷師 をドロー
+💰 [GameEngine] Player_A: SP+3 (Base:3, Current SP: 4, isFirstTurn:false, turn:9)
+⚔️ 聖都の見習い剣士(ATK1) → 轟雷の魔導士 に 1 ダメージ (HP: 0)
+🔄 轟雷の魔導士(ATK1) 反撃 → 聖都の見習い剣士 に 1 ダメージ (HP: 0)
+💀 聖都の見習い剣士 が場から除去された
+💀 轟雷の魔導士 が場から除去された
+⚠️ p1 のアクション回数が上限に達したため、強制終了します。
+⏭️ Player_A: ターン終了
+🔍 [GameEngine] startTurn: player=Player_B, id=p2, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 9 - Player_B ═══
+📖 Player_B: 紅蓮の速槍ツバキ をドロー
+💰 [GameEngine] Player_B: SP+3 (Base:3, Current SP: 3, isFirstTurn:false, turn:9)
+🃏 Player_B: 業火の術師 を前列レーン2に配置 (SP: 1)
+⚠️ 業火の術師 は神族レベル条件（awaken:red:7）を満たしていないため、効果は発動しませんでした
+🛡️ お転婆な看板娘 がシールド「地脈より溢れし獄禍」を攻撃！(耐久: 2 → 1)
+🔥 月夜の狩人 のアビリティ発動！裁きの聖女 に 2 ダメージ (HP: -1)
+💀 裁きの聖女 が場から除去された
+⏭️ Player_B: ターン終了
+🔍 [GameEngine] startTurn: player=Player_A, id=p1, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 10 - Player_A ═══
+📖 Player_A: 獅子心王の騎士 をドロー
+💰 [GameEngine] Player_A: SP+3 (Base:3, Current SP: 7, isFirstTurn:false, turn:10)
+🃏 Player_A: 紫晶の剣豪 を前列レーン2に配置 (SP: 1)
+⏭️ Player_A: ターン終了
+🔍 [GameEngine] startTurn: player=Player_B, id=p2, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 10 - Player_B ═══
+📖 Player_B: 貫星の射手 をドロー
+💰 [GameEngine] Player_B: SP+3 (Base:3, Current SP: 4, isFirstTurn:false, turn:10)
+🃏 Player_B: 紅蓮の速槍ツバキ を前列レーン1に配置 (SP: 0)
+🛡️ 紅蓮の速槍ツバキ がシールド「地脈より溢れし獄禍」を攻撃！(耐久: 1 → -1 [攻城])
+💥 シールド「地脈より溢れし獄禍」破壊！スキル「なし」発動！
+❌ AIエラー (p2): アクション不可. アクション: {"type":"attack","attackerRow":"front","attackerLane":1,"targetInfo":{"type":"unit","row":"front","lane":1,"unit":{"instanceId":"WH019_1777918049779_arnxp","cardId":"WH019","artId":"WH019","name":"紫晶の剣豪","type":"unit","color":"white","cost":6,"baseAttack":5,"baseHp":5,"currentAttack":5,"currentHp":0,"maxHp":5,"keywords":[],"abilityTrigger":"on_attack","abilityEffect":"buff_stats","abilityValue":2,"abilities":[{"id":"WH019_ability","trigger":"on_attack","effect":"buff_stats","value":2,"target":"this_unit","text":"【攻撃時】このユニットのATKとHP+2。","description":"紫水の鎧を纏い、剣の極致を追求する。","condition":""}],"rarity":2,"flavorText":"紫水の鎧を纏い、剣の極致を追求する。","text":"【攻撃時】このユニットのATKとHP+2。","ownerId":"p1","canAttack":false,"hasActed":false,"barrierActive":false,"endureActive":false,"stealthActive":false,"summonedThisTurn":true,"modifiers":[]}}}
+⚠️ p2 のアクション回数が上限に達したため、強制終了します。
+⏭️ Player_B: ターン終了
+🔍 [GameEngine] startTurn: player=Player_A, id=p1, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 11 - Player_A ═══
+📖 Player_A: 聖王ソロモン をドロー
+💰 [GameEngine] Player_A: SP+3 (Base:3, Current SP: 4, isFirstTurn:false, turn:11)
+🃏 Player_A: 獅子心王の騎士 を前列レーン1に配置 (SP: 1)
+⚠️ p1 のアクション回数が上限に達したため、強制終了します。
+⏭️ Player_A: ターン終了
+🔍 [GameEngine] startTurn: player=Player_B, id=p2, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 11 - Player_B ═══
+📖 Player_B: 戦旗の防人 をドロー
+💰 [GameEngine] Player_B: SP+3 (Base:3, Current SP: 3, isFirstTurn:false, turn:11)
+🃏 Player_B: 戦旗の防人 を後列レーン1に配置 (SP: 0)
+📖 戦旗の防人 のアビリティ発動！1 枚ドロー
+⚔️ 紅蓮の速槍ツバキ(ATK4) → 獅子心王の騎士 に 4 ダメージ (HP: -2)
+🔄 獅子心王の騎士(ATK3) 反撃 → 紅蓮の速槍ツバキ に 3 ダメージ (HP: -2)
+💀 獅子心王の騎士 が場から除去された
+💀 紅蓮の速槍ツバキ が場から除去された
+⚔️ 業火の術師(ATK2) → 紫晶の剣豪 に 2 ダメージ (HP: 3)
+🔄 紫晶の剣豪(ATK5) 反撃 → 業火の術師 に 5 ダメージ (HP: -3)
+💀 業火の術師 が場から除去された
+🛡️ お転婆な看板娘 がシールド「魔導壁の瓦解」を攻撃！(耐久: 3 → 2)
+🔥 月夜の狩人 のアビリティ発動！紫晶の剣豪 に 2 ダメージ (HP: 1)
+⚔️ 月夜の狩人(ATK3) → 紫晶の剣豪 に 3 ダメージ (HP: -2)
+🔄 紫晶の剣豪(ATK5) 反撃 → 月夜の狩人 に 5 ダメージ (HP: 0)
+💀 紫晶の剣豪 が場から除去された
+💀 月夜の狩人 が場から除去された
+⏭️ Player_B: ターン終了
+🔍 [GameEngine] startTurn: player=Player_A, id=p1, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 12 - Player_A ═══
+📖 Player_A: 信仰の盾 をドロー
+💰 [GameEngine] Player_A: SP+3 (Base:3, Current SP: 4, isFirstTurn:false, turn:12)
+🤖 Player_A: 手札上限超過。自動で破棄します。
+🗑️ Player_A: 聖剣の継承者 を捨てた
+⏭️ Player_A: ターン終了
+🔍 [GameEngine] startTurn: player=Player_B, id=p2, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 12 - Player_B ═══
+📖 Player_B: 晶刃の戦乙女 をドロー
+💰 [GameEngine] Player_B: SP+3 (Base:3, Current SP: 3, isFirstTurn:false, turn:12)
+🃏 Player_B: 荒野の斥候 を前列レーン2に配置 (SP: 2)
+⬆️ Player_B: redの神族レベル+1 (Lv.6, SP: 1)
+🛡️ お転婆な看板娘 がシールド「魔導壁の瓦解」を攻撃！(耐久: 2 → 1)
+🛡️ 戦旗の防人 がシールド「魔導壁の瓦解」を攻撃！(耐久: 1 → 0)
+💥 シールド「魔導壁の瓦解」破壊！スキル「魔導壁の瓦解のスキル」発動！
+⏭️ Player_B: ターン終了
+🔍 [GameEngine] startTurn: player=Player_A, id=p1, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 13 - Player_A ═══
+📖 Player_A: 聖法王の代行者 をドロー
+💰 [GameEngine] Player_A: SP+3 (Base:3, Current SP: 7, isFirstTurn:false, turn:13)
+🃏 Player_A: 眩耀の貴族 を前列レーン2に配置 (SP: 2)
+⬆️ 眩耀の貴族 のアビリティ発動！眩耀の貴族 HP+1 (HP: 5)
+⏭️ Player_A: ターン終了
+🔍 [GameEngine] startTurn: player=Player_B, id=p2, isFirstTurn=false, gs.isFirstTurn={"p1":false,"p2":false}
+
+═══ ターン 13 - Player_B ═══
+📖 Player_B: 残火の楽士 をドロー
+💰 [GameEngine] Player_B: SP+3 (Base:3, Current SP: 4, isFirstTurn:false, turn:13)
+🃏 Player_B: 残火の楽士 を前列レーン1に配置 (SP: 2)
+⚠️ 残火の楽士 の「link」条件を満たしていないため発動しません
+🛡️ 眩耀の貴族 の加護がダメージを無効化！（加護消滅）
+⚔️ 荒野の斥候(ATK1) → 眩耀の貴族 に 0 ダメージ (HP: 5)
+🔄 眩耀の貴族(ATK5) 反撃 → 荒野の斥候 に 5 ダメージ (HP: -4)
+🔥 荒野の斥候 のアビリティ発動！眩耀の貴族 に 1 ダメージ (HP: 4)
+🔥 荒野の斥候 のアビリティ発動！眩耀の貴族 に 1 ダメージ (HP: 3)
+💀 荒野の斥候 が場から除去された
+⚡ お転婆な看板娘 のダイレクトアタック！Player_A に直接攻撃！
+🏆 Player_B の勝利！

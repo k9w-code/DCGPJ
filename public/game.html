@@ -7,62 +7,197 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+  <!-- 画面回転プロンプト -->
   <div class="rotate-prompt" id="rotate-prompt">
     <div style="font-size: 64px; margin-bottom: 20px;">📱🔄</div>
     <div style="font-size: 24px; margin-bottom: 10px;">スマホを横向きにしてください</div>
     <div style="font-size: 16px; color: #a09880;">Please rotate your device to landscape</div>
   </div>
+
+  <!-- 全画面オーバーレイ要素（拡大縮小の影響を受けないようにbody直下に配置） -->
+  <div class="overlay mulligan-overlay" id="mulligan-overlay" style="display: none;">
+    <div class="mulligan-panel glass-panel">
+      <h2>MULLIGAN</h2>
+      <p>初手の手札を引き直しますか？</p>
+      <div class="mulligan-cards" id="mulligan-cards"></div>
+      <div class="mulligan-actions">
+        <button class="btn btn-primary" id="btn-mulligan-keep">キープ</button>
+        <button class="btn" id="btn-mulligan-redraw">引き直し</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay discard-overlay" id="discard-overlay" style="display: none;">
+    <div class="discard-panel glass-panel">
+      <h2 style="color: #f43f5e;">DISCARD</h2>
+      <p id="discard-message" style="margin-bottom: 20px; font-weight: bold;">手札が上限を超えています。捨てるカードを選択してください。</p>
+      <div class="discard-cards" id="discard-cards"></div>
+      <div class="discard-actions" style="margin-top: 30px;">
+        <button class="btn btn-danger" id="btn-discard-confirm" disabled style="min-width: 200px; font-weight: 900;">選択したカードを捨てる</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="shield-confirm-overlay" style="display: none; z-index: 10000;">
+    <div class="glass-panel" style="padding: 40px; text-align: center; max-width: 500px; border-color: var(--gold);">
+      <h2 style="margin-bottom: 20px; color: var(--gold); font-size: 28px;">Shield Break?</h2>
+      <p style="margin-bottom: 30px; color: #e2e8f0; font-size: 18px;">このユニットで相手のシールドを攻撃しますか？</p>
+      <div style="display: flex; gap: 20px; justify-content: center;">
+        <button class="btn btn-primary" id="btn-shield-confirm" style="padding: 12px 30px; font-size: 18px;">攻撃実行</button>
+        <button class="btn" id="btn-shield-cancel" style="padding: 12px 30px; font-size: 18px;">やめる</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="shield-break-overlay" style="display: none; z-index: 20000; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px);">
+    <div class="shield-break-modal" id="shield-break-modal">
+      <div class="sb-burst-ring"></div>
+      <div class="sb-burst-ring sb-burst-ring-2"></div>
+      <h1 class="sb-title">SHIELD BREAK!</h1>
+      <div class="sb-content">
+        <div class="sb-card-wrapper" id="sb-card-wrapper">
+          <div class="sb-card-inner">
+            <div class="sb-card-back"></div>
+            <div class="sb-card-front" id="sb-card-image"></div>
+          </div>
+        </div>
+        <div class="sb-info">
+          <h2 class="sb-card-name" id="sb-card-name">Card Name</h2>
+          <div class="sb-trigger-row">
+            <span class="sb-trigger-badge">TRIGGER</span>
+            <span class="sb-trigger-effect" id="sb-trigger-effect">効果テキスト</span>
+          </div>
+        </div>
+      </div>
+      <div class="sb-hint">クリックして続ける</div>
+    </div>
+  </div>
+
+  <div class="overlay card-detail-overlay" id="card-detail-overlay" style="display: none;">
+    <div class="card-detail-modal">
+      <div class="cd-close-btn" id="btn-close-detail"></div>
+      <div class="cd-image-area" id="cd-image"></div>
+      <div class="cd-info-area">
+        <div class="cd-header">
+          <div class="cd-cost" id="cd-cost">0</div>
+          <h2 class="cd-name" id="cd-name">Card Name</h2>
+        </div>
+        <div class="cd-type-tags">
+          <span class="cd-type-tag" id="cd-type">Unit</span>
+          <div class="cd-tribe-tag">
+            <div class="cd-tribe-icon" id="cd-tribe-icon"></div>
+            <span class="cd-tribe-text" id="cd-tribe-text">Neutral</span>
+          </div>
+          <div class="cd-rarity" id="cd-rarity">Common</div>
+        </div>
+        <div class="cd-stats" id="cd-stats-container">
+          <div class="cd-stat"><span class="cd-stat-icon">⚔️</span><span id="cd-attack">0</span></div>
+          <div class="cd-stat"><span class="cd-stat-icon">❤️</span><span id="cd-hp">0</span></div>
+        </div>
+        <div class="cd-text-box">
+          <div class="cd-effect-text" id="cd-text"></div>
+          <div class="cd-flavor-text" id="cd-flavor"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay settings-overlay" id="settings-overlay" style="display: none;">
+    <div class="settings-panel glass-panel">
+      <h2>SETTINGS</h2>
+      <div class="settings-section">
+        <label>音量設定</label>
+        <div class="setting-item"><span>BGM</span><input type="range" id="slider-bgm" min="0" max="1" step="0.05" value="0.3"></div>
+        <div class="setting-item"><span>SE</span><input type="range" id="slider-se" min="0" max="1" step="0.05" value="0.3"></div>
+      </div>
+      <div class="settings-section">
+        <label>BGM選択</label>
+        <div class="setting-item">
+          <select id="select-bgm" class="btn" style="width: 100%; appearance: auto; background: rgba(0,0,0,0.5); color: white; padding: 8px; border: 1px solid rgba(255,255,255,0.2);">
+            <option value="battle1" selected>Battle BGM 1 (Standard)</option>
+            <option value="battle2">Battle BGM 2</option>
+            <option value="battle3">Battle BGM 3</option>
+            <option value="battle4">Battle BGM 4</option>
+            <option value="battle5">Battle BGM 5</option>
+            <option value="battle6">Battle BGM 6</option>
+            <option value="battle7">Battle BGM 7</option>
+          </select>
+        </div>
+      </div>
+      <div class="settings-list">
+        <button class="btn" id="btn-show-help" style="width: 100%; border-color: var(--accent); color: var(--accent);">ヘルプ・ルール (HELP)</button>
+        <button class="btn btn-danger" id="btn-surrender" style="width: 100%; font-weight: bold;">投了 (SURRENDER)</button>
+        <button class="btn" onclick="document.getElementById('settings-overlay').style.display='none'" style="width: 100%;">戻る</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay result-overlay" id="result-overlay" style="display: none;">
+    <div class="result-modal">
+      <div class="result-header" id="result-header"></div>
+      <div class="result-stats" id="result-stats"></div>
+      <div class="result-actions">
+        <button class="btn btn-primary btn-large" id="btn-result-back">ロビーに戻る (BACK TO LOBBY)</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="help-overlay" style="display: none; z-index: 50000 !important; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);">
+    <div class="help-modal">
+      <div class="help-header">
+        <h2>ONLINE MANUAL</h2>
+        <button class="btn-close" id="btn-close-help">×</button>
+      </div>
+      <div class="help-content" id="help-content"></div>
+    </div>
+  </div>
+
+  
+  </div>
+
+  <!-- ゲーム本体（スケーリングの対象） -->
   <div class="game-wrapper" id="game-wrapper">
     <div class="game-container" id="game-container">
-      <!-- デバッグ信号灯 -->
-      <div id="debug-signal" style="position:fixed;top:5px;left:5px;background:rgba(255,0,0,0.8);color:white;padding:4px 10px;font-size:12px;z-index:10000;border-radius:4px;font-family:monospace;pointer-events:none;box-shadow:0 0 10px rgba(0,0,0,0.5);">STATUS: WAITING...</div>
+      <div id="debug-signal" style="position:fixed;top:5px;left:5px;background:rgba(255,0,0,0.8);color:white;padding:4px 10px;font-size:12px;z-index:10000;border-radius:4px;font-family:monospace;pointer-events:none;">STATUS: WAITING...</div>
       
-      <!-- 画面左側：アバターとステータス -->
       <div class="side-area left-side">
-        <!-- 相手アバター領域 (左上) -->
         <div class="avatar-block opponent-block">
           <div class="avatar-frame">
             <div class="avatar-image" id="opp-avatar"></div>
-            <div class="avatar-life">
-              <div class="life-value" id="opp-life">7</div>
-            </div>
+            <div class="avatar-life"><div class="life-value" id="opp-life">7</div></div>
           </div>
           <div class="avatar-info">
             <div class="player-name" id="opp-name">Opponent</div>
             <div class="status-row">
-              <span class="status-badge" title="SP">SP: <span id="opp-sp">0</span></span>
-              <span class="status-badge" title="デッキ枚数">Deck: <span id="opp-deck">40</span></span>
-              <span class="status-badge" title="手札枚数">Hand: <span id="opp-hand">5</span></span>
+              <span class="status-badge">DECK <span id="opp-deck">40</span></span>
+              <span class="status-badge">HAND <span id="opp-hand">5</span></span>
             </div>
             <div class="tribe-hud opp-crystals" id="opp-tribes"></div>
+            <div class="sp-orbs-container" id="opp-sp-orbs"></div>
             <div class="shields-display opp-shields" id="opp-shields"></div>
           </div>
         </div>
 
         <div class="side-spacer"></div>
 
-        <!-- 自分アバター領域 (左下) -->
         <div class="avatar-block player-block">
           <div class="avatar-info">
             <div class="player-name" id="my-name">You</div>
             <div class="status-row">
-              <span class="status-badge" title="SP">SP: <span id="my-sp">0</span></span>
-              <span class="status-badge" title="デッキ枚数">Deck: <span id="my-deck">40</span></span>
-              <span class="status-badge" title="手札枚数" id="my-hand-container">Hand: <span id="my-hand-count">5</span></span>
+              <span class="status-badge">DECK <span id="my-deck">40</span></span>
+              <span class="status-badge">HAND <span id="my-hand-count">5</span></span>
             </div>
             <div class="tribe-hud my-crystals" id="my-tribes"></div>
+            <div class="sp-orbs-container" id="my-sp-orbs"></div>
             <div class="shields-display my-shields" id="my-shields"></div>
           </div>
           <div class="avatar-frame">
             <div class="avatar-image" id="my-avatar"></div>
-            <div class="avatar-life">
-              <div class="life-value" id="my-life">7</div>
-            </div>
+            <div class="avatar-life"><div class="life-value" id="my-life">7</div></div>
           </div>
         </div>
       </div>
 
-      <!-- 画面中央：3D盤面と手札 -->
       <div class="center-area">
         <div class="battlefield-container">
           <div class="battlefield-3d" id="battlefield-3d">
@@ -76,17 +211,15 @@
         </div>
       </div>
 
-      <!-- 画面右側：ログとターン制御 -->
       <div class="side-area right-side">
         <div class="turn-indicator" id="turn-indicator">TURN 1</div>
-        <div class="settings-btn" id="settings-btn" title="設定">⚙️</div>
+        <div class="settings-btn" id="settings-btn">⚙️</div>
         <div class="log-panel glass-panel">
           <div class="log-content" id="log-content"></div>
         </div>
         <div class="action-panel glass-panel">
           <div class="panel-subtitle">DIVINE CRYSTAL (COST: 1 SP)</div>
           <div class="crystal-buttons" id="tribe-raise-panel">
-            <!-- ポップアップ・確認場所 -->
             <div id="crystal-confirm-popup" class="crystal-confirm-popup" style="display: none;">
               <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px;">
                 <div id="confirm-tribe-icon" style="width: 32px; height: 32px; background-size: contain; background-repeat: no-repeat;"></div>
@@ -115,179 +248,33 @@
         </div>
       </div>
 
-      <!-- オーバーレイ要素 -->
-      <div class="overlay mulligan-overlay" id="mulligan-overlay" style="display: none;">
-        <div class="mulligan-panel glass-panel">
-          <h2>MULLIGAN</h2>
-          <p>初手の手札を引き直しますか？</p>
-          <div class="mulligan-cards" id="mulligan-cards"></div>
-          <div class="mulligan-actions">
-            <button class="btn btn-primary" id="btn-mulligan-keep">キープ</button>
-            <button class="btn" id="btn-mulligan-redraw">引き直し</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 手札上限破棄オーバーレイ -->
-      <div class="overlay discard-overlay" id="discard-overlay" style="display: none;">
-        <div class="discard-panel glass-panel">
-          <h2 style="color: #f43f5e;">DISCARD CARDS</h2>
-          <p id="discard-message" style="margin-bottom: 20px; font-weight: bold;">手札が上限を超えています。捨てるカードを選択してください。</p>
-          <div class="discard-cards" id="discard-cards"></div>
-          <div class="discard-actions" style="margin-top: 30px;">
-            <button class="btn btn-danger" id="btn-discard-confirm" disabled style="min-width: 200px; font-weight: 900;">選択したカードを捨てる</button>
-          </div>
-        </div>
-      </div>
-
-
-
-      <div class="overlay" id="shield-confirm-overlay" style="display: none; z-index: 10000;">
-        <div class="glass-panel" style="padding: 40px; text-align: center; max-width: 500px; border-color: var(--gold);">
-          <h2 style="margin-bottom: 20px; color: var(--gold); font-size: 28px;">Shield Break?</h2>
-          <p style="margin-bottom: 30px; color: #e2e8f0; font-size: 18px;">このユニットで相手のシールドを攻撃しますか？</p>
-          <div style="display: flex; gap: 20px; justify-content: center;">
-            <button class="btn btn-primary" id="btn-shield-confirm" style="padding: 12px 30px; font-size: 18px;">攻撃実行</button>
-            <button class="btn" id="btn-shield-cancel" style="padding: 12px 30px; font-size: 18px;">やめる</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- シールドブレイク演出オーバーレイ -->
-      <div class="overlay" id="shield-break-overlay" style="display: none; z-index: 20000; background: rgba(0,0,0,0.85);">
-        <div class="shield-break-modal" id="shield-break-modal">
-          <div class="sb-burst-effect"></div>
-          <h1 class="sb-title">SHIELD BREAK!</h1>
-          <div class="sb-content">
-            <div class="sb-card" id="sb-card-image"></div>
-            <div class="sb-info">
-              <h2 id="sb-card-name">Card Name</h2>
-              <div class="sb-skill-name">【トリガー】 <span id="sb-skill-name-text">Skill Name</span></div>
-              <div class="sb-skill-desc" id="sb-skill-desc">Skill Description</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="overlay card-detail-overlay" id="card-detail-overlay" style="display: none;">
-        <div class="card-detail-modal">
-          <div class="cd-close-btn" id="btn-close-detail"></div>
-          <div class="cd-image-area" id="cd-image"></div>
-          <div class="cd-info-area">
-            <div class="cd-header">
-              <div class="cd-cost" id="cd-cost">0</div>
-              <h2 class="cd-name" id="cd-name">Card Name</h2>
-            </div>
-            <div class="cd-type-tags">
-              <span class="cd-type-tag" id="cd-type">Unit</span>
-              <div class="cd-tribe-tag">
-                <div class="cd-tribe-icon" id="cd-tribe-icon"></div>
-                <span class="cd-tribe-text" id="cd-tribe-text">Neutral</span>
-              </div>
-              <div class="cd-rarity" id="cd-rarity">Common</div>
-            </div>
-            <div class="cd-stats" id="cd-stats-container">
-              <div class="cd-stat"><span class="cd-stat-icon">⚔️</span><span id="cd-attack">0</span></div>
-              <div class="cd-stat"><span class="cd-stat-icon">❤️</span><span id="cd-hp">0</span></div>
-            </div>
-            <div class="cd-text-box">
-              <div class="cd-effect-text" id="cd-text"></div>
-              <div class="cd-flavor-text" id="cd-flavor"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="overlay settings-overlay" id="settings-overlay" style="display: none;">
-        <div class="settings-panel glass-panel">
-          <h2>SETTINGS</h2>
-          <div class="settings-section">
-            <label>音量設定</label>
-            <div class="setting-item"><span>BGM</span><input type="range" id="slider-bgm" min="0" max="1" step="0.05" value="0.3"></div>
-            <div class="setting-item"><span>SE</span><input type="range" id="slider-se" min="0" max="1" step="0.05" value="0.3"></div>
-          </div>
-          <div class="settings-section">
-            <label>BGM選択</label>
-            <div class="setting-item">
-              <select id="select-bgm" class="btn" style="width: 100%; appearance: auto; background: rgba(0,0,0,0.5); color: white; padding: 8px; border: 1px solid rgba(255,255,255,0.2);">
-                <option value="battle1" selected>Battle BGM 1 (Standard)</option>
-                <option value="battle2">Battle BGM 2</option>
-                <option value="battle3">Battle BGM 3</option>
-                <option value="battle4">Battle BGM 4</option>
-                <option value="battle5">Battle BGM 5</option>
-                <option value="battle6">Battle BGM 6</option>
-                <option value="battle7">Battle BGM 7</option>
-              </select>
-            </div>
-          </div>
-          <div class="settings-list">
-            <button class="btn" id="btn-show-help" style="width: 100%; border-color: var(--accent); color: var(--accent);">ヘルプ・ルール (HELP)</button>
-            <button class="btn btn-danger" id="btn-surrender" style="width: 100%; font-weight: bold;">投了 (SURRENDER)</button>
-            <button class="btn" onclick="document.getElementById('settings-overlay').style.display='none'" style="width: 100%;">戻る</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 演出レイヤー・オーバーレイ領域 -->
-
-      <!-- 攻撃矢印 (game-container内に移動してスケーリングを統一、viewBoxで座標系を固定) -->
+      <!-- 攻撃矢印 -->
       <svg id="attack-arrow-svg" viewBox="0 0 1920 1080" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:9000; display:none;">
         <defs>
-          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-          <marker id="arrowhead" markerWidth="10" markerHeight="7" 
-                  refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" fill="#f43f5e" />
-          </marker>
+          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
+          <linearGradient id="arrow-gradient" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(244, 63, 94, 0.2)" /><stop offset="100%" stop-color="rgba(244, 63, 94, 1)" /></linearGradient>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#f43f5e" /></marker>
         </defs>
-        <line id="attack-arrow-line" x1="0" y1="0" x2="0" y2="0" stroke="#f43f5e" stroke-width="10" stroke-dasharray="25,15" marker-end="url(#arrowhead)" filter="url(#glow)" />
+        <path id="attack-arrow-line" d="" stroke="url(#arrow-gradient)" stroke-width="12" stroke-dasharray="30,20" marker-end="url(#arrowhead)" filter="url(#glow)" fill="none" />
       </svg>
 
-
-      <!-- ターゲット選択中オーバーレイ -->
       <div id="targeting-instruction" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; justify-content: center; align-items: center; z-index: 10000;">
-        <div class="targeting-message" style="background: rgba(0,0,0,0.8); color: #fbbf24; font-size: 42px; font-weight: 900; padding: 20px 60px; border: 4px solid #fbbf24; border-radius: 60px; box-shadow: 0 0 30px rgba(251,191,36,0.5); letter-spacing: 2px; text-shadow: 0 0 10px rgba(0,0,0,0.8);">SELECT TARGET FOR ABILITY</div>
+        <div class="targeting-message" style="background: rgba(0,0,0,0.8); color: #fbbf24; font-size: 42px; font-weight: 900; padding: 20px 60px; border: 4px solid #fbbf24; border-radius: 60px;">SELECT TARGET FOR ABILITY</div>
       </div>
 
-      <div class="overlay result-overlay" id="result-overlay" style="display: none;">
-        <div class="result-modal">
-          <div class="result-header" id="result-header"></div>
-          <div class="result-stats" id="result-stats">
-            <!-- ターン数やダメージなどのスタッツを表示可能 -->
-          </div>
-          <div class="result-actions">
-            <button class="btn btn-primary btn-large" id="btn-result-back">ロビーに戻る (BACK TO LOBBY)</button>
-          </div>
-        </div>
+      <!-- VFXレイヤー -->
+      <div id="turn-splash" class="turn-splash" style="display:none;">
+        <div class="splash-content" id="splash-content">YOUR TURN</div>
+        <div class="splash-sub"></div>
       </div>
-
-      <!-- ヘルプ・マニュアル用オーバーレイ -->
-      <div class="overlay" id="help-overlay" style="display: none; z-index: 50000 !important; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);">
-        <div class="help-modal">
-          <div class="help-header">
-            <h2>ONLINE MANUAL</h2>
-            <button class="btn-close" id="btn-close-help">×</button>
-          </div>
-          <div class="help-content" id="help-content">
-            <!-- JavaScript経由でコンテンツが注入されます -->
-          </div>
-        </div>
-      </div>
-    </div>
-    </div>
-    <!-- ターン開始演出用 -->
-    <div id="turn-splash" class="turn-splash">
-      <div class="splash-content" id="splash-content">YOUR TURN</div>
-    </div>
+      <div id="vfx-layer" style="position:absolute; inset:0; pointer-events:none; z-index:15000; overflow:hidden;"></div>
   </div>
 
-
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/audio-manager.js?v=targeting_fix_v4"></script>
-  <script src="/js/game-renderer.js?v=targeting_fix_v4"></script>
-  <script src="/js/game-client.js?v=targeting_fix_v4"></script>
+  <script src="/js/audio-manager.js?v=vfx_v6"></script>
+  <script src="/js/vfx-engine.js?v=vfx_v6"></script>
+  <script src="/js/game-renderer.js?v=vfx_v6"></script>
+  <script src="/js/game-client.js?v=vfx_v6"></script>
   
   <script>
     function resizeGame() {

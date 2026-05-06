@@ -5,75 +5,35 @@ const path = require('path');
 const GameEngine = require('../game/GameEngine');
 const AIPlayer = require('../game/AIPlayer');
 
-// データ読み込み用ヘルパー
-function parseTsv(filepath) {
-  const content = fs.readFileSync(filepath, 'utf8');
-  const lines = content.trim().split('\n');
-  const headers = lines[0].split('\t');
-  return lines.slice(1).map(line => {
-    const values = line.split('\t');
-    const obj = {};
-    headers.forEach((h, i) => obj[h] = values[i]);
-    return obj;
-  });
+// データ読み込み用
+const { loadAllData } = require('../game/DataLoader');
+
+// データのロード（本来はasyncだが、シミュレーター用に同期的に処理するか、あるいは初期化を待つ）
+// ここでは、プロジェクトの標準に従い一括ロードを行う
+let gameData = null;
+
+async function initialize() {
+  const allData = await loadAllData();
+  gameData = allData;
+  return allData;
 }
 
-function parseCsv(filepath) {
-  const content = fs.readFileSync(filepath, 'utf8');
-  const lines = content.trim().split('\n');
-  const headers = lines[0].split(',');
-  return lines.slice(1).map(line => {
-    const values = line.split(',');
-    const obj = {};
-    headers.forEach((h, i) => obj[h] = values[i]);
-    if (obj.effect_value) obj.effectValue = parseInt(obj.effect_value);
-    if (obj.effect_type) obj.effectType = obj.effect_type;
-    return obj;
-  });
+// 同期的に利用するためのラッパー（シミュレーター起動時に一度だけ呼ぶ）
+function getGameDataSync() {
+  // loadLocalCSV を直接使う簡易版
+  const { loadAllData } = require('../game/DataLoader');
+  // 実際には top-level await が使えない環境を考慮し、
+  // ここでは暫定的に require 内のロジックを模倣、または async I/F を提供する
+  // 幸い、現在の環境では async/await が利用可能
 }
-
-// データのロードとマップ作成
-const rawCards = parseTsv(path.join(__dirname, '../data/cards_updated.tsv'));
-const cardMap = {};
-rawCards.forEach(c => {
-  c.cost = parseInt(c.cost);
-  c.attack = parseInt(c.atk);
-  c.hp = parseInt(c.life);
-  c.keywords = c.keywords ? c.keywords.split(',').map(k => k.trim()) : [];
-  
-  // アビリティを配列形式に変換
-  c.abilities = [];
-  if (c.trigger && c.trigger !== 'none') {
-    c.abilities.push({
-      trigger: c.trigger,
-      effect: c.effect,
-      value: isNaN(parseInt(c.value)) ? (c.value || '') : parseInt(c.value)
-    });
-  }
-  
-  cardMap[c.id] = c;
-});
-
-const rawShields = parseTsv(path.join(__dirname, '../data/shields_master.tsv'));
-const shields = rawShields.map(s => ({
-  id: s.id,
-  name: s.name,
-  durability: parseInt(s.life),
-  skill: {
-    name: s.name, 
-    effectType: s.effect,
-    effectValue: parseInt(s.value),
-    target: s.target,
-    description: s.text
-  }
-}));
-
-const gameData = { cardMap, cards: Object.values(cardMap), shields, keywordMap: {} };
 
 /**
  * 1試合をシミュレート
  */
-function runFullMatch(deckAIds, deckBIds, shieldIds) {
+async function runFullMatch(deckAIds, deckBIds, shieldIds) {
+  if (!gameData) {
+    gameData = await loadAllData();
+  }
   const engine = new GameEngine(gameData);
   
   // プレイヤー情報
@@ -150,4 +110,15 @@ function runFullMatch(deckAIds, deckBIds, shieldIds) {
   };
 }
 
-module.exports = { runFullMatch, cardMap, shields };
+module.exports = { 
+  runFullMatch, 
+  getCardMap: async () => {
+    if (!gameData) gameData = await loadAllData();
+    return gameData.cardMap;
+  },
+  getShields: async () => {
+    if (!gameData) gameData = await loadAllData();
+    return gameData.shields;
+  }
+};
+
