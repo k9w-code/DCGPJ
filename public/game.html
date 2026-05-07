@@ -284,8 +284,19 @@
     function resizeGame() {
       const container = document.getElementById('game-container');
       if (!container) return;
-      const windowWidth = window.innerWidth;
-      const windowHeight = window.innerHeight;
+      let windowWidth = window.innerWidth;
+      let windowHeight = window.innerHeight;
+      
+      // iOS Safari landscape orientation fix
+      if (typeof window.orientation !== 'undefined' && (window.orientation === 90 || window.orientation === -90)) {
+        if (windowHeight > windowWidth) {
+          // Portrait dimensions returned incorrectly, swap them
+          const temp = windowWidth;
+          windowWidth = windowHeight;
+          windowHeight = temp;
+        }
+      }
+
       const scaleX = windowWidth / 1920;
       const scaleY = windowHeight / 1080;
       const scale = Math.min(scaleX, scaleY);
@@ -294,6 +305,16 @@
       container.style.left = `${(windowWidth - 1920 * scale) / 2}px`;
       container.style.top = `${(windowHeight - 1080 * scale) / 2}px`;
       container.style.transformOrigin = '0 0';
+    }
+    
+    // Setup robust resize listeners
+    if (!window._resizeFixed) {
+      window._resizeFixed = true;
+      window.addEventListener('orientationchange', () => {
+        setTimeout(resizeGame, 100);
+        setTimeout(resizeGame, 300);
+        setTimeout(resizeGame, 800);
+      });
     }
     window.addEventListener('resize', resizeGame);
     window.addEventListener('load', resizeGame);
