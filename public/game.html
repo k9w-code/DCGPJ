@@ -285,20 +285,17 @@
       const container = document.getElementById('game-container');
       if (!container) return;
       
-      // Use visualViewport if available, fallback to innerWidth/Height
-      let windowWidth = window.visualViewport ? window.visualViewport.width : window.innerWidth;
-      let windowHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      let windowWidth = window.innerWidth;
+      let windowHeight = window.innerHeight;
       
-      if (windowWidth <= 0) windowWidth = window.innerWidth;
-      if (windowHeight <= 0) windowHeight = window.innerHeight;
-
-      // iOS Safari landscape orientation fix
-      if (typeof window.orientation !== 'undefined' && (window.orientation === 90 || window.orientation === -90)) {
-        if (windowHeight > windowWidth) {
-          const temp = windowWidth;
-          windowWidth = windowHeight;
-          windowHeight = temp;
-        }
+      // Orientation check
+      const isLandscape = window.matchMedia("(orientation: landscape)").matches || Math.abs(window.orientation) === 90;
+      
+      // Fix for iOS reporting wrong dimensions on orientation change
+      if (isLandscape && windowHeight > windowWidth) {
+        const temp = windowWidth;
+        windowWidth = windowHeight;
+        windowHeight = temp;
       }
 
       const scaleX = windowWidth / 1920;
@@ -314,28 +311,16 @@
       container.style.transformOrigin = '0 0';
     }
     
-    // Setup robust resize listeners
     if (!window._resizeFixed) {
       window._resizeFixed = true;
-      
       const resizeHandler = () => {
         resizeGame();
-        // iOS Safari delay fixes
         setTimeout(resizeGame, 100);
-        setTimeout(resizeGame, 300);
-        setTimeout(resizeGame, 800);
+        setTimeout(resizeGame, 500);
       };
-
       window.addEventListener('orientationchange', resizeHandler);
       window.addEventListener('resize', resizeHandler);
-      
-      if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', resizeHandler);
-        window.visualViewport.addEventListener('scroll', resizeGame);
-      }
-      
-      // Fallback poller
-      setInterval(resizeGame, 1500);
+      setInterval(resizeGame, 2000);
     }
     window.addEventListener('load', resizeGame);
     document.addEventListener('DOMContentLoaded', resizeGame);

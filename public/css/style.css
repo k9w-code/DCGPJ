@@ -3551,7 +3551,7 @@ body.targeting-mode {
   .overlay, .card-detail-overlay, #shield-break-overlay {
     background: rgba(0,0,0,0.98) !important;
   }
-  .deck-builder-header, .collection-header, .deck-panel-header, .glass-panel {
+  .deck-builder-header, .collection-header, .deck-panel-header, .glass-panel, .panel {
     background: rgba(13, 19, 38, 0.98) !important;
   }
 }
