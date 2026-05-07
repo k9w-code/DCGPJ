@@ -15,7 +15,7 @@
     <div style="font-size: 24px; margin-bottom: 10px;">スマホを横向きにしてください</div>
     <div style="font-size: 16px; color: #a09880;">Please rotate your device to landscape</div>
   </div>
-  <div class="game-wrapper" id="game-wrapper" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; overflow: hidden; background: #000;">
+  <div class="game-wrapper" id="game-wrapper" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; overflow: hidden; background: #000;">
     <div class="game-container" id="game-container" style="width: 1920px; height: 1080px; position: relative; transform-origin: 0 0; display: block;">
   <div class="deck-builder" style="height: 1080px;">
     <!-- 左ペイン: カード詳細プレビュー -->
@@ -186,41 +186,47 @@
       const container = document.getElementById('game-container');
       if (!container) return;
       
-      let windowWidth = window.innerWidth;
-      let windowHeight = window.innerHeight;
+      let w = window.innerWidth;
+      let h = window.innerHeight;
       
-      // Orientation check
+      // For mobile devices, the larger dimension is ALWAYS width in landscape
+      const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
       const isLandscape = window.matchMedia("(orientation: landscape)").matches || Math.abs(window.orientation) === 90;
       
-      // Fix for iOS reporting wrong dimensions on orientation change
-      if (isLandscape && windowHeight > windowWidth) {
-        const temp = windowWidth;
-        windowWidth = windowHeight;
-        windowHeight = temp;
+      if (isMobile && isLandscape) {
+        let actualW = Math.max(w, h);
+        let actualH = Math.min(w, h);
+        w = actualW;
+        h = actualH;
       }
 
-      const scaleX = windowWidth / 1920;
-      const scaleY = windowHeight / 1080;
+      const scaleX = w / 1920;
+      const scaleY = h / 1080;
       const scale = Math.min(scaleX, scaleY);
       
       if (scale <= 0) return;
 
       container.style.transform = `scale(${scale})`;
       container.style.position = 'absolute';
-      container.style.left = `${(windowWidth - 1920 * scale) / 2}px`;
-      container.style.top = `${(windowHeight - 1080 * scale) / 2}px`;
+      container.style.left = `${(w - 1920 * scale) / 2}px`;
+      container.style.top = `${(h - 1080 * scale) / 2}px`;
       container.style.transformOrigin = '0 0';
+      
+      // Force repaint for iOS
+      container.style.opacity = '0.999';
+      setTimeout(() => { container.style.opacity = '1'; }, 50);
     }
     
     if (!window._resizeFixed) {
       window._resizeFixed = true;
-      const resizeHandler = () => {
+      const handler = () => {
         resizeGame();
         setTimeout(resizeGame, 100);
         setTimeout(resizeGame, 500);
+        setTimeout(resizeGame, 1000);
       };
-      window.addEventListener('orientationchange', resizeHandler);
-      window.addEventListener('resize', resizeHandler);
+      window.addEventListener('resize', handler);
+      window.addEventListener('orientationchange', handler);
       setInterval(resizeGame, 2000);
     }
     window.addEventListener('load', resizeGame);

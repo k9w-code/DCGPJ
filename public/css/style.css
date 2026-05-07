@@ -3549,9 +3549,11 @@ body.targeting-mode {
     -webkit-backdrop-filter: none !important;
   }
   .overlay, .card-detail-overlay, #shield-break-overlay {
-    background: rgba(0,0,0,0.98) !important;
+    background: rgba(0,0,0,0.95) !important;
   }
   .deck-builder-header, .collection-header, .deck-panel-header, .glass-panel, .panel {
-    background: rgba(13, 19, 38, 0.98) !important;
+    background: rgba(25, 35, 65, 0.98) !important; /* Slightly lighter to verify existence */
+    transform: translateZ(0); /* Force GPU layer */
+    -webkit-transform: translateZ(0);
   }
 }
