@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
   <title>DCG - ゲーム画面</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
@@ -214,6 +217,7 @@
       <div class="side-area right-side">
         <div class="turn-indicator" id="turn-indicator">TURN 1</div>
         <div class="settings-btn" id="settings-btn">⚙️</div>
+        <div class="fullscreen-btn" id="fullscreen-btn" style="position: absolute; top: 15px; right: 60px; font-size: 24px; cursor: pointer; z-index: 1000; text-shadow: 0 0 5px #000; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="フルスクリーン切り替え">⛶</div>
         <div class="log-panel glass-panel">
           <div class="log-content" id="log-content"></div>
         </div>

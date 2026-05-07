@@ -766,3 +766,19 @@ window.emitDiscardCards = function(cardIndices) {
   }
 
 initInteractions();
+
+// Fullscreen Toggle
+document.addEventListener('DOMContentLoaded', () => {
+  const fsBtn = document.getElementById('fullscreen-btn');
+  if (fsBtn) {
+    fsBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.log('Fullscreen error:', err.message);
+        });
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    });
+  }
+});
