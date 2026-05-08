@@ -897,7 +897,7 @@ window.updateUI = function() {
           const sbCard = document.getElementById('sb-card-image');
           if (sbCard) {
             // 正しい画像パス (/assets/images/cards/) に修正
-            sbCard.style.backgroundImage = `url('/assets/images/cards/${shield.id}.webp')`;
+            if (window.getCardImagePath) { sbCard.style.backgroundImage = `url('${window.getCardImagePath(shield)}')`; } else { sbCard.style.backgroundImage = `url('/assets/images/shields/${shield.id.replace('SH','S')}.webp')`; }
           }
           
           // 演出用クラスを付与
