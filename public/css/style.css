@@ -3936,3 +3936,36 @@ body.targeting-mode {
       filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6)) !important;
     }
   }
+
+  @media (max-width: 1250px) {
+    /* Level-up confirmation popup enlargement */
+    .crystal-confirm-popup {
+      width: 420px !important;
+      bottom: 120px !important; /* Move higher to not overlap with enlarged buttons below */
+      padding: 30px !important;
+      border-width: 3px !important;
+      border-radius: 20px !important;
+    }
+    .crystal-confirm-popup p {
+      font-size: 24px !important; /* Bigger text */
+      margin-bottom: 25px !important;
+    }
+    .crystal-confirm-popup #confirm-tribe-icon {
+      width: 48px !important; /* Bigger icon */
+      height: 48px !important;
+    }
+    .popup-actions {
+      gap: 20px !important;
+    }
+    .popup-actions .btn-mini {
+      padding: 15px 40px !important; /* Huge touch targets */
+      font-size: 20px !important;
+      min-width: 120px !important;
+      border-radius: 12px !important;
+    }
+    #btn-crystal-confirm {
+      background: var(--accent) !important;
+      color: #fff !important;
+      font-weight: bold !important;
+    }
+  }
