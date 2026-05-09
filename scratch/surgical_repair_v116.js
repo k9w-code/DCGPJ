@@ -1,4 +1,26 @@
-<!DOCTYPE html>
+const fs = require('fs');
+
+// --- 1. SURGICAL REPAIR OF game.html ---
+let gameHtml = fs.readFileSync('public/game.html', 'utf8');
+
+// Fix the missing closing tags for game containers (Line 250 area)
+// and the missing closing tags for card-detail (Line 351 area)
+gameHtml = gameHtml.replace(
+  '<div id="vfx-layer" style="position:absolute; inset:0; pointer-events:none; z-index:15000; overflow:hidden;"></div>\n    </div>',
+  '<div id="vfx-layer" style="position:absolute; inset:0; pointer-events:none; z-index:15000; overflow:hidden;"></div>\n    </div>\n  </div>'
+);
+
+gameHtml = gameHtml.replace(
+  '<div class="cd-text-box">\n          <div class="cd-effect-text" id="cd-text"></div>\n          <div class="cd-flavor-text" id="cd-flavor"></div>\n        </div>\n      </div>\n</body>',
+  '<div class="cd-text-box">\n          <div class="cd-effect-text" id="cd-text"></div>\n          <div class="cd-flavor-text" id="cd-flavor"></div>\n        </div>\n      </div>\n    </div>\n</div>\n</body>'
+);
+
+fs.writeFileSync('public/game.html', gameHtml, 'utf8');
+
+// --- 2. SURGICAL REPAIR OF deck-builder.html ---
+// I need to RESTORE the missing UI components I deleted
+// I'll take the "v115" rewrite but ADD back the missing parts from the diff
+const restoredBuilderHtml = `<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -94,4 +116,8 @@
   <script src="/js/audio-manager.js?v=v116"></script>
   <script src="/js/deck-builder.js?v=v116"></script>
 </body>
-</html>
+</html>`;
+
+fs.writeFileSync('public/deck-builder.html', restoredBuilderHtml, 'utf8');
+
+console.log('Surgical repair complete.');

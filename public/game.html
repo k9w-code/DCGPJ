@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <title>DCG - ゲーム画面</title>
-  <link rel="stylesheet" href="/css/style.css?v=v115_restored">
+  <link rel="stylesheet" href="/css/style.css?v=v110_global_z">
 </head>
 <body>
   <!-- 画面回転プロンプト -->
@@ -76,6 +76,10 @@
     </div>
   </div>
 
+  
+    </div>
+  </div>
+
   <div class="overlay settings-overlay" id="settings-overlay" style="display: none;">
     <div class="settings-panel glass-panel">
       <h2>SETTINGS</h2>
@@ -116,7 +120,7 @@
     </div>
   </div>
 
-  <div class="overlay" id="help-overlay" style="display: none; z-index: 300000 !important; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);">
+  <div class="overlay" id="help-overlay" style="display: none; z-index: 50000 !important; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);">
     <div class="help-modal">
       <div class="help-header">
         <h2>ONLINE MANUAL</h2>
@@ -124,6 +128,9 @@
       </div>
       <div class="help-content" id="help-content"></div>
     </div>
+  </div>
+
+  
   </div>
 
   <!-- ゲーム本体（スケーリングの対象） -->
@@ -148,7 +155,9 @@
             <div class="shields-display opp-shields" id="opp-shields"></div>
           </div>
         </div>
+
         <div class="side-spacer"></div>
+
         <div class="avatar-block player-block">
           <div class="avatar-info">
             <div class="player-name" id="my-name">You</div>
@@ -183,18 +192,33 @@
       <div class="side-area right-side">
         <div class="turn-indicator" id="turn-indicator">TURN 1</div>
         <div class="settings-btn" id="settings-btn">⚙️</div>
-        <div class="fullscreen-btn" id="fullscreen-btn" style="position: absolute; top: 15px; right: 60px; font-size: 24px; cursor: pointer; z-index: 1000; text-shadow: 0 0 5px #000;">⛶</div>
+        <div class="fullscreen-btn" id="fullscreen-btn" style="position: absolute; top: 15px; right: 60px; font-size: 24px; cursor: pointer; z-index: 1000; text-shadow: 0 0 5px #000; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="フルスクリーン切り替え">⛶</div>
         <div class="log-panel glass-panel">
           <div class="log-content" id="log-content"></div>
         </div>
         <div class="action-panel glass-panel">
           <div class="panel-subtitle">DIVINE CRYSTAL (COST: 1 SP)</div>
           <div class="crystal-buttons" id="tribe-raise-panel">
+            <div id="crystal-confirm-popup" class="crystal-confirm-popup" style="display: none;">
+              <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px;">
+                <div id="confirm-tribe-icon" style="width: 32px; height: 32px; background-size: contain; background-repeat: no-repeat;"></div>
+                <p style="margin: 0; font-weight: bold;">Lv上げますか？</p>
+              </div>
+              <div class="popup-actions">
+                <button class="btn btn-mini btn-primary" id="btn-crystal-confirm">はい</button>
+                <button class="btn btn-mini" id="btn-crystal-cancel">いいえ</button>
+              </div>
+              <div class="popup-arrow"></div>
+            </div>
             <div class="crystal-btn red" data-color="red" title="赤"></div>
             <div class="crystal-btn blue" data-color="blue" title="青"></div>
             <div class="crystal-btn green" data-color="green" title="緑"></div>
             <div class="crystal-btn white" data-color="white" title="白"></div>
             <div class="crystal-btn black" data-color="black" title="黒"></div>
+          </div>
+          <button class="btn btn-primary" id="btn-confirm-raise" style="display: none; width: 100%; margin-top: 10px; font-weight: bold;">レベルアップ確定</button>
+          <div id="unit-actions-panel" style="display: none; margin-top: 15px; border-top: 1px solid #555; padding-top: 15px;">
+             <button class="btn btn-primary" id="btn-activate-ability" style="width: 100%; font-weight: bold; background: #9333ea; border-color: #a855f7;">能力発動 (ACTIVATE)</button>
           </div>
           <button class="btn btn-primary btn-end-turn" id="btn-end-turn">
             <span class="btn-text">TURN END</span>
@@ -206,22 +230,100 @@
       <!-- 攻撃矢印 -->
       <svg id="attack-arrow-svg" viewBox="0 0 1920 1080" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:9000; display:none;">
         <defs>
+          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
           <linearGradient id="arrow-gradient" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(244, 63, 94, 0.2)" /><stop offset="100%" stop-color="rgba(244, 63, 94, 1)" /></linearGradient>
           <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#f43f5e" /></marker>
         </defs>
-        <path id="attack-arrow-line" d="" stroke="url(#arrow-gradient)" stroke-width="12" stroke-dasharray="30,20" marker-end="url(#arrowhead)" fill="none" />
+        <path id="attack-arrow-line" d="" stroke="url(#arrow-gradient)" stroke-width="12" stroke-dasharray="30,20" marker-end="url(#arrowhead)" filter="url(#glow)" fill="none" />
       </svg>
+
+      <div id="targeting-instruction" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; justify-content: center; align-items: center; z-index: 10000;">
+        <div class="targeting-message" style="background: rgba(0,0,0,0.8); color: #fbbf24; font-size: 42px; font-weight: 900; padding: 20px 60px; border: 4px solid #fbbf24; border-radius: 60px;">SELECT TARGET FOR ABILITY</div>
+      </div>
 
       <!-- VFXレイヤー -->
       <div id="turn-splash" class="turn-splash" style="display:none;">
         <div class="splash-content" id="splash-content">YOUR TURN</div>
+        <div class="splash-sub"></div>
       </div>
       <div id="vfx-layer" style="position:absolute; inset:0; pointer-events:none; z-index:15000; overflow:hidden;"></div>
-    </div>
   </div>
 
-  <!-- カード詳細オーバーレイ (BODY直下) -->
-  <div class="overlay card-detail-overlay" id="card-detail-overlay" style="display: none;">
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/audio-manager.js?v=vfx_v6"></script>
+  <script src="/js/vfx-engine.js?v=vfx_v6"></script>
+  <script src="/js/game-renderer.js?v=vfx_v6"></script>
+  <script src="/js/game-client.js?v=vfx_v6"></script>
+  
+  <script>
+    function resizeGame() {
+      const container = document.getElementById('game-container');
+      if (!container) return;
+      
+      let w = window.innerWidth;
+      let h = window.innerHeight;
+      
+      // For mobile devices, the larger dimension is ALWAYS width in landscape
+      const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+      const isLandscape = window.matchMedia("(orientation: landscape)").matches || Math.abs(window.orientation) === 90;
+      
+      if (isMobile && isLandscape) {
+        let actualW = Math.max(w, h);
+        let actualH = Math.min(w, h);
+        w = actualW;
+        h = actualH;
+      }
+
+      const scaleX = w / 1920;
+      const scaleY = h / 1080;
+      const scale = Math.min(scaleX, scaleY);
+      
+      if (scale <= 0) return;
+
+      container.style.transform = `scale(${scale})`;
+      container.style.position = 'absolute';
+      container.style.left = `${(w - 1920 * scale) / 2}px`;
+      container.style.top = `${(h - 1080 * scale) / 2}px`;
+      container.style.transformOrigin = '0 0';
+      
+      // Force repaint for iOS
+      container.style.opacity = '0.999';
+      setTimeout(() => { container.style.opacity = '1'; }, 50);
+    }
+    
+    if (!window._resizeFixed) {
+      window._resizeFixed = true;
+      const handler = () => {
+        resizeGame();
+        setTimeout(resizeGame, 100);
+        setTimeout(resizeGame, 500);
+        setTimeout(resizeGame, 1000);
+      };
+      window.addEventListener('resize', handler);
+      window.addEventListener('orientationchange', handler);
+      setInterval(resizeGame, 2000);
+    }
+    window.addEventListener('load', resizeGame);
+    document.addEventListener('DOMContentLoaded', resizeGame);
+    resizeGame();
+  </script>
+
+  <script>
+    // Prevent Safari pinch zoom
+    document.addEventListener('gesturestart', function(e) {
+      e.preventDefault();
+    });
+    // Prevent Safari double-tap zoom
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(e) {
+      const now = (new Date()).getTime();
+      if (now - lastTouchEnd <= 300) {
+        e.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, false);
+  </script>
+<div class="overlay card-detail-overlay" id="card-detail-overlay" style="display: none;">
     <div class="card-detail-modal">
       <div class="cd-close-btn" id="btn-close-detail"></div>
       <div class="cd-image-area" id="cd-image"></div>
@@ -247,33 +349,5 @@
           <div class="cd-flavor-text" id="cd-flavor"></div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/audio-manager.js?v=v115"></script>
-  <script src="/js/vfx-engine.js?v=v115"></script>
-  <script src="/js/game-renderer.js?v=v115"></script>
-  <script src="/js/game-client.js?v=v115"></script>
-  
-  <script>
-    function resizeGame() {
-      const container = document.getElementById('game-container');
-      if (!container) return;
-      let w = window.innerWidth;
-      let h = window.innerHeight;
-      const scaleX = w / 1920;
-      const scaleY = h / 1080;
-      const scale = Math.min(scaleX, scaleY);
-      container.style.transform = `scale(${scale})`;
-      container.style.position = 'absolute';
-      container.style.left = `${(w - 1920 * scale) / 2}px`;
-      container.style.top = `${(h - 1080 * scale) / 2}px`;
-      container.style.transformOrigin = '0 0';
-    }
-    window.addEventListener('resize', resizeGame);
-    window.addEventListener('load', resizeGame);
-    document.addEventListener('DOMContentLoaded', resizeGame);
-  </script>
 </body>
 </html>
