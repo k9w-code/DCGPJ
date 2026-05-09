@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <title>DCG - デッキ構築</title>
-  <link rel="stylesheet" href="/css/style.css?v=v126_mobile_final">
+  <link rel="stylesheet" href="/css/style.css?v=v127_final_fix">
 </head>
 <body>
   <div class="rotate-prompt" id="rotate-prompt">
@@ -144,9 +144,10 @@
     <button class="btn btn-primary btn-start-game" id="btn-submit-deck" disabled>START GAME</button>
     </div>
   </div>
+    </div>
+  </div>
 
-  <!-- カード詳細モーダル (全画面共通仕様) -->
-  <div class="overlay card-detail-overlay" id="card-detail-overlay" style="display: none;">
+  <div class="overlay card-detail-overlay" id="card-detail-overlay" style="display: none; z-index: 999999999 !important; width: 100dvw !important; height: 100dvh !important; position: fixed !important; top: 0 !important; left: 0 !important;">
     <div class="card-detail-modal">
       <div class="cd-close-btn" id="btn-close-detail"></div>
       <div class="cd-image-area" id="cd-image"></div>
@@ -188,80 +189,19 @@
       const scaleX = windowWidth / 1920;
       const scaleY = windowHeight / 1080;
       const scale = Math.min(scaleX, scaleY);
-      container.style.transform = `scale(${scale})`;
+      container.style.transform = "scale(" + scale + ")";
       container.style.position = 'absolute';
-      container.style.left = `${(windowWidth - 1920 * scale) / 2}px`;
-      container.style.top = `${(windowHeight - 1080 * scale) / 2}px`;
+      container.style.left = ((windowWidth - 1920 * scale) / 2) + "px";
+      container.style.top = ((windowHeight - 1080 * scale) / 2) + "px";
       container.style.transformOrigin = '0 0';
     }
     window.addEventListener('resize', resizeGame);
     window.addEventListener('load', resizeGame);
     document.addEventListener('DOMContentLoaded', resizeGame);
     resizeGame();
+    document.addEventListener('touchstart', function(e) { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+    document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
+    window.addEventListener('load', function() { setTimeout(function() { window.dispatchEvent(new Event('resize')); window.scrollTo(0, 0); }, 500); });
   </script>
-
-
-  <script>
-    // Force prevent pinch zoom and double tap zoom
-    document.addEventListener('touchstart', function(event) {
-      if (event.touches.length > 1) {
-        event.preventDefault();
-      }
-    }, { passive: false });
-    
-    let lastTouchEnd = 0;
-    document.addEventListener('touchend', function(event) {
-      const now = (new Date()).getTime();
-      if (now - lastTouchEnd <= 300) {
-        event.preventDefault();
-      }
-      lastTouchEnd = now;
-    }, false);
-    
-    document.addEventListener('wheel', function(event) {
-      if (event.ctrlKey) {
-        event.preventDefault();
-      }
-    }, { passive: false });
-  </script>
-
-
-  <script>
-    // iOS Safari Specific: Disable double-tap zoom and pinch zoom
-    document.addEventListener('gesturestart', function(e) {
-      e.preventDefault();
-    });
-    
-    // Physical hardware silent mode check is impossible, but Web Audio helps.
-    // Ensure AudioContext is resumed on first interaction.
-    document.addEventListener('pointerdown', function() {
-      if (window.audioManager && window.audioManager.audioCtx) {
-        if (window.audioManager.audioCtx.state === 'suspended') {
-          window.audioManager.audioCtx.resume();
-        }
-      }
-    }, { once: false });
-  </script>
-
-
-  <script>
-    // Safari Layout Bug Fix: Trigger resize after toolbar state stabilizes
-    window.addEventListener('load', function() {
-      setTimeout(function() {
-        window.dispatchEvent(new Event('resize'));
-        // Scroll to top to reset any viewport shifts
-        window.scrollTo(0, 0);
-      }, 500);
-    });
-    
-    // Settings Scroll Support for iOS
-    const settingsOverlay = document.getElementById('settings-overlay');
-    if (settingsOverlay) {
-      settingsOverlay.addEventListener('touchmove', function(e) {
-        if (e.target === settingsOverlay) e.preventDefault();
-      }, { passive: false });
-    }
-  </script>
-
 </body>
 </html>

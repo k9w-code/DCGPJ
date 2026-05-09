@@ -1960,7 +1960,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* 鬯ｮ・ｫ・ｽ・ｪ・ｽ・ｽ・ｽ・ｭ鬮ｯ讖ｸ・ｽ・ｳ髯橸ｽ｢・ｽ・ｹ・ｽ螳亥擠・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隰ｨ魑ｴﾂ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ */
 .settings-overlay {
-    display: flex !important;
+    /* fixed in v127 */
     justify-content: center !important;
   z-index: 200000 !important;
   background: rgba(0, 0, 0, 0.4);
