@@ -45,7 +45,7 @@ body {
     radial-gradient(ellipse at 50% 80%, rgba(124, 58, 237, 0.04) 0%, transparent 50%),
     radial-gradient(circle at center, var(--bg-secondary) 0%, var(--bg-primary) 100%);
   color: var(--text-primary);
-  min-height: 100dvh;
+  min-height: 100dvh; touch-action: none; user-select: none; -webkit-user-select: none;
   overflow-x: hidden;
 }
 
@@ -523,6 +523,7 @@ body {
 }
 
 .game-wrapper {
+  touch-action: none;
   position: fixed;
   top: 0; left: 0;
   width: 100vw; height: 100dvh;
