@@ -3921,3 +3921,18 @@ body.targeting-mode {
       font-size: 24px !important;
     }
   }
+
+  @media (max-width: 1250px) {
+    /* Lower hand position slightly more */
+    .hand-area-wrapper {
+      bottom: -1dvh !important; /* Sink it just a bit more into the bottom */
+    }
+    
+    /* Fix oversized drag ghost */
+    .drag-ghost {
+      transform: scale(0.6) !important; /* Scale down to match mobile hand cards */
+      transform-origin: center center !important;
+      opacity: 0.9 !important;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6)) !important;
+    }
+  }
