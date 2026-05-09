@@ -7,12 +7,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <title>DCG テストプレイ</title>
-  <link rel="stylesheet" href="/css/style.css?v=v125_ios_physical">
+  <link rel="stylesheet" href="/css/style.css?v=v126_mobile_final">
 </head>
 <body>
   <div class="lobby-container">
     <div class="lobby-header">
-      <h1>DCG TESTPLAY Vol.125</h1>
+      <h1>DCG TESTPLAY Vol.126</h1>
       <p>デジタルカードゲーム テストプレイ環境</p>
     </div>
 
@@ -122,6 +122,26 @@
         }
       }
     }, { once: false });
+  </script>
+
+
+  <script>
+    // Safari Layout Bug Fix: Trigger resize after toolbar state stabilizes
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        window.dispatchEvent(new Event('resize'));
+        // Scroll to top to reset any viewport shifts
+        window.scrollTo(0, 0);
+      }, 500);
+    });
+    
+    // Settings Scroll Support for iOS
+    const settingsOverlay = document.getElementById('settings-overlay');
+    if (settingsOverlay) {
+      settingsOverlay.addEventListener('touchmove', function(e) {
+        if (e.target === settingsOverlay) e.preventDefault();
+      }, { passive: false });
+    }
   </script>
 
 </body>

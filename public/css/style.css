@@ -1289,6 +1289,10 @@ body {
 
 /* ==== 鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・｢鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴擾ｽｶ邵ｺ譛ｱﾎ碑ｭ趣ｽ｢・ｽ・ｽ・ｽ・ｫ (鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴寂扱・ｭ髮｣・ｿ・ｽ・ｽ・ｩ・ｽ・ｽ・ｽ・ｳ鬯ｩ閧ｴ蠕暦ｿｽ・ｽ・ｽ・ｰ) ==== */
 .card-detail-overlay {
+    width: 100dvw !important;
+    height: 100dvh !important;
+    left: 0 !important;
+    top: 0 !important;
   position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px);
   z-index: 10001 !important; display: flex; align-items: center; justify-content: center;
 }
@@ -1956,6 +1960,8 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* 鬯ｮ・ｫ・ｽ・ｪ・ｽ・ｽ・ｽ・ｭ鬮ｯ讖ｸ・ｽ・ｳ髯橸ｽ｢・ｽ・ｹ・ｽ螳亥擠・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隰ｨ魑ｴﾂ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ */
 .settings-overlay {
+    display: flex !important;
+    justify-content: center !important;
   z-index: 200000 !important;
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(15px);
@@ -3831,3 +3837,16 @@ body.targeting-mode {
     background: rgba(0,0,0,0.95) !important;
   }
 }
+
+  @media (max-width: 1250px) {
+    .settings-overlay {
+      align-items: flex-start !important;
+      padding-top: 5dvh !important;
+      overflow-y: auto !important;
+    }
+    .settings-panel {
+      margin-bottom: 5dvh !important;
+      max-height: none !important; /* Allow panel to grow and scroll via overlay */
+      flex-shrink: 0 !important;
+    }
+  }

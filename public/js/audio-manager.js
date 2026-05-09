@@ -57,7 +57,7 @@ class SoundManager {
   updateBGMVolume(val) {
     this.bgmVolume = parseFloat(val);
     this.bgmAudio.volume = this.bgmVolume;
-    if (this.mainGain) this.mainGain.gain.setTargetAtTime(this.bgmVolume, this.audioCtx.currentTime, 0.1);
+    if (this.mainGain) if (this.mainGain && this.mainGain.gain) this.mainGain.gain.setTargetAtTime(this.bgmVolume, this.audioCtx.currentTime, 0.05);
     this.bgmVolume = parseFloat(val);
     this.bgmAudio.volume = this.bgmVolume;
   }
