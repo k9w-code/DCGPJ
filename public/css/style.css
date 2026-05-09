@@ -1,7 +1,9 @@
+/* style.css - DCG 鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驍ｵ・ｺ陝ｶ・ｷ・ｽ・ｹ隴主・讓滄Δ譎｢・ｽ・ｻ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｬ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・､鬮ｴ謇假ｽｽ・ｺ・ｽ・ｽ・ｽ・ｰ鬮ｯ貊ゑｽｿ・ｽ・ｽ・ｽ*/
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap');
 
 :root {
+  /* === 鬨ｾ・ｾ隶夲ｿｽ・ｼ鬘費ｽｸ・ｺ・ｽ・ｪ驛｢謨鳴驛｢譎｢・ｽ・ｼ驛｢・ｧ・ｽ・ｯ驛｢譎・ｽｼ譁撰ｼ憺Δ譎｢・ｽ・ｳ驛｢・ｧ・ｽ・ｿ驛｢・ｧ・ｽ・ｸ驛｢譎｢・ｽ・ｼ 驛｢・ｧ・ｽ・ｫ驛｢譎｢・ｽ・ｩ驛｢譎｢・ｽ・ｼ驛｢譏懶ｽｻ・｣・取ｨ抵ｽｹ譎｢・ｿ・ｽ郢晢ｽｨ === */
   --bg-primary: #030712;
   --bg-secondary: #0a0f1f;
   --bg-card: #111827;
@@ -45,9 +47,11 @@ body {
     radial-gradient(ellipse at 50% 80%, rgba(124, 58, 237, 0.04) 0%, transparent 50%),
     radial-gradient(circle at center, var(--bg-secondary) 0%, var(--bg-primary) 100%);
   color: var(--text-primary);
-  min-height: 100dvh; touch-action: none; user-select: none; -webkit-user-select: none;
+  min-height: 100dvh;
   overflow-x: hidden;
 }
+
+/* ========== 鬮ｯ・ｷ髣鯉ｽｨ・ｽ・ｽ・ｽ・ｱ鬯ｯ・ｨ・ｽ・ｾ髯橸ｽ｢・ｽ・ｹ驍ｵ・ｺ隲ｷ蛹・ｽｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴趣ｿｽ・ｺ・｢驛｢譎｢・ｽ・ｻ鬩幢ｽ｢隴取ｨ費ｽｺ繧托ｽｾ雜｣・ｽ・ｦ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ========== */
 
 .btn {
   padding: 10px 24px;
@@ -121,6 +125,8 @@ h1, h2, h3 {
   font-weight: 700;
   letter-spacing: 1px;
 }
+
+/* ========== 鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｭ鬩幢ｽ｢隴寂或・ｾ・ｭ驛｢譎｢・ｽ・ｻ ========== */
 
 .lobby-container {
   max-width: 640px;
@@ -227,13 +233,14 @@ h1, h2, h3 {
   border-color: var(--border-glow);
 }
 
+/* ========== 鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・｣鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｭ鬮ｫ・ｶ陜｣・､髴肴劼・ｿ・ｽ・ｽ・ｯ驛｢譎｢・ｽ・ｻ(3鬩幢ｽ｢隴取得・ｽ・｣・ｽ・ｹ驍ｵ・ｺ・ｽ・ｽ・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬮ｯ蜈ｷ・ｽ・ｻ・ｽ・ｽ・ｽ・ｷ鬮ｫ・ｴ・ｽ・ｽ・ｽ・ｽ・ｽ・ｰ) ========== */
 .deck-builder {
   display: grid;
   grid-template-columns: 320px 1fr 320px;
   grid-template-rows: 100%;
   gap: 20px;
   padding: 20px;
-  height: 100%;
+  height: 100dvh;
   box-sizing: border-box;
   background: radial-gradient(circle at center, #111827 0%, #050811 100%);
   overflow: hidden;
@@ -248,6 +255,7 @@ h1, h2, h3 {
   gap: 15px;
 }
 
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｪ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴取ｨ頑據髫ｴ・ｴ陝ｶ・ｷ・ｽ・ｹ・ｽ・ｧ・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｩ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴趣ｿｽ・ｽ・ｼ隴∫ｵｶ隘夜ｩ幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ */
 .color-filter-bar {
   display: flex;
   gap: 10px;
@@ -276,6 +284,7 @@ h1, h2, h3 {
 .orb-inner.white { background: var(--white-card); box-shadow: 0 0 8px var(--white-card); }
 .orb-inner.black { background: var(--black-card); box-shadow: 0 0 8px var(--black-card); }
 
+/* 鬩幢ｽ｢隴趣ｿｽ・ｱ謚ｵ・ｾ蜿門・隰ｦ謌雁ｵｯ隴擾ｽｴ・趣ｽｨ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｣鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ */
 .type-cost-filters {
   display: flex;
   gap: 20px;
@@ -306,6 +315,7 @@ h1, h2, h3 {
   box-shadow: 0 4px 12px var(--accent-glow);
 }
 
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴取得・ｽ・ｳ・ｽ・ｨ驍ｵ・ｺ陜｣・､・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｪ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・ｩ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｻ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｢鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・､鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ・ｽ雜｣・ｿ・ｽ */
 .card-grid {
   flex: 1;
   overflow-y: auto;
@@ -317,7 +327,8 @@ h1, h2, h3 {
 }
 .card-item {
   aspect-ratio: 3/4;
-  min-height: 200px; border-radius: 12px;
+  min-height: 200px; /* 鬩搾ｽｵ・ｽ・ｦ髫ｴ・ｽ・ｽ・ｹ髯ｷ・ｷ闔会ｽ｣・ｽ・ｽ鬯ｩ・･鬮ｦ・ｪ遶企・・ｹ・ｧ驗呻ｽｫ・ｽ蟶晢ｽｫ・ｦ・ｽ・ｲ髮趣ｿｽ・ｽ・｢ */
+  border-radius: 12px;
   background-size: cover;
   background-position: center;
   border: 2px solid transparent;
@@ -344,6 +355,7 @@ h1, h2, h3 {
   justify-content: flex-end;
 }
 
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴乗・・ｽ・ｺ陋ｹ・ｽ・ｽ・ｽ・ｽ・ｸ・ｽ・ｽ・ｽ・ｸ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｢鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・､鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ驛｢譎｢・ｽ・ｻ髣費ｿｽ・ｽ・･髫ｰ・ｽ・ｽ・ｿ鬮｣蛹・ｽｽ・ｳ髯槭ｑ・ｿ・ｽ・ｽ・ｽ・ｽ・ｼ驛｢譎｢・ｽ・ｻ*/
 .grid-cost {
   position: absolute;
   top: 8px; right: 8px;
@@ -389,6 +401,7 @@ h1, h2, h3 {
   opacity: 0.9;
 }
 
+/* 鬮｣蜴・ｽｽ・ｫ髫ｴ蜿門ｾ暦ｿｽ・ｽ・ｽ・ｭ髯区ｻゑｽｽ・･驍ｵ・ｺ陝ｶ・ｷ・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｭ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・ｨ */
 .save-slots {
   display: flex;
   gap: 6px;
@@ -422,6 +435,7 @@ h1, h2, h3 {
 }
 .btn-save-deck:hover { opacity: 1; transform: scale(1.1); }
 
+/* 鬯ｨ・ｾ陋ｹ・ｽ・ｽ・ｽ・ｽ・ｻ鬮ｯ・ｷ陷托ｿｽ・ｽ・ｸ驗呻ｽｫ・趣ｽｨ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｩ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｿｽ・ｿ・ｽ驛｢譎｢・ｽ・｣鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｯ */
 .card-item.no-image {
   background: linear-gradient(135deg, #1f2937 0%, #111827 100%) !important;
   display: flex; align-items: center; justify-content: center;
@@ -448,6 +462,7 @@ h1, h2, h3 {
 }
 .saved-flash { animation: flashSuccess 0.6s ease-out; }
 
+/* 鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・｣鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｭ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｪ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴乗・・ｽ・ｺ・ｽ・･驛｢譎｢・ｽ・ｻ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ*/
 .deck-entry {
   display: flex;
   align-items: center;
@@ -463,6 +478,7 @@ h1, h2, h3 {
 .de-name { flex: 1; font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .de-copies { font-size: 14px; font-weight: 700; color: var(--gold); }
 
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｷ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴取得・ｽ・ｳ・ｽ・ｨ驍ｵ・ｺ隴惹ｼ夲ｽｽ・ｹ・ｽ・ｧ・ｽ・ｽ・ｽ・ｯ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｷ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｧ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ */
 .shield-list-section {
   padding: 15px;
   border-top: 1px solid var(--border-subtle);
@@ -493,6 +509,7 @@ h1, h2, h3 {
   width: 100%;
 }
 
+/* 鬩幢ｽ｢隴惹ｸ橸ｽｹ・ｲ・ｽ蜿厄ｽｨ謚ｵ・ｽ・ｹ隴寂或・ｾ・ｭ・ｽ螳茨ｽ､・ｼ・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｪ鬩幢ｽ｢隴趣ｿｽ・ｽ・ｼ隴∵腸・ｼ諞ｺﾎ費ｿｽ・ｧ・ｽ・ｽ・ｽ・､鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ */
 .preview-stats .ps-atk, .preview-stats .ps-hp {
   background: rgba(0,0,0,0.4);
   padding: 5px 15px;
@@ -514,6 +531,8 @@ h1, h2, h3 {
   font-size: 11px;
   border: 1px solid rgba(139, 92, 246, 0.3);
 }
+/* ========== 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｲ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴寂扱・ｱ讖ｸ・ｿ・ｽ・ｽ・ｾ鬮ｫ・ｰ鬲・ｼ夲ｽｽ・ｽ・ｽ・ｦ鬯ｨ・ｾ陋ｹ・ｽ・ｽ・ｽ・ｽ・ｻ鬯ｯ・ｮ・ｽ・ｱ・ｽ・ｽ・ｽ・｢ (UI Overhaul) ========== */
+
 body {
   margin: 0; padding: 0;
   width: 100vw; height: 100dvh;
@@ -523,7 +542,6 @@ body {
 }
 
 .game-wrapper {
-  touch-action: none;
   position: fixed;
   top: 0; left: 0;
   width: 100vw; height: 100dvh;
@@ -547,6 +565,7 @@ body {
 .center-area { grid-column: 2; }
 .right-side { grid-column: 3; }
 
+/* 驛｢・ｧ・ｽ・ｪ驛｢譎｢・ｽ・ｼ驛｢譎・ｿｽ・ｽ・ｽ驛｢譎｢・ｽ・ｬ驛｢・ｧ・ｽ・､鬮ｫ陬懈が・ｽ・ｴ・ｽ・ｽ驛｢・ｧ陋幢ｽｵ邵ｺ蝣､・ｹ譎｢・ｽ・ｪ驛｢譎｢・ｿ・ｽ郢晢ｽｩ驛｢譎・ｽｼ驥・ｺｽ・ｹ譎｢・ｽ・ｼ驍ｵ・ｺ闕ｵ譎｢・ｽ陋ｾ・ｫ・ｯ・ｽ・､髯樊ｻ薙§・ｽ・ｽ驍ｵ・ｲ遶乗劼・ｿ・ｽ鬯ｮ・ｱ・ｽ・｢驍ｵ・ｺ・ｽ・ｫ鬯ｩ貅ｷ隱ｿ・ｽ・ｽ・ｽ・ｮ */
 .overlay {
   grid-column: 1 / span 3;
   grid-row: 1;
@@ -555,6 +574,7 @@ body {
   z-index: 10000;
 }
 
+/* ==== 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｵ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・､鬩幢ｽ｢隴取得・ｽ・ｳ・ｽ・ｨ驍ｵ・ｺ鬯倩ｲｻ・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｪ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｢鬮ｯ・ｷ髣鯉ｽｨ・ｽ・ｽ・ｽ・ｱ鬯ｯ・ｨ・ｽ・ｾ驛｢譎｢・ｽ・ｻ==== */
 .side-area {
   position: relative;
   z-index: 100;
@@ -577,6 +597,7 @@ body {
   border-radius: 16px;
 }
 
+/* ==== 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｢鬩幢ｽ｢隴趣ｿｽ・ｿ・ｽ驍ｵ・ｺ・ｽ・｡鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ驛｢譎｢・ｽ・ｻ髫ｴ謫ｾ・ｽ・ｴ驍ｵ・ｺ陝ｶ・ｷ・ｽ・ｹ隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・ｻ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｨ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｪ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｢ ==== */
 .avatar-block {
   display: flex; gap: 30px; align-items: center; position: relative;
   width: 100%;
@@ -598,6 +619,7 @@ body {
   z-index: 5;
 }
 
+/* 髯懃軸・ｫ・ｽ・ｽ・ｻ・ｽ・｢驍ｵ・ｺ陷ｷ・ｶ・ｽ遏ｩ・ｬ・ｲ雎暮ｯ会ｽｽ・ｰ陟托ｽｱ・取㏍・ｹ譎｢・ｽ・ｳ驛｢・ｧ・ｽ・ｰ */
 .avatar-frame::before {
   content: '';
   position: absolute;
@@ -659,7 +681,8 @@ body {
   font-size: 34px; font-weight: 900;
   color: #fff;
   text-shadow: 0 0 10px rgba(255,0,0,0.8), 0 2px 4px #000;
-  margin-top: -6px; letter-spacing: -1px;
+  margin-top: -6px; /* 驛｢譏懶ｽｸ螂・ｽｿ・ｽ驛｢譎冗樟・ｽ・ｽ髣包ｽｳ・ｽ・ｭ髯樊ｻゑｽｽ・ｮ驍ｵ・ｺ・ｽ・ｫ髯ｷ・ｷ陋ｹ・ｻ・ｽ蜀暦ｽｸ・ｺ陝ｶ蜻ｻ・ｽ・ｽ */
+  letter-spacing: -1px;
 }
 
 .avatar-info {
@@ -676,6 +699,7 @@ body {
 .status-row { display: flex; gap: 10px; font-size: 14px; font-weight: 700; color: #aaa; }
 .player-block .status-row { justify-content: flex-end; }
 
+/* ==== 鬨ｾ・ｾ隶謎ｼ・ｿｽ驛｢譎｢・ｽ・ｬ驛｢譎冗函・取辨蜍暦ｿｽ・ｨ鬩穂ｼ夲ｽｽ・ｺ (HUD) ==== */
 .tribe-hud {
   display: flex; gap: 6px; margin-top: 10px;
 }
@@ -691,6 +715,7 @@ body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.5);
   display: flex; align-items: center; justify-content: center;
 }
+/* 驛｢譎・ｽｧ・ｭ・取㏍・ｹ・ｧ・ｽ・ｬ驛｢譎｢・ｽ・ｳ鬨ｾ蛹・ｽｽ・ｻ鬯ｮ・ｱ・ｽ・｢ */
 .mulligan-panel {
   width: 90%;
   max-width: 1000px;
@@ -750,6 +775,7 @@ body {
 }
 .tribe-badge.active .level-text { display: flex; }
 
+/* 鬨ｾ・ｾ隶謎ｼ・ｿｽ驛｢譎｢・ｽ・ｬ驛｢譎冗函・取刮・ｹ・ｧ・ｽ・｢驛｢譎｢・ｿ・ｽ・ｽ・ｽ驛｢・ｧ・ｽ・ｲ驛｢譎｢・ｽ・ｼ驛｢・ｧ・ｽ・ｸ・ｽ・ｽ陋ｹ・ｻ・ｽ繧会ｽｸ・ｺ陟搾ｽｺ・ｽ・ｽ・ｽ・ｿ鬨ｾ蛹・ｽｽ・ｨ驍ｵ・ｺ陷ｷ・ｶ・ｽ邇匁捗・ｽ・ｴ髯ｷ・ｷ髣鯉ｽｨ・ｽ・ｼ・ｽ・ｽ */
 .tribe-progress-container {
   position: absolute; bottom: -4px; width: 40px; height: 4px;
   background: rgba(0,0,0,0.5); border-radius: 2px;
@@ -761,6 +787,7 @@ body {
   transition: width 0.3s ease;
 }
 
+/* 鬮ｯ讖ｸ・ｽ・ｻ髫ｶ轣假ｽｲ・ｩ邵ｺ雜｣・ｿ・ｽ・ｽ・ｧ鬮ｯ蜈ｷ・ｽ・ｻ・ｽ・ｽ・ｽ・･鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｩ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ */
 .tribe-badge {
   width: 50px; height: 50px;
   background-size: contain; background-repeat: no-repeat; background-position: center;
@@ -782,13 +809,16 @@ body {
 .tribe-white { color: #f1f5f9; }
 .tribe-black { color: #a78bfa; }
 
+/* 鬮｣遒第Τ騾趣ｽｯ陷茨ｽｱ鬮ｫ・ｲ・ｽ・､・ｽ・ｧ鬯ｩ謳ｾ・ｽ・ｯ・ｽ・ｭ鬮ｫ・ｰ隰費ｽｶ・ｽ・ｼ髯懈瑳・ｻ繧托ｽｽ・ｽ・ｽ・ｮ・ｽ・ｵ鬯ｯ・ｮ・ｽ・ｫ髯橸ｽｳ闔�・･鬯滂ｽｭ鬩搾ｽｵ・ｽ・ｺ・ｽ・ｫ鬯ｩ蜍溪・・ｽ・ｽ・ｽ・ｻ鬯ｮ・ｯ・ｽ・ｦ鬯ｲ・ｽ・ｼ螟ｲ・ｽ・ｽ・ｽ・ｼ驛｢譎｢・ｽ・ｻ*/
 .crystal-orb { display: none; }
 
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｷ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴取得・ｽ・ｳ・ｽ・ｨ驛｢譎｢・ｽ・ｧ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｣鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴惹ｸ橸ｽｹ・ｲ・ｽ蜿厄ｽｨ謚ｵ・ｽ・ｹ・ｽ・ｧ・ｽ・ｽ・ｽ・､驛｢譎｢・ｽ・ｻ驛｢譎｢・ｽ・ｻVG鬯ｯ・ｯ陞滂ｽｲ・ｽ・ｽ・ｽ・ｨ驛｢譎｢・ｽ・ｻ驛｢譎｢・ｽ・ｻ*/
 .shields-display { 
   display: flex; gap: 15px; margin-top: 10px;
   min-height: 100px;
   align-items: center;
-  padding: 15px; border-radius: 12px;
+  padding: 15px; /* 鬮ｯ蜈ｷ・ｽ・ｻ・ｽ・ｽ・ｽ・､鬮ｯ讖ｸ・ｽ・ｳ髯樊ｺｯ謠・ｿｽ・ｼ隲幄肩・ｽ・ｲ・ｽ・ｺ鬩幢ｽ｢・ｽ・ｧ鬮ｮ蛹ｺ・ｩ・ｸ・ｽ・ｽ・ｽ・ｺ驛｢譎｢・ｽ・ｻ・ｽ・ｽ・ｽ・｡鬩幢ｽ｢・ｽ・ｧ髣包ｽｵ隴擾ｽｶ髯橸ｽｺ鬩幢ｽ｢・ｽ・ｧ驕ｶ荳橸ｽ｣・ｹ・ｽ・ｽ鬩幢ｽ｢隴乗・・ｽ・ｻ・ｽ・｣驛｢譎｢・ｽ・ｧ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｣鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｰ */
+  border-radius: 12px;
   transition: all 0.3s ease;
 }
 .shields-display:hover, .shields-display.target-highlight {
@@ -839,6 +869,7 @@ body {
   z-index: 2;
 }
 
+/* ==== 鬮｣蛹・ｽｽ・ｳ・ｽ・ｽ・ｽ・ｭ鬮ｯ讓奇ｽｻ繧托ｽｽ・ｽ・ｽ・ｮ3D鬯ｨ・ｾ・ｽ・ｶ・ｽ・ｽ・ｽ・､鬯ｯ・ｮ・ｽ・ｱ・ｽ・ｽ・ｽ・｢ ==== */
 .center-area {
   display: flex;
   flex-direction: column;
@@ -850,8 +881,10 @@ body {
 }
 .battlefield-container {
   flex: 1;
-  perspective: 1600px; display: flex; align-items: center; justify-content: center;
-  margin-top: -200px; transition: margin-top 0.4s ease;
+  perspective: 1600px; /* 1200 -> 1600 鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｫ鬩搾ｽｵ・ｽ・ｺ髯ｷ莨夲ｽｽ・ｱ驕ｯ・ｶ・ｽ・ｻ鬩幢ｽ｢隴乗・・ｽ・ｻ・ｽ・｣驛｢譎｢・ｽ・ｻ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢・ｽ・ｧ鬮ｮ蛹ｺ・ｩ・ｸ・ｽ・ｽ・ｽ・ｼ・ｽ・ｽ・ｽ・ｷ鬩幢ｽ｢・ｽ・ｧ驕ｶ荳橸ｽ､・ｲ・ｽ・ｽ・ｽ・ｽ */
+  display: flex; align-items: center; justify-content: center;
+  margin-top: -200px; /* -160px -> -200px 鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｫ鬩搾ｽｵ・ｽ・ｺ髯ｷ莨夲ｽｽ・ｱ驕ｯ・ｶ・ｽ・ｻ鬩搾ｽｵ・ｽ・ｺ鬮ｴ驛・ｽｲ・ｻ・ｽ・ｽ髢ｾ・･・ｽ・ｸ・ｽ・ｺ・ｽ・ｽ・ｽ・ｫ鬮｣蛹・ｽｽ・ｳ鬯ｯ・ｽ・､・ｧ・ｽ・ｩ・ｽ・ｿ鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｸ */
+  transition: margin-top 0.4s ease;
 }
 .battlefield-3d {
   width: 950px;
@@ -879,8 +912,10 @@ body {
 }
 .board-half {
   display: grid;
-  grid-template-rows: repeat(2, 224px); gap: 20px;
-  min-height: 470px; }
+  grid-template-rows: repeat(2, 224px); /* 郢ｧ・ｫ郢晢ｽｼ郢晏ｳｨ・ｽ鬯ｮ蛟･・・崕・ｽ・帝￡・ｺ闖ｫ・ｽ */
+  gap: 20px;
+  min-height: 470px; /* 2陋ｻ・ｽ + gap 陋ｻ・ｽ */
+}
 #targeting-instruction {
     position: fixed;
     top: 0;
@@ -891,7 +926,8 @@ body {
     align-items: center;
     justify-content: center;
     z-index: 10000;
-    pointer-events: none !important; }
+    pointer-events: none !important; /* 郢ｧ・ｯ郢晢ｽｪ郢晢ｿｽ縺醍ｹｧ蟶敖蝓寂с邵ｺ霈披雷郢ｧ蛹ｺ諤咎ｩ･蟠趣ｽｦ竏ｬ・ｨ・ｭ陞ｳ・ｽ */
+}
 
 .targeting-message {
     background: rgba(0,0,0,0.85);
@@ -913,10 +949,12 @@ body {
     to { opacity: 1.0; transform: scale(1.05); }
 }
 #opponent-board {
-  grid-template-areas: "back" "front"; margin-bottom: 25px;
+  grid-template-areas: "back" "front"; /* 騾ｶ・ｸ隰・ｹ晢ｿｽ闕ｳ鄙ｫ窶ｲ陟墓ぁ・ｽ邵ｲ竏ｽ・ｸ荵昶ｲ陷第ｦ奇ｿｽ */
+  margin-bottom: 25px;
 }
 #player-board {
-  grid-template-areas: "front" "back"; margin-top: 25px;
+  grid-template-areas: "front" "back"; /* 髢ｾ・ｪ陋ｻ・ｽ・ｽ闕ｳ鄙ｫ窶ｲ陷第ｦ奇ｿｽ邵ｲ竏ｽ・ｸ荵昶ｲ陟墓ぁ・ｽ */
+  margin-top: 25px;
 }
 .board-row {
   display: grid; grid-template-columns: repeat(3, 160px);
@@ -926,6 +964,7 @@ body {
 .opponent-half { position: relative; z-index: 10; transform-style: preserve-3d; }
 .player-half { position: relative; z-index: 10; transform-style: preserve-3d; }
 
+/* 郢ｧ・ｰ郢晢ｽｪ郢晢ｿｽ繝ｩ郢ｧ・ｨ郢晢ｽｪ郢ｧ・｢邵ｺ・ｮ陷托ｽｲ郢ｧ髮・ｽｽ阮吮ｻ */
 .opponent-back { grid-area: back; }
 .opponent-front { grid-area: front; }
 .player-front { grid-area: front; }
@@ -975,6 +1014,7 @@ body {
   to { box-shadow: 0 0 40px rgba(34, 197, 94, 0.8); border-color: rgba(34, 197, 94, 1); }
 }
 
+/* 鬩幢ｽ｢隴趣ｽ｢・ｽ・ｦ鬩幢ｽ｢隴乗・・ｽ・ｹ隴擾ｽｴ・取坩ﾎ碑ｭ主・讓滄し・ｺ陷･・ｲ・ｹ隴趣ｽ｢・ｽ・ｼ鬩幢ｽ｢隴擾ｽｴ・ｽ*/
 .unit-card {
   width: 100%; height: 100%; position: absolute; top: 0; left: 0;
   touch-action: none; user-select: none;
@@ -999,7 +1039,9 @@ body {
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   box-shadow: 0 5px 15px rgba(0,0,0,0.6);
   position: relative;
-  border: none; }
+  border: none; /* clip-path 鬩搾ｽｵ・ｺ・ｽ・ｮ鬩搾ｽｵ・ｺ髮銀・・ｽ・ｽ border 鬩搾ｽｵ・ｺ・ｽ・ｯ鬮ｴ蜿厄ｽｻ繧托ｽｽ・ｽ・｡鬮ｯ・ｷ闔ｨ螟ｲ・ｽ・ｽ・ｹ鬩搾ｽｵ・ｲ驕ｶ荵嶺ｺ｢・ｽ鬯ｯ・ｩ陝ｶ蜷ｶ竕ｦ box-shadow 鬩搾ｽｵ・ｺ・ｽ・ｧ鬩搾ｽｵ・ｺ・ｽ・ｿ鬩搾ｽｵ・ｺ髯晢ｽｶ陷ｻ・ｻ・ｽ・ｽ */
+}
+/* 鬩搾ｽｵ・ｺ・ｽ・｡鬩幢ｽ｢・ｧ驛｢譎｢・ｽ・ｻ髫ｨ・ｽ・ｲ鬩搾ｽｵ・ｺ・ｽ・ｨ鬮ｫ・ｴ陝ｶ・ｷ騾包ｽ･髫ｲ・ｷ・ｽ・ｸ・ｺ・ｽ・ｪ鬩幢ｽ｢隴趣ｽ｢・ｽ・｡鬩幢ｽ｢・ｧ・ｽ・ｿ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｪ鬩幢ｽ｢隴擾ｽｴ・ｽ驍ｵ・ｺ鬯俶｢ｧ・ｱ讚・ｽｬ逍ｲ・ｻ繧托ｽｽ・ｽ・ｷ・ｽ・･ */
 .unit-stats .atk::before, .unit-stats .hp::before {
     content: ''; position: absolute; inset: 2px;
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
@@ -1018,6 +1060,7 @@ body {
 }
 .unit-stats .val { margin-top: 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
+/* ==== 鬮ｫ・ｰ・ｽ驍・ｽｫ・ｽ (鬮ｫ・ｰ・ｽ・ｽ髫ｲ讖ｸ・ｽ・ｾ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｬ鬩幢ｽ｢・ｧ・ｽ・､鬩幢ｽ｢・ｧ・ｽ・｢鬩幢ｽ｢・ｧ・ｽ・ｦ鬩幢ｽ｢隴主・讓滄Δ譎｢・ｽ・ｻJS鬩搾ｽｵ・ｺ・ｽ・ｧ鬯ｮ・ｫ・ｱ・ｽ・ｿ鬮ｫ・ｰ・ｨ・ｽ・ｴ鬩搾ｽｵ・ｲ・ｽ鬩幢ｽ｡S鬩搾ｽｵ・ｺ・ｽ・ｯ鬮ｯ諞ｺ螻ｮ・ｽ・ｺ鬮ｫ・ｴ陝ｷ・｢・ｽ・ｬ鬮ｫ・ｴ・ｫ) ==== */
 .hand-area-wrapper {
   position: absolute; bottom: -180px; left: 0; width: 100%; height: 260px;
   display: flex; justify-content: center; align-items: flex-end;
@@ -1044,6 +1087,7 @@ body {
 .hand-card:hover { border-color: #cbd5e1; box-shadow: 0 -10px 40px rgba(255,255,255,0.3); z-index: 300 !important; }
 .hand-card.selected { border-color: #fbbf24; box-shadow: 0 0 50px rgba(251, 191, 36, 0.6); }
 
+/* ==== 鬮ｯ・ｷ・ｽ・ｿ・ｽ・ｽ・ｽ・ｳ鬮ｯ蜿･・ｹ・｢・ｽ・ｽ・ｽ・ｴUI ==== */
 .right-side {
   gap: 15px;
   display: flex;
@@ -1060,7 +1104,9 @@ body {
 }
 
 .log-panel {
-  flex: 1; min-height: 0; display: flex;
+  flex: 1; /* 鬮ｫ・ｹ・ｽ・ｿ髣包ｽｵ隴趣ｽ｢・ｽ・ｽ鬯倩ｲｻ・ｽ・ｸ・ｽ・ｺ・ｽ・ｽ・ｽ・ｮ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴取得・ｽ・｣・ｽ・ｹ驛｢譎｢・ｽ・ｻ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢・ｽ・ｧ髯句ｹ｢・ｽ・ｵ髫ｨ蛛・ｽｿ・ｽ・ｽ・ｸ・ｽ・ｺ・ｽ・ｽ・ｽ・ｹ鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｦ鬮｣蜴・ｽｽ・ｴ・ｽ・ｽ・ｽ・ｿ鬩搾ｽｵ・ｽ・ｺ驛｢譎｢・ｽ・ｻ*/
+  min-height: 0; /* 鬩幢ｽ｢隴趣ｿｽ・ｽ・ｼ鬩･・ｽ・ｨ謚ｵ・ｽ・ｹ隴擾ｽｴ・ｽ・ｽ驍ｵ・ｺ鬩｢謳ｾ・ｽ・ｹ・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・ｪ鬮ｯ・ｷ・つ驛｢譎｢・ｽ・ｻ驍ｵ・ｲ陝ｶ譏ｴ・�・ｽ・ｽ・ｽ・ｮ鬮ｯ譎｢・ｿ・ｽ・ｽ・ｸ隶抵ｽｫ・ｽ・ｺ・ｽ・ｽ陞ｯ蜻ｻ・ｿ・ｽ・ｽ・ｽ鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｫ鬩搾ｽｵ・ｽ・ｺ髯ｷ・ｷ・ｽ・ｶ・ｽ・ｽ・ｽ・ｽ */
+  display: flex;
   flex-direction: column;
   padding: 15px;
   margin: 5px 0;
@@ -1109,12 +1155,14 @@ body {
   border: 3px solid #fff;
 }
 
+/* 鬨ｾ・ｾ隶謎ｼ・ｿｽ驛｢譎｢・ｽ・ｬ驛｢譎冗函・取刮・ｹ・ｧ・ｽ・｢驛｢譎｢・ｿ・ｽ・ｽ・ｽ鬩墓慣・ｽ・ｺ鬮ｫ・ｱ鬮ｦ・ｪ・ｽ・ｽ驛｢譎｢・ｿ・ｽ・ｽ・ｽ驛｢・ｧ・ｽ・｢驛｢譎｢・ｿ・ｽ・ｽ・ｽ (髫ｰ・ｾ・ｽ・ｹ髯懈ｻゑｽｿ・ｽ雎撰ｽｿ) */
 .crystal-confirm-popup {
   position: absolute;
   bottom: 85px;
   left: 50%;
   transform: translateX(-50%);
-  width: 280px; background: rgba(10, 15, 30, 0.98);
+  width: 280px; /* 驍ｵ・ｺ髴郁ｲｻ・ｽ閾･・ｸ・ｺ・ｽ・ｫ髯溯ｶ｣・ｿ・ｽ・ｽ・｡驛｢・ｧ・ｽ・ｽ */
+  background: rgba(10, 15, 30, 0.98);
   border: 1px solid var(--accent);
   border-radius: 12px;
   padding: 15px;
@@ -1124,12 +1172,14 @@ body {
 }
 
 .crystal-confirm-popup p {
-  font-size: 13px; margin-bottom: 15px;
+  font-size: 13px; /* 髯晢ｿｽ・ｻ・｣・ｽ・ｽ髯晢ｿｽ・ｸ螂・ｽｼ・ｽ・ｸ・ｺ闕ｳ螂・ｽｼ・ｽ驍ｵ・ｺ・ｽ・ｦ1鬮ｯ・ｦ陟募ｨｯ・ｽ髯ｷ・ｿ陟托ｽｱ遶擾ｽｪ驛｢・ｧ驗呻ｽｫ・ｽ・ｽ・ｸ・ｺ陷ｷ・ｶ・ｽ・･驍ｵ・ｺ陷ｷ・ｶ・ｽ・ｽ */
+  margin-bottom: 15px;
   color: #fff;
   font-weight: bold;
   line-height: 1.4;
   text-align: center;
-  white-space: nowrap; }
+  white-space: nowrap; /* 1鬮ｯ・ｦ陟募ｾ個蟶晏距・ｽ・ｨ鬩穂ｼ夲ｽｽ・ｺ */
+}
 
 .popup-actions {
   display: flex;
@@ -1168,6 +1218,7 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* 鬯ｮ・ｯ・ｽ・｣髯懈ｻゑｽｽ・ｶ驛｢譎｢・ｽ・ｻ鬨ｾ・｡・ｽ・ｪ髫ｰ・ｽ邇・ｿｽ・ｼ雎暮ｯ会ｽｿ・ｽ */
 #turn-order-overlay {
   display: flex !important;
   align-items: center;
@@ -1228,19 +1279,11 @@ body {
   box-shadow: 0 0 30px rgba(212, 160, 23, 0.5), 0 0 60px rgba(212, 160, 23, 0.2);
 }
 
-
-
+/* ==== 鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・｢鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴擾ｽｶ邵ｺ譛ｱﾎ碑ｭ趣ｽ｢・ｽ・ｽ・ｽ・ｫ (鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴寂扱・ｭ髮｣・ｿ・ｽ・ｽ・ｩ・ｽ・ｽ・ｽ・ｳ鬯ｩ閧ｴ蠕暦ｿｽ・ｽ・ｽ・ｰ) ==== */
 .card-detail-overlay {
-  position: fixed !important; 
-  inset: 0 !important; 
-  background: rgba(0,0,0,0.85) !important;
-  z-index: 2147483647 !important; /* ABSOLUTE MAXIMUM INT32 */
-  display: flex; 
-  align-items: center; 
-  justify-content: center;
-  backdrop-filter: blur(10px);
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px);
+  z-index: 10001 !important; display: flex; align-items: center; justify-content: center;
 }
-
 .card-detail-modal {
   width: 1200px; height: 750px;
   background: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="%230d1326"/><path d="M0 0L100 100M100 0L0 100" stroke="%231a2240" stroke-width="2"/></svg>');
@@ -1253,6 +1296,7 @@ body {
   background-size: cover; background-position: center;
   border: 4px solid #fff; box-shadow: 0 20px 50px #000;
 }
+/* 鬮ｫ・ｨ・ｽ・ｨ驛｢譎｢・ｽ・ｻ鬩幢ｽ｢隴趣ｿｽ魃ｵ驍ｵ・ｺ・ｽ・｡鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ */
 .cd-close-btn {
   position: absolute; top: -20px; right: -20px;
   width: 50px; height: 50px; background: #e11d48;
@@ -1263,6 +1307,11 @@ body {
   transition: all 0.2s ease;
 }
 
+/* ============================================================ */
+/* 鬯ｮ・ｴ隰・∞・ｽ・ｽ・ｽ・ｽ鬮ｯ・ｷ・ｽ・ｽ: BGM鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｻ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｬ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｯ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ & 鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・｣鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｭ鬮ｫ・ｶ陜｣・､髴肴劼・ｿ・ｽ・ｽ・ｯ髯晢ｽｲ・ｽ・ｨ驍ｵ・ｺ・ｽ・ｽ・ｽ・ｹ・ｽ・ｧ・ｽ・ｽ・ｽ・､鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬯ｨ・ｾ陋ｹ・ｽ・ｽ・ｽ・ｽ・ｨ */
+/* ============================================================ */
+
+/* 鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・｣鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｭ鬮ｫ・ｶ陜｣・､髴肴劼・ｿ・ｽ・ｽ・ｯ鬮｢・ｾ・ｽ・･髯具ｽｻ・ｽ・､鬯ｯ・ｮ・ｽ・ｱ・ｽ・ｽ・ｽ・｢鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｮ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｩ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴趣ｿｽ・ｽ・ｼ隴∫ｵｶ隘夜ｩ幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｻ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｪ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ*/
 .color-filter-bar {
   display: flex; gap: 12px; margin-bottom: 20px;
 }
@@ -1279,8 +1328,10 @@ body {
 .color-orb[data-color="green"] { background-image: url('/assets/images/icon/divine/green.png'); }
 .color-orb[data-color="white"] { background-image: url('/assets/images/icon/divine/white.png'); }
 .color-orb[data-color="black"] { background-image: url('/assets/images/icon/divine/black.png'); }
+/* 髯橸ｽｻ隶鍋腸ﾂ・ｽ・ｧ驛｢・ｧ・ｽ・ｪ驛｢譎｢・ｽ・ｼ驛｢譎・§・ｽ・ｽ鬮ｯ・ｦ・ｽ・ｨ鬩穂ｼ夲ｽｽ・ｺ驛｢・ｧ陷ｻ蝓淞蜑ｰ諤擾ｿｽ・ｹ髯具ｽｹ・ｽ・ｽ */
 .color-orb .orb-inner { display: block; }
 
+/* 鬩幢ｽ｢隴惹ｸ橸ｽｹ・ｲ・ｽ蜿厄ｽｨ謚ｵ・ｽ・ｹ隴寂或・ｾ・ｭ・ｽ螳茨ｽ､・ｼ・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬯ｨ・ｾ陋ｹ・ｽ・ｽ・ｽ・ｽ・ｨ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴主・讓滄Δ譎｢・ｽ・ｰ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驍ｵ・ｺ・ｽ・ｽ */
 .preview-cost {
   width: 64px; height: 64px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
@@ -1290,6 +1341,7 @@ body {
   flex-shrink: 0;
 }
 
+/* 鬯ｮ・ｫ・ｽ・ｪ・ｽ・ｽ・ｽ・ｭ鬮ｯ讖ｸ・ｽ・ｳ髯橸ｽ｢・ｽ・ｹ・ｽ螳亥擠・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴擾ｽｶ邵ｺ譛ｱﾎ碑ｭ趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｮBGM鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｻ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｬ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｯ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ */
 .bgm-selector {
   display: flex; gap: 10px; justify-content: space-between; margin-top: 10px;
 }
@@ -1308,6 +1360,7 @@ body {
 
 .setting-item span { font-size: 14px; color: #fff; font-weight: bold; }
 
+/* 鬮ｫ・ｶ・つ髫ｲ蟷｢・ｿ・ｽ・ｽ・ｽ・ｽ・ｴ・ｽ・ｽ・ｽ・｢鬩幢ｽ｢隴趣ｿｽ・ｽ・ｼ隴∫ｵｶ隘夜ｩ幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ鬩幢ｽ｢隴趣ｿｽ・ｿ・ｽ驛｢譎｢・ｽ・ｻ */
 .search-filter-bar {
   display: flex; gap: 15px; margin-top: 15px; padding: 10px;
   background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);
@@ -1324,6 +1377,7 @@ body {
 .glass-select { flex: 1; cursor: pointer; }
 .glass-select option { background: #1a1a1a; color: #fff; }
 
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｩ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・､鬩幢ｽ｢隴擾ｽｶ邵ｺ譛ｱﾎ碑ｭ趣ｽ｢・ｽ・ｽ・ｽ・ｼ */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -1335,6 +1389,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 18px; height: 18px; background: var(--accent); border-radius: 50%; border: 2px solid #fff; cursor: pointer; box-shadow: 0 0 10px var(--accent);
 }
 
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｻ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｰ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・｡鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴主・讓滄し・ｺ隲ｷ蛹・ｽｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴主・讓滂ｿｽ蜿厄ｽｺ・ｽ・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ (鬮ｯ蛹ｺ・ｺ・ｷ雎ｸ・ｵ驕ｶ・ｽ・ｽ・ｬ髮具ｿｽ・ｽ・ｯ・ｽ・ｽ・ｽ・ｨ・ｽ・ｽ・ｽ・ｭ鬮ｯ讖ｸ・ｽ・ｳ髯橸ｽ｢・ｽ・ｹ驕ｶ莨・ｿｽ・ｽ・ｸ・ｽ・ｺ・ｽ・ｽ・ｽ・ｩ) */
 .segmented-control {
   display: flex; background: rgba(255,255,255,0.05); border-radius: 8px; padding: 2px;
 }
@@ -1343,6 +1398,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .btn-tiny.active { background: var(--accent); color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
 
+/* 鬩幢ｽ｢隴取ｸ可・ｽ・･・ｽ蜿門旭・ｽ・ｹ隴惹ｼ夲ｽｽ・､・ｽ・ｼ髯具ｽｻ・ｽ・､鬯ｯ・ｮ・ｽ・ｱ・ｽ・ｽ・ｽ・｢ */
 .help-overlay { z-index: 300000 !important; }
 .help-panel { width: 800px; height: 700px; display: flex; flex-direction: column; padding: 40px; }
 .help-scroll-area { 
@@ -1352,6 +1408,7 @@ input[type="range"]::-webkit-slider-thumb {
 .help-item h3 { color: var(--accent); font-size: 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
 .help-item p { font-size: 15px; line-height: 1.6; color: rgba(255,255,255,0.8); }
 .help-scroll-area::-webkit-scrollbar { width: 6px; }
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｢鬩幢ｽ｢隴趣ｿｽ・ｿ・ｽ驍ｵ・ｺ・ｽ・｡鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ */
 .player-avatar-wrapper {
   position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;
 }
@@ -1364,6 +1421,7 @@ input[type="range"]::-webkit-slider-thumb {
   position: absolute; bottom: -5px; right: 0; transform: scale(0.8);
 }
 
+/* 鬮ｫ・ｰ・ｽ・ｽ驍・ｿｽ・ｫ・ｽ・ｽ・ｽ・ｽ・ｸ・ｽ・ｺ・ｽ・ｽ・ｽ・ｮ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・ｻ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬯ｮ・ｯ・ｽ・ｦ・ｽ・ｽ・ｽ・ｨ鬯ｩ遨ゑｽｼ螟ｲ・ｽ・ｽ・ｽ・ｺ */
 .unit-stats { display: flex; gap: 4px; padding: 2px; }
 .stat-badge {
   flex: 1; display: flex; align-items: center; justify-content: center; gap: 2px;
@@ -1373,6 +1431,7 @@ input[type="range"]::-webkit-slider-thumb {
 .atk-badge { border: 1px solid #ef4444; color: #fca5a5; }
 .hp-badge { border: 1px solid #10b981; color: #6ee7b7; }
 
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴取得・ｽ・｣・ｽ・ｹ・ｽ蜿門旭・ｽ・ｹ・ｽ・ｧ・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴趣ｿｽ・ｿ・ｽ鬨ｾ・｡魄・ｽｹ陷肴圜・ｿ・ｽ・ｽ・ｨ鬯ｩ遨ゑｽｼ螟ｲ・ｽ・ｽ・ｽ・ｺ */
 .spell-status {
   margin-top: auto; display: flex; align-items: center; justify-content: center;
   background: rgba(139, 92, 246, 0.3); border: 1px solid var(--accent); border-radius: 4px; padding: 4px;
@@ -1380,9 +1439,11 @@ input[type="range"]::-webkit-slider-thumb {
 .spell-icon-main { font-size: 16px; margin-right: 4px; filter: drop-shadow(0 0 5px var(--accent)); }
 .spell-label { font-size: 10px; font-weight: bold; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
 
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴寂扱・ｭ髮｣・ｿ・ｽ・ｽ・ｩ・ｽ・ｽ・ｽ・ｳ鬯ｩ閧ｴ蠕暦ｿｽ・ｽ・ｽ・ｰ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・｢鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴擾ｽｶ邵ｺ譛ｱﾎ碑ｭ趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｮ鬮ｯ讖ｸ・ｽ・ｻ髫ｶ轣假ｽｲ・ｩ邵ｺ雜｣・ｿ・ｽ・ｽ・ｧ */
 .cd-attributes { display: flex; gap: 8px; margin-top: 5px; }
 .cd-color-icon { width: 32px; height: 32px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)); }
-#cd-color { display: none; } .cd-close-btn:hover {
+#cd-color { display: none; } /* 鬮ｫ・ｴ鬲・ｼ夲ｽｽ・ｽ・ｽ・ｧ鬮ｫ・ｴ陞滂ｽｲ・ｽ・ｽ・ｽ・･鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｮ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驍ｵ・ｺ陷證ｦ・ｽ・ｹ・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴取ｧｭﾎ難ｿｽ・ｽ・ｽ・｡・ｽ・ｽ・ｽ・ｨ鬯ｩ遨ゑｽｼ螟ｲ・ｽ・ｽ・ｽ・ｺ鬩幢ｽ｢・ｽ・ｧ髯晢ｽｶ隴惹ｹ冷・鬩搾ｽｵ・ｽ・ｺ髯ｷ・ｷ・ｽ・ｶ髫ｨ・ｳ・ｽ・ｽ・ｽ・ｹ・ｽ・ｧ驕ｶ荳橸ｽ｣・ｹ・ｽ・ｽ鬮ｫ・ｰ隴会ｽｦ・ｽ・ｽ・ｽ・ｪ鬯ｩ蜉ｱ・托ｿｽ・ｽ・ｽ・ｮ鬩搾ｽｵ・ｽ・ｲ驕ｶ荳橸ｽ｣・ｺ驕ｨ螳｣縺暦ｿｽ・ｺ髮具ｿｽﾂ・･・ｽ・ｽHTML鬮ｯ蜿･・ｹ・｢・ｽ・ｽ・ｽ・ｴ鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｧ鬯ｮ・ｫ・ｽ・ｱ・ｽ・ｽ・ｽ・ｿ鬮ｫ・ｰ・ｽ・ｨ・ｽ・ｽ・ｽ・ｴ */
+.cd-close-btn:hover {
   transform: scale(1.1); background: #fb7185;
   box-shadow: 0 0 25px rgba(225, 29, 72, 0.9);
 }
@@ -1409,6 +1470,7 @@ input[type="range"]::-webkit-slider-thumb {
 .cd-type-tags { display: flex; gap: 10px; margin-bottom: 30px; }
 .cd-type-tag { font-size: 20px; padding: 5px 20px; background: rgba(255,255,255,0.1); border-radius: 20px; border: 1px solid #fff; }
 
+/* 鬯ｨ・ｾ・ｽ・ｾ髫ｶ隰趣ｽｼ・ｽ・ｿ・ｽ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｰ/鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｢鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・､鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ */
 .cd-color-tag {
   display: flex; align-items: center; gap: 8px;
   font-size: 20px; padding: 5px 20px;
@@ -1429,6 +1491,7 @@ input[type="range"]::-webkit-slider-thumb {
 .cd-flavor-text { font-style: italic; color: #94a3b8; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 20px; font-size: 20px; }
 .btn-close-modal { position: absolute; top: -20px; right: -20px; width: 60px; height: 60px; border-radius: 50%; font-size: 16px; background: #e11d48; border: 3px solid #fff; z-index: 10; cursor: pointer; }
 
+/* 鬮ｫ・ｴ鬲・ｼ夲ｽｽ・ｽ・ｽ・｢鬮ｯ譎｢・ｿ・ｽ・つ・ｽ・･驍ｵ・ｺ隲ｷ蛹・ｽｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴趣ｿｽ・ｺ・｢驛｢譎｢・ｽ・ｻ鬩幢ｽ｢隴取ｨ費ｽｺ繧托ｽｾ雜｣・ｽ・ｦ鬩幢ｽ｢隴寂握縺具ｿｽ・ｽ・ｽ・ｼ髯具ｽｹ・ｽ・ｻ驛｢譎｢・ｽ・ｻ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｪ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｬ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢・ｽ・ｧ驛｢譎｢・ｽ・ｻ・ｽ蜿悶渚・ｽ・ｹ・ｽ・ｧ・ｽ・ｽ・ｽ・ｶ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ鬩幢ｽ｢隴寂握縺具ｿｽ・ｽ・ｽ・ｼ髯晢ｽｲ・ｽ・ｨ驛｢譎｢・ｽ・ｻ鬮｣蛹・ｽｽ・ｳ鬯ｯ・ｽ・､・ｧ・ｽ・ｶ隶呵ｶ｣・ｽ・ｸ・ｽ・ｺ髯懶ｽ｣・ｽ・ｺ・ｽ・ｽ・ｽ・ｿ髫ｴ雜｣・ｿ・ｽ闔�諞ｺ・ｨ・ｾ陋ｹ・ｽ・ｽ・ｽ・ｽ・ｨ */
 .overlay {
   position: fixed; inset: 0;
   display: flex; align-items: center; justify-content: center;
@@ -1515,6 +1578,7 @@ input[type="range"]::-webkit-slider-thumb {
   to { filter: drop-shadow(0 0 40px rgba(212, 175, 55, 1)); }
 }
 
+/* 隰ｾ・ｻ隰ｦ・ｽ豕呵怺・ｰ邵ｺ・ｮ郢ｧ・ｰ郢晢ｽｭ郢晢ｽｼ陷会ｽｹ隴ｫ・ｽ */
 #attack-arrow-line {
   stroke-width: 14;
   stroke-linecap: round;
@@ -1528,7 +1592,14 @@ input[type="range"]::-webkit-slider-thumb {
   to { stroke-dashoffset: 0; }
 }
 
-
+.card-detail-overlay {
+  z-index: 99999 !important;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
 
 .card-detail-modal {
   background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
@@ -1587,7 +1658,8 @@ input[type="range"]::-webkit-slider-thumb {
 
 .cd-info-area {
   flex: 1;
-  padding: 40px 25px; display: flex;
+  padding: 40px 25px; /* 30px -> 25px 邵ｺ・ｫ邵ｺ霈費ｽ臥ｸｺ・ｫ陷鷹�托ｽｸ・ｽ */
+  display: flex;
   flex-direction: column;
   gap: 25px;
   background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
@@ -1683,7 +1755,8 @@ input[type="range"]::-webkit-slider-thumb {
 
 .cd-text-box {
   background: rgba(0,0,0,0.3);
-  padding: 16px; border-radius: 12px;
+  padding: 16px; /* 20px -> 16px 邵ｺ・ｫ邵ｺ霈費ｽ臥ｸｺ・ｫ陷鷹�托ｽｸ・ｽ */
+  border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.05);
   margin-top: auto;
 }
@@ -1728,6 +1801,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .side-spacer { flex: 1; }
 
+/* 鬩幢ｽ｢隴乗・・ｽ・ｸ髣疲ｩｸ・ｽ・ｦ鬩幢ｽ｢隴取得・ｽ・ｳ・ｽ・ｨ驍ｵ・ｺ陷･・ｲ・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴取得・ｽ・ｳ・ｽ・ｨ驛｢譎｢・ｽ・ｻ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｪ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隴趣ｿｽ・ｿ・ｽ驛｢譎｢・ｽ・ｻ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｬ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・､鬯ｨ・ｾ陋ｹ・ｽ・ｽ・ｽ・ｽ・ｨ驛｢譎｢・ｽ・ｻ髯懈瑳・ｺ・ｽ隰泌ｹ・楜陜｣・､雎｢・ｸ・ｽ縺､ﾂ・ｽ・ｽ・ｽ・ｽ鬮ｯ譎｢・ｿ・ｽ・ｽ・ｽ・ｽ・ｾ鬮ｯ貊ゑｽｽ・｢髫ｲ蟷｢・ｽ・ｶ・ｽ・ｽ・ｽ・ｼ驛｢譎｢・ｽ・ｻ*/
 .hand-card .card-overlay {
   background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
   padding: 10px;
@@ -1749,12 +1823,15 @@ input[type="range"]::-webkit-slider-thumb {
 .hc-type { font-size: 10px; color: var(--text-dim); text-align: center; margin-top: auto; letter-spacing: 1px; }
 .hc-stats { text-align: center; font-size: 11px; color: #c7d2fe; }
 
+/* unit-card on board additional */
 .unit-card.can-act {
   border: 2px solid var(--success) !important;
   box-shadow: 0 0 20px rgba(34, 197, 94, 0.6) !important;
 }
 .unit-card.acted { opacity: 0.8; filter: grayscale(0.3) brightness(0.9); }
-.unit-name { display: none; } .keywords-display { 
+.unit-name { display: none; } /* 鬯ｨ・ｾ・ｽ・ｶ・ｽ・ｽ・ｽ・､鬯ｯ・ｮ・ｽ・ｱ・ｽ・ｽ・ｽ・｢鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｧ鬩搾ｽｵ・ｽ・ｺ・ｽ・ｽ・ｽ・ｯ鬮ｯ・ｷ・ｽ・ｷ髫ｶ譛ｱ・｡謚ｫ・ｽ鬮｣蛹・ｽｽ・ｳ髯晢ｿｽ髮懶ｽ｣・ｽ・ｽ・ｽ・ｦ驛｢譎｢・ｽ・ｻ*/
+
+.keywords-display { 
     position: absolute; top: 10px; left: 0; right: 0;
     display: flex; gap: 3px; flex-wrap: wrap; justify-content: center; 
     pointer-events: none;
@@ -1765,6 +1842,7 @@ input[type="range"]::-webkit-slider-thumb {
   border: 1px solid rgba(255,255,255,0.2);
 }
 
+/* status-badge redesigned */
 .unit-stats {
   display: flex;
   justify-content: center;
@@ -1795,6 +1873,7 @@ input[type="range"]::-webkit-slider-thumb {
 .stat-badge .icon { font-size: 12px; opacity: 0.8; margin-top: -2px; }
 .stat-badge .val.damaged { color: #f87171; text-shadow: 0 0 8px #ef4444; }
 
+/* Hand card interactions */
 .hand-cards {
   display: flex;
   justify-content: center;
@@ -1819,6 +1898,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 12px;
 }
 
+/* Empty slots */
 .board-slot.empty {
   border: 1px dashed rgba(255,255,255,0.1);
   background: rgba(255,255,255,0.02);
@@ -1833,6 +1913,7 @@ input[type="range"]::-webkit-slider-thumb {
   transform: rotate(45deg);
 }
 
+/* animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -1844,11 +1925,13 @@ input[type="range"]::-webkit-slider-thumb {
 .animate-in { animation: fadeIn 0.3s ease; }
 .pulsing { animation: pulse 1.5s ease infinite; }
 
+/* scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
 
+/* ==== 鬩幢ｽ｢隴取得・ｽ・ｳ・ｽ・ｨ・ｽ荳ｻ・ｸ・ｷ・ｽ・ｹ隴擾ｽｴ・ｽ・ｽ驍ｵ・ｺ陋幢ｽｵ・ｽ・ｽ驛｢譎｢・ｽ・ｻ驛｢譎｢・ｽ・ｩ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｭ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・ｻ鬯ｨ・ｾ陋ｹ・ｽ・ｽ・ｽ・ｽ・ｨ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・､鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ ==== */
 .hand-card.dragging {
   opacity: 0.5;
   filter: grayscale(0.5);
@@ -1863,6 +1946,7 @@ input[type="range"]::-webkit-slider-thumb {
   filter: drop-shadow(0 20px 40px rgba(0,0,0,0.8));
 }
 
+/* 鬯ｮ・ｫ・ｽ・ｪ・ｽ・ｽ・ｽ・ｭ鬮ｯ讖ｸ・ｽ・ｳ髯橸ｽ｢・ｽ・ｹ・ｽ螳亥擠・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ鬩幢ｽ｢隰ｨ魑ｴﾂ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｫ */
 .settings-overlay {
   z-index: 200000 !important;
   background: rgba(0, 0, 0, 0.4);
@@ -1898,6 +1982,7 @@ input[type="range"]::-webkit-slider-thumb {
   color: #fff;
 }
 
+/* 郢ｧ・ｿ郢晢ｽｼ郢晢ｽｳ鬮｢蜿･・ｧ蛹ｺ・ｼ豕鯉ｿｽ */
 .turn-splash {
   position: fixed;
   top: 45%; left: 50%;
@@ -1930,6 +2015,7 @@ input[type="range"]::-webkit-slider-thumb {
   display: flex; flex-direction: column; gap: 15px; margin-top: 30px;
 }
 
+/* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｢鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｿ鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驍ｵ・ｺ鬩｢謳ｾ・ｽ・ｹ・ｽ・ｧ・ｽ・ｽ・ｽ・｢鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｭ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｼ */
 .attack-arrow-svg {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   pointer-events: none; z-index: 5000;
@@ -1945,6 +2031,7 @@ input[type="range"]::-webkit-slider-thumb {
   to { stroke-dashoffset: 0; }
 }
 
+/* 鬮ｫ・ｰ・ｽ・ｾ・ｽ・ｽ・ｽ・ｻ鬮ｫ・ｰ・ｽ・ｦ驛｢譎｢・ｽ・ｻ髯溯ｶ｣・ｿ・ｽ陞ｯ蜻ｻ・ｿ・ｽ・ｽ・ｽ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｦ鬩幢ｽ｢隴乗・・ｽ・ｹ隴擾ｽｴ・取坩ﾎ碑ｭ主・讓滄Δ譎｢・ｽ・ｻ鬮ｯ貊捺ｱ夲ｿｽ・ｽ・ｽ・ｷ鬯ｮ・ｫ・ｽ・ｱ・ｽ・ｽ・ｽ・ｿ */
 .unit-card.can-act {
   cursor: grab !important;
   position: relative;
@@ -1982,6 +2069,7 @@ input[type="range"]::-webkit-slider-thumb {
   transition: all 0.2s ease;
 }
 
+/* Card Detail Enhanced Styles */
 .cd-rarity {
   margin-top: 5px;
   display: inline-flex;
@@ -1998,6 +2086,7 @@ input[type="range"]::-webkit-slider-thumb {
   justify-content: center;
 }
 
+/* Rarity Colors (Common=White, Rare=Blue, Majestic=Red, Legendary=Gold) */
 .rarity-1 { color: #e2e8f0; text-shadow: 0 0 5px rgba(255,255,255,0.3); }
 .rarity-2 { color: #3b82f6; text-shadow: 0 0 10px rgba(59, 130, 246, 0.4); }
 .rarity-3 { color: #ef4444; text-shadow: 0 0 15px rgba(239, 68, 68, 0.6); animation: majesticGlow 3s infinite alternate; }
@@ -2037,7 +2126,8 @@ input[type="range"]::-webkit-slider-thumb {
   color: #d4c8a8;
   font-size: 13px;
   line-height: 1.6;
-  letter-spacing: -0.03em; margin-top: 10px;
+  letter-spacing: -0.03em; /* 隴・ｿｽ・ｭ驤ｴ菫｣郢ｧ蛛ｵ・・ｹｧ蟲ｨ竊馴圦・ｰ郢ｧ竏夲ｽ・*/
+  margin-top: 10px;
   white-space: pre-wrap;
   text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
@@ -2052,6 +2142,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 3px;
 }
 
+/* 驛｢・ｧ・ｽ・ｷ驛｢譎｢・ｽ・ｼ驛｢譎｢・ｽ・ｫ驛｢譎・ｿｽ・ｽ・ｽ・ｽ・ｴ髯橸ｽ｢鬯・汚・ｽ・ｼ雎暮ｯ会ｽｿ・ｽ */
 #shield-break-overlay {
   display: flex; align-items: center; justify-content: center;
   background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px);
@@ -2071,6 +2162,7 @@ input[type="range"]::-webkit-slider-thumb {
   100% { transform: translate(1px, -1px); }
 }
 
+/* 驛｢・ｧ・ｽ・ｹ驛｢・ｧ・ｽ・ｭ驛｢譎｢・ｽ・ｫ鬨ｾ蜈ｷ・ｽ・ｺ髯ｷ讎奇ｽ｢髮｣・ｽ・ｼ雎暮ｯ会ｽｿ・ｽ */
 #skill-trigger-overlay {
   display: flex; align-items: center; justify-content: center;
 }
@@ -2093,6 +2185,7 @@ input[type="range"]::-webkit-slider-thumb {
   100% { transform: skewX(-15deg) translateX(100%); opacity: 0; }
 }
 
+/* 驛｢・ｧ・ｽ・ｿ驛｢譎｢・ｽ・ｼ驛｢・ｧ・ｽ・ｲ驛｢譎｢・ｿ・ｽ郢晢ｽｨ髫ｰ蜴・ｽｿ・ｽ・ｽ・ｮ陞｢・ｹ・守坩・ｹ譎｢・ｽ・ｼ驛｢譎｢・ｿ・ｽ */
 body.targeting-mode {
   cursor: crosshair;
 }
@@ -2117,6 +2210,8 @@ body.targeting-mode {
   50% { box-shadow: 0 0 25px rgba(59, 130, 246, 0.8); }
   100% { box-shadow: 0 0 10px rgba(59, 130, 246, 0.4); }
 }
+/* ======== 驛｢譏ｴ・ｽ郢晢ｽ｣驛｢・ｧ・ｽ・ｭ髫ｶ蝣､霍晢ｿｽ・ｯ郢晢ｽｻUI驛｢・ｧ・ｽ・ｪ驛｢譎｢・ｽ・ｼ驛｢譎・ｿｽ郢晢ｽｻ驛｢譎擾ｽｸ蜷ｶ・ｽ驛｢譎｢・ｽ・ｫ ======== */
+
 .tabs {
   display: flex;
   gap: 15px;
@@ -2233,6 +2328,7 @@ body.targeting-mode {
   animation: errorPulse 1.5s infinite;
   border-color: var(--danger) !important;
 }
+/* 郢ｧ・｢郢晁・縺｡郢晢ｽｼ鬩包ｽｸ隰壽ｧｭ繝ｱ郢晢ｽｬ郢晢ｿｽ繝ｨ */
 .avatar-palette {
   display: flex;
   gap: 8px;
@@ -2284,8 +2380,10 @@ body.targeting-mode {
   line-height: 1.8em;
 }
 
+/* Chrome騾包ｽｨ郢晢ｽｬ郢ｧ・､郢ｧ・｢郢ｧ・ｦ郢晞メ・｣諛ｷ・ｼ・ｷ */
 .mulligan-panel { min-height: 480px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; }
 
+/* 隰・玄諠・叉莨∝応驕撰ｽｴ隴ｽ・ｽ縺帷ｹｧ・ｿ郢ｧ・､郢晢ｽｫ (APPENDED) */
 .discard-overlay {
   z-index: 6000;
   background: radial-gradient(circle at center, rgba(30, 10, 10, 0.9) 0%, rgba(0, 0, 0, 0.98) 100%);
@@ -2333,6 +2431,7 @@ body.targeting-mode {
   color: rgba(255, 255, 255, 0.4);
 }
 
+/* 郢晢ｽｦ郢昜ｹ昴Ε郢晉｣ｯ・ｽ驗ゑｽｮ陷ｿ・ｯ髢ｭ・ｽ郢ｧ・ｨ郢晢ｽｪ郢ｧ・｢邵ｺ・ｮ郢昜ｸ翫≧郢晢ｽｩ郢ｧ・､郢晢ｿｽ */
 .can-place {
     border: 3px solid #60a5fa !important;
     box-shadow: 0 0 20px rgba(96, 165, 250, 0.6), inset 0 0 10px rgba(96, 165, 250, 0.3) !important;
@@ -2347,6 +2446,7 @@ body.targeting-mode {
     100% { box-shadow: 0 0 10px rgba(96, 165, 250, 0.4); }
 }
 
+/* 郢ｧ・ｹ郢晏｣ｹﾎ晉ｹｧ・ｿ郢晢ｽｼ郢ｧ・ｲ郢晢ｿｽ繝ｨ郢昜ｸ翫≧郢晢ｽｩ郢ｧ・､郢晢ｿｽ */
 .can-spell-target {
     border: 3px solid #c084fc !important;
     box-shadow: 0 0 20px rgba(192, 132, 252, 0.6), inset 0 0 10px rgba(192, 132, 252, 0.3) !important;
@@ -2354,6 +2454,7 @@ body.targeting-mode {
     cursor: pointer !important;
 }
 
+/* 郢晏ｳｨﾎ帷ｹ晢ｿｽ縺定叉・ｭ邵ｺ・ｮ陜玲ｫ・ｽｻ・｢髯ｬ諛茨ｽｭ・｣ (郢晢ｿｽ縺堤ｹ晢ｽｬ郢晢ｽｼ郢晄・・ｿ・ｮ雎・ｽ｣) */
 .drag-ghost {
     transform: rotate(0deg) scale(1.1) !important;
     box-shadow: 0 15px 45px rgba(0,0,0,0.8) !important;
@@ -2362,6 +2463,11 @@ body.targeting-mode {
     z-index: 10000;
 }
 
+/* -------------------------------------------------------------------------- */
+/*  UI/UX 陟托ｽｷ陋ｹ・ｽ: 郢昜ｸ翫≧郢晢ｽｩ郢ｧ・､郢晏現竊堤ｹ晏ｳｨﾎ帷ｹ晢ｿｽ縺定ｲ肴ｳ鯉ｿｽ (陞ｳ謔滂ｿｽ陟包ｽｩ隴鯉ｽｧ霑夲ｿｽ)  */
+/* -------------------------------------------------------------------------- */
+
+/* 郢晏ｳｨﾎ帷ｹ晢ｿｽ縺定叉・ｭ邵ｺ・ｮ郢ｧ・ｫ郢晢ｽｼ郢晉甥・ｧ・ｿ陷搾ｽ｢髯ｬ諛茨ｽｭ・｣・ｽ蛹ｻ竏ｪ邵ｺ・｣邵ｺ蜷ｶ・・恆髦ｪ・定惺莉｣・･郢ｧ蛹ｻ竕ｧ邵ｺ・ｫ闖ｫ・ｮ雎・ｽ｣・ｽ・ｽ */
 .drag-ghost {
     transform: rotate(0deg) scale(1.1) !important;
     box-shadow: 0 15px 45px rgba(0,0,0,0.8) !important;
@@ -2370,6 +2476,7 @@ body.targeting-mode {
     z-index: 10000;
 }
 
+/* 郢晢ｽｦ郢昜ｹ昴Ε郢晉｣ｯ・ｽ驗ゑｽｮ陷ｿ・ｯ髢ｭ・ｽ郢ｧ・ｨ郢晢ｽｪ郢ｧ・｢邵ｺ・ｮ郢昜ｸ翫≧郢晢ｽｩ郢ｧ・､郢晢ｿｽ (鬮ｱ・ｽ) */
 .can-place {
     border: 3px solid #60a5fa !important;
     box-shadow: 0 0 20px rgba(96, 165, 250, 0.6), inset 0 0 10px rgba(96, 165, 250, 0.3) !important;
@@ -2385,6 +2492,7 @@ body.targeting-mode {
     100% { box-shadow: 0 0 10px rgba(96, 165, 250, 0.4); }
 }
 
+/* 郢ｧ・ｿ郢晢ｽｼ郢ｧ・ｲ郢晢ｿｽ繝ｨ鬩包ｽｸ隰壽ｨ雁・邵ｺ・ｮ郢昜ｸ翫≧郢晢ｽｩ郢ｧ・､郢晢ｿｽ (鬩･鬘檎横霓､・ｹ雋奇ｿｽ) */
 .can-target {
     border: 5px solid #fbbf24 !important;
     box-shadow: 0 0 25px #fbbf24, inset 0 0 15px rgba(251,191,36,0.5) !important;
@@ -2400,12 +2508,14 @@ body.targeting-mode {
     100% { transform: scale(1); box-shadow: 0 0 15px #fbbf24; }
 }
 
+/* 郢晄ｧｭ縺育ｹｧ・ｹ郢ｧ・ｪ郢晢ｽｼ郢晁・・ｽ隴弱ｅ・ｽ陟托ｽｷ髫ｱ・ｿ */
 .is-hovered {
     background: rgba(255, 255, 255, 0.1) !important;
     border-color: rgba(255, 255, 255, 0.5) !important;
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
 }
 
+/* 隰ｾ・ｻ隰ｦ・ｽ蜃ｾ邵ｺ・ｮ郢晢ｽｭ郢晢ｿｽ縺醍ｹｧ・ｪ郢晢ｽｳ陝・ｽｾ髮趣ｽ｡ (隘搾ｽ､) */
 .is-locked-on {
     border: 4px solid #ef4444 !important;
     box-shadow: 0 0 25px rgba(239, 68, 68, 0.6), inset 0 0 15px rgba(239, 68, 68, 0.4) !important;
@@ -2428,6 +2538,7 @@ body.targeting-mode {
     border-radius: 20px;
     border: 1px solid var(--gold);
 }
+/* ======== 郢晢ｽｪ郢ｧ・ｶ郢晢ｽｫ郢晁ご蛻､鬮ｱ・｢ (DEFEAT/VICTORY) 郢晏干ﾎ樒ｹ晄ｺ倥＞郢晢ｿｽ雋肴ｳ鯉ｿｽ ======== */
 .result-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -2473,6 +2584,7 @@ body.targeting-mode {
     100% { transform: scale(1) translateY(0); opacity: 1; }
 }
 
+/* 郢ｧ・ｷ郢晢ｽｼ郢晢ｽｫ郢晏ｳｨ縺夂ｹｧ・ｧ郢晢ｿｽ邵ｺ・ｮ郢晢ｽｬ郢ｧ・｢郢晢ｽｪ郢晢ｿｽ縺・崕・･雋肴ｳ鯉ｿｽ */
 .shield-gem.rarity-1 { border: 2px solid #e2e8f0; box-shadow: 0 0 5px rgba(255,255,255,0.2); }
 .shield-gem.rarity-2 { border: 2.5px solid #3b82f6; box-shadow: 0 0 12px rgba(59, 130, 246, 0.5); }
 .shield-gem.rarity-3 { border: 3px solid #ef4444; box-shadow: 0 0 18px rgba(239, 68, 68, 0.7); animation: majesticGlow 3s infinite alternate; }
@@ -2486,10 +2598,12 @@ body.targeting-mode {
   animation: none !important;
 }
 
+/* 繝・ャ繧ｭ讒狗ｯ峨げ繝ｪ繝・ラ逕ｨ縺ｮ繝ｬ繧｢繝ｪ繝・ぅ貍泌・ */
 .grid-item.rarity-2 { border: 2px solid #3b82f6 !important; box-shadow: 0 0 10px rgba(59, 130, 246, 0.3) !important; }
 .grid-item.rarity-3 { border: 2.5px solid #ef4444 !important; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4) !important; }
 .grid-item.rarity-4 { border: 3px solid #d4a017 !important; box-shadow: 0 0 20px rgba(212, 160, 23, 0.5) !important; }
 
+/* ==== 繧ｷ繝ｼ繝ｫ繝峨ヶ繝ｬ繧､繧ｯ繧ｫ繝・ヨ繧､繝ｳ貍泌・ ==== */
 .shield-break-modal {
   display: flex;
   flex-direction: column;
@@ -2574,6 +2688,7 @@ body.targeting-mode {
   line-height: 1.6;
 }
 
+/* Animations for Shield Break */
 @keyframes sb-zoom-in {
   0% { transform: scale(0.1); opacity: 0; }
   60% { transform: scale(1.1); opacity: 1; }
@@ -2605,6 +2720,7 @@ body.targeting-mode {
   50% { transform: translateY(-10px) rotate(-3deg); }
 }
 
+/* --- 繧ｫ繝ｼ繝芽ｩｳ邏ｰ・壼小蝟壹ヨ繝ｼ繧ｯ繝ｳ繧ｻ繧ｯ繧ｷ繝ｧ繝ｳ --- */
 .cd-token-section {
   margin-top: 20px;
   padding-top: 15px;
@@ -2662,12 +2778,16 @@ body.targeting-mode {
 .cd-token-stats .atk { color: #f87171; }
 .cd-token-stats .hp { color: #4ade80; }
 
+/* ========== 繧ｹ繝槭・繝ｻ繝｢繝舌う繝ｫ遶ｯ譛ｫ蟇ｾ蠢・========== */
+
+/* 髟ｷ謚ｼ縺玲凾縺ｮ繝・ヵ繧ｩ繝ｫ繝医Γ繝九Η繝ｼ辟｡蜉ｹ蛹厄ｼ医き繝ｼ繝臥ｭ会ｼ・*/
 .card-item, .card, .hand-card, .board-half, .tribe-badge, .avatar-frame, .mode-card {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
 }
 
+/* 繧ｹ繝槭・邵ｦ逕ｻ髱｢譎ゅ・縲梧ｨｪ逕ｻ髱｢縺ｫ縺励※縺上□縺輔＞縲阪が繝ｼ繝舌・繝ｬ繧､ */
 .rotate-prompt {
   display: none;
   position: fixed;
@@ -2682,6 +2802,7 @@ body.targeting-mode {
   font-family: 'Noto Sans JP', sans-serif;
 }
 
+/* 邵ｦ逕ｻ髱｢ (Portrait) 縺ｧ逕ｻ髱｢蟷・′迢ｭ縺・�ｴ蜷医・繧ｲ繝ｼ繝�譛ｬ菴薙ｒ髫�縺励※隴ｦ蜻翫ｒ蜃ｺ縺・*/
 @media screen and (max-width: 900px) and (orientation: portrait) {
   #game-wrapper {
     display: none !important;
@@ -2694,6 +2815,7 @@ body.targeting-mode {
 
 
 
+/* Status Badges Enhancement */
 .status-badge {
   display: inline-block;
   background: rgba(0, 0, 0, 0.5);
@@ -2716,6 +2838,7 @@ body.targeting-mode {
 }
 
 
+/* Player/Opponent Differentiation */
 .player-block .avatar-info {
   background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.1));
   border-right: 2px solid rgba(37, 99, 235, 0.3);
@@ -2739,6 +2862,12 @@ body.targeting-mode {
 }
 
 
+/* ================================================================
+   VFX ENGINE — 演出用CSSアニメーション定義
+   vfx-engine.js が参照する全クラスをここで定義する
+   ================================================================ */
+
+/* --- ダメージ数値ポップアップ --- */
 .damage-number {
   position: absolute;
   font-family: var(--font-fantasy);
@@ -2761,6 +2890,7 @@ body.targeting-mode {
   100% { opacity: 0; transform: translate(-50%, -80px) scale(0.8); }
 }
 
+/* --- ユニット被弾フラッシュ --- */
 .unit-hit-flash {
   animation: hitFlashAnim 0.4s ease-out;
 }
@@ -2774,6 +2904,7 @@ body.targeting-mode {
   100% { filter: brightness(1) saturate(1); }
 }
 
+/* --- ユニットシェイク --- */
 .unit-shake {
   animation: unitShakeAnim 0.3s ease-out;
 }
@@ -2786,6 +2917,7 @@ body.targeting-mode {
   100% { transform: translateX(0) rotate(0); }
 }
 
+/* --- 死亡シェイク + フェードアウト --- */
 .unit-death-shake {
   animation: deathShake 0.3s ease-out;
 }
@@ -2807,6 +2939,7 @@ body.targeting-mode {
   100% { opacity: 0; transform: scale(0.3) translateY(20px); filter: brightness(2) saturate(0) blur(4px); }
 }
 
+/* --- 衝撃波リング --- */
 .impact-burst {
   position: absolute;
   width: 80px; height: 80px;
@@ -2822,6 +2955,7 @@ body.targeting-mode {
   100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
 }
 
+/* --- アビリティ発動グロウ --- */
 .unit-ability-flash {
   animation: abilityPulse 0.8s ease-out;
 }
@@ -2832,6 +2966,7 @@ body.targeting-mode {
   100% { box-shadow: 0 0 0 0 transparent; filter: brightness(1); }
 }
 
+/* --- 召喚フラッシュ --- */
 .summon-flash {
   position: absolute;
   inset: 0;
@@ -2848,6 +2983,7 @@ body.targeting-mode {
   100% { opacity: 0; transform: scale(2); }
 }
 
+/* --- ユニット出現アニメーション --- */
 .unit-appear {
   animation: unitAppear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
@@ -2857,6 +2993,7 @@ body.targeting-mode {
   100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0) brightness(1); }
 }
 
+/* --- 画面揺れ --- */
 .screen-shake {
   animation: screenShake 0.4s ease-out;
 }
@@ -2874,6 +3011,7 @@ body.targeting-mode {
   100% { transform: translate(0, 0); }
 }
 
+/* --- 不屈 (Endure) ラベル --- */
 .endure-label {
   position: absolute;
   font-family: var(--font-fantasy);
@@ -2894,6 +3032,7 @@ body.targeting-mode {
   100% { opacity: 0; transform: translate(-50%, -30px) scale(0.9); }
 }
 
+/* --- 共鳴 (Resonance) 波紋 --- */
 .resonance-ring {
   position: absolute;
   width: 60px; height: 60px;
@@ -2929,6 +3068,7 @@ body.targeting-mode {
   100% { opacity: 0; transform: translate(-50%, -20px) scale(0.95); }
 }
 
+/* --- シールドヒット / ブレイクラベル --- */
 .shield-hit-label {
   position: absolute;
   font-family: var(--font-fantasy);
@@ -2962,6 +3102,7 @@ body.targeting-mode {
   100% { opacity: 0; transform: translate(-50%, -50px) scale(0.9); }
 }
 
+/* --- アビリティ発動ラベル --- */
 .ability-trigger-label {
   position: absolute;
   font-family: var(--font-fantasy);
@@ -2986,6 +3127,7 @@ body.targeting-mode {
   100% { opacity: 0; transform: translate(-50%, -15px) scale(0.95); }
 }
 
+/* --- SP回復パルス --- */
 .sp-gain-pulse {
   animation: spGainPulseAnim 0.6s ease-out;
 }
@@ -2995,6 +3137,7 @@ body.targeting-mode {
   100% { filter: brightness(1); transform: scale(1); }
 }
 
+/* --- SP回復数値ポップアップ --- */
 .sp-gain-number {
   position: absolute;
   font-family: var(--font-fantasy);
@@ -3014,6 +3157,7 @@ body.targeting-mode {
   100% { opacity: 0; transform: translate(-50%, -45px) scale(0.8); }
 }
 
+/* --- ターンスプラッシュ フェードIN/OUT --- */
 .splash-fade-in {
   animation: splashFadeIn 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
 }
@@ -3029,6 +3173,7 @@ body.targeting-mode {
   100% { opacity: 0; transform: translate(-50%, -50%) scale(1.3); filter: blur(8px); }
 }
 
+/* ターンスプラッシュ色分け（victory=自ターン, enemy=相手ターン） */
 .turn-splash-victory .splash-content {
   background: linear-gradient(to right, transparent, rgba(37, 99, 235, 0.3), transparent);
   color: #93c5fd;
@@ -3040,6 +3185,7 @@ body.targeting-mode {
   text-shadow: 0 0 30px rgba(239, 68, 68, 0.8), 0 0 60px rgba(239, 68, 68, 0.4), 0 4px 8px rgba(0,0,0,0.9);
 }
 
+/* --- ロックオン表示（攻撃矢印先端） --- */
 .is-locked-on {
   outline: 3px solid rgba(239, 68, 68, 0.9) !important;
   box-shadow: 0 0 25px rgba(239, 68, 68, 0.7), inset 0 0 15px rgba(239, 68, 68, 0.3) !important;
@@ -3050,12 +3196,14 @@ body.targeting-mode {
   100% { outline-width: 5px; box-shadow: 0 0 35px rgba(239, 68, 68, 0.9); }
 }
 
+/* --- ホバー表示（カードドラッグ中） --- */
 .is-hovered {
   outline: 2px solid rgba(59, 130, 246, 0.7) !important;
   box-shadow: 0 0 20px rgba(59, 130, 246, 0.5) !important;
   background: rgba(59, 130, 246, 0.1) !important;
 }
 
+/* --- バリア / 不屈 / ステルス 視覚バッジ --- */
 .has-barrier { box-shadow: 0 0 12px rgba(226, 232, 240, 0.5), inset 0 0 8px rgba(226, 232, 240, 0.2); }
 .has-endure  { box-shadow: 0 0 12px rgba(251, 191, 36, 0.4), inset 0 0 8px rgba(251, 191, 36, 0.15); }
 .is-stealth  { opacity: 0.6; filter: saturate(0.6) brightness(0.85); }
@@ -3077,9 +3225,11 @@ body.targeting-mode {
   backdrop-filter: blur(2px);
 }
 
+/* --- ステータスバフ/デバフ色 --- */
 .val.stat-buffed   { color: #22c55e !important; text-shadow: 0 0 6px rgba(34, 197, 94, 0.6); }
 .val.stat-debuffed { color: #f43f5e !important; text-shadow: 0 0 6px rgba(244, 63, 94, 0.6); }
 
+/* --- 手札のプレイ不可表示 --- */
 .hand-card.unplayable {
   filter: grayscale(0.7) brightness(0.6);
   opacity: 0.7;
@@ -3091,12 +3241,14 @@ body.targeting-mode {
   z-index: auto !important;
 }
 
+/* --- 破棄選択 --- */
 .selected-to-discard {
   outline: 3px solid #f43f5e !important;
   box-shadow: 0 0 20px rgba(244, 63, 94, 0.6) !important;
   filter: brightness(0.7) saturate(0.5);
 }
 
+/* --- 勝利/敗北 リザルトの演出強化 --- */
 .result-overlay.victory {
   background: radial-gradient(circle at center, rgba(37, 99, 235, 0.15) 0%, rgba(0,0,0,0.9) 70%) !important;
 }
@@ -3131,6 +3283,7 @@ body.targeting-mode {
   letter-spacing: 3px;
 }
 
+/* --- ターゲット選択指示テキスト --- */
 #targeting-instruction {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -3153,6 +3306,7 @@ body.targeting-mode {
   100% { text-shadow: 0 0 25px rgba(251, 191, 36, 0.9); }
 }
 
+/* --- 修正履歴(Modifiers)の表示 --- */
 .cd-modifiers-container {
   margin-top: 12px;
   padding-top: 10px;
@@ -3180,6 +3334,7 @@ body.targeting-mode {
 .modifier-value.plus  { color: #22c55e; font-weight: bold; }
 .modifier-value.minus { color: #f43f5e; font-weight: bold; }
 
+/* --- 召喚トークンセクション --- */
 .cd-token-section {
   margin-top: 15px;
   padding-top: 12px;
@@ -3233,6 +3388,11 @@ body.targeting-mode {
 }
 
 
+/* ================================================================
+   SHIELD BREAK モーダル — リッチ演出
+   ================================================================ */
+
+/* --- オーバーレイ基盤 --- */
 #shield-break-overlay {
   display: none;
   position: fixed;
@@ -3260,6 +3420,7 @@ body.targeting-mode {
   100% { opacity: 0; }
 }
 
+/* --- モーダル本体 --- */
 .shield-break-modal {
   position: relative;
   display: flex;
@@ -3275,6 +3436,7 @@ body.targeting-mode {
   100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
+/* --- バーストリング（破壊衝撃波） --- */
 .sb-burst-ring {
   position: absolute;
   width: 400px;
@@ -3298,6 +3460,7 @@ body.targeting-mode {
   100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
 }
 
+/* --- タイトル「SHIELD BREAK!」 --- */
 .sb-title {
   font-family: var(--font-fantasy);
   font-size: 64px;
@@ -3318,6 +3481,7 @@ body.targeting-mode {
   100% { filter: drop-shadow(0 0 50px rgba(245, 158, 11, 0.9)) drop-shadow(0 4px 12px rgba(0,0,0,0.8)); }
 }
 
+/* --- カード表示エリア --- */
 .sb-content {
   display: flex;
   align-items: center;
@@ -3326,6 +3490,7 @@ body.targeting-mode {
   z-index: 3;
 }
 
+/* --- カードフリップ --- */
 .sb-card-wrapper {
   width: 220px;
   height: 310px;
@@ -3352,6 +3517,7 @@ body.targeting-mode {
   overflow: hidden;
 }
 
+/* カード裏面 */
 .sb-card-back {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e293b 100%);
   border: 3px solid rgba(212, 160, 23, 0.6);
@@ -3379,6 +3545,7 @@ body.targeting-mode {
   pointer-events: none;
 }
 
+/* カード表面（イラスト） */
 .sb-card-front {
   transform: rotateY(180deg);
   background-size: cover;
@@ -3394,6 +3561,7 @@ body.targeting-mode {
   pointer-events: none;
 }
 
+/* --- シールド情報パネル --- */
 .sb-info {
   max-width: 400px;
   display: flex;
@@ -3445,6 +3613,7 @@ body.targeting-mode {
   text-shadow: 0 1px 4px rgba(0,0,0,0.6);
 }
 
+/* --- ヒントテキスト --- */
 .sb-hint {
   font-family: var(--font-fantasy);
   font-size: 16px;
@@ -3460,6 +3629,7 @@ body.targeting-mode {
   100% { opacity: 0.7; }
 }
 
+/* --- 背景パーティクル（純CSS） --- */
 #shield-break-overlay::before {
   content: '';
   position: absolute;
@@ -3477,6 +3647,7 @@ body.targeting-mode {
   100% { opacity: 1; transform: scale(1.05); }
 }
 
+/* --- 金色の破片散乱アニメーション --- */
 #shield-break-overlay::after {
   content: '';
   position: absolute;
@@ -3508,351 +3679,22 @@ body.targeting-mode {
 .sp-orb-display { transition: all 0.3s ease; }
 .sp-orb-display:hover { transform: scale(1.1) rotate(5deg); filter: brightness(1.3); }
 
+/* Mobile Layout & iOS Crash Fix */
 /* ==========================================
-   MOBILE STABILIZATION: ONE-VIEW FINAL (v110)
-   Full visibility, no scroll, PC-like experience
+   MOBILE STABILIZATION: PC GOLDEN RATIO (v118)
+   33% Image / 67% Info - Complete PC Experience
    ========================================== */
 @media (max-width: 1250px), (max-height: 800px) {
-  /* PERFORMANCE & STABILITY */
-  * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
-  .glass-panel, .panel, .overlay, .modal { background: rgba(15, 20, 35, 0.95) !important; }
-
-  /* FIX: iPhone Home Indicator collision */
-  .player-hand { 
-    bottom: 25px !important; 
-    padding-bottom: env(safe-area-inset-bottom) !important;
-  }
-
-  /* DETAIL MODAL: PERFECT ONE-VIEW (Fixed 80vh) */
-  html body 
-  
-  html body .card-detail-modal {
-    width: auto !important;
-    max-width: 95vw !important;
-    height: 80vh !important; /* Locked height to prevent scrolling */
-    flex-direction: row !important;
-    padding: 2vh !important;
-    gap: 2vh !important;
-    position: fixed !important;
-    left: 50% !important; top: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    border: 1px solid var(--accent) !important;
-    overflow: hidden !important; /* NO SCROLLING */
-    box-sizing: border-box !important;
-  }
-
-  /* IMAGE AREA: Scaled but contained, no black gaps */
-  html body .card-detail-overlay .cd-image-area { 
-    flex: 0 0 auto !important;
-    height: 100% !important; 
-    aspect-ratio: 5 / 7 !important;
-    background-size: contain !important; /* 100% card visible */
-    background-repeat: no-repeat !important;
-    background-position: center !important;
-    border: none !important; /* Remove thick border to save space */
-  }
-
-  html body .card-detail-overlay .cd-info-area { 
-    flex: 1 !important;
-    height: 100% !important;
-    padding: 0 1vh !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 1.2vh !important;
-    overflow: hidden !important;
-  }
-
-  /* Font Sizes: Precise VH scaling for "No Scroll" */
-  html body .card-detail-overlay .cd-name { 
-    font-size: 4.5vh !important; 
-    margin: 0 !important;
-    white-space: nowrap !important;
-  }
-  html body .card-detail-overlay .cd-effect-text,
-  html body .card-detail-overlay .cd-ability-text { 
-    font-size: 3.0vh !important; 
-    line-height: 1.3 !important; 
-  }
-  html body .card-detail-overlay .cd-flavor-text { font-size: 2.2vh !important; opacity: 0.6 !important; }
-  
-  /* Icon Scaling */
-  html body .card-detail-overlay .cd-cost { 
-    width: 7vh !important; height: 7vh !important; 
-    font-size: 3.5vh !important; 
-  }
-  html body .card-detail-overlay .cd-stat-icon { width: 3vh !important; height: 3vh !important; }
-  html body .card-detail-overlay .cd-stat-value { font-size: 3.5vh !important; }
-
-  /* MULLIGAN: PRESERVING THE 45VH STATE */
-  #mulligan-overlay .card,
-  #mulligan-overlay .hand-card { 
-    height: 45vh !important; 
-    width: auto !important; 
-    aspect-ratio: 5/7 !important;
-  }
-  .mulligan-panel { 
-    height: 100vh !important;
-    padding: 2vh !important; 
-    gap: 2vh !important; 
-    justify-content: center !important;
-  }
-  .mulligan-actions .btn { font-size: 22px !important; padding: 10px 35px !important; }
-}
-
-/* ==========================================
-   MOBILE STABILIZATION: TRUE ONE-VIEW (v111)
-   No more hiding content. Fitting it by shrinking gaps.
-   ========================================== */
-@media (max-width: 1250px), (max-height: 800px) {
-  /* PERFORMANCE & STABILITY */
-  * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
-  .glass-panel, .panel, .overlay, .modal { background: rgba(15, 20, 35, 0.95) !important; }
-
-  /* FIX: iPhone Home Indicator collision */
-  .player-hand { 
-    bottom: 25px !important; 
-    padding-bottom: env(safe-area-inset-bottom) !important;
-  }
-
-  /* DETAIL MODAL: COMPACT ONE-VIEW */
-  html body 
-  
-  html body .card-detail-modal {
-    width: auto !important;
-    max-width: 96vw !important;
-    height: 85vh !important; /* Slightly more space */
-    flex-direction: row !important;
-    padding: 1.5vh !important; /* Tight padding */
-    gap: 1.5vh !important; /* Tight gap */
-    position: fixed !important;
-    left: 50% !important; top: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    border: 1px solid var(--accent) !important;
-    overflow: hidden !important;
-  }
-
-  /* IMAGE AREA: 5:7 ratio maintained */
-  html body .card-detail-overlay .cd-image-area { 
-    flex: 0 0 auto !important;
-    height: 100% !important; 
-    aspect-ratio: 5 / 7 !important;
-    background-size: contain !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
-    border: none !important;
-  }
-
-  /* INFO AREA: Eliminate all global PX gaps */
-  html body .card-detail-overlay .cd-info-area { 
-    flex: 1 !important;
-    height: 100% !important;
-    padding: 0 1vh !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 1vh !important; /* Tight internal gap */
-    overflow-y: auto !important; /* Re-enable scroll JUST IN CASE, but aim for none */
-  }
-
-  /* Header Overrides: Kill the 20px gaps */
-  html body .card-detail-overlay .cd-header { 
-    gap: 1vh !important; 
-    padding-bottom: 1vh !important; 
-    margin-bottom: 0 !important; 
-    border-bottom-width: 1px !important;
-  }
-  
-  html body .card-detail-overlay .cd-name { 
-    font-size: 3.5vh !important; 
-    margin: 0 !important;
-  }
-  
-  html body .card-detail-overlay .cd-cost { 
-    width: 6vh !important; height: 6vh !important; 
-    font-size: 3vh !important; 
-    border-width: 2px !important;
-  }
-
-  /* Tags & Stats Overrides: Kill margins */
-  html body .card-detail-overlay .cd-type-tags { gap: 0.5vh !important; margin-bottom: 0.5vh !important; }
-  html body .card-detail-overlay .cd-type-tag,
-  html body .card-detail-overlay .cd-color-tag { font-size: 2.2vh !important; padding: 0.2vh 1vh !important; }
-  html body .card-detail-overlay .cd-color-icon { width: 3vh !important; height: 3vh !important; }
-
-  html body .card-detail-overlay .cd-stats { gap: 2vh !important; margin-bottom: 1vh !important; }
-  html body .card-detail-overlay .cd-stat { font-size: 3vh !important; gap: 0.5vh !important; }
-  html body .card-detail-overlay .cd-stat-icon { font-size: 3.2vh !important; }
-
-  /* Text Box Overrides: Kill the 30px padding */
-  html body .card-detail-overlay .cd-text-box { 
-    padding: 1.2vh !important; 
-    gap: 0.8vh !important; 
-    font-size: 2.8vh !important; 
-    border-radius: 8px !important;
-  }
-  html body .card-detail-overlay .cd-effect-text { margin-bottom: 0 !important; }
-  html body .card-detail-overlay .cd-flavor-text { font-size: 2vh !important; padding-top: 0.5vh !important; margin-top: 0 !important; }
-
-  /* MULLIGAN: PRESERVING THE STABLE 45VH STATE */
-  #mulligan-overlay .card,
-  #mulligan-overlay .hand-card { 
-    height: 45vh !important; 
-    width: auto !important; 
-    aspect-ratio: 5/7 !important;
-  }
-  .mulligan-panel { 
-    height: 100vh !important;
-    padding: 2vh !important; 
-    gap: 2vh !important; 
-    justify-content: center !important;
-  }
-}
-
-/* ==========================================
-   MOBILE STABILIZATION: MAX Z-INDEX (v112)
-   Card detail is now physically the highest layer possible
-   ========================================== */
-@media (max-width: 1250px), (max-height: 800px) {
-  /* PERFORMANCE & STABILITY */
+  /* PERFORMANCE: Disable heavy effects on small viewports */
   * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 
-  /* DETAIL MODAL: MAX Z-INDEX & ONE-VIEW */
+  /* DETAIL OVERLAY: Ensure top-level visibility */
   html body .card-detail-overlay {
-    z-index: 2147483647 !important; /* MAX INT32 */
+    z-index: 2147483647 !important; /* Max INT32 */
     background: rgba(0,0,0,0.9) !important;
   }
   
-  html body .card-detail-modal {
-    width: auto !important;
-    max-width: 96vw !important;
-    height: 85vh !important;
-    flex-direction: row !important;
-    padding: 1.5vh !important;
-    gap: 1.5vh !important;
-    position: fixed !important;
-    left: 50% !important; top: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    border: 1px solid var(--accent) !important;
-    overflow: hidden !important;
-    box-sizing: border-box !important;
-  }
-
-  html body .card-detail-overlay .cd-image-area { 
-    flex: 0 0 auto !important;
-    height: 100% !important; 
-    aspect-ratio: 5 / 7 !important;
-    background-size: contain !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
-  }
-
-  html body .card-detail-overlay .cd-info-area { 
-    flex: 1 !important;
-    height: 100% !important;
-    padding: 0 1vh !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 1vh !important;
-    overflow-y: auto !important;
-  }
-
-  /* Font Scaling Refined */
-  html body .card-detail-overlay .cd-header { gap: 1vh !important; padding-bottom: 1vh !important; margin-bottom: 0 !important; border-bottom: 1px solid rgba(184, 134, 11, 0.5) !important; }
-  html body .card-detail-overlay .cd-name { font-size: 3.5vh !important; margin: 0 !important; }
-  html body .card-detail-overlay .cd-cost { width: 6vh !important; height: 6vh !important; font-size: 3vh !important; border: 2px solid #fff !important; }
-  html body .card-detail-overlay .cd-type-tags { gap: 0.5vh !important; margin-bottom: 0.5vh !important; }
-  html body .card-detail-overlay .cd-type-tag, html body .card-detail-overlay .cd-color-tag { font-size: 2.2vh !important; padding: 0.2vh 1vh !important; }
-  html body .card-detail-overlay .cd-stats { gap: 2vh !important; margin-bottom: 1vh !important; }
-  html body .card-detail-overlay .cd-stat { font-size: 3vh !important; }
-  html body .card-detail-overlay .cd-text-box { padding: 1.2vh !important; gap: 0.8vh !important; font-size: 2.8vh !important; background: rgba(0,0,0,0.5) !important; }
-  html body .card-detail-overlay .cd-flavor-text { font-size: 2vh !important; padding-top: 0.5vh !important; }
-
-  /* MULLIGAN: PRESERVING THE STABLE 45VH STATE */
-  #mulligan-overlay .card,
-  #mulligan-overlay .hand-card { height: 45vh !important; width: auto !important; aspect-ratio: 5/7 !important; }
-  .mulligan-panel { height: 100vh !important; padding: 2vh !important; gap: 2vh !important; justify-content: center !important; }
-}
-
-/* ==========================================
-   MOBILE STABILIZATION: INFO PRIORITY (v113)
-   Slimming image to give text more width
-   ========================================== */
-@media (max-width: 1250px), (max-height: 800px) {
-  /* PERFORMANCE & STABILITY */
-  * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
-
-  /* DETAIL MODAL: INFO PRIORITY LAYOUT */
-  html body .card-detail-overlay {
-    z-index: 2147483647 !important; /* MAX INT32 */
-    background: rgba(0,0,0,0.9) !important;
-  }
-  
-  html body .card-detail-modal {
-    width: 94vw !important; /* Use almost full width */
-    height: 85vh !important;
-    flex-direction: row !important;
-    padding: 1.5vh !important;
-    gap: 2vh !important;
-    position: fixed !important;
-    left: 50% !important; top: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    border: 1px solid var(--accent) !important;
-    overflow: hidden !important;
-    box-sizing: border-box !important;
-  }
-
-  /* IMAGE AREA: SLIMMED TO 38% WIDTH */
-  html body .card-detail-overlay .cd-image-area { 
-    flex: 0 0 38% !important; /* Slimmer horizontally */
-    height: 100% !important; 
-    background-size: contain !important; /* Keep ratio, gaps allowed */
-    background-repeat: no-repeat !important;
-    background-position: center !important;
-    border: none !important;
-    background-color: transparent !important;
-  }
-
-  /* INFO AREA: EXPANDED TO ~60% WIDTH */
-  html body .card-detail-overlay .cd-info-area { 
-    flex: 1 !important;
-    height: 100% !important;
-    padding: 0 1vh !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 1vh !important;
-    overflow-y: auto !important; /* Safely handle very long text */
-  }
-
-  /* Font Adjustments for wider info area */
-  html body .card-detail-overlay .cd-header { gap: 1.5vh !important; padding-bottom: 1vh !important; margin-bottom: 0 !important; }
-  html body .card-detail-overlay .cd-name { font-size: 4vh !important; white-space: normal !important; line-height: 1.1 !important; }
-  html body .card-detail-overlay .cd-cost { width: 7vh !important; height: 7vh !important; font-size: 3.5vh !important; }
-  html body .card-detail-overlay .cd-type-tags { gap: 1vh !important; margin-bottom: 0.5vh !important; flex-wrap: wrap !important; }
-  html body .card-detail-overlay .cd-type-tag, html body .card-detail-overlay .cd-color-tag { font-size: 2.5vh !important; padding: 0.3vh 1.5vh !important; }
-  html body .card-detail-overlay .cd-stats { gap: 4vh !important; margin-bottom: 1vh !important; }
-  html body .card-detail-overlay .cd-stat { font-size: 3.5vh !important; }
-  html body .card-detail-overlay .cd-text-box { padding: 1.5vh !important; gap: 1vh !important; font-size: 3.2vh !important; background: rgba(0,0,0,0.5) !important; flex: 1 !important; }
-  html body .card-detail-overlay .cd-flavor-text { font-size: 2.2vh !important; padding-top: 1vh !important; }
-
-  /* MULLIGAN: PRESERVING THE STABLE 45VH STATE */
-  #mulligan-overlay .card,
-  #mulligan-overlay .hand-card { height: 45vh !important; width: auto !important; aspect-ratio: 5/7 !important; }
-  .mulligan-panel { height: 100vh !important; padding: 2vh !important; gap: 2vh !important; justify-content: center !important; }
-}
-
-/* ==========================================
-   MOBILE STABILIZATION: GOLDEN RATIO (v114)
-   33% Image / 67% Info (PC Experience)
-   ========================================== */
-@media (max-width: 1250px), (max-height: 800px) {
-  /* PERFORMANCE & STABILITY */
-  * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
-
-  /* DETAIL MODAL: PC-LIKE PROPORTIONS */
-  html body .card-detail-overlay {
-    z-index: 2147483647 !important;
-    background: rgba(0,0,0,0.9) !important;
-  }
-  
+  /* DETAIL MODAL: Scale with Viewport Height (vh) */
   html body .card-detail-modal {
     width: 95vw !important;
     height: 85vh !important;
@@ -3864,11 +3706,12 @@ body.targeting-mode {
     transform: translate(-50%, -50%) !important;
     border: 1px solid var(--accent) !important;
     overflow: hidden !important;
+    background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%) !important;
   }
 
-  /* IMAGE AREA: 33% GOLDEN RATIO */
+  /* IMAGE AREA: 33% (MATCHES PC RATIO) */
   html body .card-detail-overlay .cd-image-area { 
-    flex: 0 0 33% !important; /* PC-like width */
+    flex: 0 0 33% !important; 
     height: 100% !important; 
     background-size: contain !important;
     background-repeat: no-repeat !important;
@@ -3877,29 +3720,58 @@ body.targeting-mode {
     background-color: transparent !important;
   }
 
-  /* INFO AREA: EXPANDED FOR READABILITY */
+  /* INFO AREA: 67% (MAXIMIZED FOR TEXT) */
   html body .card-detail-overlay .cd-info-area { 
     flex: 1 !important;
     height: 100% !important;
-    padding-right: 1vh !important;
+    padding-right: 1.5vh !important;
     display: flex !important;
     flex-direction: column !important;
     gap: 1vh !important;
     overflow-y: auto !important;
+    border: none !important;
   }
 
-  /* Font Adjustments */
-  html body .card-detail-overlay .cd-header { gap: 2vh !important; padding-bottom: 1vh !important; margin-bottom: 0 !important; }
-  html body .card-detail-overlay .cd-name { font-size: 4.5vh !important; }
+  /* FONT SCALING: Mimic PC Balance */
+  html body .card-detail-overlay .cd-header { gap: 2vh !important; padding-bottom: 1vh !important; border-bottom: 1px solid var(--gold) !important; margin-bottom: 0 !important; }
+  html body .card-detail-overlay .cd-name { font-size: 4.5vh !important; white-space: nowrap !important; }
   html body .card-detail-overlay .cd-cost { width: 7.5vh !important; height: 7.5vh !important; font-size: 4vh !important; }
   html body .card-detail-overlay .cd-type-tags { gap: 1vh !important; margin-bottom: 1vh !important; }
-  html body .card-detail-overlay .cd-type-tag, html body .card-detail-overlay .cd-color-tag { font-size: 2.4vh !important; }
+  html body .card-detail-overlay .cd-type-tag, html body .card-detail-overlay .cd-color-tag { font-size: 2.4vh !important; padding: 0.3vh 1.5vh !important; }
+  html body .cd-tribe-icon { width: 3vh !important; height: 3vh !important; }
   html body .card-detail-overlay .cd-stats { gap: 5vh !important; margin-bottom: 1.5vh !important; }
   html body .card-detail-overlay .cd-stat { font-size: 4vh !important; }
-  html body .card-detail-overlay .cd-text-box { padding: 2vh !important; gap: 1vh !important; font-size: 3.2vh !important; flex: 1 !important; }
+  html body .cd-stat-icon { font-size: 3.5vh !important; }
+  html body .card-detail-overlay .cd-text-box { padding: 2vh !important; gap: 1vh !important; font-size: 3.2vh !important; flex: 1 !important; background: rgba(0,0,0,0.4) !important; }
+  html body .card-detail-overlay .cd-flavor-text { font-size: 2.2vh !important; padding-top: 1.5vh !important; }
 
-  /* MULLIGAN: PRESERVING THE STABLE 45VH STATE */
+  /* CLOSE BUTTON: Sizable for mobile touch */
+  html body .cd-close-btn { width: 6vh !important; height: 6vh !important; top: 1vh !important; right: 1vh !important; }
+
+  /* MULLIGAN: STABLE 45VH STATE */
   #mulligan-overlay .card,
   #mulligan-overlay .hand-card { height: 45vh !important; width: auto !important; aspect-ratio: 5/7 !important; }
   .mulligan-panel { height: 100vh !important; padding: 2vh !important; gap: 2vh !important; justify-content: center !important; }
+}
+@media (max-height: 500px) {
+  .card-detail-modal {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .cd-image-area {
+    flex: 0 0 40%;
+    height: 80dvh;
+    min-height: auto;
+  }
+  .cd-info-area {
+    overflow-y: auto;
+    max-height: 80dvh;
+  }
+}
+@supports (-webkit-touch-callout: none) {
+  .overlay, .card-detail-overlay, #shield-break-overlay, .deck-builder-header {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(0,0,0,0.95) !important;
+  }
 }

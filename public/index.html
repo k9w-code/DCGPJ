@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <title>DCG テストプレイ</title>
-  <link rel="stylesheet" href="/css/style.css?v=v117_fix_black_screen">
+  <link rel="stylesheet" href="/css/style.css?v=v118_pc_port">
 </head>
 <body>
   <div class="lobby-container">
@@ -81,21 +81,5 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/audio-manager.js"></script>
   <script src="/js/lobby.js"></script>
-
-  <script>
-    // Prevent Safari pinch zoom
-    document.addEventListener('gesturestart', function(e) {
-      e.preventDefault();
-    });
-    // Prevent Safari double-tap zoom
-    let lastTouchEnd = 0;
-    document.addEventListener('touchend', function(e) {
-      const now = (new Date()).getTime();
-      if (now - lastTouchEnd <= 300) {
-        e.preventDefault();
-      }
-      lastTouchEnd = now;
-    }, false);
-  </script>
 </body>
 </html>
