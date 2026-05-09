@@ -3507,96 +3507,29 @@ body.targeting-mode {
 .sp-orb-display:hover { transform: scale(1.1) rotate(5deg); filter: brightness(1.3); }
 
 /* ==========================================
-   STRUCTURAL MOBILE STABILIZATION (v104)
-   Ensures modal is outside scaled container
+   MOBILE STABILIZATION: SLIM & Z-INDEX (v106)
+   Further font reduction to fix vertical gaps
    ========================================== */
 @media (max-width: 1250px), (max-height: 800px) {
-  /* PERFORMANCE: Disable expensive blurs on mobile */
+  /* PERFORMANCE: Full removal of blurs */
   * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
-  .glass-panel, .panel, .overlay, .modal { background: rgba(15, 20, 35, 0.95) !important; }
 
-  /* FIX: iPhone Home Indicator collision */
-  .player-hand { 
-    bottom: 25px !important; /* Lift it up */
-    padding-bottom: env(safe-area-inset-bottom) !important;
-  }
-
-  /* UNIFIED MODAL: Fixed size relative to REAL viewport, not scaled container */
+  /* DETAIL MODAL: Slimmer to fit portrait illustrations perfectly */
   html body .card-detail-overlay {
-    z-index: 99999 !important;
-    background: rgba(0,0,0,0.8) !important;
+    z-index: 100000 !important; /* Ensure it stays above mulligan */
+    background: rgba(0,0,0,0.85) !important;
   }
   
   html body .card-detail-modal {
-    width: 90vw !important;
-    max-width: 800px !important;
-    height: 90vh !important;
-    flex-direction: row !important; /* Side-by-side for landscape */
-    padding: 20px !important;
-    gap: 20px !important;
-    position: fixed !important;
-    left: 50% !important; top: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    border: 1px solid var(--accent) !important;
-    box-shadow: 0 0 30px rgba(0,0,0,0.5) !important;
-  }
-
-  html body .card-detail-overlay .cd-image-area { 
-    flex: 0 0 40% !important;
-    height: 100% !important;
-    background-size: contain !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
-  }
-
-  html body .card-detail-overlay .cd-info-area { 
-    flex: 1 !important;
-    overflow-y: auto !important;
-    padding: 10px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 15px !important;
-  }
-
-  /* Font Sizes - Standard for mobile screen */
-  html body .card-detail-overlay .cd-name { font-size: 28px !important; }
-  html body .card-detail-overlay .cd-effect-text,
-  html body .card-detail-overlay .cd-ability-text { font-size: 18px !important; line-height: 1.4 !important; }
-  html body .card-detail-overlay .cd-cost { width: 60px !important; height: 60px !important; font-size: 32px !important; }
-
-  /* Mulligan spacing fix */
-  .mulligan-panel { gap: 10px !important; padding: 10px !important; }
-  .mulligan-cards { gap: 10px !important; margin-bottom: 5px !important; }
-}
-
-/* ==========================================
-   MOBILE STABILIZATION: REVERT & SLIM (v105)
-   Back to what worked, and slimming the modal
-   ========================================== */
-@media (max-width: 1250px), (max-height: 800px) {
-  /* PERFORMANCE & STABILITY */
-  * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
-  .glass-panel, .panel, .overlay, .modal { background: rgba(15, 20, 35, 0.95) !important; }
-
-  /* FIX: iPhone Home Indicator collision */
-  .player-hand { 
-    bottom: 25px !important; 
-    padding-bottom: env(safe-area-inset-bottom) !important;
-  }
-
-  /* SLIMMED MODAL: No more huge black borders */
-  html body .card-detail-modal {
-    width: 80vw !important;
-    max-width: 700px !important;
-    height: 88vh !important;
+    width: 75vw !important;
+    max-width: 600px !important;
+    height: 80vh !important;
     flex-direction: row !important;
-    padding: 20px !important;
-    gap: 20px !important;
-    position: fixed !important;
+    padding: 15px !important;
+    gap: 15px !important;
     left: 50% !important; top: 50% !important;
     transform: translate(-50%, -50%) !important;
-    border: 1px solid var(--accent) !important;
-    overflow: hidden !important;
+    position: fixed !important;
   }
 
   html body .card-detail-overlay .cd-image-area { 
@@ -3610,38 +3543,15 @@ body.targeting-mode {
   html body .card-detail-overlay .cd-info-area { 
     flex: 1 !important;
     overflow-y: auto !important;
-    padding: 10px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 15px !important;
+    padding: 5px !important;
+    gap: 10px !important; /* Tighten internal gaps */
   }
 
-  /* Sane Font Sizes */
-  html body .card-detail-overlay .cd-name { font-size: 26px !important; }
+  /* Font Sizes: Reduced to fix vertical height pull */
+  html body .card-detail-overlay .cd-name { font-size: 22px !important; }
   html body .card-detail-overlay .cd-effect-text,
-  html body .card-detail-overlay .cd-ability-text { font-size: 18px !important; line-height: 1.4 !important; }
-  html body .card-detail-overlay .cd-cost { width: 55px !important; height: 55px !important; font-size: 28px !important; }
-
-  /* MULLIGAN REVERT: Back to 45vh (the "Good" state) */
-  #mulligan-overlay .card,
-  #mulligan-overlay .hand-card { 
-    height: 45vh !important; 
-    width: auto !important; 
-    aspect-ratio: 5/7 !important;
-  }
-  .mulligan-panel { 
-    height: 100vh !important;
-    padding: 2vh !important; 
-    gap: 2vh !important; 
-    justify-content: center !important;
-  }
-  .mulligan-panel h2 { font-size: 28px !important; margin: 0 !important; }
-  .mulligan-panel p { font-size: 18px !important; margin: 0 !important; }
-  .mulligan-cards { gap: 20px !important; margin: 0 !important; }
-  .mulligan-actions { margin-top: 1vh !important; gap: 30px !important; }
-  .mulligan-actions .btn { font-size: 24px !important; padding: 12px 40px !important; }
-}
-
-@media (max-height: 400px) {
-  html body .card-detail-modal { height: 95vh !important; }
+  html body .card-detail-overlay .cd-ability-text { font-size: 16px !important; line-height: 1.3 !important; }
+  html body .card-detail-overlay .cd-flavor-text { font-size: 14px !important; }
+  html body .card-detail-overlay .cd-cost { width: 45px !important; height: 45px !important; font-size: 24px !important; }
+  html body .card-detail-overlay .cd-stat-value { font-size: 22px !important; }
 }
