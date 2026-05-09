@@ -3696,8 +3696,8 @@ body.targeting-mode {
   
   /* DETAIL MODAL: Scale with Viewport Height (vh) */
   html body .card-detail-modal {
-    width: 95vw !important;
-    height: 85vh !important;
+    width: 80vw !important;
+    height: 75vh !important;
     flex-direction: row !important;
     padding: 1.5vh !important;
     gap: 2.5vh !important;
@@ -3734,15 +3734,15 @@ body.targeting-mode {
 
   /* FONT SCALING: Mimic PC Balance */
   html body .card-detail-overlay .cd-header { gap: 2vh !important; padding-bottom: 1vh !important; border-bottom: 1px solid var(--gold) !important; margin-bottom: 0 !important; }
-  html body .card-detail-overlay .cd-name { font-size: 4.5vh !important; white-space: nowrap !important; }
-  html body .card-detail-overlay .cd-cost { width: 7.5vh !important; height: 7.5vh !important; font-size: 4vh !important; }
+  html body .card-detail-overlay .cd-name { font-size: 3.8vh !important; white-space: nowrap !important; }
+  html body .card-detail-overlay .cd-cost { width: 7.5vh !important; height: 7.5vh !important; font-size: 3.5vh !important; }
   html body .card-detail-overlay .cd-type-tags { gap: 1vh !important; margin-bottom: 1vh !important; }
   html body .card-detail-overlay .cd-type-tag, html body .card-detail-overlay .cd-color-tag { font-size: 2.4vh !important; padding: 0.3vh 1.5vh !important; }
   html body .cd-tribe-icon { width: 3vh !important; height: 3vh !important; }
   html body .card-detail-overlay .cd-stats { gap: 5vh !important; margin-bottom: 1.5vh !important; }
-  html body .card-detail-overlay .cd-stat { font-size: 4vh !important; }
+  html body .card-detail-overlay .cd-stat { font-size: 3.5vh !important; }
   html body .cd-stat-icon { font-size: 3.5vh !important; }
-  html body .card-detail-overlay .cd-text-box { padding: 2vh !important; gap: 1vh !important; font-size: 3.2vh !important; flex: 1 !important; background: rgba(0,0,0,0.4) !important; }
+  html body .card-detail-overlay .cd-text-box { padding: 2vh !important; gap: 1vh !important; font-size: 2.8vh !important; flex: 1 !important; background: rgba(0,0,0,0.4) !important; }
   html body .card-detail-overlay .cd-flavor-text { font-size: 2.2vh !important; padding-top: 1.5vh !important; }
 
   /* CLOSE BUTTON: Sizable for mobile touch */
