@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+const fs = require('fs');
+
+// --- 1. RESTORE game.html ---
+const gameHtml = `<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -265,10 +268,10 @@
       const scaleX = w / 1920;
       const scaleY = h / 1080;
       const scale = Math.min(scaleX, scaleY);
-      container.style.transform = `scale(${scale})`;
+      container.style.transform = \`scale(\${scale})\`;
       container.style.position = 'absolute';
-      container.style.left = `${(w - 1920 * scale) / 2}px`;
-      container.style.top = `${(h - 1080 * scale) / 2}px`;
+      container.style.left = \`\${(w - 1920 * scale) / 2}px\`;
+      container.style.top = \`\${(h - 1080 * scale) / 2}px\`;
       container.style.transformOrigin = '0 0';
     }
     window.addEventListener('resize', resizeGame);
@@ -276,4 +279,95 @@
     document.addEventListener('DOMContentLoaded', resizeGame);
   </script>
 </body>
-</html>
+</html>`;
+
+// --- 2. RESTORE deck-builder.html ---
+const builderHtml = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>DCG - デッキ編成</title>
+  <link rel="stylesheet" href="/css/style.css?v=v115_restored">
+</head>
+<body>
+  <div class="builder-container">
+    <div class="builder-header">
+      <h1>DECK BUILDER</h1>
+      <div class="builder-actions">
+        <button class="btn btn-primary" id="btn-save-deck">保存して戻る</button>
+      </div>
+    </div>
+
+    <div class="builder-main">
+      <div class="card-library-panel panel glass-panel">
+        <div class="panel-header">
+          <h2>カードライブラリ</h2>
+          <div class="search-filter-bar">
+            <input type="text" id="search-input" class="glass-input" placeholder="カード名で検索...">
+            <select id="color-filter" class="glass-select">
+              <option value="all">全色</option>
+              <option value="red">赤 (火)</option>
+              <option value="blue">青 (水)</option>
+              <option value="green">緑 (自然)</option>
+              <option value="white">白 (光)</option>
+              <option value="black">黒 (闇)</option>
+              <option value="neutral">無色</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-grid" id="card-library"></div>
+      </div>
+
+      <div class="deck-list-panel panel glass-panel">
+        <div class="panel-header">
+          <h2>現在のデッキ (<span id="deck-count">0</span>/40)</h2>
+        </div>
+        <div class="deck-grid" id="deck-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- カード詳細オーバーレイ (BODY直下) -->
+  <div class="overlay card-detail-overlay" id="card-detail-overlay" style="display: none;">
+    <div class="card-detail-modal">
+      <div class="cd-close-btn" id="btn-close-detail"></div>
+      <div class="cd-image-area" id="cd-image"></div>
+      <div class="cd-info-area">
+        <div class="cd-header">
+          <div class="cd-cost" id="cd-cost">0</div>
+          <h2 class="cd-name" id="cd-name">Card Name</h2>
+        </div>
+        <div class="cd-type-tags">
+          <span class="cd-type-tag" id="cd-type">Unit</span>
+          <div class="cd-tribe-tag">
+            <div class="cd-tribe-icon" id="cd-tribe-icon"></div>
+            <span class="cd-tribe-text" id="cd-tribe-text">Neutral</span>
+          </div>
+          <div class="cd-rarity" id="cd-rarity">Common</div>
+        </div>
+        <div class="cd-stats" id="cd-stats-container">
+          <div class="cd-stat"><span class="cd-stat-icon">⚔️</span><span id="cd-attack">0</span></div>
+          <div class="cd-stat"><span class="cd-stat-icon">❤️</span><span id="cd-hp">0</span></div>
+        </div>
+        <div class="cd-text-box">
+          <div class="cd-effect-text" id="cd-text"></div>
+          <div class="cd-flavor-text" id="cd-flavor"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/audio-manager.js?v=v115"></script>
+  <script src="/js/deck-builder.js?v=v115"></script>
+</body>
+</html>`;
+
+fs.writeFileSync('public/game.html', gameHtml, 'utf8');
+fs.writeFileSync('public/deck-builder.html', builderHtml, 'utf8');
+
+// Also update style.css to match v115
+let styleCss = fs.readFileSync('public/css/style.css', 'utf8');
+// (No changes needed to style.css content, just update version strings in HTML above)
+// But I'll ensure the mobile styles block is correct v114+
+console.log('Restoration complete.');
