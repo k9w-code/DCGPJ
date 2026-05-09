@@ -1228,8 +1228,19 @@ body {
   box-shadow: 0 0 30px rgba(212, 160, 23, 0.5), 0 0 60px rgba(212, 160, 23, 0.2);
 }
 
-.card-detail-overlay {\n  position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);\n  z-index: 100000 !important; display: flex; align-items: center; justify-content: center;
+
+
+.card-detail-overlay {
+  position: fixed !important; 
+  inset: 0 !important; 
+  background: rgba(0,0,0,0.85) !important;
+  z-index: 2147483647 !important; /* ABSOLUTE MAXIMUM INT32 */
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  backdrop-filter: blur(10px);
 }
+
 .card-detail-modal {
   width: 1200px; height: 750px;
   background: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="%230d1326"/><path d="M0 0L100 100M100 0L0 100" stroke="%231a2240" stroke-width="2"/></svg>');
@@ -1517,14 +1528,7 @@ input[type="range"]::-webkit-slider-thumb {
   to { stroke-dashoffset: 0; }
 }
 
-.card-detail-overlay {
-  z-index: 99999 !important;
-  background: rgba(0,0,0,0.85);
-  backdrop-filter: blur(8px);
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
+
 
 .card-detail-modal {
   background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
@@ -3520,10 +3524,7 @@ body.targeting-mode {
   }
 
   /* DETAIL MODAL: PERFECT ONE-VIEW (Fixed 80vh) */
-  html body .card-detail-overlay {
-    z-index: 100001 !important; /* One step above global */
-    background: rgba(0,0,0,0.85) !important;
-  }
+  html body 
   
   html body .card-detail-modal {
     width: auto !important;
@@ -3614,10 +3615,7 @@ body.targeting-mode {
   }
 
   /* DETAIL MODAL: COMPACT ONE-VIEW */
-  html body .card-detail-overlay {
-    z-index: 100000 !important;
-    background: rgba(0,0,0,0.85) !important;
-  }
+  html body 
   
   html body .card-detail-modal {
     width: auto !important;
@@ -3707,4 +3705,70 @@ body.targeting-mode {
     gap: 2vh !important; 
     justify-content: center !important;
   }
+}
+
+/* ==========================================
+   MOBILE STABILIZATION: MAX Z-INDEX (v112)
+   Card detail is now physically the highest layer possible
+   ========================================== */
+@media (max-width: 1250px), (max-height: 800px) {
+  /* PERFORMANCE & STABILITY */
+  * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+
+  /* DETAIL MODAL: MAX Z-INDEX & ONE-VIEW */
+  html body .card-detail-overlay {
+    z-index: 2147483647 !important; /* MAX INT32 */
+    display: flex !important;
+    background: rgba(0,0,0,0.9) !important;
+  }
+  
+  html body .card-detail-modal {
+    width: auto !important;
+    max-width: 96vw !important;
+    height: 85vh !important;
+    flex-direction: row !important;
+    padding: 1.5vh !important;
+    gap: 1.5vh !important;
+    position: fixed !important;
+    left: 50% !important; top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    border: 1px solid var(--accent) !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  html body .card-detail-overlay .cd-image-area { 
+    flex: 0 0 auto !important;
+    height: 100% !important; 
+    aspect-ratio: 5 / 7 !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+  }
+
+  html body .card-detail-overlay .cd-info-area { 
+    flex: 1 !important;
+    height: 100% !important;
+    padding: 0 1vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1vh !important;
+    overflow-y: auto !important;
+  }
+
+  /* Font Scaling Refined */
+  html body .card-detail-overlay .cd-header { gap: 1vh !important; padding-bottom: 1vh !important; margin-bottom: 0 !important; border-bottom: 1px solid rgba(184, 134, 11, 0.5) !important; }
+  html body .card-detail-overlay .cd-name { font-size: 3.5vh !important; margin: 0 !important; }
+  html body .card-detail-overlay .cd-cost { width: 6vh !important; height: 6vh !important; font-size: 3vh !important; border: 2px solid #fff !important; }
+  html body .card-detail-overlay .cd-type-tags { gap: 0.5vh !important; margin-bottom: 0.5vh !important; }
+  html body .card-detail-overlay .cd-type-tag, html body .card-detail-overlay .cd-color-tag { font-size: 2.2vh !important; padding: 0.2vh 1vh !important; }
+  html body .card-detail-overlay .cd-stats { gap: 2vh !important; margin-bottom: 1vh !important; }
+  html body .card-detail-overlay .cd-stat { font-size: 3vh !important; }
+  html body .card-detail-overlay .cd-text-box { padding: 1.2vh !important; gap: 0.8vh !important; font-size: 2.8vh !important; background: rgba(0,0,0,0.5) !important; }
+  html body .card-detail-overlay .cd-flavor-text { font-size: 2vh !important; padding-top: 0.5vh !important; }
+
+  /* MULLIGAN: PRESERVING THE STABLE 45VH STATE */
+  #mulligan-overlay .card,
+  #mulligan-overlay .hand-card { height: 45vh !important; width: auto !important; aspect-ratio: 5/7 !important; }
+  .mulligan-panel { height: 100vh !important; padding: 2vh !important; gap: 2vh !important; justify-content: center !important; }
 }
