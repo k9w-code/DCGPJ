@@ -3684,74 +3684,86 @@ body.targeting-mode {
    MOBILE STABILIZATION: PC GOLDEN RATIO (v118)
    33% Image / 67% Info - Complete PC Experience
    ========================================== */
+/* ==========================================
+   MOBILE STABILIZATION: TRUE ONE VIEW (v120)
+   Info Priority (28% Image / 72% Info)
+   ========================================== */
 @media (max-width: 1250px), (max-height: 800px) {
-  /* PERFORMANCE: Disable heavy effects on small viewports */
   * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 
-  /* DETAIL OVERLAY: Ensure top-level visibility */
   html body .card-detail-overlay {
-    z-index: 2147483647 !important; /* Max INT32 */
+    z-index: 2147483647 !important;
     background: rgba(0,0,0,0.9) !important;
   }
   
-  /* DETAIL MODAL: Scale with Viewport Height (vh) */
   html body .card-detail-modal {
-    width: 80vw !important;
+    width: 82vw !important; /* Slightly narrower than full to feel like a modal */
     height: 75vh !important;
     flex-direction: row !important;
     padding: 1.5vh !important;
-    gap: 2.5vh !important;
+    gap: 1.5vh !important; /* Tight gaps */
     position: fixed !important;
     left: 50% !important; top: 50% !important;
     transform: translate(-50%, -50%) !important;
-    border: 1px solid var(--accent) !important;
+    border: 1px solid var(--gold) !important;
     overflow: hidden !important;
     background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%) !important;
+    border-radius: 16px !important;
   }
 
-  /* IMAGE AREA: 33% (MATCHES PC RATIO) */
+  /* IMAGE AREA: ULTRA-SLIM (28%) TO MAXIMIZE INFO */
   html body .card-detail-overlay .cd-image-area { 
-    flex: 0 0 33% !important; 
+    flex: 0 0 28% !important; 
     height: 100% !important; 
-    background-size: contain !important;
+    background-size: cover !important; /* Allow cropping to keep layout stable */
     background-repeat: no-repeat !important;
     background-position: center !important;
     border: none !important;
-    background-color: transparent !important;
+    background-color: #000 !important;
+    border-radius: 8px !important;
   }
 
-  /* INFO AREA: 67% (MAXIMIZED FOR TEXT) */
+  /* INFO AREA: MAXIMIZED (72%) */
   html body .card-detail-overlay .cd-info-area { 
     flex: 1 !important;
     height: 100% !important;
-    padding-right: 1.5vh !important;
+    padding: 0 !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 1vh !important;
-    overflow-y: auto !important;
+    gap: 0.8vh !important;
+    overflow: hidden !important; /* STRICT: No scrolling allowed for one-view */
     border: none !important;
   }
 
-  /* FONT SCALING: Mimic PC Balance */
-  html body .card-detail-overlay .cd-header { gap: 2vh !important; padding-bottom: 1vh !important; border-bottom: 1px solid var(--gold) !important; margin-bottom: 0 !important; }
-  html body .card-detail-overlay .cd-name { font-size: 3.8vh !important; white-space: nowrap !important; }
-  html body .card-detail-overlay .cd-cost { width: 7.5vh !important; height: 7.5vh !important; font-size: 3.5vh !important; }
-  html body .card-detail-overlay .cd-type-tags { gap: 1vh !important; margin-bottom: 1vh !important; }
-  html body .card-detail-overlay .cd-type-tag, html body .card-detail-overlay .cd-color-tag { font-size: 2.4vh !important; padding: 0.3vh 1.5vh !important; }
-  html body .cd-tribe-icon { width: 3vh !important; height: 3vh !important; }
-  html body .card-detail-overlay .cd-stats { gap: 5vh !important; margin-bottom: 1.5vh !important; }
+  /* COMPACT FONT SCALING */
+  html body .card-detail-overlay .cd-header { gap: 1.5vh !important; padding-bottom: 0.8vh !important; margin-bottom: 0 !important; }
+  html body .card-detail-overlay .cd-name { font-size: 3.5vh !important; white-space: normal !important; line-height: 1.1 !important; }
+  html body .card-detail-overlay .cd-cost { width: 6.5vh !important; height: 6.5vh !important; font-size: 3.5vh !important; }
+  html body .card-detail-overlay .cd-type-tags { gap: 0.8vh !important; margin-bottom: 0.5vh !important; }
+  html body .card-detail-overlay .cd-type-tag, html body .card-detail-overlay .cd-color-tag { font-size: 2.2vh !important; padding: 0.2vh 1.2vh !important; }
+  html body .cd-tribe-icon { width: 2.5vh !important; height: 2.5vh !important; }
+  html body .card-detail-overlay .cd-stats { gap: 4vh !important; margin-bottom: 0.8vh !important; }
   html body .card-detail-overlay .cd-stat { font-size: 3.5vh !important; }
-  html body .cd-stat-icon { font-size: 3.5vh !important; }
-  html body .card-detail-overlay .cd-text-box { padding: 2vh !important; gap: 1vh !important; font-size: 2.8vh !important; flex: 1 !important; background: rgba(0,0,0,0.4) !important; }
-  html body .card-detail-overlay .cd-flavor-text { font-size: 2.2vh !important; padding-top: 1.5vh !important; }
+  html body .cd-stat-icon { font-size: 3vh !important; }
+  
+  /* TEXT BOX: Sized to fit precisely */
+  html body .card-detail-overlay .cd-text-box { 
+    padding: 1.5vh !important; 
+    gap: 0.5vh !important; 
+    font-size: 2.6vh !important; 
+    flex: 1 !important; 
+    background: rgba(0,0,0,0.4) !important;
+    overflow-y: auto !important; /* Just in case text is insanely long, but target is no scroll */
+  }
+  html body .card-detail-overlay .cd-effect-text { margin-bottom: 0.5vh !important; line-height: 1.3 !important; }
+  html body .card-detail-overlay .cd-flavor-text { font-size: 2vh !important; padding-top: 0.8vh !important; opacity: 0.6 !important; }
 
-  /* CLOSE BUTTON: Sizable for mobile touch */
-  html body .cd-close-btn { width: 6vh !important; height: 6vh !important; top: 1vh !important; right: 1vh !important; }
+  /* CLOSE BUTTON */
+  html body .cd-close-btn { width: 5.5vh !important; height: 5.5vh !important; top: -1.5vh !important; right: -1.5vh !important; }
 
-  /* MULLIGAN: STABLE 45VH STATE */
+  /* MULLIGAN */
   #mulligan-overlay .card,
   #mulligan-overlay .hand-card { height: 45vh !important; width: auto !important; aspect-ratio: 5/7 !important; }
-  .mulligan-panel { height: 100vh !important; padding: 2vh !important; gap: 2vh !important; justify-content: center !important; }
 }
 @media (max-height: 500px) {
   .card-detail-modal {
