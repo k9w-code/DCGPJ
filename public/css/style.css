@@ -3689,6 +3689,21 @@ body.targeting-mode {
    Info Priority (28% Image / 72% Info)
    ========================================== */
 @media (max-width: 1250px), (max-height: 800px) {
+/* HAND AREA: Lowering position to remove unnatural gap (v121) */
+  .hand-area-wrapper { 
+    bottom: 1.5vh !important; /* Lowered from previous high value */
+    padding-bottom: 0 !important;
+  }
+  .hand-area {
+    gap: -2vh !important; /* Tighten cards slightly */
+  }
+  .hand-card {
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)) !important;
+  }
+  .hand-card:hover {
+    transform: scale(1.4) translateY(-3vh) !important; /* Stronger pop-up from lower position */
+    z-index: 500 !important;
+  }
   * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 
   html body .card-detail-overlay {
