@@ -3,64 +3,149 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>DCG - デッキ編成</title>
-  <link rel="stylesheet" href="/css/style.css?v=v116_final">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>DCG - デッキ構築</title>
+  <link rel="stylesheet" href="/css/style.css?v=v117_fix_black_screen">
 </head>
 <body>
-  <div class="builder-container">
-    <div class="builder-main">
-      <div class="card-library-panel panel glass-panel">
-        <div class="panel-header">
-          <h2>カードライブラリ</h2>
-          <div class="type-cost-filters">
+  <div class="rotate-prompt" id="rotate-prompt">
+    <div style="font-size: 64px; margin-bottom: 20px;">📱🔄</div>
+    <div style="font-size: 24px; margin-bottom: 10px;">スマホを横向きにしてください</div>
+    <div style="font-size: 16px; color: #a09880;">Please rotate your device to landscape</div>
+  </div>
+  <div class="game-wrapper" id="game-wrapper" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; overflow: hidden; background: #000;">
+    <div class="game-container" id="game-container" style="width: 1920px; height: 1080px; position: relative; transform-origin: 0 0; display: block;">
+  <div class="deck-builder" style="height: 1080px;">
+    <!-- 左ペイン: カード詳細プレビュー -->
+    <div class="preview-panel panel">
+      <div id="preview-content" class="preview-content empty">
+        <p class="empty-msg">カードを選択してください</p>
+      </div>
+    </div>
+
+    <!-- 中央ペイン: カード・シールド一覧とフィルタ -->
+    <div class="collection-panel panel">
+      <div class="collection-header">
+        <div class="tabs">
+          <button class="tab premium-tab active" data-tab="cards">
+            <span class="tab-icon">🎴</span> <span class="tab-text">カード</span>
+          </button>
+          <button class="tab premium-tab" data-tab="shields">
+            <span class="tab-icon">🛡️</span> <span class="tab-text">シールド</span>
+          </button>
+        </div>
+        
+        <div class="filters" id="card-filters">
+          <!-- 色フィルタ: 神族アイコン形式 -->
+          <div class="color-filter-bar">
+            <button class="tribe-filter active" data-color="white" title="白(神聖)"></button>
+            <button class="tribe-filter active" data-color="red" title="赤(火炎)"></button>
+            <button class="tribe-filter active" data-color="blue" title="青(海洋)"></button>
+            <button class="tribe-filter active" data-color="green" title="緑(自然)"></button>
+            <button class="tribe-filter active" data-color="black" title="黒(暗黒)"></button>
+          </div>
+          <!-- タイプ/コストフィルタ (カード用) -->
+          <div class="type-cost-filters" id="card-specific-filters">
             <div class="pill-group type-filters">
               <button class="pill active" data-type="all">ALL</button>
               <button class="pill" data-type="unit">UNIT</button>
               <button class="pill" data-type="spell">SPELL</button>
-              <button class="pill" data-type="shield">SHIELD</button>
+            </div>
+            <div class="pill-group cost-filters">
+              <button class="pill active" data-cost="all">COST</button>
+              <button class="pill" data-cost="0">0</button>
+              <button class="pill" data-cost="1">1</button>
+              <button class="pill" data-cost="2">2</button>
+              <button class="pill" data-cost="3">3</button>
+              <button class="pill" data-cost="4">4</button>
+              <button class="pill" data-cost="5">5</button>
+              <button class="pill" data-cost="6">6</button>
+              <button class="pill" data-cost="7+">7+</button>
             </div>
           </div>
+          <!-- 耐久値フィルタ (シールド用) -->
+          <div class="type-cost-filters" id="shield-specific-filters" style="display: none;">
+            <div class="pill-group durability-filters">
+              <button class="pill active" data-durability="all">耐久 ALL</button>
+              <button class="pill" data-durability="1">1</button>
+              <button class="pill" data-durability="2">2</button>
+              <button class="pill" data-durability="3">3</button>
+            </div>
+          </div>
+          <!-- 検索/キーワードフィルタ -->
           <div class="search-filter-bar">
-            <input type="text" id="search-input" class="glass-input" placeholder="カード名・テキスト検索...">
-            <select id="color-filter" class="glass-select">
-              <option value="all">全色</option>
-              <option value="red">赤 (火)</option>
-              <option value="blue">青 (水)</option>
-              <option value="green">緑 (自然)</option>
-              <option value="white">白 (光)</option>
-              <option value="black">黒 (闇)</option>
-              <option value="neutral">無色</option>
+            <input type="text" id="search-input" placeholder="カード名・テキスト検索..." class="glass-input">
+            <select id="keyword-filter" class="glass-select">
+              <option value="all">すべてのキーワード</option>
             </select>
           </div>
         </div>
-        <div class="card-grid" id="card-grid"></div>
-        <div class="card-grid" id="shield-grid" style="display:none;"></div>
       </div>
+      
+      <!-- カード一覧グリッド -->
+      <div class="card-grid" id="card-grid"></div>
+      <!-- シールド一覧グリッド（非表示スタート） -->
+      <div class="card-grid" id="shield-grid" style="display:none;"></div>
+    </div>
 
-      <div class="deck-panel panel glass-panel">
-        <div class="deck-builder-header">
-          <div class="header-left">
-            <button class="btn btn-secondary" onclick="window.location.href='/'">🏠 ロビー</button>
-            <h1>DECK BUILDER</h1>
-          </div>
-          <div class="header-actions">
+    <!-- 右ペイン: 構築中のデッキ情報 -->
+    <div class="deck-panel panel">
+      <!-- デッキ保存/読み込みスロット -->
+      <div class="deck-builder-header">
+        <div class="header-left">
+          <button class="btn btn-secondary btn-icon" onclick="window.location.href='/'" title="ロビーに戻る">🏠</button>
+          <button class="btn btn-secondary btn-icon" id="fullscreen-btn" title="フルスクリーン切り替え">⛶</button>
+          <h1>DECK BUILDER</h1>
+        </div>
+        <div class="header-actions">
+          <div class="deck-slots-container">
+            <span class="slot-label">SLOT</span>
             <div class="deck-slots" id="deck-slots"></div>
-            <button class="btn btn-primary" id="btn-save-deck">💾 保存</button>
+          </div>
+          <div class="deck-action-buttons">
+            <button class="btn btn-secondary btn-icon-text tooltip-btn" id="btn-clear-deck" title="編集中のデッキを空にする">
+              <span class="icon">🔄</span>
+            </button>
+            <button class="btn btn-danger btn-icon-text tooltip-btn" id="btn-delete-deck" title="選択中のスロットを削除">
+              <span class="icon">🗑️</span>
+            </button>
+            <button class="btn btn-primary btn-save" id="btn-save-deck" title="現在のデッキをスロットに保存">
+              💾 保存
+            </button>
+            <button class="btn btn-secondary btn-icon-text tooltip-btn" id="btn-reload-master" title="マスタデータ再取得">
+              <span class="icon">📥</span>
+            </button>
           </div>
         </div>
-
-        <div class="deck-panel-header">
-          <h2>YOUR DECK (<span id="deck-count">0</span>/40)</h2>
-          <span class="shield-badge">SHIELDS: <span id="shield-count">0</span>/3</span>
-        </div>
-        
-        <div class="deck-list-container" id="deck-list"></div>
-        
-        <button class="btn btn-primary btn-start-game" id="btn-submit-deck" disabled style="width: 100%; margin-top: 20px; font-weight: 900; height: 60px; font-size: 24px;">START GAME</button>
       </div>
+
+      <div class="deck-panel-header">
+        <h2>YOUR DECK</h2>
+        <div class="deck-counts">
+          <span class="deck-count-badge"><span id="deck-count">0</span>/40</span>
+          <span class="deck-count-badge shield-badge"><span id="shield-count">0</span>/3</span>
+        </div>
+      </div>
+      
+      <div class="deck-list-container" id="deck-list">
+        <!-- デッキ内のカード一覧 -->
+      </div>
+      
+      <!-- シールドの表示 -->
+      <div class="shield-list-section">
+        <h3 class="shield-section-title">SHIELDS</h3>
+        <div id="shield-slots">
+          <!-- 選んだシールド一覧 -->
+        </div>
+      </div>
+      
+    <button class="btn btn-primary btn-start-game" id="btn-submit-deck" disabled>START GAME</button>
     </div>
   </div>
 
+  <!-- カード詳細モーダル (バトル画面共通仕様) -->
   <div class="overlay card-detail-overlay" id="card-detail-overlay" style="display: none;">
     <div class="card-detail-modal">
       <div class="cd-close-btn" id="btn-close-detail"></div>
@@ -90,8 +175,31 @@
     </div>
   </div>
 
+    </div>
+  </div>
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/audio-manager.js?v=v116"></script>
-  <script src="/js/deck-builder.js?v=v116"></script>
+  <script src="/js/audio-manager.js"></script>
+  <script src="/js/game-renderer.js"></script>
+  <script src="/js/deck-builder.js"></script>
+  <script>
+    function resizeGame() {
+      const container = document.getElementById('game-container');
+      if (!container) return;
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      const scaleX = windowWidth / 1920;
+      const scaleY = windowHeight / 1080;
+      const scale = Math.min(scaleX, scaleY);
+      container.style.transform = `scale(${scale})`;
+      container.style.position = 'absolute';
+      container.style.left = `${(windowWidth - 1920 * scale) / 2}px`;
+      container.style.top = `${(windowHeight - 1080 * scale) / 2}px`;
+      container.style.transformOrigin = '0 0';
+    }
+    window.addEventListener('resize', resizeGame);
+    window.addEventListener('load', resizeGame);
+    document.addEventListener('DOMContentLoaded', resizeGame);
+    resizeGame();
+  </script>
 </body>
 </html>

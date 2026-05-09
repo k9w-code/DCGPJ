@@ -3718,7 +3718,6 @@ body.targeting-mode {
   /* DETAIL MODAL: MAX Z-INDEX & ONE-VIEW */
   html body .card-detail-overlay {
     z-index: 2147483647 !important; /* MAX INT32 */
-    display: flex !important;
     background: rgba(0,0,0,0.9) !important;
   }
   
@@ -3784,7 +3783,6 @@ body.targeting-mode {
   /* DETAIL MODAL: INFO PRIORITY LAYOUT */
   html body .card-detail-overlay {
     z-index: 2147483647 !important; /* MAX INT32 */
-    display: flex !important;
     background: rgba(0,0,0,0.9) !important;
   }
   
@@ -3852,7 +3850,6 @@ body.targeting-mode {
   /* DETAIL MODAL: PC-LIKE PROPORTIONS */
   html body .card-detail-overlay {
     z-index: 2147483647 !important;
-    display: flex !important;
     background: rgba(0,0,0,0.9) !important;
   }
   

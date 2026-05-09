@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <title>DCG - ゲーム画面</title>
-  <link rel="stylesheet" href="/css/style.css?v=v110_global_z">
+  <link rel="stylesheet" href="/css/style.css?v=v117_fix_black_screen">
 </head>
 <body>
   <!-- 画面回転プロンプト -->
@@ -76,7 +76,32 @@
     </div>
   </div>
 
-  
+  <div class="overlay card-detail-overlay" id="card-detail-overlay" style="display: none;">
+    <div class="card-detail-modal">
+      <div class="cd-close-btn" id="btn-close-detail"></div>
+      <div class="cd-image-area" id="cd-image"></div>
+      <div class="cd-info-area">
+        <div class="cd-header">
+          <div class="cd-cost" id="cd-cost">0</div>
+          <h2 class="cd-name" id="cd-name">Card Name</h2>
+        </div>
+        <div class="cd-type-tags">
+          <span class="cd-type-tag" id="cd-type">Unit</span>
+          <div class="cd-tribe-tag">
+            <div class="cd-tribe-icon" id="cd-tribe-icon"></div>
+            <span class="cd-tribe-text" id="cd-tribe-text">Neutral</span>
+          </div>
+          <div class="cd-rarity" id="cd-rarity">Common</div>
+        </div>
+        <div class="cd-stats" id="cd-stats-container">
+          <div class="cd-stat"><span class="cd-stat-icon">⚔️</span><span id="cd-attack">0</span></div>
+          <div class="cd-stat"><span class="cd-stat-icon">❤️</span><span id="cd-hp">0</span></div>
+        </div>
+        <div class="cd-text-box">
+          <div class="cd-effect-text" id="cd-text"></div>
+          <div class="cd-flavor-text" id="cd-flavor"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -259,95 +284,21 @@
     function resizeGame() {
       const container = document.getElementById('game-container');
       if (!container) return;
-      
-      let w = window.innerWidth;
-      let h = window.innerHeight;
-      
-      // For mobile devices, the larger dimension is ALWAYS width in landscape
-      const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-      const isLandscape = window.matchMedia("(orientation: landscape)").matches || Math.abs(window.orientation) === 90;
-      
-      if (isMobile && isLandscape) {
-        let actualW = Math.max(w, h);
-        let actualH = Math.min(w, h);
-        w = actualW;
-        h = actualH;
-      }
-
-      const scaleX = w / 1920;
-      const scaleY = h / 1080;
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      const scaleX = windowWidth / 1920;
+      const scaleY = windowHeight / 1080;
       const scale = Math.min(scaleX, scaleY);
-      
-      if (scale <= 0) return;
-
       container.style.transform = `scale(${scale})`;
       container.style.position = 'absolute';
-      container.style.left = `${(w - 1920 * scale) / 2}px`;
-      container.style.top = `${(h - 1080 * scale) / 2}px`;
+      container.style.left = `${(windowWidth - 1920 * scale) / 2}px`;
+      container.style.top = `${(windowHeight - 1080 * scale) / 2}px`;
       container.style.transformOrigin = '0 0';
-      
-      // Force repaint for iOS
-      container.style.opacity = '0.999';
-      setTimeout(() => { container.style.opacity = '1'; }, 50);
     }
-    
-    if (!window._resizeFixed) {
-      window._resizeFixed = true;
-      const handler = () => {
-        resizeGame();
-        setTimeout(resizeGame, 100);
-        setTimeout(resizeGame, 500);
-        setTimeout(resizeGame, 1000);
-      };
-      window.addEventListener('resize', handler);
-      window.addEventListener('orientationchange', handler);
-      setInterval(resizeGame, 2000);
-    }
+    window.addEventListener('resize', resizeGame);
     window.addEventListener('load', resizeGame);
     document.addEventListener('DOMContentLoaded', resizeGame);
     resizeGame();
   </script>
-
-  <script>
-    // Prevent Safari pinch zoom
-    document.addEventListener('gesturestart', function(e) {
-      e.preventDefault();
-    });
-    // Prevent Safari double-tap zoom
-    let lastTouchEnd = 0;
-    document.addEventListener('touchend', function(e) {
-      const now = (new Date()).getTime();
-      if (now - lastTouchEnd <= 300) {
-        e.preventDefault();
-      }
-      lastTouchEnd = now;
-    }, false);
-  </script>
-<div class="overlay card-detail-overlay" id="card-detail-overlay" style="display: none;">
-    <div class="card-detail-modal">
-      <div class="cd-close-btn" id="btn-close-detail"></div>
-      <div class="cd-image-area" id="cd-image"></div>
-      <div class="cd-info-area">
-        <div class="cd-header">
-          <div class="cd-cost" id="cd-cost">0</div>
-          <h2 class="cd-name" id="cd-name">Card Name</h2>
-        </div>
-        <div class="cd-type-tags">
-          <span class="cd-type-tag" id="cd-type">Unit</span>
-          <div class="cd-tribe-tag">
-            <div class="cd-tribe-icon" id="cd-tribe-icon"></div>
-            <span class="cd-tribe-text" id="cd-tribe-text">Neutral</span>
-          </div>
-          <div class="cd-rarity" id="cd-rarity">Common</div>
-        </div>
-        <div class="cd-stats" id="cd-stats-container">
-          <div class="cd-stat"><span class="cd-stat-icon">⚔️</span><span id="cd-attack">0</span></div>
-          <div class="cd-stat"><span class="cd-stat-icon">❤️</span><span id="cd-hp">0</span></div>
-        </div>
-        <div class="cd-text-box">
-          <div class="cd-effect-text" id="cd-text"></div>
-          <div class="cd-flavor-text" id="cd-flavor"></div>
-        </div>
-      </div>
 </body>
 </html>
