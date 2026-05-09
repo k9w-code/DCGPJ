@@ -7,6 +7,7 @@ class SoundManager {
     this.mainGain = this.audioCtx.createGain();
     this.mainGain.connect(this.audioCtx.destination);
     this.bgmAudio = new Audio();
+    this.bgmSource = null;
     this.bgmAudio.loop = true;
     this.bgmVolume = 0.3;
     this.seVolume = 0.3;
@@ -38,6 +39,9 @@ class SoundManager {
   }
 
   updateBGMVolume(val) {
+    this.bgmVolume = parseFloat(val);
+    this.bgmAudio.volume = this.bgmVolume;
+    if (this.mainGain) this.mainGain.gain.setTargetAtTime(this.bgmVolume, this.audioCtx.currentTime, 0.1);
     this.bgmVolume = parseFloat(val);
     this.bgmAudio.volume = this.bgmVolume;
   }

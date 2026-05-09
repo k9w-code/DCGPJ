@@ -1062,6 +1062,8 @@ body {
 
 /* ==== 鬮ｫ・ｰ・ｽ驍・ｽｫ・ｽ (鬮ｫ・ｰ・ｽ・ｽ髫ｲ讖ｸ・ｽ・ｾ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｬ鬩幢ｽ｢・ｧ・ｽ・､鬩幢ｽ｢・ｧ・ｽ・｢鬩幢ｽ｢・ｧ・ｽ・ｦ鬩幢ｽ｢隴主・讓滄Δ譎｢・ｽ・ｻJS鬩搾ｽｵ・ｺ・ｽ・ｧ鬯ｮ・ｫ・ｱ・ｽ・ｿ鬮ｫ・ｰ・ｨ・ｽ・ｴ鬩搾ｽｵ・ｲ・ｽ鬩幢ｽ｡S鬩搾ｽｵ・ｺ・ｽ・ｯ鬮ｯ諞ｺ螻ｮ・ｽ・ｺ鬮ｫ・ｴ陝ｷ・｢・ｽ・ｬ鬮ｫ・ｴ・ｫ) ==== */
 .hand-area-wrapper {
+    display: flex !important;
+    justify-content: center !important;
   position: absolute; bottom: -180px; left: 0; width: 100%; height: 260px;
   display: flex; justify-content: center; align-items: flex-end;
   pointer-events: none; z-index: 2000;
@@ -3718,11 +3720,11 @@ body.targeting-mode {
   }
   
   html body .card-detail-modal {
-    width: 75vw !important; /* Narrowed from 82vw to avoid over-stretching */
-    height: 75vh !important;
+    width: 85vw !important; /* Enlarged in v124 */
+    height: 80vh !important;
     flex-direction: row !important;
     padding: 1.5vh !important;
-    gap: 1.5vh !important; /* Tight gaps */
+    gap: 2vh !important; padding: 2vh !important;
     position: fixed !important;
     left: 50% !important; top: 50% !important;
     transform: translate(-50%, -50%) !important;
@@ -3758,10 +3760,12 @@ body.targeting-mode {
 
   /* COMPACT FONT SCALING */
   html body .card-detail-overlay .cd-header { gap: 1.5vh !important; padding-bottom: 0.8vh !important; margin-bottom: 0 !important; }
-  html body .card-detail-overlay .cd-name { font-size: 3.5vh !important; white-space: normal !important; line-height: 1.1 !important; }
+  html body .card-detail-overlay .cd-name {
+    min-height: 4vh !important; flex-shrink: 0 !important; font-size: 3.5vh !important; white-space: normal !important; line-height: 1.1 !important; }
   html body .card-detail-overlay .cd-cost { width: 6.5vh !important; height: 6.5vh !important; font-size: 3.5vh !important; }
   html body .card-detail-overlay .cd-type-tags { gap: 0.8vh !important; margin-bottom: 0.5vh !important; }
-  html body .card-detail-overlay .cd-type-tag, html body .card-detail-overlay .cd-color-tag { font-size: 2.2vh !important; padding: 0.2vh 1.2vh !important; }
+  html body .card-detail-overlay .cd-type-tag, html body .card-detail-overlay .cd-color-tag {
+    font-size: 2.5vh !important; min-width: 8vh !important; text-align: center !important; flex-shrink: 0 !important; font-size: 2.2vh !important; padding: 0.2vh 1.2vh !important; }
   html body .cd-tribe-icon { width: 2.5vh !important; height: 2.5vh !important; }
   html body .card-detail-overlay .cd-stats { gap: 4vh !important; margin-bottom: 0.8vh !important; }
   html body .card-detail-overlay .cd-stat { font-size: 3.5vh !important; }
@@ -3780,11 +3784,21 @@ body.targeting-mode {
   html body .card-detail-overlay .cd-flavor-text { font-size: 2vh !important; padding-top: 0.8vh !important; opacity: 0.6 !important; }
 
   /* CLOSE BUTTON */
-  html body .cd-close-btn { width: 5.5vh !important; height: 5.5vh !important; top: -1.5vh !important; right: -1.5vh !important; }
+  html body .cd-close-btn { width: 7vh !important; height: 7vh !important; top: 1vh !important; right: 1vh !important; }
 
   /* MULLIGAN */
   #mulligan-overlay .card,
   #mulligan-overlay .hand-card { height: 45vh !important; width: auto !important; aspect-ratio: 5/7 !important; }
+
+  .settings-panel {
+    max-width: 90vw !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+    padding: 20px !important;
+  }
+  .settings-panel h2 { font-size: 24px !important; margin-bottom: 10px !important; }
+  .setting-item { margin-bottom: 10px !important; }
+
 }
 @media (max-height: 500px) {
   .card-detail-modal {
