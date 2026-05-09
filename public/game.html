@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <title>DCG - ゲーム画面</title>
-  <link rel="stylesheet" href="/css/style.css?v=v124_stable_fix">
+  <link rel="stylesheet" href="/css/style.css?v=v125_ios_physical">
 </head>
 <body>
   <!-- 画面回転プロンプト -->
@@ -323,6 +323,24 @@
         event.preventDefault();
       }
     }, { passive: false });
+  </script>
+
+
+  <script>
+    // iOS Safari Specific: Disable double-tap zoom and pinch zoom
+    document.addEventListener('gesturestart', function(e) {
+      e.preventDefault();
+    });
+    
+    // Physical hardware silent mode check is impossible, but Web Audio helps.
+    // Ensure AudioContext is resumed on first interaction.
+    document.addEventListener('pointerdown', function() {
+      if (window.audioManager && window.audioManager.audioCtx) {
+        if (window.audioManager.audioCtx.state === 'suspended') {
+          window.audioManager.audioCtx.resume();
+        }
+      }
+    }, { once: false });
   </script>
 
 </body>

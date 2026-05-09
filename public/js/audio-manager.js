@@ -27,14 +27,30 @@ class SoundManager {
     };
   }
 
+  
   playBGM(key, force = false) {
     const src = this.files.bgm[key];
     if (!src) return;
     if (!force && this.bgmAudio.src.endsWith(src) && !this.bgmAudio.paused) return;
+    
     this.bgmAudio.src = src;
-    this.bgmAudio.volume = this.bgmVolume;
+    this.bgmAudio.crossOrigin = "anonymous";
+    
+    if (!this.bgmSource) {
+      this.bgmSource = this.audioCtx.createMediaElementSource(this.bgmAudio);
+      this.bgmSource.connect(this.mainGain);
+    }
+    
+    if (this.audioCtx.state === 'suspended') {
+      this.audioCtx.resume();
+    }
+    
     this.bgmAudio.play().catch(() => {
-      document.addEventListener('pointerdown', () => this.bgmAudio.play(), { once: true });
+      const playOnce = () => {
+        this.bgmAudio.play();
+        document.removeEventListener('pointerdown', playOnce);
+      };
+      document.addEventListener('pointerdown', playOnce);
     });
   }
 
@@ -47,6 +63,7 @@ class SoundManager {
   }
 
   updateSEVolume(val) {
+    this.seVolume = parseFloat(val);
     this.seVolume = parseFloat(val);
   }
 
