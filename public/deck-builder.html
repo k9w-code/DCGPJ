@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <title>DCG - デッキ構築</title>
-  <link rel="stylesheet" href="/css/style.css?v=v122_final_vol122">
+  <link rel="stylesheet" href="/css/style.css?v=v123_manual_fix">
 </head>
 <body>
   <div class="rotate-prompt" id="rotate-prompt">
@@ -145,64 +145,7 @@
     </div>
   </div>
 
-  <!-- カード詳細モーダル (バトル画面共通仕様) -->
-  
-        <div class="cd-stats" id="cd-stats-container">
-          <div class="cd-stat"><span class="cd-stat-icon">⚔️</span><span id="cd-attack">0</span></div>
-          <div class="cd-stat"><span class="cd-stat-icon">❤️</span><span id="cd-hp">0</span></div>
-        </div>
-        <div class="cd-text-box">
-          <div class="cd-effect-text" id="cd-text"></div>
-          <div class="cd-flavor-text" id="cd-flavor"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-    </div>
-  </div>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/audio-manager.js"></script>
-  <script src="/js/game-renderer.js"></script>
-  <script src="/js/deck-builder.js"></script>
-  <script>
-    function resizeGame() {
-      const container = document.getElementById('game-container');
-      if (!container) return;
-      const windowWidth = window.innerWidth;
-      const windowHeight = window.innerHeight;
-      const scaleX = windowWidth / 1920;
-      const scaleY = windowHeight / 1080;
-      const scale = Math.min(scaleX, scaleY);
-      container.style.transform = `scale(${scale})`;
-      container.style.position = 'absolute';
-      container.style.left = `${(windowWidth - 1920 * scale) / 2}px`;
-      container.style.top = `${(windowHeight - 1080 * scale) / 2}px`;
-      container.style.transformOrigin = '0 0';
-    }
-    window.addEventListener('resize', resizeGame);
-    window.addEventListener('load', resizeGame);
-    document.addEventListener('DOMContentLoaded', resizeGame);
-    resizeGame();
-  </script>
-<div class="overlay card-detail-overlay" id="card-detail-overlay" style="display: none;">
-    <div class="card-detail-modal">
-      <div class="cd-close-btn" id="btn-close-detail"></div>
-      <div class="cd-image-area" id="cd-image"></div>
-      <div class="cd-info-area">
-        <div class="cd-header">
-          <div class="cd-cost" id="cd-cost">0</div>
-          <h2 class="cd-name" id="cd-name">Card Name</h2>
-        </div>
-        <div class="cd-type-tags">
-          <span class="cd-type-tag" id="cd-type">Unit</span>
-          <div class="cd-tribe-tag">
-            <div class="cd-tribe-icon" id="cd-tribe-icon"></div>
-            <span class="cd-tribe-text" id="cd-tribe-text">Neutral</span>
-          </div>
-          <div class="cd-rarity" id="cd-rarity">Common</div>
-        </div>
-
+  <!-- カード詳細モーダル (全画面共通仕様) -->
   <div class="overlay card-detail-overlay" id="card-detail-overlay" style="display: none;">
     <div class="card-detail-modal">
       <div class="cd-close-btn" id="btn-close-detail"></div>
@@ -231,6 +174,31 @@
       </div>
     </div>
   </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/audio-manager.js"></script>
+  <script src="/js/game-renderer.js"></script>
+  <script src="/js/deck-builder.js"></script>
+  <script>
+    function resizeGame() {
+      const container = document.getElementById('game-container');
+      if (!container) return;
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      const scaleX = windowWidth / 1920;
+      const scaleY = windowHeight / 1080;
+      const scale = Math.min(scaleX, scaleY);
+      container.style.transform = `scale(${scale})`;
+      container.style.position = 'absolute';
+      container.style.left = `${(windowWidth - 1920 * scale) / 2}px`;
+      container.style.top = `${(windowHeight - 1080 * scale) / 2}px`;
+      container.style.transformOrigin = '0 0';
+    }
+    window.addEventListener('resize', resizeGame);
+    window.addEventListener('load', resizeGame);
+    document.addEventListener('DOMContentLoaded', resizeGame);
+    resizeGame();
+  </script>
 
 </body>
 </html>
