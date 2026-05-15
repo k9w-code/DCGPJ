@@ -3971,86 +3971,50 @@ body.targeting-mode {
   }
 
 /* ==========================================
-   MOBILE STABILIZATION: LAYOUT OVERHAUL (v131)
-   Smartphone-specific zoom-in for battle UI
+}
+/* ==========================================
+   MOBILE STABILIZATION: STABLE EXPANSION (v132)
+   Safe, non-destructive UI enlargement
    ========================================== */
 @media (max-width: 1250px), (max-height: 800px) {
   
-  /* 1. Grid Compression */
+  /* Reset Grid to stable proportions */
   .game-container {
-    grid-template-columns: 440px 1fr 360px !important;
+    grid-template-columns: 480px 1fr 420px !important;
   }
   
-  .left-side {
-    min-width: 440px !important;
-    padding: 10px !important;
-  }
-  
-  .right-side {
-    min-width: 360px !important;
-    padding: 10px !important;
-  }
-
-  /* 2. Scale Up UI Elements */
-  /* Avatar Blocks */
-  .avatar-block {
-    transform: scale(1.25) !important;
-  }
-  .player-block {
-    transform-origin: left bottom !important;
-  }
-  .opponent-block {
-    transform-origin: left top !important;
-  }
-
-  /* Right Side Panels */
+  /* Increase Font Sizes and Padding instead of Scaling */
   .log-panel {
-    transform: scale(1.15) !important;
-    transform-origin: right top !important;
-    height: 300px !important;
+    height: 280px !important;
+    font-size: 16px !important;
+  }
+  .log-content {
+    line-height: 1.4 !important;
   }
   
-  .action-panel {
-    transform: scale(1.2) !important;
-    transform-origin: right bottom !important;
+  /* Larger Buttons (Non-destructive) */
+  .crystal-btn {
+    width: 70px !important;
+    height: 70px !important;
   }
   
-  .turn-indicator {
-    transform: scale(1.3) !important;
-    transform-origin: right top !important;
-    margin-bottom: 25px !important;
+  .btn-end-turn {
+    height: 70px !important;
+    font-size: 22px !important;
   }
 
-  /* 3. Scale Up Battlefield (Cards on Board) */
-  .center-area {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
+  /* Stabilize Hand */
+  .hand-area-wrapper {
+    bottom: -1dvh !important;
   }
-
+  
+  /* Ensure Battlefield stays visible */
   .battlefield-3d {
-    transform: scale(1.2) !important;
+    transform: scale(1.1) !important;
     transform-origin: center center !important;
   }
 
-  /* Reduce vertical gaps to prevent overflow when scaled */
-  .board-half {
-    gap: 8px !important;
-  }
-  .battlefield-divider {
-    height: 60px !important;
-  }
-  
-  /* 4. Hand Cards Optimization */
-  .hand-area-wrapper {
-    bottom: -4dvh !important; /* Sink further to make room for larger battlefield */
-  }
-  .hand-card {
-    transform: scale(1.1) !important;
-    transform-origin: bottom center !important;
-  }
-  .hand-card:hover {
-    transform: scale(1.5) translateY(-4vh) !important;
-  }
+  /* Avatar Info Visibility */
+  .player-name { font-size: 26px !important; }
+  .status-row { font-size: 16px !important; }
 }
