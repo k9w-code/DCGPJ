@@ -9,8 +9,10 @@ class SoundManager {
     this.bgmAudio = new Audio();
     this.bgmSource = null;
     this.bgmAudio.loop = true;
-    this.bgmVolume = 0.3;
-    this.seVolume = 0.3;
+    
+    // ローカルストレージから音量をロードする（デフォルトは0.3）
+    this.bgmVolume = parseFloat(localStorage.getItem('dcg_bgm_volume') ?? '0.3');
+    this.seVolume = parseFloat(localStorage.getItem('dcg_se_volume') ?? '0.3');
     this.files = {
       bgm: {
         game: '/assets/bgm/battle1.mp3',
@@ -57,14 +59,89 @@ class SoundManager {
   updateBGMVolume(val) {
     this.bgmVolume = parseFloat(val);
     this.bgmAudio.volume = this.bgmVolume;
-    if (this.mainGain) if (this.mainGain && this.mainGain.gain) this.mainGain.gain.setTargetAtTime(this.bgmVolume, this.audioCtx.currentTime, 0.05);
-    this.bgmVolume = parseFloat(val);
-    this.bgmAudio.volume = this.bgmVolume;
+    if (this.mainGain && this.mainGain.gain) {
+      this.mainGain.gain.setTargetAtTime(this.bgmVolume, this.audioCtx.currentTime, 0.05);
+    }
+    localStorage.setItem('dcg_bgm_volume', this.bgmVolume);
+  }
+
+  // === BGMのシームレスなフェードアウト＆イン移行システム ===
+  fadeToBGM(key, durationMs = 800) {
+    const src = this.files.bgm[key];
+    if (!src) return;
+    // すでに同じ曲が再生中なら何もしない
+    if (this.bgmAudio.src.endsWith(src) && !this.bgmAudio.paused) return;
+
+    if (this.bgmAudio.paused || !this.bgmAudio.src) {
+      // 現在停止中なら直接プレイしてフェードイン
+      this.playBGM(key, true);
+      this.bgmAudio.volume = 0;
+      this._fadeVolume(this.bgmVolume, durationMs);
+      return;
+    }
+
+    // 再生中の場合はフェードアウトしてから次の曲をフェードイン
+    const steps = 12;
+    const interval = (durationMs / 2) / steps;
+    let currentVol = this.bgmAudio.volume;
+    const volStep = currentVol / steps;
+    let stepCount = 0;
+
+    const fadeOutTimer = setInterval(() => {
+      currentVol = Math.max(0, currentVol - volStep);
+      this.bgmAudio.volume = currentVol;
+      stepCount++;
+
+      if (stepCount >= steps || currentVol <= 0.01) {
+        clearInterval(fadeOutTimer);
+        this.bgmAudio.pause();
+
+        // 次の曲をセットして再生
+        this.bgmAudio.src = src;
+        this.bgmAudio.currentTime = 0;
+        this.bgmAudio.play().then(() => {
+          let inVol = 0;
+          const inVolStep = this.bgmVolume / steps;
+          let inStep = 0;
+
+          const fadeInTimer = setInterval(() => {
+            inVol = Math.min(this.bgmVolume, inVol + inVolStep);
+            this.bgmAudio.volume = inVol;
+            inStep++;
+            if (inStep >= steps || inVol >= this.bgmVolume) {
+              clearInterval(fadeInTimer);
+              this.bgmAudio.volume = this.bgmVolume;
+            }
+          }, interval);
+        }).catch(err => {
+          console.warn('BGM fade play error:', err);
+          this.bgmAudio.volume = this.bgmVolume;
+        });
+      }
+    }, interval);
+  }
+
+  _fadeVolume(targetVol, durationMs) {
+    const steps = 12;
+    const interval = durationMs / steps;
+    let currentVol = this.bgmAudio.volume;
+    const volStep = (targetVol - currentVol) / steps;
+    let step = 0;
+
+    const timer = setInterval(() => {
+      currentVol = Math.max(0, Math.min(this.bgmVolume, currentVol + volStep));
+      this.bgmAudio.volume = currentVol;
+      step++;
+      if (step >= steps) {
+        clearInterval(timer);
+        this.bgmAudio.volume = targetVol;
+      }
+    }, interval);
   }
 
   updateSEVolume(val) {
     this.seVolume = parseFloat(val);
-    this.seVolume = parseFloat(val);
+    localStorage.setItem('dcg_se_volume', this.seVolume);
   }
 
   stopBGM() {
@@ -138,11 +215,11 @@ class SoundManager {
         this._playSynthSound('sine', 300, 900, 0.15, 0.5, masterGain, now);
         this._playSynthSound('triangle', 450, 1350, 0.1, 0.55, masterGain, now);
         this._playSynthSound('sine', 600, 1800, 0.08, 0.4, masterGain, now + 0.05);
-        this._playSynthSound('sine', 150, 300, 0.12, 0.6, masterGain, now);  // \u4f4e\u97f3\u306e\u571f\u53f0
+        this._playSynthSound('sine', 150, 300, 0.12, 0.6, masterGain, now);  // 低音の土台
         break;
 
       // ========================================
-      // \u6c7a\u5b9a/\u958b\u59cb \u2014 \u4e0a\u6607\u30c1\u30e3\u30a4\u30e0
+      // 決定/開始 — 上昇チャイム
       // ========================================
       case 'select':
       case 'start':
@@ -152,7 +229,104 @@ class SoundManager {
         break;
 
       // ========================================
-      // \u30ab\u30fc\u30c9\u30c9\u30ed\u30fc \u2014 \u7d19\u3081\u304f\u308a\u98a8
+      // カードプレイ — パシッという配置音
+      // ========================================
+      case 'card_play':
+        this._playSynthSound('triangle', 800, 400, 0.01, 0.1, masterGain, now);
+        this._playSynthSound('sine', 1200, 600, 0.008, 0.08, masterGain, now);
+        this._playNoise(0.008, 0.06, masterGain, now, 4000);
+        break;
+
+      // ========================================
+      // マリガンカード選択 — 心地よいダブルタップフリップ音
+      // ========================================
+      case 'mulligan_select':
+        this._playSynthSound('triangle', 300, 600, 0.02, 0.12, masterGain, now);
+        this._playSynthSound('sine', 150, 450, 0.01, 0.15, masterGain, now);
+        this._playNoise(0.015, 0.1, masterGain, now, 1000);
+        this._playSynthSound('triangle', 400, 800, 0.02, 0.1, masterGain, now + 0.07);
+        this._playSynthSound('sine', 200, 600, 0.01, 0.12, masterGain, now + 0.07);
+        this._playNoise(0.015, 0.08, masterGain, now + 0.07, 1200);
+        break;
+
+      // ========================================
+      // バフ — 上昇するキラキラ音
+      // ========================================
+      case 'buff':
+        this._playSynthSound('sine', 600, 1200, 0.03, 0.25, masterGain, now);
+        this._playSynthSound('triangle', 800, 1600, 0.025, 0.2, masterGain, now + 0.05);
+        this._playSynthSound('sine', 1000, 2000, 0.02, 0.15, masterGain, now + 0.1);
+        break;
+
+      // ========================================
+      // デバフ — 下降する不吉な音
+      // ========================================
+      case 'debuff':
+        this._playSynthSound('sawtooth', 600, 200, 0.03, 0.3, masterGain, now);
+        this._playSynthSound('sine', 400, 100, 0.04, 0.35, masterGain, now);
+        this._playSynthSound('triangle', 300, 80, 0.02, 0.25, masterGain, now + 0.05);
+        break;
+
+      // ========================================
+      // 凍結 — 氷が張る結晶音
+      // ========================================
+      case 'freeze':
+        this._playSynthSound('sine', 2000, 3000, 0.01, 0.15, masterGain, now);
+        this._playSynthSound('triangle', 2500, 4000, 0.008, 0.12, masterGain, now + 0.03);
+        this._playSynthSound('sine', 1500, 2500, 0.015, 0.2, masterGain, now + 0.06);
+        this._playSynthSound('triangle', 3000, 5000, 0.005, 0.08, masterGain, now + 0.1);
+        break;
+
+      // ========================================
+      // 沈黙 — 重い封印音
+      // ========================================
+      case 'silence':
+        this._playSynthSound('sine', 400, 100, 0.05, 0.4, masterGain, now);
+        this._playSynthSound('square', 200, 50, 0.03, 0.5, masterGain, now);
+        this._playNoise(0.02, 0.15, masterGain, now + 0.1, 500);
+        break;
+
+      // ========================================
+      // バリア — 光の防壁音
+      // ========================================
+      case 'barrier':
+        this._playSynthSound('sine', 800, 1600, 0.02, 0.3, masterGain, now);
+        this._playSynthSound('triangle', 1200, 2400, 0.015, 0.25, masterGain, now);
+        this._playSynthSound('sine', 600, 1200, 0.03, 0.35, masterGain, now + 0.05);
+        break;
+
+      // ========================================
+      // バリア消費 — シールドが弾ける音
+      // ========================================
+      case 'barrier_pop':
+        this._playSynthSound('triangle', 1500, 500, 0.01, 0.15, masterGain, now);
+        this._playSynthSound('sine', 2000, 800, 0.008, 0.12, masterGain, now);
+        this._playNoise(0.01, 0.08, masterGain, now, 6000);
+        break;
+
+      // ========================================
+      // 勝利ファンファーレ前奏
+      // ========================================
+      case 'victory_fanfare':
+        this._playSynthSound('square', 523, 523, 0.04, 0.15, masterGain, now);       // C5
+        this._playSynthSound('square', 659, 659, 0.04, 0.15, masterGain, now + 0.15);// E5
+        this._playSynthSound('square', 784, 784, 0.04, 0.15, masterGain, now + 0.30);// G5
+        this._playSynthSound('sine', 1047, 1047, 0.05, 0.5, masterGain, now + 0.45); // C6
+        this._playSynthSound('triangle', 1047, 1047, 0.04, 0.45, masterGain, now + 0.45);
+        this._playSynthSound('sine', 784, 784, 0.04, 0.4, masterGain, now + 0.45);
+        break;
+
+      // ========================================
+      // 敗北 — 低い不協和音
+      // ========================================
+      case 'defeat_sound':
+        this._playSynthSound('sine', 200, 80, 0.05, 0.8, masterGain, now);
+        this._playSynthSound('sawtooth', 185, 60, 0.04, 0.7, masterGain, now);
+        this._playSynthSound('sine', 150, 40, 0.06, 0.9, masterGain, now + 0.1);
+        break;
+
+      // ========================================
+      // カードドロー — 紙めくり風
       // ========================================
       case 'draw':
         this._playNoise(0.01, 0.06, masterGain, now, 5000);
@@ -227,6 +401,40 @@ class SoundManager {
         this._playSynthSound('sine', 440, 880, 0.08, 0.5, masterGain, now);
         this._playSynthSound('sine', 554, 1108, 0.06, 0.45, masterGain, now + 0.08);
         this._playSynthSound('triangle', 660, 1320, 0.05, 0.4, masterGain, now + 0.16);
+        break;
+
+      // ========================================
+      // フリック吸着音 — 心地よい金属的スナップ音
+      // ========================================
+      case 'flick_snap':
+        this._playSynthSound('sine', 1600, 1100, 0.005, 0.08, masterGain, now);
+        this._playSynthSound('triangle', 3200, 2200, 0.002, 0.04, masterGain, now);
+        break;
+
+      // ========================================
+      // マリガンシャッフル音 — 紙の擦れノイズと擦れ音
+      // ========================================
+      case 'mulligan_swap':
+        this._playNoise(0.01, 0.1, masterGain, now, 3500);
+        this._playSynthSound('triangle', 500, 250, 0.008, 0.07, masterGain, now);
+        break;
+
+      // ========================================
+      // アバター被弾音 — 重低音爆発とオーブ損壊の複合音
+      // ========================================
+      case 'avatar_damaged':
+        this._playSynthSound('sine', 70, 15, 0.015, 0.65, masterGain, now); // 重低音の底
+        this._playSynthSound('sawtooth', 130, 30, 0.02, 0.45, masterGain, now);
+        this._playNoise(0.07, 0.55, masterGain, now, 600); // 爆圧ノイズ
+        this._playNoise(0.015, 0.22, masterGain, now + 0.04, 4500); // ガラスの鋭い破片音
+        break;
+
+      // ========================================
+      // タイマー秒針音 — 正確な時計カウントクリック音
+      // ========================================
+      case 'timer_tick':
+        this._playSynthSound('sine', 1800, 1800, 0.002, 0.02, masterGain, now);
+        this._playSynthSound('triangle', 900, 900, 0.001, 0.015, masterGain, now);
         break;
 
       default:

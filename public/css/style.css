@@ -3543,8 +3543,12 @@ body.targeting-mode {
   box-shadow: 0 0 40px rgba(212, 160, 23, 0.3), inset 0 0 60px rgba(0,0,0,0.5);
 }
 .sb-card-back::before {
-  content: '🛡️';
-  font-size: 64px;
+  content: '';
+  width: 64px;
+  height: 64px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none'><path d='M32 54S50 44 50 30V15L32 8L14 15V30C14 44 32 54 32 54Z' fill='url(%23gold-grad)' stroke='%23DAA520' stroke-width='2'/><defs><radialGradient id='gold-grad' cx='50%25' cy='50%25' r='50%25'><stop offset='0%25' stop-color='%23FFF5D6'/><stop offset='100%25' stop-color='%23DAA520'/></radialGradient></defs></svg>");
+  background-size: contain;
+  background-repeat: no-repeat;
   filter: drop-shadow(0 0 20px rgba(212, 160, 23, 0.6));
   animation: sbCardBackPulse 2s infinite alternate;
 }

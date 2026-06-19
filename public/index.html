@@ -7,9 +7,32 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <title>DCG テストプレイ</title>
-  <link rel="stylesheet" href="/css/style.css?v=v127_final_fix">
+  <link rel="stylesheet" href="/css/style.css?v=v138_mulligan_diff">
+  <link rel="stylesheet" href="/css/lobby-premium.css?v=v138_mulligan_diff">
 </head>
 <body>
+  <!-- 画面回転プロンプト -->
+  <div class="rotate-prompt" id="rotate-prompt">
+    <div class="rotate-prompt-icon">
+      <svg viewBox="0 0 80 80" width="64" height="64" fill="none">
+        <rect x="20" y="10" width="40" height="60" rx="6" stroke="currentColor" stroke-width="3"/>
+        <circle cx="40" cy="62" r="3" fill="currentColor"/>
+        <path d="M60 35 C70 35, 70 25, 60 20" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M58 17 L62 21 L56 22 Z" fill="#fbbf24"/>
+      </svg>
+    </div>
+    <div style="font-size: 24px; margin-bottom: 10px;">スマホを横向きにしてください</div>
+    <div style="font-size: 16px; color: #a09880;">Please rotate your device to landscape</div>
+  </div>
+
+  <!-- プレミアム背景エフェクト -->
+  <div class="premium-bg-container">
+    <div class="premium-orb orb-purple"></div>
+    <div class="premium-orb orb-gold"></div>
+    <div class="premium-orb orb-blue"></div>
+    <div class="premium-bg-grid"></div>
+  </div>
+
   <div class="lobby-container">
     <div class="lobby-header">
       <h1>DCG TESTPLAY Vol.134</h1>
@@ -21,19 +44,38 @@
       <h2>ゲームモード</h2>
       <div class="mode-grid">
         <div class="mode-card active" data-mode="pve" id="mode-pve">
-          <div class="icon">🤖</div>
+          <div class="icon"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: auto;"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="8" cy="15" r="1.5" fill="currentColor"/><circle cx="16" cy="15" r="1.5" fill="currentColor"/><path d="M12 2v3M9 5h6"/></svg></div>
           <div class="label">vs NPC</div>
           <div class="desc">AIと対戦</div>
         </div>
         <div class="mode-card" data-mode="pvp" id="mode-pvp">
-          <div class="icon">⚔️</div>
+          <div class="icon"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: auto;"><path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M19 19l-4-4M5 5l4 4"/></svg></div>
           <div class="label">vs 人間</div>
           <div class="desc">遠隔対戦</div>
         </div>
         <div class="mode-card" data-mode="spectate" id="mode-spectate">
-          <div class="icon">👁️</div>
+          <div class="icon"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: auto;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
           <div class="label">観戦</div>
           <div class="desc">NPC同士</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NPC難易度選択 (PvEモード時のみ表示) -->
+    <div class="lobby-section panel" id="difficulty-section" style="margin-top: 16px;">
+      <h2>NPC 難易度</h2>
+      <div class="difficulty-grid">
+        <div class="diff-card" data-difficulty="easy">
+          <div class="diff-label">EASY</div>
+          <div class="diff-desc">初級 (AIミス30%)</div>
+        </div>
+        <div class="diff-card active" data-difficulty="normal">
+          <div class="diff-label">NORMAL</div>
+          <div class="diff-desc">中級 (標準思考)</div>
+        </div>
+        <div class="diff-card" data-difficulty="hard">
+          <div class="diff-label">HARD</div>
+          <div class="diff-desc">上級 (ガチ構築＆全力)</div>
         </div>
       </div>
     </div>
@@ -67,7 +109,10 @@
     <div class="lobby-section" id="pvp-rooms" style="display: none;">
       <h2>参加可能なルーム</h2>
       <div class="room-list" id="room-list"></div>
-      <button class="btn btn-sm" id="btn-refresh" style="margin-top: 8px;">🔄 更新</button>
+      <button class="btn btn-sm" id="btn-refresh" style="margin-top: 8px; display: inline-flex; align-items: center; gap: 6px;">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        更新
+      </button>
     </div>
 
     <!-- ステータス -->
@@ -79,8 +124,8 @@
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/audio-manager.js"></script>
-  <script src="/js/lobby.js"></script>
+  <script src="/js/audio-manager.js?v=v138_mulligan_diff"></script>
+  <script src="/js/lobby.js?v=v138_mulligan_diff"></script>
 
   <script>
     // Force prevent pinch zoom and double tap zoom

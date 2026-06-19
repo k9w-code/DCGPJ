@@ -7,25 +7,32 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <title>DCG - ゲーム画面</title>
-  <link rel="stylesheet" href="/css/style.css?v=v134_vertical_fix">
+  <link rel="stylesheet" href="/css/style.css?v=v139_hud_turn">
+  <link rel="stylesheet" href="/css/battle-premium.css?v=v139_hud_turn">
 </head>
 <body>
   <!-- 画面回転プロンプト -->
   <div class="rotate-prompt" id="rotate-prompt">
-    <div style="font-size: 64px; margin-bottom: 20px;">📱🔄</div>
+    <div class="rotate-prompt-icon">
+      <svg viewBox="0 0 80 80" width="64" height="64" fill="none">
+        <rect x="20" y="10" width="40" height="60" rx="6" stroke="currentColor" stroke-width="3"/>
+        <circle cx="40" cy="62" r="3" fill="currentColor"/>
+        <path d="M60 35 C70 35, 70 25, 60 20" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M58 17 L62 21 L56 22 Z" fill="#fbbf24"/>
+      </svg>
+    </div>
     <div style="font-size: 24px; margin-bottom: 10px;">スマホを横向きにしてください</div>
     <div style="font-size: 16px; color: #a09880;">Please rotate your device to landscape</div>
   </div>
 
-  <!-- 全画面オーバーレイ要素（拡大縮小の影響を受けないようにbody直下に配置） -->
   <div class="overlay mulligan-overlay" id="mulligan-overlay" style="display: none;">
     <div class="mulligan-panel glass-panel">
       <h2>MULLIGAN</h2>
-      <p>初手の手札を引き直しますか？</p>
+      <p>交換したいカードをタップして、決定ボタンを押してください</p>
       <div class="mulligan-cards" id="mulligan-cards"></div>
       <div class="mulligan-actions">
-        <button class="btn btn-primary" id="btn-mulligan-keep">キープ</button>
-        <button class="btn" id="btn-mulligan-redraw">引き直し</button>
+        <button class="btn btn-primary" id="btn-mulligan-confirm">選択したカードを交換</button>
+        <button class="btn" id="btn-mulligan-keep-all">すべてキープ</button>
       </div>
     </div>
   </div>
@@ -94,8 +101,14 @@
           <div class="cd-rarity" id="cd-rarity">Common</div>
         </div>
         <div class="cd-stats" id="cd-stats-container">
-          <div class="cd-stat"><span class="cd-stat-icon">⚔️</span><span id="cd-attack">0</span></div>
-          <div class="cd-stat"><span class="cd-stat-icon">❤️</span><span id="cd-hp">0</span></div>
+          <div class="cd-jewel-stat cd-jewel-atk" title="攻撃力">
+            <svg class="cd-stat-decor" viewBox="0 0 24 24"><path d="M21.92 2.08a1 1 0 0 0-1.42 0l-5.59 5.58a5 5 0 0 0-7.07 0 1 1 0 0 0 0 1.42L11 12.24l-6.83 6.83a1 1 0 0 0 0 1.41l1.42 1.42a1 1 0 0 0 1.41 0L13.84 15l3.16 3.17a1 1 0 0 0 1.41 0 5 5 0 0 0 0-7.07l5.58-5.59a1 1 0 0 0 0-1.43z" fill="currentColor"/></svg>
+            <span id="cd-attack">0</span>
+          </div>
+          <div class="cd-jewel-stat cd-jewel-hp" title="体力">
+            <svg class="cd-stat-decor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg>
+            <span id="cd-hp">0</span>
+          </div>
         </div>
         <div class="cd-text-box">
           <div class="cd-effect-text" id="cd-text"></div>
@@ -112,6 +125,16 @@
         <label>音量設定</label>
         <div class="setting-item"><span>BGM</span><input type="range" id="slider-bgm" min="0" max="1" step="0.05" value="0.3"></div>
         <div class="setting-item"><span>SE</span><input type="range" id="slider-se" min="0" max="1" step="0.05" value="0.3"></div>
+      </div>
+      <div class="settings-section">
+        <label>AI 難易度選択</label>
+        <div class="setting-item">
+          <select id="select-difficulty" class="btn" style="width: 100%; appearance: auto; background: rgba(0,0,0,0.5); color: white; padding: 8px; border: 1px solid rgba(255,255,255,0.2);">
+            <option value="easy">初級 (EASY)</option>
+            <option value="normal" selected>中級 (NORMAL)</option>
+            <option value="hard">上級 (HARD)</option>
+          </select>
+        </div>
       </div>
       <div class="settings-section">
         <label>BGM選択</label>
@@ -136,11 +159,40 @@
   </div>
 
   <div class="overlay result-overlay" id="result-overlay" style="display: none;">
+    <div class="result-bg-layer" id="result-bg-layer"></div>
     <div class="result-modal">
-      <div class="result-header" id="result-header"></div>
+      <div class="result-crystal-container">
+        <div class="result-crystal" id="result-crystal"></div>
+      </div>
+      <div class="result-title" id="result-header"></div>
+      <div class="result-subtitle" id="result-subtitle"></div>
+      <div class="result-divider"></div>
       <div class="result-stats" id="result-stats"></div>
       <div class="result-actions">
-        <button class="btn btn-primary btn-large" id="btn-result-back">ロビーに戻る (BACK TO LOBBY)</button>
+        <button class="btn btn-result-rematch" id="btn-result-rematch">もう一度 (REMATCH)</button>
+        <button class="btn btn-primary btn-result-lobby" id="btn-result-back">ロビーへ戻る</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 墓地ビューワーオーバーレイ -->
+  <div class="graveyard-overlay" id="graveyard-overlay" style="display: none;">
+    <div class="graveyard-panel">
+      <div class="gy-header">
+        <div class="gy-title">
+          GRAVEYARD
+          <span class="gy-title-count" id="gy-title-count">0</span>
+        </div>
+        <div class="gy-close-btn" id="gy-close-btn">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+      </div>
+      <div class="gy-tabs">
+        <div class="gy-tab active" id="gy-tab-mine" data-target="mine">自分の墓地</div>
+        <div class="gy-tab" id="gy-tab-opp" data-target="opp">相手の墓地</div>
+      </div>
+      <div class="gy-cards-container">
+        <div class="gy-grid" id="gy-grid"></div>
       </div>
     </div>
   </div>
@@ -158,6 +210,40 @@
   
   </div>
 
+  <!-- 対戦開始のVS激突カットインオーバーレイ -->
+  <div id="vs-cutin-overlay" class="vs-cutin-overlay" style="display: none;">
+    <div class="vs-bg-flash"></div>
+    <div class="vs-curtain vs-left">
+      <div class="vs-card">
+        <div class="vs-avatar-shine"></div>
+        <div class="vs-avatar-wrapper">
+          <div class="vs-avatar" id="vs-my-avatar"></div>
+        </div>
+        <div class="vs-name-plate">
+          <div class="vs-player-tag">YOU</div>
+          <div class="vs-name" id="vs-my-name">You</div>
+        </div>
+      </div>
+    </div>
+    <div class="vs-curtain vs-right">
+      <div class="vs-card">
+        <div class="vs-avatar-shine"></div>
+        <div class="vs-avatar-wrapper">
+          <div class="vs-avatar" id="vs-opp-avatar"></div>
+        </div>
+        <div class="vs-name-plate">
+          <div class="vs-player-tag">OPPONENT</div>
+          <div class="vs-name" id="vs-opp-name">Opponent</div>
+        </div>
+      </div>
+    </div>
+    <div class="vs-center-logo">
+      <div class="vs-glow-ring"></div>
+      <div class="vs-text">VS</div>
+      <div class="vs-burst"></div>
+    </div>
+  </div>
+
   <!-- ゲーム本体（スケーリングの対象） -->
   <div class="game-wrapper" id="game-wrapper">
     <div class="game-container" id="game-container">
@@ -167,13 +253,20 @@
         <div class="avatar-block opponent-block">
           <div class="avatar-frame">
             <div class="avatar-image" id="opp-avatar"></div>
-            <div class="avatar-life"><div class="life-value" id="opp-life">7</div></div>
+            <div class="avatar-life">
+              <div class="life-wave-container">
+                <div class="life-wave-back"></div>
+                <div class="life-wave-front"></div>
+              </div>
+              <div class="life-value" id="opp-life">7</div>
+            </div>
           </div>
           <div class="avatar-info">
             <div class="player-name" id="opp-name">Opponent</div>
             <div class="status-row">
               <span class="status-badge">DECK <span id="opp-deck">40</span></span>
               <span class="status-badge">HAND <span id="opp-hand">5</span></span>
+              <span class="status-badge status-badge--grave" id="opp-grave-btn" title="相手の墓地を見る">GY <span id="opp-grave">0</span></span>
             </div>
             <div class="tribe-hud opp-crystals" id="opp-tribes"></div>
             <div class="sp-orbs-container" id="opp-sp-orbs"></div>
@@ -189,6 +282,7 @@
             <div class="status-row">
               <span class="status-badge">DECK <span id="my-deck">40</span></span>
               <span class="status-badge">HAND <span id="my-hand-count">5</span></span>
+              <span class="status-badge status-badge--grave" id="my-grave-btn" title="自分の墓地を見る">GY <span id="my-grave">0</span></span>
             </div>
             <div class="tribe-hud my-crystals" id="my-tribes"></div>
             <div class="sp-orbs-container" id="my-sp-orbs"></div>
@@ -196,7 +290,13 @@
           </div>
           <div class="avatar-frame">
             <div class="avatar-image" id="my-avatar"></div>
-            <div class="avatar-life"><div class="life-value" id="my-life">7</div></div>
+            <div class="avatar-life">
+              <div class="life-wave-container">
+                <div class="life-wave-back"></div>
+                <div class="life-wave-front"></div>
+              </div>
+              <div class="life-value" id="my-life">7</div>
+            </div>
           </div>
         </div>
       </div>
@@ -215,10 +315,39 @@
       </div>
 
       <div class="side-area right-side">
-        <div class="turn-indicator" id="turn-indicator">TURN 1</div>
-        <div class="settings-btn" id="settings-btn">⚙️</div>
-        <div class="fullscreen-btn" id="fullscreen-btn" style="position: absolute; top: 15px; right: 60px; font-size: 24px; cursor: pointer; z-index: 1000; text-shadow: 0 0 5px #000; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="フルスクリーン切り替え">⛶</div>
-        <div class="log-panel glass-panel">
+        <div class="turn-indicator" id="turn-indicator">
+          <div class="turn-number">TURN 1</div>
+          <div class="turn-phase">YOUR TURN</div>
+        </div>
+        <div class="turn-timer-container" id="turn-timer-container">
+          <svg class="timer-ring" width="70" height="70">
+            <circle class="timer-ring-circle-bg" cx="35" cy="35" r="30"></circle>
+            <circle class="timer-ring-circle" id="timer-ring-circle" cx="35" cy="35" r="30"></circle>
+          </svg>
+          <div class="timer-seconds" id="timer-seconds">90</div>
+        </div>
+        <div class="log-toggle-btn" id="log-toggle-btn" title="戦闘履歴 (LOG)">
+          <svg viewBox="0 0 24 24" class="svg-icon-btn">
+            <path d="M19 2H6c-1.2 0-2 .8-2 2v16c0 1.2.8 2 2 2h13c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 18H6c-.55 0-1-.45-1-1s.45-1 1-1h12v2zm0-4H6c-.55 0-1-.45-1-1s.45-1 1-1h12v2zm0-4H6c-.55 0-1-.45-1-1s.45-1 1-1h12v2zm0-4H6c-.55 0-1-.45-1-1s.45-1 1-1h12v2z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="settings-btn" id="settings-btn" title="設定 (SETTINGS)">
+          <svg viewBox="0 0 24 24" class="svg-icon-btn">
+            <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="fullscreen-btn" id="fullscreen-btn" title="フルスクリーン切り替え">
+          <svg viewBox="0 0 24 24" class="svg-icon-btn">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        
+        <!-- 戦闘履歴（スライド式ガラスドロワー） -->
+        <div class="log-panel glass-panel log-drawer" id="log-drawer">
+          <div class="log-drawer-header">
+            <h3><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px; display: inline-block;"><path d="M19 2H6c-1.2 0-2 .8-2 2v16c0 1.2.8 2 2 2h13c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 18H6c-.55 0-1-.45-1-1s.45-1 1-1h12v2zm0-4H6c-.55 0-1-.45-1-1s.45-1 1-1h12v2zm0-4H6c-.55 0-1-.45-1-1s.45-1 1-1h12v2zm0-4H6c-.55 0-1-.45-1-1s.45-1 1-1h12v2z" fill="currentColor"/></svg>BATTLE LOG</h3>
+            <span class="log-drawer-close" id="log-drawer-close">×</span>
+          </div>
           <div class="log-content" id="log-content"></div>
         </div>
         <div class="action-panel glass-panel">
@@ -241,9 +370,9 @@
             <div class="crystal-btn white" data-color="white" title="白"></div>
             <div class="crystal-btn black" data-color="black" title="黒"></div>
           </div>
-          <button class="btn btn-primary" id="btn-confirm-raise" style="display: none; width: 100%; margin-top: 10px; font-weight: bold;">レベルアップ確定</button>
-          <div id="unit-actions-panel" style="display: none; margin-top: 15px; border-top: 1px solid #555; padding-top: 15px;">
-             <button class="btn btn-primary" id="btn-activate-ability" style="width: 100%; font-weight: bold; background: #9333ea; border-color: #a855f7;">能力発動 (ACTIVATE)</button>
+          <button class="btn btn-primary btn-confirm-raise" id="btn-confirm-raise" style="display: none;">レベルアップ確定</button>
+          <div id="unit-actions-panel" class="unit-actions-panel" style="display: none;">
+             <button class="btn btn-primary btn-activate-ability" id="btn-activate-ability">能力発動 (ACTIVATE)</button>
           </div>
           <button class="btn btn-primary btn-end-turn" id="btn-end-turn">
             <span class="btn-text">TURN END</span>
@@ -257,6 +386,7 @@
         <defs>
           <filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
           <linearGradient id="arrow-gradient" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(244, 63, 94, 0.2)" /><stop offset="100%" stop-color="rgba(244, 63, 94, 1)" /></linearGradient>
+          <linearGradient id="timer-gradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#d97706"/><stop offset="50%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#fef08a"/></linearGradient>
           <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#f43f5e" /></marker>
         </defs>
         <path id="attack-arrow-line" d="" stroke="url(#arrow-gradient)" stroke-width="12" stroke-dasharray="30,20" marker-end="url(#arrowhead)" filter="url(#glow)" fill="none" />
@@ -271,14 +401,25 @@
         <div class="splash-content" id="splash-content">YOUR TURN</div>
         <div class="splash-sub"></div>
       </div>
+      
+      <!-- 商業級 プレミアム・ターン開始エンブレム -->
+      <div id="turn-splash-premium" class="turn-splash-premium">
+        <div class="emblem-wrapper">
+          <div class="turn-emblem" id="turn-emblem">
+            <span class="emblem-text" id="emblem-text">YOUR TURN</span>
+          </div>
+        </div>
+      </div>
+      <!-- 物理パーティクル用Canvas -->
+      <canvas id="vfx-particle-canvas" width="1920" height="1080" style="position:absolute; inset:0; pointer-events:none; z-index:14900; overflow:hidden;"></canvas>
       <div id="vfx-layer" style="position:absolute; inset:0; pointer-events:none; z-index:15000; overflow:hidden;"></div>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/audio-manager.js?v=vfx_v6"></script>
-  <script src="/js/vfx-engine.js?v=vfx_v6"></script>
-  <script src="/js/game-renderer.js?v=vfx_v6"></script>
-  <script src="/js/game-client.js?v=vfx_v6"></script>
+  <script src="/js/audio-manager.js?v=v139_hud_turn"></script>
+  <script src="/js/vfx-engine.js?v=v139_hud_turn"></script>
+  <script src="/js/game-renderer.js?v=v139_hud_turn"></script>
+  <script src="/js/game-client.js?v=v139_hud_turn"></script>
   
   <script>
     function resizeGame() {

@@ -171,13 +171,17 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
       }
     }
 
-    // \u305d\u306e\u4ed6\u306e\u30ad\u30fc\u30ef\u30fc\u30c9\u6761\u4ef6\uff08link, crisis\u7b49\uff09
-    const condKeys = ['link', 'crisis', 'vanguard', 'rearguard', 'loner', 'avenger'];
+    // その他のキーワード条件（link, crisis等）
+    const condKeys = ['link', 'crisis', 'vanguard', 'rearguard', 'loner', 'avenger', 'comeback'];
     const activeCondKw = unit.keywords && unit.keywords.find(k => condKeys.includes(getKeywordId(k).id));
     if (activeCondKw) {
       const cond = getKeywordId(activeCondKw).id;
       if (cond === 'link' && currentPlayer.cardsPlayedThisTurn <= 1) conditionMet = false;
       else if (cond === 'crisis' && calculateLife(currentPlayer) > 3) conditionMet = false;
+      else if (cond === 'comeback') {
+        const remainingShields = currentPlayer.shields.filter(s => !s.destroyed).length;
+        if (remainingShields > 1) conditionMet = false;
+      }
       else if (cond === 'vanguard') {
         let frontCount = 0;
         let isFront = false;
@@ -487,9 +491,9 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
       case 'destroy': {
         const { processUnitDeath } = require('./CombatResolver');
         if (manualTarget) {
+          manualTarget.currentHp = 0;
           const isDead = processUnitDeath(manualTarget, logs);
           if (isDead) {
-            manualTarget.currentHp = 0;
             logs.push(`\u2620\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${manualTarget.name} \u3092\u7834\u58ca\uff01`);
             events.push({ type: 'ability_kill', target: manualTarget.instanceId });
           }
@@ -497,9 +501,9 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
           const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
           if (targets.length === 1) {
             const target = targets[0];
+            target.currentHp = 0;
             const isDead = processUnitDeath(target, logs);
             if (isDead) {
-              target.currentHp = 0;
               logs.push(`\u2620\ufe0f ${unit.name} \u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u767a\u52d5\uff01${target.name} \u3092\u7834\u58ca\uff01`);
               events.push({ type: 'ability_kill', target: target.instanceId });
             }
@@ -551,16 +555,15 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
              targetId = 'enemy_unit_1'; // \u30af\u30e9\u30a4\u30a2\u30f3\u30c8\u5074\u306b\u6575\u3092\u9078\u629e\u53ef\u80fd\u3068\u4f1d\u3048\u308b
              break;
           } else {
-             // \u30bf\u30fc\u30f3\u7d42\u4e86\u6642\u7b49\u306e\u30bf\u30a4\u30d6\u30ec\u30fc\u30af\u306f\u5de6\u4e0a\u304b\u3089\u512a\u5148\uff08\u5b89\u5b9a\u30bd\u30fc\u30c8\u306e\u7b2c1\u5019\u88dc\uff09
              targetToDestroy = candidates[0];
           }
         }
 
         if (targetToDestroy) {
           const { processUnitDeath } = require('./CombatResolver');
+          targetToDestroy.currentHp = 0;
           const isDead = processUnitDeath(targetToDestroy, logs);
           if (isDead) {
-            targetToDestroy.currentHp = 0;
             const detailStr = isLowestHp ? '\u6700\u3082HP\u304c\u4f4e\u3044' : isHighestHp ? '\u6700\u3082HP\u304c\u9ad8\u3044' : isHighestAtk ? '\u6700\u3082\u653b\u6483\u529b\u304c\u9ad8\u3044' : '\u6700\u3082\u653b\u6483\u529b\u304c\u4f4e\u3044';
             logs.push(`\u2620\ufe0f ${unit.name} \u306e\u52b9\u679c\uff01${detailStr} ${targetToDestroy.name} \u3092\u7834\u58ca\uff01`);
             events.push({ type: 'ability_kill', target: targetToDestroy.instanceId });
@@ -823,7 +826,7 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
             console.log(`\ud83c\udfaf [AbilityProcessor] summon_token: Requesting target for ${unit.name} (${trigger})`);
             needsTarget = true;
             targetId = 'empty_slot';
-            // \u30bf\u30fc\u30b2\u30c3\u30c8\u8981\u6c42\u6642\u306f\u5373\u5ea7\u306b\u7d50\u679c\u3092\u8fd4\u3057\u3001\u5165\u529b\u3092\u5f85\u3064
+            // \u30bf\u30fc\u30b2\u30c3\u30c8\u8981\u6c42\u6642\u306f\u5373\u5ea7\u306b\u7d50\u679c\u3092\u8fd4\u3057\u3001\u5165\u529b\u3092\u5f85\u3064\uff09
             return { events, needsTarget, targetId, effect: 'summon_token', originalAbility: ability };
           } else {
             logs.push(`\u26a0\ufe0f ${unit.name} \u306e\u52b9\u679c\uff01\u3057\u304b\u3057\u5834\u306b\u7a7a\u304d\u304c\u306a\u304f\u53ec\u559a\u306b\u5931\u6557\u3057\u307e\u3057\u305f`);
@@ -1082,9 +1085,9 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
       case 'destroy': {
         const { processUnitDeath } = require('./CombatResolver');
         if (manualTarget) {
+          manualTarget.currentHp = 0;
           const isDead = processUnitDeath(manualTarget, logs);
           if (isDead) {
-            manualTarget.currentHp = 0;
             logs.push(`\u2620\ufe0f \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${manualTarget.name} \u3092\u7834\u58ca\uff01`);
             events.push({ type: 'spell_kill', target: manualTarget.instanceId });
           }
@@ -1092,18 +1095,18 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
           const targets = getAbilityTargets(abilityTargetId, currentPlayer, opponentPlayer, value, null); // \u30b7\u30fc\u30eb\u30c9\u30b9\u30ad\u30eb\u306e\u5834\u5408\u306f\u30e6\u30cb\u30c3\u30c8\u306a\u3057
           if (abilityTargetId.includes('all')) {
             targets.forEach(target => {
+              target.currentHp = 0;
               const isDead = processUnitDeath(target, logs);
               if (isDead) {
-                target.currentHp = 0;
                 logs.push(`\u2620\ufe0f \u30b9\u30da\u30eb\u52b9\u679c\uff01${target.name} \u3092\u7834\u58ca\uff01`);
                 events.push({ type: 'spell_kill', target: target.instanceId });
               }
             });
           } else if (targets.length === 1) {
             const target = targets[0];
+            target.currentHp = 0;
             const isDead = processUnitDeath(target, logs);
             if (isDead) {
-              target.currentHp = 0;
               logs.push(`\u2620\ufe0f \u30b9\u30da\u30eb\u300c${card.name}\u300d: ${target.name} \u3092\u7834\u58ca\uff01`);
               events.push({ type: 'spell_kill', target: target.instanceId });
             }

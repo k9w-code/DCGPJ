@@ -60,24 +60,47 @@ class GameEngine {
     return this.getGameStateForClients();
   }
 
-  processMulligan(playerId, doMulligan) {
+  processMulligan(playerId, decision) {
     const player = this.gameState.players[playerId];
     if (!player) {
-      console.warn(`\u26a0\ufe0f processMulligan: \u30d7\u30ec\u30a4\u30e4\u30fc ${playerId} \u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093`);
+      console.warn(`⚠️ processMulligan: プレイヤー ${playerId} が見つかりません`);
       return null;
     }
 
-    if (doMulligan) {
-      const handCardIds = player.hand.map(c => c.id);
-      player.deck = shuffleDeck([...player.deck, ...handCardIds]);
-      player.hand = [];
-      drawCards(player, this.cardMap, INITIAL_HAND_SIZE);
-      this.log(`\ud83d\udd04 ${player.name}: \u30d5\u30eb\u30de\u30ea\u30ac\u30f3\u5b9f\u884c\uff01`);
+    let redrawIndices = [];
+    if (Array.isArray(decision)) {
+      redrawIndices = decision;
+    } else if (decision && typeof decision === 'object' && Array.isArray(decision.redrawIndices)) {
+      redrawIndices = decision.redrawIndices;
+    } else if (decision === true) {
+      // 互換性のため: trueなら全引き直し
+      redrawIndices = player.hand.map((_, idx) => idx);
+    }
+
+    if (redrawIndices.length > 0) {
+      const redrawCards = [];
+      const keepCards = [];
+      player.hand.forEach((card, idx) => {
+        if (redrawIndices.includes(idx)) {
+          redrawCards.push(card.id);
+        } else {
+          keepCards.push(card);
+        }
+      });
+
+      // 引き直すカードを山札に戻してシャッフル
+      player.deck = shuffleDeck([...player.deck, ...redrawCards]);
+      player.hand = keepCards;
+
+      // 不足枚数をドロー
+      drawCards(player, this.cardMap, redrawIndices.length);
+      this.log(`🔄 ${player.name}: マリガン実行（${redrawIndices.length}枚交換: [${redrawIndices.join(', ')}]）`);
     } else {
-      this.log(`\u2705 ${player.name}: \u30de\u30ea\u30ac\u30f3\u306a\u3057 (\u30ad\u30fc\u30d7)`);
+      this.log(`✅ ${player.name}: マリガンなし (キープ)`);
     }
     return this.getGameStateForClients();
   }
+
 
   startTurn() {
     const gs = this.gameState;
@@ -681,6 +704,14 @@ class GameEngine {
       }
 
     } else if (targetInfo.type === 'shield') {
+      // 演出：シールドへの攻撃開始
+      this.queueAnimationEvent({
+        type: 'attack',
+        source: attacker.instanceId,
+        target: targetInfo.id || 'shield',
+        targetType: 'shield'
+      });
+
       const result = resolveShieldAttack(attacker, opponent.shields, gs.logs);
       opponent.totalShieldDurability = opponent.shields.reduce((sum, s) => sum + s.currentDurability, 0);
 
@@ -689,17 +720,25 @@ class GameEngine {
         gs.phase = 'shield_break_anim';
         gs.pendingShieldBreak = {
           shield: result.shield,
-          artId: result.shield.artId || result.shield.id, // \u30a4\u30e9\u30b9\u30c8\u8868\u793a\u7528\u306b\u8ffd\u52a0
+          artId: result.shield.artId || result.shield.id, // イラスト表示用に追加
           attackerId: playerId
         };
         this.broadcastTrigger('shield_break', opponent.id);
       }
 
     } else if (targetInfo.type === 'direct') {
-      this.log(`\u26a1 ${attacker.name} \u306e\u30c0\u30a4\u30ec\u30af\u30c8\u30a2\u30bf\u30c3\u30af\uff01${opponent.name} \u306b\u76f4\u63a5\u653b\u6483\uff01`);
+      // 演出：ダイレクトアタック開始
+      this.queueAnimationEvent({
+        type: 'attack',
+        source: attacker.instanceId,
+        target: opponent.id,
+        targetType: 'direct'
+      });
+
+      this.log(`⚡ ${attacker.name} のダイレクトアタック！${opponent.name} に直接攻撃！`);
       gs.winner = playerId;
       gs.phase = 'game_over';
-      this.log(`\ud83c\udfc6 ${player.name} \u306e\u52dd\u5229\uff01`);
+      this.log(`🏆 ${player.name} の勝利！`);
     }
 
     if (attacker && getBoardUnit(player.board, attackerRow, attackerLane)) {
@@ -875,7 +914,11 @@ class GameEngine {
           const targetPlayer = this.gameState.players[event.player];
           if (targetPlayer && event.unit && event.row && event.lane !== undefined) {
              targetPlayer.board[event.row][event.lane] = event.unit;
-             // \u5fc5\u8981\u306b\u5fdc\u3058\u3066\u8ffd\u52a0\u306e\u30ad\u30fc\u30ef\u30fc\u30c9\u521d\u671f\u5316\uff08\u30c8\u30fc\u30af\u30f3\u306e\u5834\u5408\u306f\u57fa\u672c\u521d\u671f\u5316\u6e08\u307f\u306e\u305f\u3081\u4ee3\u5165\u306e\u307f\u3067OK\uff09
+             this.queueAnimationEvent({
+               type: 'summon',
+               playerId: event.player,
+               unit: event.unit
+             });
           }
           break;
         }
@@ -914,6 +957,11 @@ class GameEngine {
                 owner.hand.push({ ...cardData });
                 this.log(`\ud83d\udd04 ${foundUnit.name} \u304c ${owner.name} \u306e\u624b\u672d\u306b\u623b\u3063\u305f`);
                 this.broadcastTrigger('card_bounce', owner.id);
+                // アニメーションイベントを追加！
+                this.queueAnimationEvent({
+                  type: 'ability_bounce',
+                  target: targetInstanceId
+                });
               }
             }
           }
@@ -936,6 +984,33 @@ class GameEngine {
         case 'shield_skill_kill': {
           this.queueAnimationEvent({
             type: 'kill',
+            target: event.target
+          });
+          break;
+        }
+        case 'ability_freeze':
+        case 'spell_freeze':
+        case 'shield_skill_freeze': {
+          this.queueAnimationEvent({
+            type: 'ability_freeze',
+            target: event.target
+          });
+          break;
+        }
+        case 'ability_silence':
+        case 'spell_silence':
+        case 'shield_skill_silence': {
+          this.queueAnimationEvent({
+            type: 'ability_silence',
+            target: event.target
+          });
+          break;
+        }
+        case 'ability_barrier':
+        case 'spell_barrier':
+        case 'shield_skill_barrier': {
+          this.queueAnimationEvent({
+            type: 'ability_barrier',
             target: event.target
           });
           break;
@@ -1018,8 +1093,10 @@ class GameEngine {
   }
 
   log(message) {
-    if (this.gameState) this.gameState.logs.push(message);
-    console.log(message);
+    // ログから絵文字を削除（ダサいというフィードバック対応）
+    const cleanMessage = message.replace(/[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]|\uFE0F/g, '').trim();
+    if (this.gameState) this.gameState.logs.push(cleanMessage);
+    console.log(cleanMessage);
   }
 
   discardCards(playerId, indices) {

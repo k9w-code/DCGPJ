@@ -81,6 +81,68 @@ function buildRandomDeck(cardPool, color1, color2) {
   return deck;
 }
 
+// 難易度に応じた高度なAI自動構築デッキ生成
+function generateAIBalancedDeck(difficulty) {
+  const cardPool = gameData.cards;
+  let deck = [];
+  
+  if (difficulty === 'easy') {
+    // Easy: シナジーの薄いプレーンなカード（スターター級、低レア度を多く）
+    const lowRarityCards = cardPool.filter(c => c.rarity <= 2);
+    const colors = ['red', 'blue', 'green', 'white', 'black'];
+    const c1 = colors[Math.floor(Math.random() * colors.length)];
+    const c2 = colors[Math.floor(Math.random() * colors.length)];
+    const pool = lowRarityCards.filter(c => c.color === c1 || c.color === c2 || c.color === 'neutral');
+    
+    for (let i = 0; i < 40; i++) {
+      const card = pool[Math.floor(Math.random() * pool.length)] || cardPool[0];
+      deck.push(card.id);
+    }
+  } 
+  
+  else if (difficulty === 'hard') {
+    // Hard: 強力なレジェンド（★4）、シナジーのあるカードを贅沢に搭載
+    // 強いコンボテーマを自動選定（赤緑アグロ、青黒コントロール、白青回復バリア）
+    const themes = [
+      { colors: ['red', 'green'], name: 'アグロ' },
+      { colors: ['blue', 'black'], name: 'コントロール' },
+      { colors: ['white', 'blue'], name: 'バリア＆回復' }
+    ];
+    const theme = themes[Math.floor(Math.random() * themes.length)];
+    const pool = cardPool.filter(c => theme.colors.includes(c.color) || c.color === 'neutral');
+    
+    // レア度の高いカード順にソートして、限界枚数（maxCopies）まで多く積み込む
+    const priorityCards = [...pool].sort((a, b) => b.rarity - a.rarity || b.attack - a.attack);
+    
+    let idx = 0;
+    while (deck.length < 40) {
+      const card = priorityCards[idx % priorityCards.length];
+      const copies = Math.min(card.maxCopies, 3);
+      for (let i = 0; i < copies && deck.length < 40; i++) {
+        deck.push(card.id);
+      }
+      idx++;
+    }
+  } 
+  
+  else {
+    // Normal: 属性バランスが良く、適度な除去・バフがブレンドされた標準デッキ
+    const colors = ['red', 'blue', 'green', 'white', 'black'];
+    const c1 = colors[Math.floor(Math.random() * colors.length)];
+    let c2 = colors[Math.floor(Math.random() * colors.length)];
+    while (c2 === c1) c2 = colors[Math.floor(Math.random() * colors.length)];
+    
+    const pool = cardPool.filter(c => c.color === c1 || c.color === c2 || c.color === 'neutral');
+    
+    for (let i = 0; i < 40; i++) {
+      const card = pool[Math.floor(Math.random() * pool.length)] || cardPool[0];
+      deck.push(card.id);
+    }
+  }
+  
+  return deck;
+}
+
 function getRandomShields(count) {
   const shuffled = [...gameData.shields].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count).map(s => s.id);
@@ -214,22 +276,24 @@ io.on('connection', (socket) => {
     // PvE / 観戦モードならAIを追加
     if (data.mode === 'pve' || data.mode === 'spectate') {
       const aiId = `ai_${Date.now()}`;
+      const difficulty = data.difficulty || 'normal';
       const aiPlayer = {
         id: aiId,
-        name: 'NPC',
+        name: `NPC (${difficulty.toUpperCase()})`,
         avatar: '6', // AI用デフォルトアバター (例: 6番)
         socket: null,
         deck: null,
         shields: null,
         mulliganDone: false,
         isAI: true,
-        ai: new AIPlayer(aiId, gameData.cardMap),
+        difficulty: difficulty,
+        ai: new AIPlayer(aiId, gameData.cardMap, difficulty),
       };
       room.players.push(aiPlayer);
 
       if (data.mode === 'spectate') {
         playerObj.isAI = true;
-        playerObj.ai = new AIPlayer(playerId, gameData.cardMap);
+        playerObj.ai = new AIPlayer(playerId, gameData.cardMap, 'normal');
       }
 
       socket.emit('room_ready', { roomId, mode: data.mode });
@@ -285,14 +349,11 @@ io.on('connection', (socket) => {
     // AI用デッキ自動構築
     for (const p of room.players) {
       if (p.isAI && !p.deck) {
-        const colors = ['red', 'blue', 'green', 'white', 'black'];
-        const c1 = colors[Math.floor(Math.random() * colors.length)];
-        let c2 = colors[Math.floor(Math.random() * colors.length)];
-        while (c2 === c1) c2 = colors[Math.floor(Math.random() * colors.length)];
-        p.deck = buildRandomDeck(gameData.cards, c1, c2);
+        const diff = p.difficulty || 'normal';
+        p.deck = generateAIBalancedDeck(diff);
         p.shields = getRandomShields(3);
         p.mulliganDone = true;
-        console.log(`🤖 AIデッキ構築: ${c1}/${c2}`);
+        console.log(`🤖 AIデッキ構築完了: 難易度=${diff}, カード=${p.deck.length}枚`);
       }
     }
 
@@ -301,6 +362,33 @@ io.on('connection', (socket) => {
       startGame(room);
     } else {
       socket.emit('waiting_opponent_deck');
+    }
+  });
+
+  // 難易度変更
+  socket.on('change_difficulty', (data) => {
+    if (!currentRoom) return;
+    const room = rooms.get(currentRoom);
+    if (!room) return;
+    
+    const aiPlayer = room.players.find(p => p.isAI);
+    if (aiPlayer) {
+      const difficulty = data.difficulty || 'normal';
+      aiPlayer.difficulty = difficulty;
+      aiPlayer.name = `NPC (${difficulty.toUpperCase()})`;
+      aiPlayer.ai.difficulty = difficulty;
+      
+      console.log(`🤖 AIの難易度が変更されました: ${difficulty}`);
+      socket.emit('difficulty_changed', { difficulty });
+      
+      // ゲーム進行中であればゲーム状態内のプレイヤー名も更新して同期する
+      if (room.engine && room.engine.gameState && room.engine.gameState.players[aiPlayer.id]) {
+        room.engine.gameState.players[aiPlayer.id].name = aiPlayer.name;
+        sendGameStateToAll(room);
+      } else {
+        // まだ開始前であればルーム情報を配信して待機画面に反映
+        io.to(currentRoom).emit('room_ready', { roomId: currentRoom, mode: room.mode });
+      }
     }
   });
 
@@ -315,7 +403,8 @@ io.on('connection', (socket) => {
     const player = room.players[session.playerIndex];
     if (!player || player.mulliganDone) return;
 
-    room.engine.processMulligan(player.id, data.doMulligan);
+    const decision = (data.redrawIndices !== undefined) ? data.redrawIndices : data.doMulligan;
+    room.engine.processMulligan(player.id, decision);
     player.mulliganDone = true;
 
     if (room.players.every(p => p.mulliganDone)) {

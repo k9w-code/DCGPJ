@@ -7,11 +7,28 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <title>DCG - デッキ構築</title>
-  <link rel="stylesheet" href="/css/style.css?v=v134_vertical_fix">
+  <link rel="stylesheet" href="/css/style.css?v=v138_mulligan_diff">
+  <link rel="stylesheet" href="/css/battle-premium.css?v=v138_mulligan_diff">
+  <link rel="stylesheet" href="/css/lobby-premium.css?v=v138_mulligan_diff">
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
+  <!-- プレミアム背景エフェクト -->
+  <div class="premium-bg-container">
+    <div class="premium-orb orb-purple"></div>
+    <div class="premium-orb orb-gold"></div>
+    <div class="premium-orb orb-blue"></div>
+    <div class="premium-bg-grid"></div>
+  </div>
   <div class="rotate-prompt" id="rotate-prompt">
-    <div style="font-size: 64px; margin-bottom: 20px;">📱🔄</div>
+    <div class="rotate-prompt-icon">
+      <svg viewBox="0 0 80 80" width="64" height="64" fill="none">
+        <rect x="20" y="10" width="40" height="60" rx="6" stroke="currentColor" stroke-width="3"/>
+        <circle cx="40" cy="62" r="3" fill="currentColor"/>
+        <path d="M60 35 C70 35, 70 25, 60 20" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M58 17 L62 21 L56 22 Z" fill="#fbbf24"/>
+      </svg>
+    </div>
     <div style="font-size: 24px; margin-bottom: 10px;">スマホを横向きにしてください</div>
     <div style="font-size: 16px; color: #a09880;">Please rotate your device to landscape</div>
   </div>
@@ -30,10 +47,10 @@
       <div class="collection-header">
         <div class="tabs">
           <button class="tab premium-tab active" data-tab="cards">
-            <span class="tab-icon">🎴</span> <span class="tab-text">カード</span>
+            <span class="tab-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; display: inline-block;"><rect x="3" y="6" width="12" height="15" rx="2" transform="rotate(-5 3 6)"/><rect x="8" y="3" width="12" height="15" rx="2" transform="rotate(5 8 3)"/></svg></span> <span class="tab-text">カード</span>
           </button>
           <button class="tab premium-tab" data-tab="shields">
-            <span class="tab-icon">🛡️</span> <span class="tab-text">シールド</span>
+            <span class="tab-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; display: inline-block;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span> <span class="tab-text">シールド</span>
           </button>
         </div>
         
@@ -76,7 +93,7 @@
           </div>
           <!-- 検索/キーワードフィルタ -->
           <div class="search-filter-bar">
-            <input type="text" id="search-input" placeholder="カード名・テキスト検索..." class="glass-input">
+            <input type="text" id="search-input" placeholder="Search cards..." class="glass-input">
             <select id="keyword-filter" class="glass-select">
               <option value="all">すべてのキーワード</option>
             </select>
@@ -95,8 +112,18 @@
       <!-- デッキ保存/読み込みスロット -->
       <div class="deck-builder-header">
         <div class="header-left">
-          <button class="btn btn-secondary btn-icon" onclick="window.location.href='/'" title="ロビーに戻る">🏠</button>
-          <button class="btn btn-secondary btn-icon" id="fullscreen-btn" title="フルスクリーン切り替え">⛶</button>
+          <!-- ロビーへ戻るボタン -->
+          <button class="btn btn-secondary btn-icon db-icon-btn" onclick="window.location.href='/'" title="ロビーに戻る">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </button>
+          <!-- フルスクリーンボタン -->
+          <button class="btn btn-secondary btn-icon db-icon-btn db-fullscreen-btn" id="fullscreen-btn" title="フルスクリーン切り替え">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+            </svg>
+          </button>
           <h1>DECK BUILDER</h1>
         </div>
         <div class="header-actions">
@@ -105,17 +132,30 @@
             <div class="deck-slots" id="deck-slots"></div>
           </div>
           <div class="deck-action-buttons">
-            <button class="btn btn-secondary btn-icon-text tooltip-btn" id="btn-clear-deck" title="編集中のデッキを空にする">
-              <span class="icon">🔄</span>
+            <!-- クリア -->
+            <button class="btn btn-secondary btn-icon-text tooltip-btn db-action-btn" id="btn-clear-deck" title="編集中のデッキを空にする">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
             </button>
-            <button class="btn btn-danger btn-icon-text tooltip-btn" id="btn-delete-deck" title="選択中のスロットを削除">
-              <span class="icon">🗑️</span>
+            <!-- 削除 -->
+            <button class="btn btn-danger btn-icon-text tooltip-btn db-action-btn" id="btn-delete-deck" title="選択中のスロットを削除">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
             </button>
-            <button class="btn btn-primary btn-save" id="btn-save-deck" title="現在のデッキをスロットに保存">
-              💾 保存
+            <!-- コードコピー -->
+            <button class="btn btn-secondary btn-icon-text tooltip-btn db-action-btn" id="btn-export-code" title="デッキコードをコピー">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             </button>
-            <button class="btn btn-secondary btn-icon-text tooltip-btn" id="btn-reload-master" title="マスタデータ再取得">
-              <span class="icon">📥</span>
+            <!-- インポート -->
+            <button class="btn btn-secondary btn-icon-text tooltip-btn db-action-btn" id="btn-import-code" title="デッキコードから読込">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </button>
+            <!-- 保存 -->
+            <button class="btn btn-primary btn-save db-save-btn" id="btn-save-deck" title="現在のデッキをスロットに保存">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              保存
+            </button>
+            <!-- マスタデータ再取得 -->
+            <button class="btn btn-secondary btn-icon-text tooltip-btn db-action-btn" id="btn-reload-master" title="マスタデータ再取得">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             </button>
           </div>
         </div>
@@ -126,6 +166,18 @@
         <div class="deck-counts">
           <span class="deck-count-badge"><span id="deck-count">0</span>/40</span>
           <span class="deck-count-badge shield-badge"><span id="shield-count">0</span>/3</span>
+        </div>
+      </div>
+      
+      <!-- デッキ分析パネル（コスト分布 ＆ 色バランス） -->
+      <div class="deck-analysis-panel" id="deck-analysis-panel">
+        <div class="analysis-section">
+          <div class="analysis-title">COLOR BALANCE</div>
+          <div class="color-balance-bar" id="color-balance-bar"></div>
+        </div>
+        <div class="analysis-section">
+          <div class="analysis-title">MANA CURVE</div>
+          <div class="mana-curve-chart" id="mana-curve-chart"></div>
         </div>
       </div>
       
@@ -165,8 +217,8 @@
           <div class="cd-rarity" id="cd-rarity">Common</div>
         </div>
         <div class="cd-stats" id="cd-stats-container">
-          <div class="cd-stat"><span class="cd-stat-icon">⚔️</span><span id="cd-attack">0</span></div>
-          <div class="cd-stat"><span class="cd-stat-icon">❤️</span><span id="cd-hp">0</span></div>
+          <div class="cd-stat"><span id="cd-attack" class="atk-box">0</span></div>
+          <div class="cd-stat"><span id="cd-hp" class="hp-box">0</span></div>
         </div>
         <div class="cd-text-box">
           <div class="cd-effect-text" id="cd-text"></div>
@@ -177,9 +229,9 @@
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/audio-manager.js"></script>
-  <script src="/js/game-renderer.js"></script>
-  <script src="/js/deck-builder.js"></script>
+  <script src="/js/audio-manager.js?v=v138_mulligan_diff"></script>
+  <script src="/js/game-renderer.js?v=v138_mulligan_diff"></script>
+  <script src="/js/deck-builder.js?v=v138_mulligan_diff"></script>
   <script>
     function resizeGame() {
       const container = document.getElementById('game-container');

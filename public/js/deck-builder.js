@@ -234,6 +234,68 @@ function initUI() {
     });
   }
 
+  // === デッキコードのエクスポート ===
+  const btnExport = document.getElementById('btn-export-code');
+  if (btnExport) {
+    btnExport.addEventListener('click', () => {
+      if (Object.keys(deck).length === 0) {
+        alert('空のデッキはエクスポートできません。カードを追加してください。');
+        return;
+      }
+      try {
+        const data = { d: deck, s: selectedShields };
+        const jsonStr = JSON.stringify(data);
+        const code = btoa(unescape(encodeURIComponent(jsonStr)));
+        
+        navigator.clipboard.writeText(code).then(() => {
+          alert('🔑 デッキコードをクリップボードにコピーしました！\nこのコードをSNS等で共有したり、インポートして使ってください。');
+        }).catch(err => {
+          prompt('以下のデッキコードをコピーしてください：', code);
+        });
+        
+        if (window.audioManager) window.audioManager.playSE('click');
+      } catch (e) {
+        alert('エクスポートに失敗しました: ' + e.message);
+      }
+    });
+  }
+
+  // === デッキコードのインポート ===
+  const btnImport = document.getElementById('btn-import-code');
+  if (btnImport) {
+    btnImport.addEventListener('click', () => {
+      const code = prompt('コピーしたデッキコードを入力してください：');
+      if (!code) return;
+      
+      try {
+        const jsonStr = decodeURIComponent(escape(atob(code.trim())));
+        const data = JSON.parse(jsonStr);
+        
+        if (data.d && typeof data.d === 'object' && Array.isArray(data.s)) {
+          // デッキを上書き
+          deck = data.d;
+          selectedShields = data.s.slice(0, 3); // 最大3枚
+          
+          window.deck = deck;
+          window.selectedShields = selectedShields;
+          
+          // 表示を更新
+          renderDeckList();
+          renderShieldSlotsList();
+          updateSubmitButton();
+          if (typeof renderDeckAnalysis === 'function') renderDeckAnalysis();
+          
+          alert('🔌 デッキコードからデッキを正常に読み込みました！');
+          if (window.audioManager) window.audioManager.playSE('levelUp');
+        } else {
+          alert('無効なデッキコード形式です。');
+        }
+      } catch (e) {
+        alert('インポートに失敗しました。コードが正しいか確認してください。\nエラー: ' + e.message);
+      }
+    });
+  }
+
   // デッキ保存スロットの生成と初期化
   const slotsContainer = document.getElementById('deck-slots');
   if (slotsContainer && slotsContainer.children.length === 0) {
@@ -241,14 +303,18 @@ function initUI() {
       const slot = document.createElement('div');
       slot.className = `save-slot${i === currentSaveSlot ? ' active' : ''}`;
       slot.dataset.slot = i;
-      slot.textContent = i + 1;
+      
+      const savedName = localStorage.getItem(`dcg_deck_name_slot_${i}`) || `SLOT ${i + 1}`;
+      slot.textContent = savedName;
       slotsContainer.appendChild(slot);
     }
   }
 
   // デッキ保存スロット
   document.querySelectorAll('.save-slot').forEach(slot => {
-    slot.addEventListener('click', () => {
+    slot.addEventListener('click', (e) => {
+      if (e.target.tagName && e.target.tagName.toLowerCase() === 'input') return;
+      
       document.querySelectorAll('.save-slot').forEach(s => s.classList.remove('active'));
       slot.classList.add('active');
       currentSaveSlot = parseInt(slot.dataset.slot);
@@ -257,6 +323,53 @@ function initUI() {
       renderDeckList();
       renderShieldSlotsList();
       updateSubmitButton();
+    });
+
+    slot.addEventListener('dblclick', () => {
+      if (slot.querySelector('input')) return;
+
+      const currentName = slot.textContent.trim();
+      slot.innerHTML = '';
+      
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = currentName;
+      input.style.width = '90px';
+      input.style.background = '#0f172a';
+      input.style.color = '#ffffff';
+      input.style.border = '1px solid #fbbf24';
+      input.style.borderRadius = '6px';
+      input.style.padding = '4px 6px';
+      input.style.fontSize = '12px';
+      input.style.textAlign = 'center';
+      input.style.outline = 'none';
+      input.style.boxShadow = '0 0 10px rgba(251, 191, 36, 0.3)';
+      
+      slot.appendChild(input);
+      input.focus();
+      input.select();
+
+      const finishEdit = () => {
+        let newName = input.value.trim();
+        if (!newName) newName = `SLOT ${parseInt(slot.dataset.slot) + 1}`;
+        localStorage.setItem(`dcg_deck_name_slot_${slot.dataset.slot}`, newName);
+        slot.innerHTML = '';
+        slot.textContent = newName;
+        if (window.audioManager) window.audioManager.playSE('click');
+      };
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          finishEdit();
+        } else if (e.key === 'Escape') {
+          slot.innerHTML = '';
+          slot.textContent = currentName;
+        }
+      });
+
+      input.addEventListener('blur', () => {
+        finishEdit();
+      });
     });
   });
 
@@ -443,7 +556,7 @@ function renderCardGrid() {
     const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
     const primaryColor = getColorCSS(colors[0]);
 
-    el.style.backgroundImage = `url('${getCardImagePath(card)}')`;
+    el.style.backgroundImage = `url('${window.getCardImagePath(card)}')`;
     
     // コスト丸アイコン（右上）、カード名は非表示（プレビューで確認）
     // ユニットの場合はATK/HPも小さく表示
@@ -451,16 +564,22 @@ function renderCardGrid() {
       ? `<div class="grid-stats"><span class="gs-atk">${card.attack}</span><span class="gs-hp">${card.hp}</span></div>` 
       : `<div class="grid-type-label">SPELL</div>`;
       
+    const foilShineHtml = (card.rarity === 4) ? '<div class="foil-shine"></div>' : '';
     el.innerHTML = `
+      ${foilShineHtml}
       <div class="grid-card-overlay">
         <div class="grid-cost" style="background:${primaryColor};">${card.cost}</div>
         ${statsOverlay}
         ${count > 0 ? `<div class="grid-count">×${count}</div>` : ''}
       </div>
-      <img src="${getCardImagePath(card)}" style="display:none;" onerror="${IMG_FALLBACK}">
+      <img src="${window.getCardImagePath(card)}" style="display:none;" onerror="${IMG_FALLBACK}">
     `;
     
     el.addEventListener('click', () => showPreview('card', card));
+    el.addEventListener('dblclick', () => {
+      addToDeck(card);
+      showPreview('card', card);
+    });
     el.addEventListener('contextmenu', (e) => { e.preventDefault(); removeFromDeck(card.id); });
     
     // バトル画面と同じ詳細表示を有効化
@@ -518,7 +637,7 @@ function showPreview(type, data) {
   if (type === 'card') {
     const count = deck[data.id] || 0;
     const maxCopies = (typeof data.maxCopies !== 'undefined') ? data.maxCopies : 3;
-    const bgImage = getCardImagePath(data);
+    const bgImage = window.getCardImagePath(data);
     
     // スキル・キーワード表示 (DataLoaderのマッピングに合わせて調整)
     const keywordHtml = data.keywords && data.keywords.length > 0 
@@ -566,9 +685,9 @@ function showPreview(type, data) {
             <div class="token-list">
               ${tokenCards.map(tc => `
                 <div class="token-item" style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 4px; cursor: pointer; transition: background 0.2s;" onclick="const tc = (window.allCards || []).find(c => c.id === '${tc.id}'); if (tc) window.showCardDetail(tc);">
-                  <div style="width: 30px; height: 30px; background-image: url('${getCardImagePath(tc)}'); background-size: cover; border-radius: 2px;"></div>
+                  <div style="width: 30px; height: 30px; background-image: url('${window.getCardImagePath(tc)}'); background-size: cover; border-radius: 2px;"></div>
                   <div style="flex:1; font-size: 11px; font-weight: bold;">${tc.name}</div>
-                  <div style="font-size: 10px;">⚔️${tc.attack} ❤️${tc.hp}</div>
+                  <div style="font-size: 10px;"><span class="atk-box">${tc.attack}</span> <span class="hp-box">${tc.hp}</span></div>
                 </div>
               `).join('')}
             </div>
@@ -579,7 +698,7 @@ function showPreview(type, data) {
 
     const flavorHtml = data.flavorText ? `<div class="preview-flavor">${data.flavorText}</div>` : '';
     const statsHtml = data.type === 'unit' 
-      ? `<div class="preview-stats"><span class="ps-atk">⚔ ${data.attack}</span><span class="ps-hp">❤ ${data.hp}</span></div>` 
+      ? `<div class="preview-stats"><span class="ps-atk">${data.attack}</span><span class="ps-hp">${data.hp}</span></div>` 
       : `<div class="preview-stats"><span class="ps-spell">SPELL</span></div>`;
 
     container.innerHTML = `
@@ -611,6 +730,47 @@ function showPreview(type, data) {
     
     document.getElementById('btn-minus').addEventListener('click', () => { removeFromDeck(data.id); showPreview('card', data); });
     document.getElementById('btn-plus').addEventListener('click', () => { addToDeck(data); showPreview('card', data); });
+    
+    // === キーワードクイッククリック絞り込み検索 ===
+    container.querySelectorAll('.kw-badge').forEach(badge => {
+      badge.style.cursor = 'pointer';
+      badge.title = `「${badge.textContent}」で絞り込み`;
+      badge.addEventListener('click', () => {
+        const keywordText = badge.textContent.trim();
+        const keywordSelect = document.getElementById('keyword-filter');
+        if (keywordSelect) {
+          let found = false;
+          for (const opt of keywordSelect.options) {
+            if (opt.textContent === keywordText) {
+              keywordSelect.value = opt.value;
+              activeKeyword = opt.value;
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            // フルキーワード名 (例: "taunt:1"等) ではない単一検索マッチのフォールバック
+            for (const opt of keywordSelect.options) {
+              if (opt.value.split(':')[0] === keywordText) {
+                keywordSelect.value = opt.value;
+                activeKeyword = opt.value;
+                break;
+              }
+            }
+          }
+        }
+        
+        // 検索文字列はクリアしてフィルタ優先
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+          searchInput.value = '';
+          activeSearchText = '';
+        }
+        
+        renderGrid();
+        if (window.audioManager) window.audioManager.playSE('select');
+      });
+    });
     
   } else if (type === 'shield') {
     const isSelected = selectedShields.includes(data.id);
@@ -692,6 +852,13 @@ function renderDeckList() {
   for (const { card, count } of entries) {
     const el = document.createElement('div');
     el.className = 'deck-entry';
+    
+    // 背景イラストとグラデーションマスクの設定
+    const bgUrl = window.getCardImagePath(card);
+    el.style.backgroundImage = `linear-gradient(90deg, rgba(15, 17, 26, 0.95) 0%, rgba(15, 17, 26, 0.8) 40%, rgba(15, 17, 26, 0.25) 100%), url('${bgUrl}')`;
+    el.style.backgroundSize = 'cover';
+    el.style.backgroundPosition = 'right center';
+    
     const primaryColor = getColorCSS(card.color);
     el.innerHTML = `
       <span class="de-cost" style="background:${primaryColor};">${card.cost}</span>
@@ -699,6 +866,10 @@ function renderDeckList() {
       <span class="de-copies">×${count}</span>
     `;
     el.addEventListener('click', () => { showPreview('card', card); });
+    el.addEventListener('dblclick', () => {
+      removeFromDeck(card.id);
+      showPreview('card', card);
+    });
     
     // デッキリスト内でも詳細表示を有効化
     if (typeof attachCardDetailEvent === 'function') {
@@ -706,6 +877,87 @@ function renderDeckList() {
     }
     
     list.appendChild(el);
+  }
+  
+  // デッキ分析グラフの更新
+  renderDeckAnalysis();
+}
+
+function renderDeckAnalysis() {
+  const colorCounts = { white: 0, red: 0, blue: 0, green: 0, black: 0, neutral: 0 };
+  const costCounts = Array(8).fill(0); // 0, 1, 2, 3, 4, 5, 6, 7+
+  let totalCardsForColors = 0;
+
+  for (const [id, count] of Object.entries(deck)) {
+    const card = allCards.find(c => c.id === id);
+    if (card) {
+      // 1. 色割合集計
+      const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
+      colors.forEach(col => {
+        const colLower = col.toLowerCase();
+        if (colorCounts[colLower] !== undefined) {
+          colorCounts[colLower] += count;
+        }
+      });
+      totalCardsForColors += count * colors.length;
+
+      // 2. コストマナカーブ集計
+      if (card.cost !== undefined) {
+        const cost = card.cost;
+        if (cost >= 7) {
+          costCounts[7] += count;
+        } else {
+          costCounts[cost] += count;
+        }
+      }
+    }
+  }
+
+  // --- 色割合インジケーター描画 ---
+  const bar = document.getElementById('color-balance-bar');
+  if (bar) {
+    bar.innerHTML = '';
+    if (totalCardsForColors === 0) {
+      bar.innerHTML = '<div style="color: var(--text-dim); font-size: 11px; text-align: center; width: 100%; line-height: 12px;">デッキが空です</div>';
+    } else {
+      const colorsOrder = ['white', 'red', 'blue', 'green', 'black'];
+      colorsOrder.forEach(col => {
+        const cnt = colorCounts[col];
+        if (cnt > 0) {
+          const pct = (cnt / totalCardsForColors) * 100;
+          const seg = document.createElement('div');
+          seg.className = `color-segment segment-${col}`;
+          seg.style.width = `${pct}%`;
+          seg.style.background = getColorCSS(col);
+          seg.title = `${col.toUpperCase()}: ${cnt}枚 (${Math.round(pct)}%)`;
+          bar.appendChild(seg);
+        }
+      });
+    }
+  }
+
+  // --- マナカーブ棒グラフ描画 ---
+  const chart = document.getElementById('mana-curve-chart');
+  if (chart) {
+    chart.innerHTML = '';
+    const maxCount = Math.max(1, ...costCounts);
+    
+    for (let i = 0; i <= 7; i++) {
+      const cnt = costCounts[i];
+      const heightPct = (cnt / maxCount) * 100;
+      const colLabel = i === 7 ? '7+' : i;
+      
+      const barWrapper = document.createElement('div');
+      barWrapper.className = 'mana-bar-wrapper';
+      barWrapper.innerHTML = `
+        <div class="mana-bar-value">${cnt > 0 ? cnt : ''}</div>
+        <div class="mana-bar-outer">
+          <div class="mana-bar-inner" style="height:${heightPct}%;"></div>
+        </div>
+        <div class="mana-bar-label">${colLabel}</div>
+      `;
+      chart.appendChild(barWrapper);
+    }
   }
 }
 
@@ -741,6 +993,12 @@ function renderShieldSlotsList() {
         el.appendChild(controls);
         el.appendChild(content);
         el.classList.add('filled');
+        
+        // 背景イラストとグラデーションマスクの設定
+        const bgUrl = getShieldImagePath(shield);
+        el.style.backgroundImage = `linear-gradient(90deg, rgba(15, 17, 26, 0.95) 0%, rgba(15, 17, 26, 0.8) 45%, rgba(15, 17, 26, 0.3) 100%), url('${bgUrl}')`;
+        el.style.backgroundSize = 'cover';
+        el.style.backgroundPosition = 'right center';
       } else {
         el.innerHTML = `<span style="color:#ef4444;font-size:13px;">不明なシールド (ID: ${selectedShields[i]})</span>`;
         el.classList.add('error-slot');
@@ -817,5 +1075,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (document.exitFullscreen) document.exitFullscreen();
       }
     });
+  }
+});
+
+// ========== ★4レジェンダリーカード：ホログラフィック・ホイル座標追従グローバルデリゲーション ==========
+document.addEventListener('pointermove', (e) => {
+  const card = e.target.closest('.rarity-4');
+  if (!card) return;
+  const rect = card.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const px = (x / rect.width) * 100;
+  const py = (y / rect.height) * 100;
+  card.style.setProperty('--foil-x', `${px}%`);
+  card.style.setProperty('--foil-y', `${py}%`);
+});
+
+document.addEventListener('pointerout', (e) => {
+  const card = e.target.closest('.rarity-4');
+  if (card && !card.contains(e.relatedTarget)) {
+    card.style.setProperty('--foil-x', '50%');
+    card.style.setProperty('--foil-y', '50%');
   }
 });

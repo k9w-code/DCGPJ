@@ -1,0 +1,383 @@
+/* lobby-premium.css - プレミアムロビーUI/UX拡張 */
+
+/* 1. 背景の極上化 & ネオンオーブアニメーション */
+.premium-bg-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  z-index: -2;
+  overflow: hidden;
+  background: radial-gradient(circle at center, #0a0e1a 0%, #020408 100%);
+}
+
+.premium-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.18;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: orb-float 25s ease-in-out infinite alternate;
+}
+
+.orb-purple {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.8) 0%, transparent 70%);
+  top: -100px; left: -100px;
+  animation-duration: 35s;
+}
+
+.orb-gold {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(184, 134, 11, 0.6) 0%, transparent 70%);
+  bottom: -150px; right: -150px;
+  animation-duration: 40s;
+  animation-delay: -5s;
+}
+
+.orb-blue {
+  width: 450px; height: 450px;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.5) 0%, transparent 70%);
+  top: 40%; left: 60%;
+  animation-duration: 28s;
+  animation-delay: -12s;
+}
+
+@keyframes orb-float {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(80px, 50px) scale(1.15); }
+  100% { transform: translate(-40px, -80px) scale(0.9); }
+}
+
+/* 背景にサイバーグリッドをうっすら重ねる */
+.premium-bg-grid {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: 
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: center;
+  mask-image: radial-gradient(circle at center, black 40%, transparent 90%);
+  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 90%);
+  pointer-events: none;
+}
+
+/* 2. タイトルのネオン化 */
+.lobby-header h1 {
+  font-size: 46px !important;
+  letter-spacing: 6px !important;
+  background: linear-gradient(135deg, #e9d5ff 0%, #b8860b 50%, #fef08a 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 0 15px rgba(184, 134, 11, 0.25)) !important;
+  animation: logo-glow 4s ease-in-out infinite alternate;
+}
+
+@keyframes logo-glow {
+  0% { filter: drop-shadow(0 0 12px rgba(184, 134, 11, 0.2)) drop-shadow(0 0 2px rgba(184, 134, 11, 0.1)); }
+  100% { filter: drop-shadow(0 0 25px rgba(184, 134, 11, 0.45)) drop-shadow(0 0 8px rgba(124, 58, 237, 0.3)); }
+}
+
+/* 3. 極上グラスモルフィズムパネル */
+.panel {
+  background: rgba(10, 16, 32, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.15) !important; /* 天面のハイライト */
+  border-radius: 20px !important;
+  backdrop-filter: blur(25px) !important;
+  -webkit-backdrop-filter: blur(25px) !important;
+  box-shadow: 
+    0 30px 60px rgba(0, 0, 0, 0.6), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4) !important;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.panel:hover {
+  border-color: rgba(184, 134, 11, 0.2) !important;
+  box-shadow: 
+    0 35px 70px rgba(0, 0, 0, 0.7), 
+    0 0 30px rgba(184, 134, 11, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+/* 4. モードカードのアップグレード */
+.mode-grid {
+  gap: 16px !important;
+}
+
+.mode-card {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 16px !important;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.mode-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(184, 134, 11, 0.1));
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.mode-card:hover {
+  transform: translateY(-6px) !important;
+  border-color: rgba(124, 58, 237, 0.4) !important;
+  box-shadow: 
+    0 15px 30px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(124, 58, 237, 0.15) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.mode-card:hover::before {
+  opacity: 1;
+}
+
+.mode-card.active {
+  transform: translateY(-2px) !important;
+  border-color: var(--accent) !important;
+  background: rgba(184, 134, 11, 0.06) !important;
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.3),
+    0 0 25px rgba(184, 134, 11, 0.25),
+    inset 0 0 12px rgba(184, 134, 11, 0.1) !important;
+}
+
+.mode-card.active::before {
+  background: linear-gradient(135deg, rgba(184, 134, 11, 0.15), rgba(245, 158, 11, 0.05));
+  opacity: 1;
+}
+
+.mode-card .icon {
+  font-size: 32px !important;
+  margin-bottom: 12px !important;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.mode-card:hover .icon {
+  transform: scale(1.22) translateY(-2px);
+}
+
+.mode-card.active .icon {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 8px rgba(184, 134, 11, 0.6));
+}
+
+.mode-card .label {
+  font-size: 14px !important;
+  letter-spacing: 0.5px;
+  color: var(--text-primary);
+  font-weight: 600 !important;
+}
+
+.mode-card .desc {
+  font-size: 11px !important;
+  color: var(--text-secondary) !important;
+  opacity: 0.8;
+  margin-top: 6px !important;
+}
+
+/* アバター選択の洗練 */
+.avatar-palette {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.avatar-option {
+  width: 48px !important; height: 48px !important;
+  border-radius: 50% !important;
+  border: 2px solid rgba(255, 255, 255, 0.15) !important;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  position: relative;
+}
+
+.avatar-option:hover {
+  transform: scale(1.18) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4) !important;
+}
+
+.avatar-option.active {
+  transform: scale(1.12) !important;
+  border-color: var(--gold) !important;
+  box-shadow: 
+    0 0 18px rgba(218, 165, 32, 0.6),
+    0 0 0 2px rgba(218, 165, 32, 0.2) !important;
+}
+
+/* 6. ボタンのプレミアム化（シマー・グロー効果） */
+.btn-primary {
+  background: linear-gradient(135deg, #b8860b 0%, #8b5cf6 100%) !important;
+  border: none !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3) !important;
+  z-index: 1;
+  transition: all 0.3s ease !important;
+}
+
+/* ボタン内の光の反射効果（Shimmer） */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  transition: none;
+  z-index: 2;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 
+    0 8px 25px rgba(139, 92, 246, 0.5),
+    0 0 15px rgba(184, 134, 11, 0.2) !important;
+  filter: brightness(1.08);
+}
+
+.btn-primary:hover::after {
+  left: 150%;
+  transition: left 0.9s ease-in-out;
+}
+
+.btn-primary:active {
+  transform: translateY(1px) !important;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4) !important;
+  filter: brightness(0.95);
+}
+
+/* 7. 入力フォームの美化 */
+input[type="text"] {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  padding: 12px 16px !important;
+  color: #fff !important;
+  transition: all 0.3s ease !important;
+}
+
+input[type="text"]:focus {
+  border-color: rgba(184, 134, 11, 0.6) !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  box-shadow: 
+    0 0 15px rgba(184, 134, 11, 0.15),
+    inset 0 1px 3px rgba(0,0,0,0.5) !important;
+}
+
+/* 8. フォームグループの装飾 */
+.form-group label {
+  font-size: 11px !important;
+  letter-spacing: 1.5px !important;
+  color: var(--text-secondary) !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  margin-bottom: 8px !important;
+}
+
+/* スクロールバーのカスタマイズ */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.2);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* 9. 難易度選択カード (v138) */
+.difficulty-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.diff-card {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 12px !important;
+  padding: 10px 8px !important;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.diff-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(218, 165, 32, 0.08));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.diff-card:hover {
+  transform: translateY(-3px) !important;
+  border-color: rgba(139, 92, 246, 0.3) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.diff-card:hover::before {
+  opacity: 1;
+}
+
+.diff-card.active {
+  border-color: var(--gold) !important;
+  background: rgba(184, 134, 11, 0.06) !important;
+  box-shadow: 
+    0 5px 15px rgba(0, 0, 0, 0.2),
+    0 0 15px rgba(184, 134, 11, 0.2) !important;
+}
+
+.diff-card.active::before {
+  background: linear-gradient(135deg, rgba(184, 134, 11, 0.1), rgba(245, 158, 11, 0.03));
+  opacity: 1;
+}
+
+.diff-label {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px;
+  color: var(--text-primary);
+}
+
+.diff-card.active .diff-label {
+  color: var(--gold);
+  text-shadow: 0 0 8px rgba(218, 165, 32, 0.4);
+}
+
+.diff-desc {
+  font-size: 9px !important;
+  color: var(--text-secondary) !important;
+  opacity: 0.8;
+  margin-top: 4px !important;
+}
+

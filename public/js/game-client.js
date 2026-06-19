@@ -1,6 +1,238 @@
 // game-client.js
 const socket = io();
 
+// ==========================================================================
+// PHASE 10: Ultimate Visual Physics Engine (Drag Physics & Shield Particles)
+// ==========================================================================
+
+// 1. ドラッグ物理シミュレータ状態オブジェクト
+let dragPhysics = {
+  active: false,
+  x: 0, y: 0,           // 現在の回転角度 (tiltX, tiltY)
+  vx: 0, vy: 0,         // 回転速度
+  targetX: 0, targetY: 0, // 目標復元角度 (0)
+  k: 0.16,              // スプリング剛性 (バネの強さ)
+  d: 0.84,              // 減衰定数 (ダンピング摩擦)
+  rafId: null
+};
+
+// ドラッグ物理慣性＆スプリングスナップの毎フレーム更新ループ
+function updateDragPhysics() {
+  if (!dragPhysics.active && Math.abs(dragPhysics.x) < 0.05 && Math.abs(dragPhysics.y) < 0.05) {
+    dragPhysics.x = 0; dragPhysics.y = 0;
+    dragPhysics.vx = 0; dragPhysics.vy = 0;
+    if (dragGhost) {
+      dragGhost.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)`;
+    }
+    dragPhysics.rafId = null;
+    return;
+  }
+
+  // 物理計算 (F = -kx - dv)
+  const ax = -dragPhysics.k * (dragPhysics.x - dragPhysics.targetX) - (1 - dragPhysics.d) * dragPhysics.vx;
+  const ay = -dragPhysics.k * (dragPhysics.y - dragPhysics.targetY) - (1 - dragPhysics.d) * dragPhysics.vy;
+
+  dragPhysics.vx += ax;
+  dragPhysics.vy += ay;
+  dragPhysics.x += dragPhysics.vx;
+  dragPhysics.y += dragPhysics.vy;
+
+  if (dragGhost) {
+    // 極端な角度への変形破綻を防止するため制限
+    const renderX = Math.max(-28, Math.min(28, dragPhysics.x));
+    const renderY = Math.max(-28, Math.min(28, dragPhysics.y));
+    dragGhost.style.transform = `perspective(1000px) rotateX(${renderX}deg) rotateY(${renderY}deg) scale(1.06)`;
+  }
+
+  dragPhysics.rafId = requestAnimationFrame(updateDragPhysics);
+}
+
+// 2. 物理シールドブレイクCanvasパーティクルエンジン
+let vfxCanvas = null;
+let vfxCtx = null;
+let vfxParticles = [];
+let vfxActive = false;
+
+function initVfxCanvas() {
+  vfxCanvas = document.getElementById('vfx-particle-canvas');
+  if (vfxCanvas) {
+    vfxCtx = vfxCanvas.getContext('2d');
+  }
+}
+
+// クリスタル破片オブジェクトのクラス構造 (JSプレーン)
+class CrystalParticle {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    // 放射状のランダムな初期速度（上と左右に吹き飛ぶ）
+    const angle = Math.random() * Math.PI + Math.PI; // 上半球方向 (180〜360度)
+    const speed = 4 + Math.random() * 12;
+    this.vx = Math.cos(angle) * speed;
+    this.vy = Math.sin(angle) * speed - (2 + Math.random() * 5); // 強力な上昇力
+    
+    this.size = 6 + Math.random() * 12;
+    this.gravity = 0.38; // 重力加速度
+    this.rebound = -0.45; // 盤面底（1080px）での反発係数
+    this.friction = 0.98; // 空気抵抗
+    this.alpha = 1.0;
+    this.fade = 0.012 + Math.random() * 0.018; // フェード速度
+    this.rotation = Math.random() * Math.PI * 2;
+    this.rotSpeed = (Math.random() - 0.5) * 0.25; // 回転角速度
+    
+    // ゴールド、イエロー、氷ブルー、水晶シルバーのランダムな色
+    const colors = [
+      'rgba(251, 191, 36, ', // ゴールド
+      'rgba(254, 240, 138, ', // イエロー
+      'rgba(96, 165, 250, ', // 氷ブルー
+      'rgba(226, 232, 240, ', // シルバー
+      'rgba(147, 51, 234, '  // 魔力パープル
+    ];
+    this.colorBase = colors[Math.floor(Math.random() * colors.length)];
+  }
+
+  update() {
+    this.vy += this.gravity; // 重力
+    this.vx *= this.friction; // 空気抵抗
+    this.x += this.vx;
+    this.y += this.vy;
+    this.rotation += this.rotSpeed;
+    this.alpha -= this.fade;
+
+    // 盤面底（1080px）またはアバター枠下部での物理バウンド
+    if (this.y >= 1060 && this.vy > 0) {
+      this.y = 1060;
+      this.vy *= this.rebound;
+      this.vx *= 0.6; // 摩擦
+    }
+  }
+
+  draw(ctx) {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rotation);
+    ctx.fillStyle = this.colorBase + this.alpha + ')';
+    
+    // 立体的な多角形（ダイヤモンド状の破片）を描画
+    ctx.beginPath();
+    ctx.moveTo(0, -this.size);
+    ctx.lineTo(this.size * 0.6, 0);
+    ctx.lineTo(0, this.size);
+    ctx.lineTo(-this.size * 0.6, 0);
+    ctx.closePath();
+    ctx.fill();
+    
+    // 破片のエッジハイライト（光沢）
+    ctx.strokeStyle = `rgba(255, 255, 255, ${this.alpha * 0.8})`;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    
+    ctx.restore();
+  }
+}
+
+// 物理ダメージ・バフポップアップ文字のパーティクルクラス
+class DamageTextParticle {
+  constructor(x, y, text, color) {
+    this.x = x;
+    this.y = y - 30; // カードの中心より少し上から
+    this.text = text;
+    this.color = color; // 'red' | 'gold' | 'green'
+    
+    // 放物線を描いて上に吹き出す初期速度
+    this.vx = (Math.random() - 0.5) * 3; // 左右ブレ
+    this.vy = -7 - Math.random() * 5;   // 上方向への力
+    
+    this.gravity = 0.28;
+    this.alpha = 1.0;
+    this.fade = 0.015;
+    this.scale = 1.2;
+  }
+
+  update() {
+    this.vy += this.gravity;
+    this.x += this.vx;
+    this.y += this.vy;
+    this.alpha -= this.fade;
+    this.scale = Math.max(0.7, this.scale - 0.008);
+  }
+
+  draw(ctx) {
+    ctx.save();
+    ctx.globalAlpha = this.alpha;
+    
+    // AAA級のドロップシャドウ付きポップフォント
+    ctx.font = `900 ${Math.floor(34 * this.scale)}px 'Outfit', 'Inter', sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    let fill = '#ef4444'; // 赤（ダメージ）
+    if (this.color === 'gold') fill = '#fbbf24'; // 金（バフ）
+    if (this.color === 'green') fill = '#10b981'; // 緑（回復）
+    
+    // 太めの黒縁を描く（視認性向上）
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.95)';
+    ctx.lineWidth = 7;
+    ctx.strokeText(this.text, this.x, this.y);
+    
+    ctx.fillStyle = fill;
+    ctx.fillText(this.text, this.x, this.y);
+    
+    ctx.restore();
+  }
+}
+
+// 物理ポップアップVFXの発火
+window.triggerDamagePopupVFX = function(x, y, text, color) {
+  if (!vfxCanvas) initVfxCanvas();
+  if (!vfxCanvas) return;
+
+  vfxParticles.push(new DamageTextParticle(x, y, text, color));
+
+  if (!vfxActive) {
+    vfxActive = true;
+    requestAnimationFrame(updateVfxParticles);
+  }
+};
+
+// 物理シールドブレイクVFXの発火
+window.triggerShieldBreakVFX = function(x, y) {
+  if (!vfxCanvas) initVfxCanvas();
+  if (!vfxCanvas) return;
+
+  console.log(`[VFX ENGINE] Exploding 3D crystal particles at (${x}, ${y})`);
+  
+  // 120個の物理破片を一度に放出
+  for (let i = 0; i < 120; i++) {
+    vfxParticles.push(new CrystalParticle(x, y));
+  }
+
+  if (!vfxActive) {
+    vfxActive = true;
+    requestAnimationFrame(updateVfxParticles);
+  }
+};
+
+function updateVfxParticles() {
+  if (!vfxCanvas || !vfxCtx) return;
+  vfxCtx.clearRect(0, 0, vfxCanvas.width, vfxCanvas.height);
+
+  vfxParticles.forEach((p, index) => {
+    p.update();
+    p.draw(vfxCtx);
+    if (p.alpha <= 0) {
+      vfxParticles.splice(index, 1);
+    }
+  });
+
+  if (vfxParticles.length > 0) {
+    requestAnimationFrame(updateVfxParticles);
+  } else {
+    vfxActive = false;
+  }
+}
+
+
 // \u30b9\u30da\u30eb\u306e\u4f7f\u7528\u53ef\u5426\u30c1\u30a7\u30c3\u30af
 function canPlaySpell(card) {
   if (!card || card.type !== 'spell') return true;
@@ -60,8 +292,273 @@ fetch('/api/cards')
   })
   .catch(err => console.error('   [CLIENT] Cards load failed:', err));
 
-// === \u30bf\u30fc\u30b2\u30c3\u30c8\u9078\u629e\u51e6\u7406 ===
-// \u3053\u308c\u306b\u3088\u308a \u63a5\u7d9a\u5b8c\u4e86\u76f4\u5f8c\u306b\u30c7\u30fc\u30bf\u304c\u5c4a\u3044\u3066\u3082\u3053\u307c\u3055\u305a\u53d7\u3051\u53d6\u308c\u307e\u3059 
+// === ターゲット選択処理 ===
+// これにより 接続完了直後にデータが届いてもこぼさず受け取れます 
+
+// ステータス増減（バフ・デバフ）およびドローを自動検知してSEとVFXを適用する関数
+function detectAndPlayStatChanges(oldState, newState) {
+  if (!oldState || !newState) return;
+
+  // 1. ドローSEの自動検知
+  if (oldState.me && newState.me) {
+    const oldHandSize = oldState.me.hand ? oldState.me.hand.length : 0;
+    const newHandSize = newState.me.hand ? newState.me.hand.length : 0;
+    if (newHandSize > oldHandSize && newState.phase !== 'mulligan') {
+      if (window.audioManager) window.audioManager.playSE('draw');
+      console.log(`[CLIENT VFX] Draw detected! Hand size went from ${oldHandSize} to ${newHandSize}`);
+    }
+  }
+  if (oldState.opponent && newState.opponent) {
+    const oldOppHandSize = oldState.opponent.hand ? oldState.opponent.hand.length : 0;
+    const newOppHandSize = newState.opponent.hand ? newState.opponent.hand.length : 0;
+    if (newOppHandSize > oldOppHandSize && newState.phase !== 'mulligan') {
+      if (window.audioManager) window.audioManager.playSE('draw');
+    }
+  }
+
+  // 2. バフ・デバフの自動検知
+  const oldUnits = {};
+  const mapBoard = (board) => {
+    if (!board) return;
+    for (const row of ['front', 'back']) {
+      const slots = board[row];
+      if (!slots) continue;
+      slots.forEach(unit => {
+        if (unit && unit.instanceId) {
+          oldUnits[unit.instanceId] = unit;
+        }
+      });
+    }
+  };
+  mapBoard(oldState.me && oldState.me.board);
+  mapBoard(oldState.opponent && oldState.opponent.board);
+
+  const checkNewBoard = (board, owner) => {
+    if (!board) return;
+    for (const row of ['front', 'back']) {
+      const slots = board[row];
+      if (!slots) continue;
+      for (let lane = 0; lane < 3; lane++) {
+        const unit = slots[lane];
+        if (unit && unit.instanceId) {
+          const oldUnit = oldUnits[unit.instanceId];
+          if (oldUnit) {
+            const atkDiff = (unit.currentAttack || 0) - (oldUnit.currentAttack || 0);
+            const hpDiff = (unit.currentHp || 0) - (oldUnit.currentHp || 0);
+            const maxHpDiff = (unit.maxHp || 0) - (oldUnit.maxHp || 0);
+
+            const slotEl = window.VFX ? window.VFX.getBoardSlotEl(owner, row, lane) : null;
+            if (slotEl) {
+              const rect = slotEl.getBoundingClientRect();
+              const container = document.getElementById('game-container');
+              const containerRect = container.getBoundingClientRect();
+              const scale = containerRect.width / 1920;
+              const x = (rect.left + rect.width / 2 - containerRect.left) / scale;
+              const y = (rect.top + rect.height / 2 - containerRect.top) / scale;
+
+              if (atkDiff > 0 || maxHpDiff > 0) {
+                // 攻撃力または最大生命力の上昇＝バフ！
+                const buffText = atkDiff > 0 ? `+${atkDiff} ATK` : `+${maxHpDiff} HP`;
+                if (window.triggerDamagePopupVFX) {
+                  window.triggerDamagePopupVFX(x, y, buffText, 'gold');
+                }
+                if (window.VFX && window.VFX.playAbilityFlash) {
+                  window.VFX.playAbilityFlash(slotEl, 'gold');
+                }
+                if (window.audioManager) window.audioManager.playSE('buff');
+                console.log(`[CLIENT VFX] Buff detected on ${unit.name} (+${atkDiff}/+${maxHpDiff})`);
+              } else if (hpDiff < 0 && maxHpDiff === 0) {
+                // 通常の被弾ダメージ！
+                const dmgText = `${hpDiff}`;
+                if (window.triggerDamagePopupVFX) {
+                  window.triggerDamagePopupVFX(x, y, dmgText, 'red');
+                }
+                if (window.VFX && window.VFX.playAbilityFlash) {
+                  window.VFX.playAbilityFlash(slotEl, 'black');
+                }
+                if (window.audioManager) window.audioManager.playSE('debuff');
+                console.log(`[CLIENT VFX] Damage detected on ${unit.name} (${hpDiff})`);
+              } else if (atkDiff < 0 || (hpDiff < 0 && maxHpDiff < 0)) {
+                // 攻撃力の低下、または最大生命力低下を伴う生命力減少＝デバフ！
+                const debuffText = atkDiff < 0 ? `${atkDiff} ATK` : `${hpDiff} HP`;
+                if (window.triggerDamagePopupVFX) {
+                  window.triggerDamagePopupVFX(x, y, debuffText, 'red');
+                }
+                if (window.VFX && window.VFX.playAbilityFlash) {
+                  window.VFX.playAbilityFlash(slotEl, 'black');
+                }
+                if (window.audioManager) window.audioManager.playSE('debuff');
+                console.log(`[CLIENT VFX] Debuff detected on ${unit.name} (${atkDiff}/${hpDiff})`);
+              }
+            }
+          }
+        }
+      }
+    }
+  };
+
+  checkNewBoard(newState.me && newState.me.board, 'me');
+  checkNewBoard(newState.opponent && newState.opponent.board, 'opp');
+
+  // 3. SP変動検知 (v139)
+  if (oldState.me && newState.me) {
+    const oldSp = oldState.me.sp ?? 0;
+    const newSp = newState.me.sp ?? 0;
+    if (newSp !== oldSp) {
+      const diff = newSp - oldSp;
+      const spOrbsEl = document.getElementById('my-sp-orbs');
+      if (spOrbsEl) {
+        spOrbsEl.classList.remove('sp-flash');
+        void spOrbsEl.offsetWidth; // リフロー
+        spOrbsEl.classList.add('sp-flash');
+        setTimeout(() => spOrbsEl.classList.remove('sp-flash'), 800);
+
+        const popup = document.createElement('div');
+        popup.className = `sp-diff-popup ${diff > 0 ? 'sp-gain' : 'sp-lose'}`;
+        popup.textContent = diff > 0 ? `+${diff}` : `${diff}`;
+        
+        const rect = spOrbsEl.getBoundingClientRect();
+        popup.style.left = `${rect.left + rect.width / 2}px`;
+        popup.style.top = `${rect.top - 30}px`;
+        document.body.appendChild(popup);
+        
+        setTimeout(() => {
+          popup.remove();
+        }, 1200);
+      }
+    }
+  }
+
+  // 4. 神族レベルアップ検知 (v139)
+  if (oldState.me && newState.me && oldState.me.tribeLevels && newState.me.tribeLevels) {
+    const tribeColors = ['red', 'blue', 'green', 'white', 'black'];
+    tribeColors.forEach(color => {
+      const oldLevel = oldState.me.tribeLevels[color] || 0;
+      const newLevel = newState.me.tribeLevels[color] || 0;
+      if (newLevel > oldLevel) {
+        console.log(`[CLIENT VFX] Tribe ${color} leveled up to ${newLevel}`);
+        
+        // HUDバッジのフラッシュ
+        const myTribesEl = document.getElementById('my-tribes');
+        if (myTribesEl) {
+          const badge = myTribesEl.querySelector(`.tribe-${color}`);
+          if (badge) {
+            badge.classList.remove('level-up-flash');
+            void badge.offsetWidth;
+            badge.classList.add('level-up-flash');
+            setTimeout(() => badge.classList.remove('level-up-flash'), 1500);
+          }
+        }
+        
+        // クリスタル結晶ボタンのフラッシュ
+        const crystalBtn = document.querySelector(`.crystal-btn[data-color="${color}"]`);
+        if (crystalBtn) {
+          crystalBtn.classList.remove('level-up-flash');
+          void crystalBtn.offsetWidth;
+          crystalBtn.classList.add('level-up-flash');
+          setTimeout(() => crystalBtn.classList.remove('level-up-flash'), 1500);
+        }
+
+        // SE再生
+        if (window.audioManager) {
+          window.audioManager.playSE('levelUp');
+        }
+      }
+    });
+  }
+}
+
+// === クライアント主導型スマート・ターンタイマー (60秒制限) ===
+let turnTimerInterval = null;
+let turnTimeRemaining = 60;
+
+function manageTurnTimer(state) {
+  // タイマーと警告演出の初期クリア
+  clearInterval(turnTimerInterval);
+  const timerContainer = document.getElementById('turn-timer-container');
+  const timerRingCircle = document.getElementById('timer-ring-circle');
+  const timerSeconds = document.getElementById('timer-seconds');
+  const indicator = document.getElementById('turn-indicator');
+  
+  if (timerContainer) {
+    timerContainer.classList.remove('warning-pulse');
+    timerContainer.style.display = 'none'; // 通常（相手ターン等）は非表示
+  }
+  if (timerRingCircle) {
+    timerRingCircle.style.strokeDashoffset = '0';
+  }
+
+  if (!state || state.phase === 'mulligan' || state.phase === 'waiting_mulligan' || state.phase === 'game_over') {
+    if (indicator && state && state.phase === 'game_over') {
+      indicator.innerHTML = `<div class="turn-number">FINISH</div><div class="turn-phase">GAME OVER</div>`;
+    }
+    return;
+  }
+
+  // 自分のターンか判定
+  const isMyTurn = state.currentPlayerId === state.me.id;
+  
+  // ターン表示の初期化（HTML構造を崩さず、フェーズを綺麗に描画）
+  if (indicator) {
+    indicator.innerHTML = `<div class="turn-number">TURN ${state.turnNumber}</div><div class="turn-phase">${isMyTurn ? 'YOUR TURN' : "OPPONENT TURN"}</div>`;
+  }
+  
+  if (isMyTurn) {
+    turnTimeRemaining = 90; // 制限時間を90秒（1分30秒）へ拡張
+    
+    if (timerContainer) {
+      timerContainer.style.display = 'flex'; // 自分ターン時は円形タイマーを表示
+    }
+    if (timerSeconds) {
+      timerSeconds.textContent = turnTimeRemaining;
+    }
+    
+    const maxTime = 90;
+    const circumference = 188.4; // 2 * PI * r (30)
+
+    turnTimerInterval = setInterval(() => {
+      turnTimeRemaining--;
+      
+      // タイマー数値と円形プログレスバーの更新
+      if (timerSeconds) {
+        timerSeconds.textContent = turnTimeRemaining;
+      }
+      if (timerRingCircle) {
+        const progress = turnTimeRemaining / maxTime;
+        const offset = circumference * (1 - progress);
+        timerRingCircle.style.strokeDashoffset = offset;
+      }
+
+      // 残り20秒以下で警告開始（赤脈打ち＋時計針SE）
+      if (turnTimeRemaining <= 20 && turnTimeRemaining > 0) {
+        if (timerContainer) {
+          timerContainer.classList.add('warning-pulse');
+        }
+        if (window.audioManager) {
+          window.audioManager.playSE('timer_tick');
+        }
+      }
+
+      // 0秒で自動的にターン終了
+      if (turnTimeRemaining <= 0) {
+        clearInterval(turnTimerInterval);
+        console.log('   [CLIENT] Turn timer expired, automatically ending turn.');
+        window.pendingAction = true;
+        socket.emit('game_action', { action: 'end_turn' });
+        
+        if (timerContainer) {
+          timerContainer.classList.remove('warning-pulse');
+        }
+        if (timerSeconds) {
+          timerSeconds.textContent = '0';
+        }
+        if (indicator) {
+          indicator.innerHTML = `<div class="turn-number">TIME UP!</div><div class="turn-phase">CHANGING TURN</div>`;
+        }
+      }
+    }, 1000);
+  }
+}
 
 socket.on('game_state', (state) => {
   const signal = document.getElementById('debug-signal');
@@ -71,9 +568,22 @@ socket.on('game_state', (state) => {
   }
   console.log('   [CLIENT] game_state received:', state ? `Phase: ${state.phase}, Turn: ${state.turnNumber}` : 'NULL');
   if (!state) return;
+
+  // 1. サーバーから送られてきたアニメーション演出（戦闘・スキル発動等）の実行
+  if (window.VFX && window.VFX.processAnimationEvents && state.animationEvents) {
+    window.VFX.processAnimationEvents(state.animationEvents, state.me.id);
+  }
+
+  // 2. バフ・デバフ・ドローの自動検知SEの実行
+  if (window.gameState) {
+    detectAndPlayStatChanges(window.gameState, state);
+  }
   
   window.gameState = state;
-  window.pendingAction = false; // \u901a\u4fe1\u5b8c\u4e86\u306b\u3064\u304d\u30ed\u30c3\u30af\u89e3\u9664
+  window.pendingAction = false; // 通信完了につきロック解除
+
+  // ターンタイマーの管理始動
+  manageTurnTimer(state);
 
   const tryUpdate = () => {
     if (typeof window.updateUI === 'function') {
@@ -86,7 +596,7 @@ socket.on('game_state', (state) => {
   };
   tryUpdate();
 
-  // === \u30bf\u30fc\u30b2\u30c3\u30c8\u9078\u629e\u51e6\u7406 ===
+  // === ターゲット選択処理 ===
   if (state.phase !== 'mulligan' && state.phase !== 'waiting_mulligan') {
     const mulliganOverlay = document.getElementById('mulligan-overlay');
     if (mulliganOverlay && mulliganOverlay.style.display !== 'none') {
@@ -137,14 +647,21 @@ document.addEventListener('pointerdown', function(e) {
 
 socket.on('mulligan_phase', (data) => {
   console.log('   [CLIENT] mulligan_phase received');
-  if (window.audioManager) window.audioManager.playBGM('game');
-  if (typeof showMulligan === 'function') {
-    showMulligan(data.hand, () => {
-      socket.emit('mulligan_decision', { doMulligan: false });
-    }, () => {
-      socket.emit('mulligan_decision', { doMulligan: true });
-    });
+  if (window.audioManager) window.audioManager.fadeToBGM('deck', 1200);
+
+  // VS激突カットインを発火
+  if (window.VFX && window.VFX.triggerVsCutin) {
+    window.VFX.triggerVsCutin();
   }
+
+  // カットイン完了後（約2.2秒後）にマリガン選択画面を表示
+  setTimeout(() => {
+    if (typeof showMulligan === 'function') {
+      showMulligan(data.hand, (redrawIndices) => {
+        socket.emit('mulligan_decision', { redrawIndices });
+      });
+    }
+  }, 2200);
 });
 
 socket.on('error_msg', (data) => {
@@ -188,6 +705,14 @@ socket.on('session_invalid', () => {
   if (signal) {
     signal.textContent = 'STATUS: INVALID SESSION';
     signal.style.background = 'rgba(128,0,128,0.8)';
+  }
+});
+
+socket.on('difficulty_changed', (data) => {
+  console.log(`[CLIENT] AI difficulty synchronized: ${data.difficulty}`);
+  const selectDiff = document.getElementById('select-difficulty');
+  if (selectDiff) {
+    selectDiff.value = data.difficulty;
   }
 });
 
@@ -324,27 +849,133 @@ let attackerPos = null;
 let pendingShieldAttack = null;
 let selectedTribeColor = null; // \u30ec\u30d9\u30eb\u30a2\u30c3\u30d7\u78ba\u8a8d\u7528
 
+// 最もclientXに近いプレイヤー側の空きスロットを探す（フリックプレイ用）
+function getBestEmptySlot(clientX) {
+  const state = window.gameState;
+  if (!state || !state.me || !state.me.board) return null;
+
+  const boardEl = document.getElementById('player-board');
+  if (!boardEl) return null;
+
+  // プレイヤー側の空いている board-slot をすべて取得
+  const slots = Array.from(boardEl.querySelectorAll('.board-slot.empty'));
+  if (slots.length === 0) return null;
+
+  let bestSlot = null;
+  let minDistance = Infinity;
+
+  slots.forEach(slot => {
+    const rect = slot.getBoundingClientRect();
+    const slotCenterX = rect.left + rect.width / 2;
+    const dist = Math.abs(clientX - slotCenterX);
+    if (dist < minDistance) {
+      minDistance = dist;
+      bestSlot = slot;
+    }
+  });
+
+  if (bestSlot) {
+    return {
+      row: bestSlot.dataset.row,
+      lane: parseInt(bestSlot.dataset.lane),
+      element: bestSlot
+    };
+  }
+  return null;
+}
+
 function onPointerMove(e) {
   if (isDragging && dragGhost) {
     dragGhost.style.left = `${e.clientX - 90}px`;
     dragGhost.style.top = `${e.clientY - 126}px`;
 
-    // \u30ab\u30fc\u30c9\u30c9\u30e9\u30c3\u30b0\u4e2d\uff08\u30b9\u30da\u30eb or \u30e6\u30cb\u30c3\u30c8\u5171\u901a\uff09\u306e\u30db\u30d0\u30fc\u8868\u793a
+    // 本物の物理演算（角速度 vx, vy への慣性力の加算）
+    const forceX = Math.max(-10, Math.min(10, e.movementY * 0.45));
+    const forceY = Math.max(-10, Math.min(10, -e.movementX * 0.45));
+    dragPhysics.vx += forceX;
+    dragPhysics.vy += forceY;
+
+    // カードドラッグ中（スペル or ユニット共通）のホバー表示
     const state = window.gameState;
     if (state && dragSource && dragSource.type === 'hand') {
       const card = state.me.hand[dragSource.index];
+
+      // === スマホ対応：フリック（スワイプ）プレイ用の最適空きスロット検知 ===
+      const isSwipeUp = dragStartPos && (dragStartPos.y - e.clientY) > 100;
+      
+      // 既存のスナップハイライトを全解除
+      document.querySelectorAll('.board-slot.can-place-highlight').forEach(s => s.classList.remove('can-place-highlight'));
+      
+      if (isSwipeUp && card && card.type !== 'spell') {
+        const snappedSlot = getBestEmptySlot(e.clientX);
+        if (snappedSlot && snappedSlot.element) {
+          // スナップ先が新しく有効化、あるいは別のスロットに切り替わった瞬間にスナップ音を再生
+          if (!window.activeSnappedSlot || window.activeSnappedSlot.element !== snappedSlot.element) {
+            if (window.audioManager) window.audioManager.playSE('flick_snap');
+          }
+          snappedSlot.element.classList.add('can-place-highlight');
+          window.activeSnappedSlot = snappedSlot;
+        } else {
+          window.activeSnappedSlot = null;
+        }
+      } else {
+        window.activeSnappedSlot = null;
+      }
       const coords = getInternalCoords(e.clientX, e.clientY);
       const svg = document.getElementById('attack-arrow-svg');
       const line = document.getElementById('attack-arrow-line');
       const cardRect = document.querySelector(`[data-index="${dragSource.index}"]`)?.getBoundingClientRect();
 
-      // \u30bf\u30fc\u30b2\u30c3\u30c8\u5019\u88dc\u306e\u7279\u5b9a\uff08\u5168\u30ab\u30fc\u30c9\u5171\u901a\uff09
+      // ターゲット候補の特定（全カード共通）
       const elements = document.elementsFromPoint(e.clientX, e.clientY);
       const targetSlot = elements.find(el => el.classList.contains('board-slot'));
       
-      // \u5168\u30b9\u30ed\u30c3\u30c8\u306e\u30db\u30d0\u30fc\u89e3\u9664
-      document.querySelectorAll('.board-slot').forEach(s => s.classList.remove('is-hovered'));
-      if (targetSlot) targetSlot.classList.add('is-hovered');
+      // 全スロットのホバー・プレビュー解除
+      document.querySelectorAll('.board-slot').forEach(s => {
+        s.classList.remove('is-hovered');
+        s.classList.remove('drag-over-valid');
+        s.classList.remove('drag-over-invalid');
+      });
+
+      if (targetSlot) {
+        targetSlot.classList.add('is-hovered');
+        
+        if (card) {
+          const isSpell = card.type === 'spell';
+          const isMyBoard = targetSlot.closest('#player-board') !== null;
+          
+          if (!isSpell) {
+            // ユニットの場合
+            const row = targetSlot.dataset.row;
+            const lane = parseInt(targetSlot.dataset.lane);
+            const isSlotEmpty = state.me.board && state.me.board[row] && !state.me.board[row][lane];
+            
+            const myLevels = state.me.tribeLevels || {};
+            const cardColors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
+            const hasTribeLevel = cardColors.every(col => (myLevels[col] || 0) >= (card.cost || 0));
+            const canPlay = (state.me.sp || 0) >= (card.cost || 0) && hasTribeLevel;
+            
+            // 配置可能条件：味方盤面、スロット空、リソース(SP/レベル)が足りる
+            if (isMyBoard && isSlotEmpty && canPlay) {
+              targetSlot.classList.add('drag-over-valid');
+            } else {
+              targetSlot.classList.add('drag-over-invalid');
+            }
+          } else {
+            // スペルの場合：リソースが足りるなら valid、足りないなら invalid としてプレビュー
+            const myLevels = state.me.tribeLevels || {};
+            const cardColors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
+            const hasTribeLevel = cardColors.every(col => (myLevels[col] || 0) >= (card.cost || 0));
+            const canPlay = (state.me.sp || 0) >= (card.cost || 0) && hasTribeLevel;
+            
+            if (canPlay) {
+              targetSlot.classList.add('drag-over-valid');
+            } else {
+              targetSlot.classList.add('drag-over-invalid');
+            }
+          }
+        }
+      }
 
       // \u30b9\u30da\u30eb\u306e\u5834\u5408\u306e\u307f\u77e2\u5370\u3092\u8868\u793a
       if (card && card.type === 'spell' && svg && line && cardRect) {
@@ -360,9 +991,9 @@ function onPointerMove(e) {
           targetY = center.y;
         }
 
-        // \u66f2\u7dda(Quadratic Bezier)\u306e\u63cf\u753b
+        // 曲線(Quadratic Bezier)の描画
         const cpX = (start.x + targetX) / 2;
-        const cpY = (start.y + targetY) / 2 - 100; // \u5c11\u3057\u4e0a\u306b\u81a8\u3089\u307e\u305b\u308b
+        const cpY = (start.y + targetY) / 2 - 100; // 少し上に膨らませる
         line.setAttribute('d', `M ${start.x} ${start.y} Q ${cpX} ${cpY} ${targetX} ${targetY}`);
       }
     }
@@ -377,7 +1008,7 @@ function onPointerMove(e) {
       let targetX = coords.x;
       let targetY = coords.y;
 
-      // \u30bf\u30fc\u30b2\u30c3\u30c8\u3078\u306e\u30b9\u30ca\u30c3\u30d7\u51e6\u7406
+      // ターゲットへのスナップ処理
       const elements = document.elementsFromPoint(e.clientX, e.clientY);
       const targetSlot = elements.find(el => el.classList.contains('can-attack'));
       const targetShield = elements.find(el => el.id === 'opp-shields');
@@ -390,36 +1021,82 @@ function onPointerMove(e) {
         targetY = center.y;
         snapTarget.classList.add('is-locked-on');
       } else {
-        // \u30ed\u30c3\u30af\u30aa\u30f3\u89e3\u9664
+        // ロックオン解除
         document.querySelectorAll('.is-locked-on').forEach(el => el.classList.remove('is-locked-on'));
       }
 
-      // \u66f2\u7dda(Quadratic Bezier)\u306e\u63cf\u753b
+      // 曲線(Quadratic Bezier)の描画
       const cpX = (attackerPos.x + targetX) / 2;
-      const cpY = (attackerPos.y + targetY) / 2 - 150; // \u5c11\u3057\u4e0a\u306b\u81a8\u3089\u307e\u305b\u308b
+      const cpY = (attackerPos.y + targetY) / 2 - 150; // 少し上に膨らませる
       line.setAttribute('d', `M ${attackerPos.x} ${attackerPos.y} Q ${cpX} ${cpY} ${targetX} ${targetY}`);
     }
   }
+}
+
+function cleanupDrag() {
+  isDragging = false;
+  dragSource = null;
+  dragStartPos = null;
+  window.activeSnappedSlot = null;
+  window.selectedCard = null;
+  dragPhysics.active = false;
+  
+  if (dragGhost) {
+    dragGhost.remove();
+    dragGhost = null;
+  }
+  
+  const svg = document.getElementById('attack-arrow-svg');
+  if (svg) svg.style.display = 'none';
+  
+  document.querySelectorAll('.board-slot').forEach(s => {
+    s.classList.remove('can-place-highlight');
+    s.classList.remove('is-hovered');
+    s.classList.remove('drag-over-valid');
+    s.classList.remove('drag-over-invalid');
+  });
+  
+  if (typeof window.updateUI === 'function') window.updateUI();
 }
 
 function onPointerUp(e) {
   const elements = document.elementsFromPoint(e.clientX, e.clientY);
   const state = window.gameState;
   
-  // \u30db\u30d0\u30fc\u5f37\u8abf\u306e\u5168\u89e3\u9664
+  // ホバー強調の全解除
   document.querySelectorAll('.is-hovered').forEach(el => el.classList.remove('is-hovered'));
 
   if (isDragging && dragSource && dragSource.type === 'hand') {
-    // \u8aa4\u7206\u9632\u6b62\uff1a\u79fb\u52d5\u8ddd\u96e2\u30c1\u30a7\u30c3\u30af
+    // 誤爆防止：移動距離チェック
     const dist = dragStartPos ? Math.hypot(e.clientX - dragStartPos.x, e.clientY - dragStartPos.y) : 0;
     
     if (dist < DRAG_THRESHOLD) {
       console.log('    [CLIENT] Drag cancelled: Under threshold', dist);
+      cleanupDrag();
+      return;
     } else {
       const card = state.me.hand[dragSource.index];
       const isSpell = card && card.type === 'spell';
 
-      // \u30b9\u30da\u30eb\u306e\u5bfe\u8c61\u30c1\u30a7\u30c3\u30af\uff08\u5bfe\u8c61\u304c\u3044\u306a\u3044\u5834\u5408\u306f\u8b66\u544a\u3092\u51fa\u3057\u3066\u4e2d\u65ad\uff09
+      // === スマホ対応：フリック（スワイプ）による自動スナッププレイ ===
+      if (!isSpell && window.activeSnappedSlot) {
+        const slot = window.activeSnappedSlot;
+        console.log(`   [CLIENT] Flick Snap Play Triggered: row=${slot.row}, lane=${slot.lane}`);
+        
+        window.pendingAction = true;
+        socket.emit('game_action', { 
+          action: 'play_card', 
+          handIndex: dragSource.index, 
+          targetRow: slot.row, 
+          targetLane: slot.lane 
+        });
+        
+        if (window.audioManager) window.audioManager.playSE('card_play');
+        cleanupDrag();
+        return;
+      }
+
+      // スペルの対象チェック（対象がいない場合は警告を出して中断）
       if (isSpell && card.abilities) {
         let hasValidTarget = true;
         for (const ability of card.abilities) {
@@ -436,22 +1113,13 @@ function onPointerUp(e) {
         if (!hasValidTarget) {
             console.warn('   [CLIENT] No valid targets for this spell');
             if (window.audioManager) window.audioManager.playSE('error');
-            
-            // ドラッグ状態を解除してから戻る
-            if (dragGhost) { dragGhost.remove(); dragGhost = null; }
-            const svg = document.getElementById('attack-arrow-svg');
-            if (svg) svg.style.display = 'none';
-            isDragging = false;
-            dragSource = null;
-            dragStartPos = null;
-            if (typeof window.updateUI === 'function') window.updateUI();
-
-            alert('\u9069\u5207\u306a\u5bfe\u8c61\u304c\u3044\u307e\u305b\u3093');
+            cleanupDrag();
+            alert('適切な対象がいません');
             return;
         }
       }
 
-      // \u30b9\u30da\u30eb\u306a\u3089\u76f8\u624b\u306e\u76e4\u9762\u3082\u5bfe\u8c61\u306b\u53d6\u308c\u308b\u3088\u3046\u306b\u3059\u308b
+      // スペルなら相手の盤面も対象に取れるようにする
       const slot = elements.find(el => el.classList.contains('board-slot') && (isSpell || !el.classList.contains('opponent')));
       
       if (slot) {
@@ -459,6 +1127,7 @@ function onPointerUp(e) {
         const lane = parseInt(slot.dataset.lane);
         window.pendingAction = true;
         socket.emit('game_action', { action: 'play_card', handIndex: dragSource.index, targetRow: row, targetLane: lane });
+        if (window.audioManager) window.audioManager.playSE('card_play');
       }
     }
   }
@@ -466,7 +1135,7 @@ function onPointerUp(e) {
   if (isDraggingAttack && dragSource && dragSource.type === 'unit' && state) {
     const targetEl = elements.find(el => el.classList.contains('board-slot') || el.id === 'opp-shields' || el.classList.contains('is-locked-on'));
     if (targetEl && state.opponent) {
-      // \u30ed\u30c3\u30af\u30aa\u30f3\u3055\u308c\u3066\u3044\u308b\u8981\u7d20 \u307e\u305f\u306fID/\u30af\u30e9\u30b9\u3067\u7279\u5b9a
+      // ロックオンされている要素 またはID/クラスで特定
       const isShieldTarget = targetEl.id === 'opp-shields' || (targetEl.parentElement && targetEl.parentElement.id === 'opp-shields');
       const targetType = isShieldTarget ? 'shield' : 'unit';
       
@@ -495,6 +1164,7 @@ function onPointerUp(e) {
   isDraggingAttack = false;
   dragSource = null;
   dragStartPos = null;
+  window.activeSnappedSlot = null; // スナップ用キャッシュリセット
   window.selectedCard = null; // \u63b4\u3093\u3067\u3044\u308b\u30ab\u30fc\u30c9\u60c5\u5831\u3092\u30af\u30ea\u30a2
   if (typeof window.updateUI === 'function') window.updateUI();
 }
@@ -512,11 +1182,20 @@ window.handleCardPointerDown = function(e, index) {
   if (window.pendingAction) return;
 
   const card = state.me.hand[index];
-  window.selectedCard = card; // \u30ec\u30f3\u30c0\u30e9\u30fc\u306b\u63b4\u3093\u3067\u3044\u308b\u30ab\u30fc\u30c9\u3092\u4f1d\u3048\u308b
+  window.selectedCard = card; // レンダラーに掴んでいるカードを伝える
   isDragging = true;
   dragSource = { type: 'hand', index };
   dragStartPos = { x: e.clientX, y: e.clientY };
-  if (typeof window.updateUI === 'function') window.updateUI(); // \u914d\u7f6e\u53ef\u80fd\u30de\u30b9\u3092\u5149\u3089\u305b\u308b
+
+  // --- 慣性ドラッグ物理シミュレータの開始 ---
+  dragPhysics.active = true;
+  dragPhysics.x = 0; dragPhysics.y = 0;
+  dragPhysics.vx = 0; dragPhysics.vy = 0;
+  if (!dragPhysics.rafId) {
+    dragPhysics.rafId = requestAnimationFrame(updateDragPhysics);
+  }
+
+  if (typeof window.updateUI === 'function') window.updateUI(); // 配置可能マスを光らせる
 
   const original = e.currentTarget;
   dragGhost = original.cloneNode(true);
@@ -568,7 +1247,8 @@ window.handleSlotClick = function(type, row, lane, e) {
         targetRow: row, 
         targetLane: lane 
       });
-      // \u4f7f\u7528\u5f8c\u306f\u9078\u629e\u89e3\u9664\uff08\u5fc5\u8981\u306b\u5fdc\u3058\u3066 Renderer \u5074\u3068\u540c\u671f\uff09
+      if (window.audioManager) window.audioManager.playSE('card_play');
+      // 使用後は選択解除（必要に応じて Renderer 側と同期）
       window.selectedCardIndex = null;
       if (typeof window.updateUI === 'function') window.updateUI();
     }
@@ -617,15 +1297,21 @@ function initInteractions() {
     };
   }
 
-  // --- \u97f3\u91cf\u30b9\u30e9\u30a4\u30c0\u30fc ---
+  // --- 音量スライダー ---
   const sliderBGM = document.getElementById('slider-bgm');
   const sliderSE = document.getElementById('slider-se');
   if (sliderBGM) {
+    if (window.audioManager) {
+      sliderBGM.value = window.audioManager.bgmVolume;
+    }
     sliderBGM.oninput = (e) => {
       if (window.audioManager) window.audioManager.updateBGMVolume(e.target.value);
     };
   }
   if (sliderSE) {
+    if (window.audioManager) {
+      sliderSE.value = window.audioManager.seVolume;
+    }
     sliderSE.oninput = (e) => {
       if (window.audioManager) window.audioManager.updateSEVolume(e.target.value);
     };
@@ -639,17 +1325,28 @@ function initInteractions() {
     };
   }
 
-  // --- \u6295\u4e86 ---
+  // --- 投了 ---
   document.getElementById('btn-surrender')?.addEventListener('click', () => {
-    if (confirm('\u672c\u5f53\u306b\u6295\u4e86\u3057\u307e\u3059\u304b\uff1f')) {
+    if (confirm('本当に投了しますか？')) {
       socket.emit('game_action', { action: 'surrender' });
       if (settingsOverlay) settingsOverlay.style.display = 'none';
     }
   });
 
-  // --- \u30ea\u30b6\u30eb\u30c8\u753b\u9762\u30a2\u30af\u30b7\u30e7\u30f3 ---
+  // --- AI 難易度選択 ---
+  const selectDiff = document.getElementById('select-difficulty');
+  if (selectDiff) {
+    selectDiff.onchange = (e) => {
+      const difficulty = e.target.value;
+      console.log(`[CLIENT] Requesting difficulty change: ${difficulty}`);
+      socket.emit('change_difficulty', { difficulty });
+      if (window.audioManager) window.audioManager.playSE('click');
+    };
+  }
+
+  // --- リザルト画面アクション ---
   document.getElementById('btn-result-back')?.addEventListener('click', () => {
-    // \u30bb\u30c3\u30b7\u30e7\u30f3\u3092\u30af\u30ea\u30a2\u3057\u3066\u30ed\u30d3\u30fc\u306b\u623b\u308b
+    // セッションをクリアしてロビーに戻る
     sessionStorage.removeItem('sessionId');
     window.location.href = '/';
   });
@@ -710,12 +1407,15 @@ function initInteractions() {
   });
 }
 
-function showMulligan(hand, onKeep, onRedraw) {
+function showMulligan(hand, onSubmit) {
   const overlay = document.getElementById('mulligan-overlay');
   const container = document.getElementById('mulligan-cards');
   if (!overlay || !container) return;
   container.innerHTML = '';
-  hand.forEach(card => {
+  
+  const selectedIndices = new Set();
+  
+  hand.forEach((card, index) => {
     const el = document.createElement('div');
     el.className = 'hand-card';
     const bgImage = (typeof window.getCardImagePath === 'function') 
@@ -723,6 +1423,21 @@ function showMulligan(hand, onKeep, onRedraw) {
       : `/assets/images/cards/neutral/${card.artId || card.id}.webp`;
     el.style.backgroundImage = `url('${bgImage}')`;
     el.innerHTML = `<div class="card-overlay"><div class="cost-gem">${card.cost}</div></div>`;
+    
+    // カードをクリックした時の選択トグル処理
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (selectedIndices.has(index)) {
+        selectedIndices.delete(index);
+        el.classList.remove('selected-for-redraw');
+        if (window.audioManager) window.audioManager.playSE('mulligan_select');
+      } else {
+        selectedIndices.add(index);
+        el.classList.add('selected-for-redraw');
+        if (window.audioManager) window.audioManager.playSE('mulligan_select');
+      }
+    });
+
     if (typeof attachCardDetailEvent === 'function') attachCardDetailEvent(el, card);
     container.appendChild(el);
   });
@@ -736,11 +1451,21 @@ function showMulligan(hand, onKeep, onRedraw) {
     newBtn.addEventListener('click', (e) => {
       e.preventDefault();
       overlay.style.display = 'none';
+      if (window.audioManager) window.audioManager.playSE('mulligan_swap');
       if (callback) callback();
     });
   };
-  setupBtn('btn-mulligan-keep', onKeep);
-  setupBtn('btn-mulligan-redraw', onRedraw);
+
+  // 「選択したカードを交換」ボタン
+  setupBtn('btn-mulligan-confirm', () => {
+    const redrawIndices = Array.from(selectedIndices);
+    onSubmit(redrawIndices);
+  });
+
+  // 「すべてキープ」ボタン
+  setupBtn('btn-mulligan-keep-all', () => {
+    onSubmit([]);
+  });
 }
 
 // \u7834\u68c4\u30a2\u30af\u30b7\u30e7\u30f3\u306e\u9001\u4fe1
@@ -781,4 +1506,187 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // === 📜 戦闘履歴トグルドロワーの開閉制御 ===
+  const logToggleBtn = document.getElementById('log-toggle-btn');
+  const logDrawer = document.getElementById('log-drawer');
+  const logDrawerClose = document.getElementById('log-drawer-close');
+
+  if (logToggleBtn && logDrawer) {
+    logToggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      logDrawer.classList.toggle('active');
+      if (window.audioManager) window.audioManager.playSE('click');
+    });
+  }
+  if (logDrawerClose && logDrawer) {
+    logDrawerClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      logDrawer.classList.remove('active');
+      if (window.audioManager) window.audioManager.playSE('click');
+    });
+  }
+  // ドロワーの外側をクリックした際に自動で閉じるUX
+  document.addEventListener('click', (e) => {
+    if (logDrawer && logDrawer.classList.contains('active')) {
+      if (!logDrawer.contains(e.target) && e.target !== logToggleBtn) {
+        logDrawer.classList.remove('active');
+      }
+    }
+  });
+
+  // =====================================================
+  // 墓地ビューワー
+  // =====================================================
+  (function initGraveyardViewer() {
+    const gyOverlay   = document.getElementById('graveyard-overlay');
+    const gyGrid      = document.getElementById('gy-grid');
+    const gyTitleCnt  = document.getElementById('gy-title-count');
+    const gyCloseBtn  = document.getElementById('gy-close-btn');
+    const gyTabMine   = document.getElementById('gy-tab-mine');
+    const gyTabOpp    = document.getElementById('gy-tab-opp');
+    const myGraveBtn  = document.getElementById('my-grave-btn');
+    const oppGraveBtn = document.getElementById('opp-grave-btn');
+
+    if (!gyOverlay || !gyGrid) return;
+
+    // 現在表示中のターゲット（'mine' | 'opp'）
+    let currentTarget = 'mine';
+
+    // -------------------------------------------------------
+    // カードを graveyard 配列からグリッドに描画する
+    // -------------------------------------------------------
+    function renderGyGrid(cards) {
+      gyGrid.innerHTML = '';
+      if (!cards || cards.length === 0) {
+        gyGrid.innerHTML = '<div class="gy-empty">まだカードはありません</div>';
+        if (gyTitleCnt) gyTitleCnt.textContent = '0';
+        return;
+      }
+
+      if (gyTitleCnt) gyTitleCnt.textContent = String(cards.length);
+
+      cards.forEach(card => {
+        const rarity = card.rarity || 1;
+        const imgPath = window.getCardImagePath
+          ? window.getCardImagePath(card)
+          : `/assets/images/card/${card.id || 'default'}.jpg`;
+
+        const item = document.createElement('div');
+        item.className = `gy-card-item gy-rarity-${rarity}`;
+
+        // ステータス（ユニットのみ）
+        const statsHtml = (card.type !== 'spell' && card.attack !== undefined)
+          ? `<div class="gy-card-stats">
+               <span class="gy-stat atk">${card.attack ?? 0}</span>
+               <span class="gy-stat hp">${card.hp ?? 0}</span>
+             </div>`
+          : '';
+
+        item.innerHTML = `
+          <div class="gy-card-art" style="background-image: url('${imgPath}'), url('/assets/images/ui/card_back.jpeg');">
+            ${statsHtml}
+          </div>
+          <div class="gy-card-name">${card.name || '???'}</div>
+        `;
+
+        // クリックでカード詳細を開く
+        item.addEventListener('click', () => {
+          if (window.showCardDetail) window.showCardDetail(card);
+        });
+
+        gyGrid.appendChild(item);
+      });
+    }
+
+    // -------------------------------------------------------
+    // オーバーレイを開く（ターゲット指定）
+    // -------------------------------------------------------
+    function openGraveyard(target) {
+      currentTarget = target || 'mine';
+
+      // タブ状態を更新
+      gyTabMine.classList.toggle('active', currentTarget === 'mine');
+      gyTabOpp.classList.toggle('active',  currentTarget === 'opp');
+
+      // データを描画
+      const data = window._gyData || { mine: [], opp: [] };
+      renderGyGrid(data[currentTarget]);
+
+      gyOverlay.style.display = 'flex';
+      if (window.audioManager) window.audioManager.playSE('click');
+    }
+
+    // -------------------------------------------------------
+    // オーバーレイを閉じる
+    // -------------------------------------------------------
+    function closeGraveyard() {
+      gyOverlay.style.display = 'none';
+      if (window.audioManager) window.audioManager.playSE('click');
+    }
+
+    // -------------------------------------------------------
+    // イベントリスナー
+    // -------------------------------------------------------
+
+    // 自分の GY バッジ
+    if (myGraveBtn)  myGraveBtn.addEventListener('click',  () => openGraveyard('mine'));
+    // 相手の GY バッジ
+    if (oppGraveBtn) oppGraveBtn.addEventListener('click', () => openGraveyard('opp'));
+
+    // 閉じるボタン
+    if (gyCloseBtn) gyCloseBtn.addEventListener('click', closeGraveyard);
+
+    // 背景クリックで閉じる
+    gyOverlay.addEventListener('click', (e) => {
+      if (e.target === gyOverlay) closeGraveyard();
+    });
+
+    // タブ切り替え
+    gyTabMine.addEventListener('click', () => {
+      if (currentTarget === 'mine') return;
+      currentTarget = 'mine';
+      gyTabMine.classList.add('active');
+      gyTabOpp.classList.remove('active');
+      const data = window._gyData || { mine: [], opp: [] };
+      renderGyGrid(data.mine);
+    });
+
+    gyTabOpp.addEventListener('click', () => {
+      if (currentTarget === 'opp') return;
+      currentTarget = 'opp';
+      gyTabMine.classList.remove('active');
+      gyTabOpp.classList.add('active');
+      const data = window._gyData || { mine: [], opp: [] };
+      renderGyGrid(data.opp);
+    });
+
+    // Escape キーで閉じる
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && gyOverlay.style.display !== 'none') {
+        closeGraveyard();
+      }
+    });
+  })();
+
+  // =====================================================
+  // 対戦終了ボタン（ロビーへ / REMATCH）
+  // =====================================================
+  const resultBackBtn   = document.getElementById('btn-result-back');
+  const resultRematchBtn = document.getElementById('btn-result-rematch');
+
+  if (resultBackBtn) {
+    resultBackBtn.addEventListener('click', () => {
+      window.location.href = '/';
+    });
+  }
+
+  if (resultRematchBtn) {
+    resultRematchBtn.addEventListener('click', () => {
+      // 同じロビーに戻るだけ（将来的にはRe-queue処理）
+      window.location.href = '/';
+    });
+  }
+
 });
+

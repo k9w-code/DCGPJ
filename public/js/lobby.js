@@ -9,6 +9,7 @@ if (window.audioManager) {
 
 let selectedMode = 'pve';
 let selectedAvatar = '1'; // デフォルトアバター (1, 2, 3...)
+let selectedDifficulty = 'normal'; // デフォルト難易度
 
 // アバター選択
 document.querySelectorAll('.avatar-option').forEach(option => {
@@ -37,8 +38,22 @@ document.querySelectorAll('.mode-card').forEach(card => {
       btnCreate.textContent = 'ルームを作成';
     }
 
+    // PvEモードの時だけ難易度選択を表示
+    document.getElementById('difficulty-section').style.display = selectedMode === 'pve' ? 'block' : 'none';
+
     document.getElementById('pvp-rooms').style.display = selectedMode === 'pvp' ? 'block' : 'none';
     if (selectedMode === 'pvp') socket.emit('get_rooms');
+  });
+});
+
+// 難易度選択
+document.querySelectorAll('.diff-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.diff-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    selectedDifficulty = card.dataset.difficulty;
+    console.log(`[LOBBY] Difficulty selected: ${selectedDifficulty}`);
+    if (window.audioManager) window.audioManager.playSE('click');
   });
 });
 
@@ -47,15 +62,17 @@ document.getElementById('btn-create').addEventListener('click', () => {
   const playerName = document.getElementById('player-name').value || 'プレイヤー';
   const roomName = document.getElementById('room-name').value || '';
   
-  console.log(`[LOBBY] Emitting create_room with avatar: ${selectedAvatar}`);
+  console.log(`[LOBBY] Emitting create_room with avatar: ${selectedAvatar}, difficulty: ${selectedDifficulty}`);
   socket.emit('create_room', {
     playerName,
     avatar: selectedAvatar,
     roomName: roomName || `${playerName}の部屋`,
     mode: selectedMode,
+    difficulty: selectedDifficulty,
   });
 
   document.getElementById('create-section').style.display = 'none';
+  document.getElementById('difficulty-section').style.display = 'none';
   document.getElementById('status-section').style.display = 'block';
   document.getElementById('status-text').textContent = 'ルーム作成中...';
 });

@@ -127,6 +127,48 @@ window.VFX = (function() {
     if (window.audioManager) window.audioManager.playSE('endure');
   }
 
+  // ========== シールド破壊エフェクト ==========
+  function playShieldShatter(el) {
+    if (!el) return;
+    const layer = document.getElementById('vfx-layer');
+    if (!layer) return;
+    
+    // 要素の中心座標を取得（viewport上の絶対座標に近いもの）
+    const rect = el.getBoundingClientRect();
+    const container = document.getElementById('game-container');
+    const containerRect = container.getBoundingClientRect();
+    const scale = containerRect.width / 1920;
+    
+    const x = (rect.left + rect.width / 2 - containerRect.left) / scale;
+    const y = (rect.top + rect.height / 2 - containerRect.top) / scale;
+
+    const shatterContainer = document.createElement('div');
+    shatterContainer.className = 'shield-shatter-container';
+    shatterContainer.style.left = `${x}px`;
+    shatterContainer.style.top = `${y}px`;
+
+    // 破片を複数生成
+    for (let i = 0; i < 6; i++) {
+      const shard = document.createElement('div');
+      shard.className = 'shield-shatter-shard';
+      const angle = (Math.PI * 2 / 6) * i + (Math.random() * 0.5);
+      const distance = 40 + Math.random() * 60;
+      const tx = Math.cos(angle) * distance;
+      const ty = Math.sin(angle) * distance - 20; // 少し上方向にバイアス
+      const rot = (Math.random() - 0.5) * 720; // 回転角度
+      
+      shard.style.setProperty('--tx', `${tx}px`);
+      shard.style.setProperty('--ty', `${ty}px`);
+      shard.style.setProperty('--rot', `${rot}deg`);
+      
+      shatterContainer.appendChild(shard);
+    }
+    
+    layer.appendChild(shatterContainer);
+    setTimeout(() => shatterContainer.remove(), 600);
+    if (window.audioManager) window.audioManager.playSE('shield_break'); // SEがあれば再生
+  }
+
   // ========== 召喚エフェクト ==========
   function playSummonEffect(el, color) {
     if (!el) return;
@@ -142,6 +184,13 @@ window.VFX = (function() {
     flash.style.setProperty('--summon-color', glowColor);
     el.appendChild(flash);
     setTimeout(() => flash.remove(), 700);
+
+    // プレミアム召喚オーラを追加 (v138)
+    const aura = document.createElement('div');
+    aura.className = `summon-aura ${color || 'neutral'}`;
+    aura.style.setProperty('--summon-color', glowColor);
+    el.appendChild(aura);
+    setTimeout(() => aura.remove(), 900);
 
     // VFXレイヤーに衝撃波
     const center = getSlotCenter(el);
@@ -509,11 +558,290 @@ window.VFX = (function() {
     if (window.audioManager) window.audioManager.playSE('direct_attack');
   }
 
+  // instanceId から盤面のスロット要素を検索するヘルパー
+  function getBoardSlotElByInstanceId(instanceId) {
+    const state = window.gameState;
+    if (!state || !instanceId) return null;
+    for (const owner of ['me', 'opponent']) {
+      const board = state[owner] && state[owner].board;
+      if (!board) continue;
+      for (const row of ['front', 'back']) {
+        const slots = board[row];
+        if (!slots) continue;
+        for (let lane = 0; lane < 3; lane++) {
+          const unit = slots[lane];
+          if (unit && unit.instanceId === instanceId) {
+            return getBoardSlotEl(owner === 'me' ? 'me' : 'opp', row, lane);
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  // スクリーンシェイク（画面揺れ）
+  function triggerScreenShake() {
+    const gameWrapper = document.getElementById('game-wrapper');
+    if (!gameWrapper) return;
+    gameWrapper.classList.add('screen-shake');
+    setTimeout(() => gameWrapper.classList.remove('screen-shake'), 450);
+  }
+
+  // 対戦開始のVS激突カットイン
+  function triggerVsCutin() {
+    const overlay = document.getElementById('vs-cutin-overlay');
+    if (!overlay) return;
+
+    const state = window.gameState;
+    if (!state) return;
+
+    // 自分の情報
+    const myNameEl = document.getElementById('vs-my-name');
+    const myAvatarEl = document.getElementById('vs-my-avatar');
+    if (state.me) {
+      if (myNameEl) myNameEl.textContent = state.me.name || 'YOU';
+      if (myAvatarEl) {
+        const avatarStr = String(state.me.avatar || '1');
+        myAvatarEl.style.backgroundImage = `url('/assets/images/avatar/${avatarStr}.png')`;
+      }
+    }
+
+    // 相手の情報
+    const oppNameEl = document.getElementById('vs-opp-name');
+    const oppAvatarEl = document.getElementById('vs-opp-avatar');
+    if (state.opponent) {
+      if (oppNameEl) oppNameEl.textContent = state.opponent.name || 'OPPONENT';
+      if (oppAvatarEl) {
+        const avatarStr = String(state.opponent.avatar || '1');
+        oppAvatarEl.style.backgroundImage = `url('/assets/images/avatar/${avatarStr}.png')`;
+      }
+    }
+
+    // クラスのリセットと表示
+    overlay.className = 'vs-cutin-overlay';
+    overlay.style.display = 'flex';
+    
+    // スライドイン発火
+    void overlay.offsetWidth; // リフロー
+    overlay.classList.add('active');
+
+    // 0.5秒後に中央で激突
+    setTimeout(() => {
+      overlay.classList.add('clashed');
+      
+      // 激突SEの再生と本番バトルBGMへの移行
+      if (window.audioManager) {
+        window.audioManager.playSE('impact');
+        window.audioManager.fadeToBGM('game', 600);
+      }
+      
+      // スクリーンシェイク
+      triggerScreenShake();
+    }, 500);
+
+    // 1.5秒後にフェードアウト開始
+    setTimeout(() => {
+      overlay.classList.add('fade-out');
+    }, 1500);
+
+    // 2.1秒後に完全に消去＆クリーンアップ
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      overlay.className = 'vs-cutin-overlay';
+      
+      // BATTLE START イントロ演出をトリガー！
+      if (window.VFX && window.VFX.playBattleStartIntro) {
+        window.VFX.playBattleStartIntro();
+      }
+    }, 2100);
+  }
+
+  // 物理突進・衝突バウンドアニメーション
+  function playCombatAnimation(attackerId, defenderId, targetType, isOpponentAttack) {
+    const sourceEl = getBoardSlotElByInstanceId(attackerId);
+    if (!sourceEl) return;
+
+    let targetEl = null;
+    if (targetType === 'shield') {
+      targetEl = document.getElementById(isOpponentAttack ? 'my-shields' : 'opp-shields');
+    } else if (targetType === 'direct') {
+      targetEl = document.getElementById(isOpponentAttack ? 'my-avatar' : 'opp-avatar');
+    } else {
+      targetEl = getBoardSlotElByInstanceId(defenderId);
+    }
+
+    if (!targetEl) {
+      // フォールバック（通常シェイク）
+      sourceEl.classList.add('unit-shake');
+      setTimeout(() => sourceEl.classList.remove('unit-shake'), 300);
+      if (window.audioManager) window.audioManager.playSE('attack');
+      return;
+    }
+
+    // 衝突元と先の位置を取得
+    const sourceRect = sourceEl.getBoundingClientRect();
+    const targetRect = targetEl.getBoundingClientRect();
+
+    // 差分を計算
+    const dx = (targetRect.left + targetRect.width / 2) - (sourceRect.left + sourceRect.width / 2);
+    const dy = (targetRect.top + targetRect.height / 2) - (sourceRect.top + sourceRect.height / 2);
+
+    // transitionとzIndexの初期化
+    sourceEl.style.transition = 'none';
+    sourceEl.style.zIndex = '9999';
+
+    // タメ演出（進行方向と逆にわずかに引く）
+    const pullX = -dx * 0.08;
+    const pullY = -dy * 0.08;
+    sourceEl.style.transform = `translate3d(${pullX}px, ${pullY}px, 0)`;
+
+    setTimeout(() => {
+      // 突進開始（激突）
+      sourceEl.style.transition = 'transform 0.16s cubic-bezier(0.25, 1, 0.2, 1)';
+      sourceEl.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+
+      setTimeout(() => {
+        // 激突位置に衝撃波エフェクトを発生
+        const center = getSlotCenter(targetEl);
+        if (center) {
+          spawnImpactBurst(center.x, center.y, '#ef4444');
+        }
+
+        // 激突時エフェクト
+        if (targetType === 'direct') {
+          triggerScreenShake();
+          if (window.audioManager) window.audioManager.playSE('direct_attack');
+        } else if (targetType === 'shield') {
+          if (window.audioManager) window.audioManager.playSE('impact');
+        } else {
+          if (window.audioManager) window.audioManager.playSE('attack');
+        }
+
+        // ヒットフラッシュを適用
+        playHitFlash(targetEl, 'red');
+
+        // バウンド（元の位置に戻る）
+        sourceEl.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1)';
+        sourceEl.style.transform = 'translate3d(0, 0, 0)';
+
+        setTimeout(() => {
+          sourceEl.style.zIndex = '';
+          sourceEl.style.transition = '';
+        }, 350);
+
+      }, 160);
+    }, 80);
+  }
+
   // ========== アニメーションイベントの一括処理 ==========
   function processAnimationEvents(events, myPlayerId) {
     if (!events || events.length === 0) return;
     events.forEach(event => {
+      console.log('   [VFX EVENT] Processing:', JSON.stringify(event));
       switch (event.type) {
+        // --- サーバーの生イベント対応 ---
+        case 'attack': {
+          let isOpponentAttack = false;
+          if (window.gameState && window.gameState.opponent) {
+            const oppSlots = [];
+            for (const r of ['front', 'back']) {
+              if (window.gameState.opponent.board[r]) {
+                window.gameState.opponent.board[r].forEach(u => { if (u) oppSlots.push(u.instanceId); });
+              }
+            }
+            if (oppSlots.includes(event.source)) {
+              isOpponentAttack = true;
+            }
+          }
+          playCombatAnimation(event.source, event.target, event.targetType, isOpponentAttack);
+          break;
+        }
+        case 'counter': {
+          const el = getBoardSlotElByInstanceId(event.source);
+          if (el) {
+            el.classList.add('unit-shake');
+            setTimeout(() => el.classList.remove('unit-shake'), 300);
+          }
+          if (window.audioManager) window.audioManager.playSE('impact');
+          break;
+        }
+        case 'damage': {
+          const el = getBoardSlotElByInstanceId(event.target);
+          if (el) {
+            let flashColor = 'red';
+            let playSE = 'impact';
+            
+            if (event.vfxType === 'decay') {
+              flashColor = 'purple';
+              playSE = 'debuff';
+              playDecayEffect(el);
+            } else if (event.vfxType === 'spell') {
+              flashColor = 'blue';
+              playSE = 'spell';
+            } else if (event.vfxType === 'ability') {
+              flashColor = 'gold';
+              playSE = 'buff';
+            }
+            
+            playHitFlash(el, flashColor);
+            spawnDamageNumber(el, event.damage, 'damage');
+            
+            if (window.audioManager) window.audioManager.playSE(playSE);
+          }
+          break;
+        }
+        case 'kill': {
+          const el = getBoardSlotElByInstanceId(event.target);
+          if (el) {
+            playDeathEffect(el);
+          }
+          break;
+        }
+        case 'endure': {
+          const el = getBoardSlotElByInstanceId(event.target);
+          if (el) {
+            playEndureEffect(el);
+          }
+          break;
+        }
+        case 'ability_freeze': {
+          const el = getBoardSlotElByInstanceId(event.target);
+          if (el) {
+            playAbilityFlash(el, 'blue');
+            if (window.audioManager) window.audioManager.playSE('freeze');
+          }
+          break;
+        }
+        case 'ability_silence': {
+          const el = getBoardSlotElByInstanceId(event.target);
+          if (el) {
+            playAbilityFlash(el, 'black');
+            if (window.audioManager) window.audioManager.playSE('silence');
+          }
+          break;
+        }
+        case 'ability_barrier': {
+          const el = getBoardSlotElByInstanceId(event.target);
+          if (el) {
+            playAbilityFlash(el, 'white');
+            if (window.audioManager) window.audioManager.playSE('barrier');
+          }
+          break;
+        }
+        case 'ability_bounce': {
+          const el = getBoardSlotElByInstanceId(event.target);
+          if (el) {
+            playAbilityFlash(el, 'white');
+            if (window.audioManager) window.audioManager.playSE('draw');
+          }
+          break;
+        }
+        case 'summon': {
+          if (window.audioManager) window.audioManager.playSE('summon');
+          break;
+        }
+
+        // --- 既存のイベント対応 ---
         case 'unit_combat':
           playBattleEffect(event, myPlayerId);
           break;
@@ -552,6 +880,115 @@ window.VFX = (function() {
     });
   }
 
+  // BATTLE START イントロ演出
+  function playBattleStartIntro() {
+    const layer = document.getElementById('vfx-layer');
+    if (!layer) return;
+
+    const emblem = document.createElement('div');
+    emblem.className = 'battle-start-emblem';
+    
+    const text = document.createElement('div');
+    text.className = 'battle-start-text';
+    text.textContent = 'BATTLE START';
+    emblem.appendChild(text);
+    
+    layer.appendChild(emblem);
+    
+    if (window.audioManager) {
+      window.audioManager.playSE('resonance');
+    }
+
+    setTimeout(() => {
+      triggerScreenShake();
+      
+      if (window.audioManager) {
+        window.audioManager.playSE('shield_break');
+      }
+      
+      // 1920x1080の中央から黄金の物理パーティクルをバースト射出
+      if (window.triggerShieldBreakVFX) {
+        window.triggerShieldBreakVFX(960, 540);
+        window.triggerShieldBreakVFX(960, 540);
+      }
+      
+      emblem.classList.add('shattered');
+      
+      setTimeout(() => {
+        emblem.remove();
+      }, 1000);
+    }, 900);
+  }
+
+  // 決着パーティクル演出 (v139)
+  function playGameOverParticles(isWinner) {
+    const layer = document.getElementById('vfx-layer');
+    if (!layer) return;
+
+    const particleCount = 100;
+    const colors = isWinner
+      ? ['#ffd700', '#f59e0b', '#fbbf24', '#ffffff', '#fffbeb'] // 黄金/白
+      : ['#ef4444', '#7f1d1d', '#1f2937', '#111827', '#000000']; // 赤黒/灰
+
+    const startX = 960; // 1920x1080 基準の中央
+    const startY = 540;
+
+    for (let i = 0; i < particleCount; i++) {
+      const p = document.createElement('div');
+      p.className = `game-over-particle ${isWinner ? 'victory-p' : 'defeat-p'}`;
+      p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      
+      p.style.left = `${startX}px`;
+      p.style.top = `${startY}px`;
+      
+      const size = isWinner 
+        ? Math.random() * 8 + 4 
+        : Math.random() * 12 + 6;
+      p.style.width = `${size}px`;
+      p.style.height = `${size}px`;
+      
+      const angle = Math.random() * Math.PI * 2;
+      const speed = isWinner 
+        ? Math.random() * 15 + 5 
+        : Math.random() * 25 + 8;
+      
+      let vx = Math.cos(angle) * speed;
+      let vy = Math.sin(angle) * speed;
+      const gravity = isWinner ? 0.12 : 0.28;
+      const friction = 0.96;
+      
+      let posX = startX;
+      let posY = startY;
+      let opacity = 1.0;
+      let rotation = Math.random() * 360;
+      const rotSpeed = (Math.random() - 0.5) * 10;
+      
+      layer.appendChild(p);
+      
+      const update = () => {
+        vx *= friction;
+        vy += gravity;
+        posX += vx;
+        posY += vy;
+        rotation += rotSpeed;
+        opacity -= isWinner ? 0.01 : 0.015;
+        
+        p.style.left = `${posX}px`;
+        p.style.top = `${posY}px`;
+        p.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
+        p.style.opacity = opacity;
+        
+        if (opacity > 0 && posY < 1080 && posX > 0 && posX < 1920) {
+          requestAnimationFrame(update);
+        } else {
+          p.remove();
+        }
+      };
+      
+      requestAnimationFrame(update);
+    }
+  }
+
   // ========== 公開API ==========
   return {
     playBattleEffect,
@@ -571,5 +1008,11 @@ window.VFX = (function() {
     playDirectAttackEffect,
     processAnimationEvents,
     getBoardSlotEl,
+    getBoardSlotElByInstanceId,
+    playCombatAnimation,
+    triggerScreenShake,
+    triggerVsCutin,
+    playBattleStartIntro,
+    playGameOverParticles,
   };
 })();
