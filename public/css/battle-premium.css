@@ -3837,6 +3837,689 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
   border-radius: 2px; /* 灰のような無骨な破片 */
 }
 
+/* ========================================================
+   デッキビルダー プレミアムUI (v140)
+   ======================================================== */
+
+/* --- デッキパネル（右パネル）のオーバーライド --- */
+.deck-panel.panel {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+/* --- ヘッダー全体レイアウト --- */
+.deck-builder-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, rgba(15, 17, 26, 0.95) 0%, rgba(25, 28, 42, 0.9) 100%);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 12px 12px 0 0;
+  flex-shrink: 0;
+}
+
+.deck-builder-header .header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.deck-builder-header .header-left h1 {
+  font-size: 16px;
+  letter-spacing: 3px;
+  color: #e2e8f0;
+  margin: 0;
+  text-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
+  white-space: nowrap;
+}
+
+.deck-builder-header .header-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+/* --- デッキスロットセレクター --- */
+.deck-slots-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.deck-slots-container .slot-label {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.deck-slots {
+  display: flex;
+  gap: 4px;
+}
+
+.deck-slots .save-slot {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  transition: all 0.2s ease;
+}
+
+.deck-slots .save-slot:hover {
+  border-color: rgba(139, 92, 246, 0.6);
+  color: #fff;
+  background: rgba(139, 92, 246, 0.15);
+}
+
+.deck-slots .save-slot.active {
+  background: rgba(139, 92, 246, 0.4);
+  border-color: rgba(139, 92, 246, 0.8);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+}
+
+.deck-slots .save-slot.has-data {
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+/* --- ヘッダーアクションボタン群 --- */
+.deck-action-buttons {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.db-icon-btn,
+.db-action-btn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.db-icon-btn:hover,
+.db-action-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+
+.db-icon-btn svg,
+.db-action-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.db-save-btn {
+  height: 30px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.5) 0%, rgba(109, 40, 217, 0.5) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.5);
+  color: #fff;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+}
+
+.db-save-btn:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.7) 0%, rgba(109, 40, 217, 0.7) 100%);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+}
+
+.db-save-btn svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* --- YOUR DECK パネルヘッダー --- */
+.deck-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.deck-panel-header h2 {
+  font-size: 13px;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+.deck-counts {
+  display: flex;
+  gap: 8px;
+}
+
+.deck-count-badge {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #c4b5fd;
+}
+
+.deck-count-badge.shield-badge {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #93c5fd;
+}
+
+/* --- デッキ分析パネル (COLOR BALANCE / MANA CURVE) --- */
+.deck-analysis-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.analysis-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.analysis-title {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.35);
+  text-transform: uppercase;
+}
+
+/* COLOR BALANCE バー */
+.color-balance-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.color-segment {
+  min-width: 3px;
+  transition: width 0.3s ease;
+}
+
+.color-segment.segment-white { background: #e2e8f0; }
+.color-segment.segment-red   { background: #ef4444; }
+.color-segment.segment-blue  { background: #3b82f6; }
+.color-segment.segment-green { background: #22c55e; }
+.color-segment.segment-black { background: #8b5cf6; }
+
+/* MANA CURVE 棒グラフ */
+.mana-curve-chart {
+  display: flex;
+  gap: 3px;
+  align-items: flex-end;
+  height: 50px;
+  padding-top: 4px;
+}
+
+.mana-bar-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  height: 100%;
+}
+
+.mana-bar-value {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mana-bar-outer {
+  flex: 1;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
+.mana-bar-inner {
+  width: 100%;
+  background: linear-gradient(to top, rgba(139, 92, 246, 0.7), rgba(139, 92, 246, 0.4));
+  border-radius: 3px 3px 0 0;
+  transition: height 0.3s ease;
+  min-height: 0;
+}
+
+.mana-bar-label {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.35);
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- デッキリスト改善 --- */
+.deck-list-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+  margin: 0;
+}
+
+.deck-list-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.deck-list-container::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 2px;
+}
+
+.deck-entry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  margin: 1px 4px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  min-height: 28px;
+}
+
+.deck-entry:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-left-color: rgba(139, 92, 246, 0.6);
+}
+
+.de-cost {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 11px;
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.de-name {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 500;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.de-copies {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fbbf24;
+  flex-shrink: 0;
+}
+
+/* --- シールドリスト改善 --- */
+.shield-list-section {
+  padding: 8px 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.shield-section-title {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.3);
+  text-align: center;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.shield-list-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  background-size: cover;
+  background-position: right center;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.shield-list-item:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.shield-list-item.empty-slot {
+  border-style: dashed;
+  opacity: 0.4;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 11px;
+}
+
+.shield-reorder-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.btn-arrow {
+  width: 18px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+
+.btn-arrow:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.btn-arrow:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+/* --- START GAMEボタン改善 --- */
+.btn-start-game {
+  margin-top: 8px;
+  padding: 14px;
+  font-size: 16px;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-weight: 800;
+  letter-spacing: 4px;
+  width: calc(100% - 20px);
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);
+  border: 2px solid rgba(196, 181, 253, 0.4);
+  color: #fff;
+  cursor: pointer;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.btn-start-game:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  filter: brightness(1.1);
+}
+
+.btn-start-game:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.btn-start-game:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  filter: saturate(0.3) brightness(0.6);
+}
+
+/* --- プレビューパネル（左パネル）改善 --- */
+.preview-panel {
+  padding: 16px !important;
+}
+
+.preview-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.preview-content.empty {
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-content .empty-msg {
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+/* プレビューカードイラスト */
+.preview-card-image {
+  width: 100%;
+  aspect-ratio: 3/4;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* レアリティ表示の装飾 */
+.preview-rarity {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: 'Outfit', 'Inter', sans-serif;
+}
+
+.preview-rarity.rarity-1 {
+  background: rgba(156, 163, 175, 0.2);
+  border: 1px solid rgba(156, 163, 175, 0.4);
+  color: #9ca3af;
+}
+
+.preview-rarity.rarity-2 {
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  color: #60a5fa;
+}
+
+.preview-rarity.rarity-3 {
+  background: rgba(168, 85, 247, 0.2);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: #c084fc;
+}
+
+.preview-rarity.rarity-4 {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.3));
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  color: #fbbf24;
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+
+/* プレビュー内の枚数コントロール */
+.preview-count-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 10px;
+}
+
+.preview-count-control .count-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  flex: 1;
+}
+
+.preview-count-control .count-display {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: #fbbf24;
+  min-width: 40px;
+  text-align: center;
+}
+
+.preview-count-control .count-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(139, 92, 246, 0.3);
+  border: 1px solid rgba(139, 92, 246, 0.5);
+  color: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 700;
+  transition: all 0.15s ease;
+}
+
+.preview-count-control .count-btn:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+}
+
+.preview-count-control .count-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* --- コレクションパネル（中央）改善 --- */
+.collection-panel {
+  padding: 0 !important;
+}
+
+.collection-header {
+  padding: 12px 16px !important;
+  gap: 10px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(0, 0, 0, 0.4) !important;
+  border-radius: 12px 12px 0 0;
+}
+
+/* タブ */
+.premium-tab {
+  padding: 6px 16px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+/* 検索バー */
+.search-filter-bar {
+  display: flex;
+  gap: 10px;
+}
+
+.glass-input {
+  flex: 1;
+  padding: 6px 14px;
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.glass-input:focus {
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+}
+
+.glass-select {
+  padding: 6px 12px;
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #e2e8f0;
+  cursor: pointer;
+}
+
+
 
 
 
