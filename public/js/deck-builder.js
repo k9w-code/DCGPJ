@@ -304,7 +304,7 @@ function initUI() {
       slot.className = `save-slot${i === currentSaveSlot ? ' active' : ''}`;
       slot.dataset.slot = i;
       
-      const savedName = localStorage.getItem(`dcg_deck_name_slot_${i}`) || `SLOT ${i + 1}`;
+      const savedName = localStorage.getItem(`dcg_deck_name_slot_${i}`) || `${i + 1}`;
       slot.textContent = savedName;
       slotsContainer.appendChild(slot);
     }
@@ -351,7 +351,7 @@ function initUI() {
 
       const finishEdit = () => {
         let newName = input.value.trim();
-        if (!newName) newName = `SLOT ${parseInt(slot.dataset.slot) + 1}`;
+        if (!newName) newName = `${parseInt(slot.dataset.slot) + 1}`;
         localStorage.setItem(`dcg_deck_name_slot_${slot.dataset.slot}`, newName);
         slot.innerHTML = '';
         slot.textContent = newName;
@@ -570,6 +570,7 @@ function renderCardGrid() {
       <div class="grid-card-overlay">
         <div class="grid-cost" style="background:${primaryColor};">${card.cost}</div>
         ${statsOverlay}
+        <div class="grid-card-name">${card.name}</div>
         ${count > 0 ? `<div class="grid-count">×${count}</div>` : ''}
       </div>
       <img src="${window.getCardImagePath(card)}" style="display:none;" onerror="${IMG_FALLBACK}">

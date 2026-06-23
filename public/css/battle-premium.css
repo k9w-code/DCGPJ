@@ -4519,7 +4519,418 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
   cursor: pointer;
 }
 
+/* ========================================================
+   デッキビルダー v141 追加修正
+   ======================================================== */
 
+/* --- 左パネル: プレビューパネル全体 --- */
+.preview-panel {
+  padding: 12px !important;
+  overflow: hidden !important;
+}
+
+.preview-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.preview-content.empty {
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-content .empty-msg {
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+/* プレビューカードイラスト — 高さを抑制して情報エリアを確保 */
+.preview-card-image {
+  width: 100%;
+  aspect-ratio: 5 / 3;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center top;
+  margin-bottom: 10px;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
+}
+
+/* プレビュー情報エリア（スクロール可能） */
+.preview-info {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  min-height: 0;
+}
+
+.preview-info::-webkit-scrollbar {
+  width: 3px;
+}
+
+.preview-info::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 2px;
+}
+
+/* カード名タイトル行 */
+.preview-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.preview-title h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+/* プレビュー内コストアイコン */
+.preview-cost {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  text-shadow: 0 0 6px #000, 0 0 10px #000;
+  flex-shrink: 0;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+}
+
+/* レアリティバッジ（cd-rarity + rarity-X で統一） */
+.cd-rarity {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 9px !important;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.cd-rarity.rarity-1,
+.preview-rarity.rarity-1 {
+  background: rgba(156, 163, 175, 0.2);
+  border: 1px solid rgba(156, 163, 175, 0.4);
+  color: #9ca3af;
+}
+
+.cd-rarity.rarity-2,
+.preview-rarity.rarity-2 {
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  color: #60a5fa;
+}
+
+.cd-rarity.rarity-3,
+.preview-rarity.rarity-3 {
+  background: rgba(168, 85, 247, 0.2);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: #c084fc;
+}
+
+.cd-rarity.rarity-4,
+.preview-rarity.rarity-4 {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.3));
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  color: #fbbf24;
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+
+/* ATK/HP / SPELL ステータス行 */
+.preview-stats {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.preview-stats .ps-atk,
+.preview-stats .ps-hp {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 3px 10px;
+  border-radius: 14px;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ps-atk { color: #f87171; border-color: rgba(239, 68, 68, 0.3) !important; }
+.ps-hp  { color: #4ade80; border-color: rgba(74, 222, 128, 0.3) !important; }
+.ps-spell { color: #a78bfa; font-size: 12px; font-weight: 700; }
+
+/* キーワードバッジ列 */
+.preview-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.kw-badge {
+  display: inline-block;
+  background: rgba(139, 92, 246, 0.15);
+  color: #c084fc;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.kw-badge:hover {
+  background: rgba(139, 92, 246, 0.3);
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+/* アビリティリスト */
+.cd-abilities-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ability-item {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #cbd5e1;
+  padding: 5px 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+  border-left: 2px solid rgba(139, 92, 246, 0.3);
+}
+
+.ability-trigger {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.15);
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* カード説明テキスト */
+.preview-desc {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+/* フレーバーテキスト */
+.preview-flavor {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  font-style: italic;
+  font-size: 10px;
+  color: rgba(160, 152, 128, 0.8);
+  line-height: 1.4;
+}
+
+/* --- 枚数コントロールエリア --- */
+.preview-controls {
+  flex-shrink: 0;
+  padding: 8px 0 0;
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.preview-controls label {
+  display: block;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control-group .btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+  border: 1px solid;
+  flex-shrink: 0;
+}
+
+.control-group .btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.control-group .btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.control-group .btn-primary {
+  background: rgba(139, 92, 246, 0.4);
+  border-color: rgba(139, 92, 246, 0.6);
+  color: #fff;
+}
+
+.control-group .btn-primary:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+}
+
+.control-group .btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.control-group .count-display {
+  flex: 1;
+  text-align: center;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: #fbbf24;
+  letter-spacing: 1px;
+}
+
+/* --- 中央パネル: カードグリッド改善 --- */
+
+/* SPELLラベル */
+.grid-type-label {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #a78bfa;
+  background: rgba(139, 92, 246, 0.25);
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+/* カードグリッド内のカード名ラベル（ホバー時表示） */
+.grid-card-overlay .grid-card-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: #f1f5f9;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  margin-top: 4px;
+}
+
+.card-item:hover .grid-card-name {
+  opacity: 1;
+}
+
+/* ★4レジェンダリー ホイルシャイン */
+.foil-shine {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--foil-x, 50%) var(--foil-y, 50%),
+    rgba(251, 191, 36, 0.25) 0%,
+    rgba(168, 85, 247, 0.15) 30%,
+    transparent 60%
+  );
+  pointer-events: none;
+  z-index: 2;
+  mix-blend-mode: screen;
+  border-radius: inherit;
+}
+
+/* レアリティ別カード枠の発光 */
+.card-item.rarity-4 {
+  border-color: rgba(251, 191, 36, 0.5);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5),
+              0 0 12px rgba(251, 191, 36, 0.2);
+}
+
+.card-item.rarity-3 {
+  border-color: rgba(168, 85, 247, 0.35);
+}
+
+.card-item.rarity-2 {
+  border-color: rgba(59, 130, 246, 0.25);
+}
+
+/* --- 右パネル: スロットボタン改善 --- */
+.deck-slots .save-slot {
+  width: 28px !important;
+  height: 28px !important;
+  font-size: 11px !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 2px;
+}
+
+/* デッキリストの行をさらにコンパクトに */
+.deck-entry {
+  padding: 4px 8px;
+  min-height: 26px;
+  gap: 6px;
+}
+
+.de-cost {
+  width: 20px;
+  height: 20px;
+  font-size: 10px;
+}
+
+.de-name {
+  font-size: 11px;
+}
+
+.de-copies {
+  font-size: 11px;
+}
 
 
 
