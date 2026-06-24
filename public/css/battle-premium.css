@@ -3850,10 +3850,10 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
 /* --- ヘッダー全体レイアウト --- */
 .deck-builder-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 12px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 12px;
   background: linear-gradient(135deg, rgba(15, 17, 26, 0.95) 0%, rgba(25, 28, 42, 0.9) 100%);
   border-bottom: 1px solid rgba(139, 92, 246, 0.2);
   border-radius: 12px 12px 0 0;
@@ -3863,13 +3863,14 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
 .deck-builder-header .header-left {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  width: 100%;
   flex-shrink: 0;
 }
 
 .deck-builder-header .header-left h1 {
   font-size: 16px;
-  letter-spacing: 3px;
+  letter-spacing: 2px;
   color: #e2e8f0;
   margin: 0;
   text-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
@@ -3879,8 +3880,9 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
 .deck-builder-header .header-actions {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  align-items: flex-end;
+  gap: 8px;
+  align-items: stretch;
+  width: 100%;
   flex-shrink: 0;
 }
 
@@ -3888,6 +3890,8 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
 .deck-slots-container {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
   gap: 6px;
 }
 
@@ -3945,6 +3949,8 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
   display: flex;
   gap: 4px;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .db-icon-btn,
@@ -4551,13 +4557,13 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
 /* プレビューカードイラスト — 高さを抑制して情報エリアを確保 */
 .preview-card-image {
   width: 100%;
-  aspect-ratio: 5 / 3;
-  border-radius: 10px;
+  aspect-ratio: 3 / 4;
+  border-radius: 12px;
   background-size: cover;
-  background-position: center top;
-  margin-bottom: 10px;
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  background-position: center;
+  margin-bottom: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
   flex-shrink: 0;
 }
 
@@ -4932,8 +4938,7 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
   font-size: 11px;
 }
 
-
-
-
-
-
+/* デッキビルダー一覧のレジェンダリーカードのホイルシャイン演出のオミット (ユーザーの要望による) */
+.card-item .foil-shine {
+  display: none !important;
+}

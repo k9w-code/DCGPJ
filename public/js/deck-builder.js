@@ -81,7 +81,10 @@ function updateKeywordDropdown() {
   const keywordSet = new Set();
   allCards.forEach(c => {
     if (c.keywords && Array.isArray(c.keywords)) {
-      c.keywords.forEach(kw => keywordSet.add(kw));
+      c.keywords.forEach(kw => {
+        const baseKw = kw.split(':')[0];
+        if (baseKw) keywordSet.add(baseKw);
+      });
     }
   });
   
@@ -94,18 +97,24 @@ function updateKeywordDropdown() {
   }
   
   // 初期表示用に一部ハードコードしたマッピングもサポート
-  const KEYWORD_NAMES = { taunt: '挑発', rush: '速攻', speed: '速攻', stealth: '潜伏', double_strike: '連撃', barrier: '加護', endure: '不屈', siege: '攻城', comeback: '逆転', awaken: '覚醒', pierce: '貫通', spread: '拡散', drain: '吸命', intimidate: '威圧' };
+  const KEYWORD_NAMES = {
+    taunt: '挑発', rush: '速攻', speed: '速攻', stealth: '潜伏', double_strike: '連撃',
+    barrier: '加護', endure: '不屈', siege: '攻城', comeback: '逆転', awaken: '覚醒',
+    pierce: '貫通', spread: '拡散', drain: '吸命', intimidate: '威圧', lethal: '必殺',
+    crisis: '背水', snipe: '狙撃', resonance: '共鳴', silence: '沈黙', link: '連携',
+    vanguard: '先陣', rearguard: '後衛', spellshield: '魔盾', sacrifice: '代償',
+    echo: '残響', overload: '暴走', loner: '孤高', avenger: '復讐', decay: '腐敗', legacy: '遺言'
+  };
 
-  Array.from(keywordSet).sort().forEach(kw => {
+  Array.from(keywordSet).sort().forEach(baseKw => {
     // 削除済マスタ対応: baseKw (例:'awaken'等)でチェックし、マスタがロード済なのに該当設定がなければ除外
-    const baseKw = kw.split(':')[0];
     if (window.keywordMap && Object.keys(window.keywordMap).length > 0 && !window.keywordMap[baseKw]) {
       return;
     }
     const opt = document.createElement('option');
-    opt.value = kw;
-    const master = window.keywordMap && window.keywordMap[kw];
-    const kwName = master ? master.name : (typeof KEYWORD_NAMES !== 'undefined' ? KEYWORD_NAMES[baseKw] : kw);
+    opt.value = baseKw;
+    const master = window.keywordMap && window.keywordMap[baseKw];
+    const kwName = master ? master.name : (KEYWORD_NAMES[baseKw] || baseKw);
     opt.textContent = kwName;
     select.appendChild(opt);
   });
@@ -527,9 +536,9 @@ function renderCardGrid() {
       (c.name && c.name.includes(activeSearchText)) || 
       (c.text && c.text.includes(activeSearchText));
       
-    // キーワードによるフィルタ (完全一致)
+    // キーワードによるフィルタ (パラメータ対応)
     const passKeyword = activeKeyword === 'all' || 
-      (c.keywords && c.keywords.includes(activeKeyword));
+      (c.keywords && c.keywords.some(kw => kw.split(':')[0] === activeKeyword));
 
     // 枚数制限が0のカード(トークン用)はコレクションに表示しない
     const passLimit = (typeof c.maxCopies !== 'undefined') ? c.maxCopies > 0 : true;
@@ -568,7 +577,7 @@ function renderCardGrid() {
     el.innerHTML = `
       ${foilShineHtml}
       <div class="grid-card-overlay">
-        <div class="grid-cost" style="background:${primaryColor};">${card.cost}</div>
+        <div class="grid-cost" style="border-color:${primaryColor} !important;">${card.cost}</div>
         ${statsOverlay}
         <div class="grid-card-name">${card.name}</div>
         ${count > 0 ? `<div class="grid-count">×${count}</div>` : ''}
