@@ -935,6 +935,7 @@ function renderHand(state, selectedCardIndex, onCardClick) {
     const canPlay = isMyTurn && (state.me.sp || 0) >= (card.cost || 0) && hasTribeLevel;
     
     const el = document.createElement('div');
+    el.dataset.index = index; // かき分け用のインデックス付与
     // 属性の第一カラーを取得してオーラクラスを付与
     const firstColor = cardColors[0] ? cardColors[0].toLowerCase() : 'neutral';
     const rarityClass = ` rarity-${card.rarity || 1}`;
@@ -964,7 +965,7 @@ function renderHand(state, selectedCardIndex, onCardClick) {
       </div>
     `;
 
-    // 3Dチルト ＆ スムーズなインタラクションの実装
+    // 3Dチルト ＆ スムーズなインタラクション（かき分けエフェクト付き）の実装
     el.addEventListener('pointermove', (e) => {
       const rect = el.getBoundingClientRect();
       const x = e.clientX - rect.left;
@@ -974,8 +975,30 @@ function renderHand(state, selectedCardIndex, onCardClick) {
       const angleX = -((y - yc) / yc) * 15; // 最大15度傾く
       const angleY = ((x - xc) / xc) * 15;
 
-      el.style.transform = `translateX(${translateX}px) rotate(${angle}deg) translateY(${translateY - 30}px) scale(1.22) perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg)`;
-      el.style.zIndex = '999';
+      const hoveredIndex = index;
+      const allHandCards = container.querySelectorAll('.hand-card');
+      
+      allHandCards.forEach((c) => {
+        const cIndex = parseInt(c.dataset.index);
+        const cOffset = handCount > 1 ? (cIndex - (handCount - 1) / 2) : 0;
+        const cAngle = handCount > 1 ? cOffset * (maxAngle / ((handCount - 1) || 1)) : 0;
+        const cTranslateX = cOffset * 60;
+        const cTranslateY = Math.abs(cOffset) * 15;
+
+        if (cIndex === hoveredIndex) {
+          // ホバー中のカード：大きく拡大して上に持ち上げる
+          c.style.transform = `translateX(${cTranslateX}px) rotate(${cAngle}deg) translateY(${cTranslateY - 45}px) scale(1.28) perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+          c.style.zIndex = '999';
+        } else if (cIndex < hoveredIndex) {
+          // ホバーされたカードより左側のカード：左にスライドし、少し傾ける
+          c.style.transform = `translateX(${cTranslateX - 25}px) rotate(${cAngle - 6}deg) translateY(${cTranslateY + 5}px) scale(0.95)`;
+          c.style.zIndex = '90';
+        } else {
+          // ホバーされたカードより右側のカード：右にスライドし、少し傾ける
+          c.style.transform = `translateX(${cTranslateX + 25}px) rotate(${cAngle + 6}deg) translateY(${cTranslateY + 5}px) scale(0.95)`;
+          c.style.zIndex = '90';
+        }
+      });
 
       if (card.rarity === 4) {
         const px = (x / rect.width) * 100;
@@ -1006,16 +1029,26 @@ function renderHand(state, selectedCardIndex, onCardClick) {
     });
 
     el.addEventListener('pointerleave', () => {
-      el.style.transform = `translateX(${translateX}px) rotate(${angle}deg) translateY(${translateY}px) scale(1) rotateX(0deg) rotateY(0deg)`;
-      el.style.zIndex = '';
+      const allHandCards = container.querySelectorAll('.hand-card');
+      allHandCards.forEach((c) => {
+        const cIndex = parseInt(c.dataset.index);
+        const cOffset = handCount > 1 ? (cIndex - (handCount - 1) / 2) : 0;
+        const cAngle = handCount > 1 ? cOffset * (maxAngle / ((handCount - 1) || 1)) : 0;
+        const cTranslateX = cOffset * 60;
+        const cTranslateY = Math.abs(cOffset) * 15;
+        
+        c.style.transform = `translateX(${cTranslateX}px) rotate(${cAngle}deg) translateY(${cTranslateY}px) scale(1) rotateX(0deg) rotateY(0deg)`;
+        c.style.zIndex = '';
+        
+        const overlay = c.querySelector('.card-overlay');
+        if (overlay) overlay.style.transform = 'translate3d(0, 0, 0)';
+        const foil = c.querySelector('.foil-shine');
+        if (foil) foil.style.transform = 'translate3d(0, 0, 0)';
+      });
 
       if (card.rarity === 4) {
         el.style.setProperty('--foil-x', '50%');
         el.style.setProperty('--foil-y', '50%');
-        const overlay = el.querySelector('.card-overlay');
-        if (overlay) overlay.style.transform = 'translate3d(0, 0, 0)';
-        const foil = el.querySelector('.foil-shine');
-        if (foil) foil.style.transform = 'translate3d(0, 0, 0)';
       }
 
       hideTooltip();

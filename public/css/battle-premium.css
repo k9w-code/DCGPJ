@@ -3456,32 +3456,43 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
 /* 交換対象として選択されたカード */
 .mulligan-cards .hand-card.selected-for-redraw {
   border: 2px solid #ef4444 !important;
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.7) !important;
-  transform: translateY(-12px) !important;
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.9) !important;
+  transform: translateY(-16px) !important;
+  filter: brightness(0.75) saturate(1.2) !important;
 }
 
 .mulligan-cards .hand-card.selected-for-redraw::after {
   content: 'REDRAW';
   position: absolute;
   inset: 0;
-  background: rgba(239, 68, 68, 0.45);
+  background: 
+    repeating-linear-gradient(
+      45deg,
+      rgba(0, 0, 0, 0.3),
+      rgba(0, 0, 0, 0.3) 10px,
+      rgba(239, 68, 68, 0.35) 10px,
+      rgba(239, 68, 68, 0.35) 20px
+    ),
+    rgba(239, 68, 68, 0.25);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-fantasy);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 900;
-  letter-spacing: 2px;
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  letter-spacing: 3px;
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
   border-radius: 8px;
   animation: redraw-pulse 1.5s infinite alternate;
+  text-shadow: 0 0 10px #000, 0 2px 4px #000;
+  z-index: 5;
 }
 
 @keyframes redraw-pulse {
-  0% { background: rgba(239, 68, 68, 0.35); }
-  100% { background: rgba(239, 68, 68, 0.55); }
+  0% { opacity: 0.85; }
+  100% { opacity: 1; }
 }
 
 /* ========================================================
@@ -3726,13 +3737,18 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
 @keyframes pulse-green-btn {
   0% {
     box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4),
+                0 0 4px rgba(52, 211, 153, 0.2),
                 inset 0 1px 0 rgba(255, 255, 255, 0.3),
                 inset 0 -4px 0 rgba(0, 0, 0, 0.3);
+    border-color: rgba(167, 243, 208, 0.4) !important;
   }
   100% {
-    box-shadow: 0 6px 25px rgba(16, 185, 129, 0.7),
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.75),
+                0 0 16px rgba(52, 211, 153, 0.65),
                 inset 0 1px 0 rgba(255, 255, 255, 0.4),
                 inset 0 -4px 0 rgba(0, 0, 0, 0.3);
+    border-color: rgba(52, 211, 153, 0.95) !important;
+    filter: brightness(1.08);
   }
 }
 

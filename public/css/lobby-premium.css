@@ -381,3 +381,81 @@ input[type="text"]:focus {
   margin-top: 4px !important;
 }
 
+/* プレイヤー名入力欄の高級ネオンデザイン */
+input#player-name {
+  background: rgba(10, 16, 32, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 8px !important;
+  color: #fff !important;
+  padding: 10px 14px !important;
+  font-size: 14px !important;
+  font-family: 'Outfit', 'Inter', sans-serif !important;
+  transition: all 0.3s ease !important;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  outline: none !important;
+}
+
+input#player-name:focus {
+  border-color: var(--gold, #b8860b) !important;
+  box-shadow: 
+    inset 0 1px 2px rgba(0,0,0,0.4),
+    0 0 15px rgba(184, 134, 11, 0.45) !important;
+  background: rgba(10, 16, 32, 0.85) !important;
+}
+
+/* カード活性化パルス */
+.mode-card.active, .diff-card.active {
+  animation: lobby-card-pulse 2.5s infinite alternate ease-in-out !important;
+}
+
+@keyframes lobby-card-pulse {
+  0% {
+    box-shadow: 
+      0 5px 15px rgba(0, 0, 0, 0.2),
+      0 0 12px rgba(184, 134, 11, 0.2) !important;
+    border-color: rgba(184, 134, 11, 0.5) !important;
+  }
+  100% {
+    box-shadow: 
+      0 10px 25px rgba(0, 0, 0, 0.3),
+      0 0 24px rgba(184, 134, 11, 0.5),
+      inset 0 0 15px rgba(184, 134, 11, 0.15) !important;
+    border-color: rgba(245, 158, 11, 0.9) !important;
+  }
+}
+
+/* 空ルームのプレースホルダー */
+.empty-rooms-placeholder {
+  padding: 40px 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.015) !important;
+  border: 1px dashed rgba(255, 255, 255, 0.1) !important;
+  border-radius: 16px !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin: 15px 0;
+}
+
+.empty-rooms-icon {
+  color: rgba(255, 255, 255, 0.15);
+  filter: drop-shadow(0 0 8px rgba(255,255,255,0.05));
+  animation: icon-float 4s ease-in-out infinite alternate;
+}
+
+.empty-rooms-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  opacity: 0.75;
+  letter-spacing: 0.5px;
+}
+
+@keyframes icon-float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  100% { transform: translateY(-6px) rotate(3deg); }
+}
+

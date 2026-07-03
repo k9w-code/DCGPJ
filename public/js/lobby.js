@@ -84,7 +84,17 @@ socket.on('room_list', (roomItems) => {
   const list = document.getElementById('room-list');
   list.innerHTML = '';
   if (roomItems.length === 0) {
-    list.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:20px;font-size:13px;">参加可能なルームがありません</div>';
+    list.innerHTML = `
+      <div class="empty-rooms-placeholder">
+        <div class="empty-rooms-icon">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <div class="empty-rooms-text">現在参加可能なルームはありません。<br>新しくルームを作成するか、更新してください。</div>
+      </div>
+    `;
     return;
   }
   roomItems.forEach(room => {
