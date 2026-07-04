@@ -236,7 +236,7 @@ h1, h2, h3 {
 /* ========== 鬩幢ｽ｢隴擾ｽｴ・ｽ・ｽ驛｢譎｢・ｽ・｣鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｭ鬮ｫ・ｶ陜｣・､髴肴劼・ｿ・ｽ・ｽ・ｯ驛｢譎｢・ｽ・ｻ(3鬩幢ｽ｢隴取得・ｽ・｣・ｽ・ｹ驍ｵ・ｺ・ｽ・ｽ・ｽ・ｹ隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ鬮ｯ蜈ｷ・ｽ・ｻ・ｽ・ｽ・ｽ・ｷ鬮ｫ・ｴ・ｽ・ｽ・ｽ・ｽ・ｽ・ｰ) ========== */
 .deck-builder {
   display: grid;
-  grid-template-columns: 360px 1fr 300px;
+  grid-template-columns: 290px 1fr 300px;
   grid-template-rows: 100%;
   gap: 12px;
   padding: 12px;
@@ -1786,9 +1786,9 @@ input[type="range"]::-webkit-slider-thumb {
 .preview-flavor {
   font-style: italic;
   color: #a09880;
-  font-size: 0.9rem;
+  font-size: 1.05rem;
   margin-top: 0.8rem;
-  line-height: 1.5;
+  line-height: 1.6;
   white-space: pre-wrap;
 }
 
