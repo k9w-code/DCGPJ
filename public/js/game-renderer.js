@@ -97,25 +97,25 @@ window.getCardImagePath = function(card) {
   else if (upperId.startsWith('GE') || upperId.startsWith('G')) folder = 'green';
   else if (upperId.startsWith('WE') || upperId.startsWith('W')) folder = 'white';
   else if (upperId.startsWith('N')) folder = 'rainbow';
-  else if (upperId.startsWith('T')) folder = 'token'; // \u30c8\u30fc\u30af\u30f3\u7528
+  else if (upperId.startsWith('T')) folder = 'token'; // トークン用
   
   return isShield
     ? `/assets/images/shields/${cleanId.replace('SH', 'S')}.webp?v=2`
     : `/assets/images/cards/${folder}/${cleanId}.webp?v=2`;
 };
 
-// \u76e4\u9762\u63cf\u753b
+// 盤面描画
 function renderBoard(state, selectedCard, selectedAttacker, onSlotClick) {
-  renderOpponentBoard(state, selectedAttacker, onSlotClick);
+  renderOpponentBoard(state, selectedCard, selectedAttacker, onSlotClick);
   renderPlayerBoard(state, selectedCard, selectedAttacker, onSlotClick);
 }
 
-function renderOpponentBoard(state, selectedAttacker, onSlotClick) {
+function renderOpponentBoard(state, selectedCard, selectedAttacker, onSlotClick) {
   const container = document.getElementById('opponent-board');
   if (!container) return;
   container.innerHTML = '';
 
-  const rows = ['back', 'front']; // \u76f8\u624b\u306f\u5965\u304c\u5f8c\u5217\u3001\u624b\u524d\u304c\u524d\u5217
+  const rows = ['back', 'front']; // 相手は奥が後列、手前が前列
 
   rows.forEach(row => {
     const rowWrapper = document.createElement('div');
@@ -1214,8 +1214,10 @@ window.updateUI = function() {
       const crystal = document.getElementById('result-crystal');
       const bgLayer = document.getElementById('result-bg-layer');
       
-      resultOverlay.style.display = 'flex';
-      resultOverlay.className = 'overlay result-overlay ' + (isWinner ? 'victory' : 'defeat');
+      if (resultOverlay) {
+        resultOverlay.style.display = 'flex';
+        resultOverlay.className = 'overlay result-overlay ' + (isWinner ? 'victory' : 'defeat');
+      }
 
       if (bgLayer) bgLayer.className = 'result-bg-layer ' + (isWinner ? 'victory' : 'defeat');
 
@@ -1295,7 +1297,7 @@ window.updateUI = function() {
         window.resultBgmPlayed = true;
       }
     } else {
-      resultOverlay.style.display = 'none';
+      if (resultOverlay) resultOverlay.style.display = 'none';
       window.resultBgmPlayed = false;
       window.gameOverVfxStarted = false;
     }
