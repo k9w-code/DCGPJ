@@ -1388,7 +1388,7 @@ body, .card-name, .log-entry, .mulligan-title, .cd-name, .cd-flavor-text, .cd-ef
   top: 0; left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 999999;
+  z-index: 49000; /* ヘルプオーバーレイ(50000)の一つ下に設定 */
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   pointer-events: none;
@@ -3122,7 +3122,7 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
 
 #hand-card-tooltip {
   position: fixed;
-  z-index: 99000;
+  z-index: 19000; /* シールドブレイクオーバーレイ(20000)の一つ下に設定 */
   pointer-events: none;
   width: 280px;
   opacity: 0;

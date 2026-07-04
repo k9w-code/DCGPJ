@@ -472,6 +472,8 @@ function detectAndPlayStatChanges(oldState, newState) {
 let turnTimerInterval = null;
 let turnTimeRemaining = 60;
 
+let lastTimerTurnKey = null; // タイマーリセット防止用（同一ターンキー）
+
 function manageTurnTimer(state) {
   // タイマーと警告演出の初期クリア
   clearInterval(turnTimerInterval);
@@ -504,7 +506,13 @@ function manageTurnTimer(state) {
   }
   
   if (isMyTurn) {
-    turnTimeRemaining = 90; // 制限時間を90秒（1分30秒）へ拡張
+    // 同一ターン・同一プレイヤーの場合はタイマーをリセットしない
+    const thisTurnKey = `${state.turnNumber}_${state.me.id}`;
+    const isSameTurn = (thisTurnKey === lastTimerTurnKey);
+    if (!isSameTurn) {
+      lastTimerTurnKey = thisTurnKey;
+      turnTimeRemaining = 90; // 新しいターン開始時のみ90秒にリセット
+    }
     
     if (timerContainer) {
       timerContainer.style.display = 'flex'; // 自分ターン時は円形タイマーを表示
@@ -563,8 +571,7 @@ function manageTurnTimer(state) {
 socket.on('game_state', (state) => {
   const signal = document.getElementById('debug-signal');
   if (signal) {
-    signal.textContent = 'STATUS: STATE RECEIVED';
-    signal.style.background = 'rgba(0,255,0,0.8)';
+    signal.style.display = 'none'; // ゲーム状態受信後は非表示
   }
   console.log('   [CLIENT] game_state received:', state ? `Phase: ${state.phase}, Turn: ${state.turnNumber}` : 'NULL');
   if (!state) return;
@@ -1274,7 +1281,6 @@ function initInteractions() {
     pendingShieldAttack = null;
     isDraggingAttack = false;
     dragSource = null;
-    if (typeof window.updateUI === 'function') window.updateUI();
     if (typeof window.updateUI === 'function') window.updateUI();
     document.getElementById('shield-confirm-overlay').style.display = 'none';
   });

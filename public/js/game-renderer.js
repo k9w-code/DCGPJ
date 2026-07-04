@@ -698,8 +698,6 @@ function renderPlayerInfo(state, selectedAttacker) {
     });
   }
 
-  renderShields('my-shields', state.me.shields, true);
-
   if (state.opponent) {
     safeSetText('opp-name', state.opponent.name);
     const oppAvatarEl = document.getElementById('opp-avatar');
