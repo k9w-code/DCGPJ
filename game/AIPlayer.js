@@ -102,7 +102,7 @@ class AIPlayer {
       for (const row of ROWS) {
         for (let i = 0; i < NUM_LANES; i++) {
           const unit = opponent.board[row][i];
-          if (unit) {
+          if (unit && !unit.stealthActive && !hasKeyword(unit, 'spellshield')) {
             targets.push({ row, lane: i, unit });
           }
         }
@@ -152,7 +152,7 @@ class AIPlayer {
     }
 
     // 3. 味方ユニットへのバフや回復など
-    const isSelfTarget = targetId.includes('self') && ['buff', 'heal', 'shield_gain'].includes(effect);
+    const isSelfTarget = targetId.includes('self') && ['buff', 'heal', 'shield_gain', 'destroy'].includes(effect);
     if (isSelfTarget) {
       const targets = [];
       for (const row of ROWS) {

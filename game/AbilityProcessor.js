@@ -856,12 +856,38 @@ function processAbility(trigger, unit, gameState, currentPlayer, opponentPlayer,
       }
     }
     if (needsTarget) {
-      // targetId\u304c\u672a\u8a2d\u5b9a\u306e\u5834\u5408\u3001ability.target \u304b\u3089\u81ea\u52d5\u8a2d\u5b9a
       if (!targetId) {
         targetId = abilityTargetId;
       }
-      console.log(`\ud83c\udfaf [AbilityProcessor] Target requested for ${effect}, targetId: ${targetId}`);
-      return { events, needsTarget, targetId, effect, originalAbility: ability, abilityIndex: i };
+      
+      // 実際に選択可能な対象が1つ以上あるかチェック
+      const targetPlayer = targetId.includes('enemy') ? opponentPlayer : currentPlayer;
+      let hasTarget = false;
+      
+      const { forEachUnit, ROWS, NUM_LANES } = require('./GameState');
+      const { hasKeyword } = require('./KeywordEffects');
+
+      if (targetId.includes('empty')) {
+        for (const r of ROWS) {
+          for (let j = 0; j < NUM_LANES; j++) {
+            if (!targetPlayer.board[r][j]) hasTarget = true;
+          }
+        }
+      } else {
+        forEachUnit(targetPlayer.board, u => {
+          if (u && !u.stealthActive && !hasKeyword(u, 'spellshield')) {
+            hasTarget = true;
+          }
+        });
+      }
+      
+      if (hasTarget) {
+        console.log(`🎯 [AbilityProcessor] Target requested for ${effect}, targetId: ${targetId}`);
+        return { events, needsTarget, targetId, effect, originalAbility: ability, abilityIndex: i };
+      } else {
+        logs.push(`⚠️ 有効な対象となるユニットが存在しないため、効果は不発に終わりました`);
+        needsTarget = false;
+      }
     }
   }
   return { events, needsTarget: false, targetId: null };
@@ -1312,7 +1338,33 @@ function processSpellEffect(card, gameState, currentPlayer, opponentPlayer, targ
     }
 
     if (needsTarget) {
-      return { events, needsTarget, targetId, effect, abilityIndex: i };
+      // 実際に選択可能な対象が1つ以上あるかチェック
+      const targetPlayer = abilityTargetId.includes('enemy') ? opponentPlayer : currentPlayer;
+      let hasTarget = false;
+      
+      const { forEachUnit, ROWS, NUM_LANES } = require('./GameState');
+      const { hasKeyword } = require('./KeywordEffects');
+
+      if (abilityTargetId.includes('empty')) {
+        for (const r of ROWS) {
+          for (let j = 0; j < NUM_LANES; j++) {
+            if (!targetPlayer.board[r][j]) hasTarget = true;
+          }
+        }
+      } else {
+        forEachUnit(targetPlayer.board, u => {
+          if (u && !u.stealthActive && !hasKeyword(u, 'spellshield')) {
+            hasTarget = true;
+          }
+        });
+      }
+      
+      if (hasTarget) {
+        return { events, needsTarget, targetId: abilityTargetId, effect, abilityIndex: i };
+      } else {
+        logs.push(`⚠️ 有効な対象となるユニットが存在しないため、効果は不発に終わりました`);
+        needsTarget = false;
+      }
     }
   }
 
