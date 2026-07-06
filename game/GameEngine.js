@@ -518,6 +518,13 @@ class GameEngine {
       gs.phase = 'main';
       gs.pendingAbilitySource = null;
       this.cleanupDeadUnits();
+
+      // 攻撃時効果解決後の戦闘処理再開
+      if (sourceInfo.trigger === 'on_attack' && sourceInfo.attackContext) {
+        const ctx = sourceInfo.attackContext;
+        return this.executeCombat(unit, ctx.attackerRow, ctx.attackerLane, ctx.targetInfo, sourceInfo.ownerId);
+      }
+
       return this.getGameStateForClients();
     }
 
@@ -631,7 +638,25 @@ class GameEngine {
     }
 
     const abilityResult = processAbility('on_attack', attacker, gs, player, opponent, this.cardMap, gs.logs);
-    if (this.handleAbilityResult(abilityResult, attacker, 'on_attack', player, opponent)) return this.getGameStateForClients();
+    if (this.handleAbilityResult(abilityResult, attacker, 'on_attack', player, opponent)) {
+      // 攻撃のコンテキストを退避
+      if (gs.pendingAbilitySource) {
+        gs.pendingAbilitySource.attackContext = {
+          attackerRow,
+          attackerLane,
+          targetInfo
+        };
+      }
+      return this.getGameStateForClients();
+    }
+
+    return this.executeCombat(attacker, attackerRow, attackerLane, targetInfo, playerId);
+  }
+
+  executeCombat(attacker, attackerRow, attackerLane, targetInfo, playerId) {
+    const gs = this.gameState;
+    const player = gs.players[playerId];
+    const opponent = getOpponentPlayer(gs);
 
     // 攻撃時効果による死亡判定（ここで死亡したユニットは戦闘を行えない）
     // 先にクリーンアップを実行して死亡したユニットの情報を反映
@@ -639,17 +664,13 @@ class GameEngine {
 
     // クリーンアップにより攻撃者または防御者が盤面から消滅したかチェック
     const isAttackerAlive = getBoardUnit(player.board, attackerRow, attackerLane) !== null;
-    let isDefenderDeadByAbility = false;
 
     if (targetInfo.type === 'unit') {
       const defRow = targetInfo.row || 'front';
       const defLane = targetInfo.lane;
       const defender = getBoardUnit(opponent.board, defRow, defLane);
 
-      if (!defender) {
-         // 防御側が攻撃時効果で死亡した場合
-         isDefenderDeadByAbility = true;
-      } else {
+      if (defender) {
          if (defender.stealthActive) return { error: 'このユニットは潜伏中で攻撃対象にできません' };
 
          if (isAttackerAlive) {
@@ -1113,20 +1134,6 @@ class GameEngine {
     return events;
   }
 
-        player.graveyard.push({ id: (card.cardId || card.id), name: card.name });
-        discardedNames.push(card.name);
-      }
-    }
-    
-    if (discardedNames.length > 0) {
-      this.log(`\ud83d\uddd1\ufe0f ${player.name}: ${discardedNames.length}\u679a\u306e\u30ab\u30fc\u30c9\u3092\u6368\u3066\u305f`);
-    }
-    
-    // \u898f\u5b9a\u679a\u6570\u4ee5\u4e0b\u306a\u3089\u30e1\u30a4\u30f3\u30d5\u30a7\u30fc\u30ba\u3078
-    if (player.hand.length <= MAX_HAND_SIZE) {
-      this.gameState.phase = 'main';
-    }
-  }
 
   getSanitizedLogs(logs, viewerId) {
     return logs.map(msg => {
