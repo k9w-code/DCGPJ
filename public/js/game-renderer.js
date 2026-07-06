@@ -474,9 +474,29 @@ window.showCardDetail = function(card) {
     }
   }
 
+  // バニラ判定（能力もテキストもキーワードもシールドスキルもない場合）
+  const isVanilla = (!card.text || card.text.trim() === '') &&
+                    (!card.abilities || card.abilities.length === 0) &&
+                    (!card.keywords || card.keywords.length === 0) &&
+                    (!card.skill);
+
+  const flavorEl = document.getElementById('cd-flavor');
+  if (flavorEl) {
+    if (isVanilla) {
+      flavorEl.classList.add('is-vanilla');
+    } else {
+      flavorEl.classList.remove('is-vanilla');
+    }
+  }
+
   // テキスト・アビリティ表示
   const textEl = document.getElementById('cd-text');
   if (textEl) {
+    if (isVanilla) {
+      textEl.style.display = 'none';
+    } else {
+      textEl.style.display = 'block';
+    }
     let mainText = '';
     if (card.text) {
       mainText = `<div class="cd-abilities-list"><div class="ability-item" style="border:none; background:transparent; padding:0;">${(card.text || '').replace(/\\n/g, '<br>')}</div></div>`;
@@ -640,7 +660,15 @@ function renderPlayerInfo(state, selectedAttacker) {
     mySpOrbs.innerHTML = '';
     const spValue = state.me.sp || 0;
     const orb = document.createElement('div');
-    orb.className = 'sp-orb-display victory-glow';
+    
+    // SP変更アニメーション判定
+    let flashClass = '';
+    if (window.lastMySp !== undefined && window.lastMySp !== spValue) {
+      flashClass = ' sp-change-flash';
+    }
+    window.lastMySp = spValue;
+
+    orb.className = `sp-orb-display victory-glow${flashClass}`;
     orb.style.cssText = `
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       position: relative; z-index: 100;
@@ -650,6 +678,12 @@ function renderPlayerInfo(state, selectedAttacker) {
       <div class="sp-value">${spValue}</div>
     `;
     mySpOrbs.appendChild(orb);
+
+    if (flashClass) {
+      setTimeout(() => {
+        orb.classList.remove('sp-change-flash');
+      }, 650);
+    }
   }
 
   safeSetText('my-deck', state.me.deckCount);
@@ -717,7 +751,15 @@ function renderPlayerInfo(state, selectedAttacker) {
       oppSpOrbs.innerHTML = '';
       const spValue = state.opponent.sp || 0;
       const orb = document.createElement('div');
-      orb.className = 'sp-orb-display';
+      
+      // SP変更アニメーション判定
+      let flashClass = '';
+      if (window.lastOppSp !== undefined && window.lastOppSp !== spValue) {
+        flashClass = ' sp-change-flash';
+      }
+      window.lastOppSp = spValue;
+
+      orb.className = `sp-orb-display${flashClass}`;
       orb.style.cssText = `
         display: flex; flex-direction: column; align-items: center; justify-content: center;
         position: relative; z-index: 100;
@@ -727,6 +769,12 @@ function renderPlayerInfo(state, selectedAttacker) {
         <div class="sp-value sp-value--opp">${spValue}</div>
       `;
       oppSpOrbs.appendChild(orb);
+
+      if (flashClass) {
+        setTimeout(() => {
+          orb.classList.remove('sp-change-flash');
+        }, 650);
+      }
     }
     
     safeSetText('opp-hand', state.opponent.handCount);
