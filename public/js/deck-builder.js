@@ -281,9 +281,40 @@ function initUI() {
         const data = JSON.parse(jsonStr);
         
         if (data.d && typeof data.d === 'object' && Array.isArray(data.s)) {
+          // 有効なカードのみにクリーンアップ
+          const cleanedDeck = {};
+          for (const id in data.d) {
+            const card = allCards.find(c => c.id === id);
+            if (card && card.maxCopies > 0) {
+              const maxCopies = typeof card.maxCopies !== 'undefined' ? card.maxCopies : 3;
+              cleanedDeck[id] = Math.min(data.d[id], maxCopies);
+            }
+          }
+          
+          // 有効なシールドのみにクリーンアップ
+          const cleanedShields = data.s.filter(id => allShields.some(s => s.id === id)).slice(0, 3);
+
+          // 色数（属性数）チェック: 中立を除いて最大2色まで
+          const colorsUsed = new Set();
+          for (const id in cleanedDeck) {
+            const card = allCards.find(c => c.id === id);
+            if (card) {
+              const cardColors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
+              cardColors.forEach(col => {
+                const c = col.toLowerCase();
+                if (c !== 'neutral') colorsUsed.add(c);
+              });
+            }
+          }
+
+          if (colorsUsed.size > 2) {
+            alert(`⚠️ インポートに失敗しました。デッキに含まれる神族の属性（色）は、中立を除き最大2色までである必要があります。（検出された属性: ${Array.from(colorsUsed).join(', ')}）`);
+            return;
+          }
+
           // デッキを上書き
-          deck = data.d;
-          selectedShields = data.s.slice(0, 3); // 最大3枚
+          deck = cleanedDeck;
+          selectedShields = cleanedShields;
           
           window.deck = deck;
           window.selectedShields = selectedShields;

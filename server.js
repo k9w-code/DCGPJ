@@ -60,6 +60,8 @@ app.post('/api/reload', async (req, res) => {
 const rooms = new Map();
 // sessionId → { roomId, playerIndex } のマッピング（ページ遷移を跨ぐ）
 const sessions = new Map();
+// 切断タイマー管理 (playerId -> timeout)
+const disconnectTimers = new Map();
 
 // デッキ自動構築（テスト用）
 function buildRandomDeck(cardPool, color1, color2) {
@@ -168,6 +170,13 @@ io.on('connection', (socket) => {
         // プレイヤーのsocketを更新
         const player = room.players[session.playerIndex];
         if (player) {
+          // タイマー解除
+          if (disconnectTimers.has(player.id)) {
+            clearTimeout(disconnectTimers.get(player.id));
+            disconnectTimers.delete(player.id);
+            console.log(`✅ 切断タイマー解除 (再接続成功): ${player.name}`);
+          }
+          
           player.socket = socket;
           socket.join(currentRoom);
           console.log(`🔄 セッション復帰: ${player.name} (${sessionId.slice(0, 8)}...)`);
@@ -232,6 +241,12 @@ io.on('connection', (socket) => {
         // プレイヤーのソケットを最新のものに更新
         const player = room.players[session.playerIndex];
         if (player) {
+          // タイマー解除
+          if (disconnectTimers.has(player.id)) {
+            clearTimeout(disconnectTimers.get(player.id));
+            disconnectTimers.delete(player.id);
+            console.log(`✅ 切断タイマー解除 (再接続成功): ${player.name}`);
+          }
           player.socket = socket;
           console.log(`🔄 セッション復旧: ${player.name} (Room: ${currentRoom})`);
         }
@@ -341,10 +356,65 @@ io.on('connection', (socket) => {
     const player = room.players[session.playerIndex];
     if (!player) return;
 
-    player.deck = data.deckCardIds;
-    player.shields = data.shieldIds;
+    // --- 厳密なサーバー側デッキバリデーション ---
+    const deckCardIds = data.deckCardIds || [];
+    const shieldIds = data.shieldIds || [];
 
-    console.log(`📋 デッキ提出: ${player.name} (カード${player.deck.length}枚, シールド${player.shields.length}枚)`);
+    if (deckCardIds.length !== 40) {
+      socket.emit('error_msg', { message: `デッキのカード枚数は40枚である必要があります（現在: ${deckCardIds.length}枚）` });
+      return;
+    }
+    if (shieldIds.length !== 3) {
+      socket.emit('error_msg', { message: `シールドの枚数は3枚である必要があります（現在: ${shieldIds.length}枚）` });
+      return;
+    }
+
+    // カードの存在チェックと枚数制限（maxCopies）の検証
+    const cardCounts = {};
+    const colorsUsed = new Set();
+    
+    for (const cardId of deckCardIds) {
+      const card = gameData.cards.find(c => c.id === cardId);
+      if (!card) {
+        socket.emit('error_msg', { message: `無効なカードが含まれています: ${cardId}` });
+        return;
+      }
+      
+      // 枚数カウント
+      cardCounts[cardId] = (cardCounts[cardId] || 0) + 1;
+      const maxCopies = typeof card.maxCopies !== 'undefined' ? card.maxCopies : 3;
+      if (cardCounts[cardId] > maxCopies) {
+        socket.emit('error_msg', { message: `カード「${card.name}」の枚数制限(${maxCopies}枚)を超えています` });
+        return;
+      }
+
+      // 属性色の収集
+      const cardColors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
+      cardColors.forEach(col => {
+        const c = col.toLowerCase();
+        if (c !== 'neutral') colorsUsed.add(c);
+      });
+    }
+
+    // シールドの存在チェック
+    for (const shieldId of shieldIds) {
+      const shield = gameData.shields.find(s => s.id === shieldId);
+      if (!shield) {
+        socket.emit('error_msg', { message: `無効なシールドが含まれています: ${shieldId}` });
+        return;
+      }
+    }
+
+    // 2色制限チェック
+    if (colorsUsed.size > 2) {
+      socket.emit('error_msg', { message: `デッキ内の神族属性（色）は中立を除いて最大2色までです（現在: ${Array.from(colorsUsed).join(', ')}）` });
+      return;
+    }
+
+    player.deck = deckCardIds;
+    player.shields = shieldIds;
+
+    console.log(`📋 デッキ提出(バリデーション済): ${player.name} (カード${player.deck.length}枚, シールド${player.shields.length}枚, 属性色: ${Array.from(colorsUsed).join(', ')})`);
 
     // AI用デッキ自動構築
     for (const p of room.players) {
@@ -501,7 +571,39 @@ io.on('connection', (socket) => {
   // 切断
   socket.on('disconnect', () => {
     console.log(`🔌 切断: ${socket.id}`);
-    // ルームは残しておく（再接続を許可）
+    
+    if (sessionId && currentRoom) {
+      const session = sessions.get(sessionId);
+      if (session) {
+        const room = rooms.get(currentRoom);
+        if (room) {
+          const player = room.players[session.playerIndex];
+          if (player) {
+            console.log(`⏳ プレイヤー切断タイマー開始: ${player.name} (2分後にルーム削除)`);
+            
+            // 既存のタイマーがあればクリア
+            if (disconnectTimers.has(player.id)) {
+              clearTimeout(disconnectTimers.get(player.id));
+            }
+            
+            const timer = setTimeout(() => {
+              console.log(`🚨 再接続期限切れ: ${player.name} のルーム ${currentRoom} をクリーンアップします`);
+              rooms.delete(currentRoom);
+              
+              // 該当ルームの全セッションを削除
+              for (const [sId, sess] of sessions.entries()) {
+                if (sess.roomId === currentRoom) {
+                  sessions.delete(sId);
+                }
+              }
+              disconnectTimers.delete(player.id);
+            }, 120000); // 2分
+            
+            disconnectTimers.set(player.id, timer);
+          }
+        }
+      }
+    }
   });
 });
 
