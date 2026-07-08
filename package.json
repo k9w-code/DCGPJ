@@ -4,7 +4,7 @@
   "description": "DCG テストプレイ環境",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node --max-old-space-size=350 server.js",
     "dev": "node server.js"
   },
   "dependencies": {
