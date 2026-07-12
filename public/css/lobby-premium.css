@@ -1,5 +1,36 @@
 /* lobby-premium.css - プレミアムロビーUI/UX拡張 */
 
+/* 0. ロビーのスクロール許可 & プレミアムスクロールバー */
+html, body {
+  height: auto !important;
+  min-height: 100dvh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* プレミアムカスタムスクロールバー */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* トラック（背景） */
+::-webkit-scrollbar-track {
+  background: rgba(10, 16, 32, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+/* つまみ */
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #b8860b 0%, #8b5cf6 100%);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #d4a017 0%, #a78bfa 100%);
+}
+
 /* 1. 背景の極上化 & ネオンオーブアニメーション */
 .premium-bg-container {
   position: fixed;
