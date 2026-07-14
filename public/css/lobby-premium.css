@@ -490,3 +490,60 @@ input#player-name:focus {
   100% { transform: translateY(-6px) rotate(3deg); }
 }
 
+/* ==========================================================================
+   モバイル向けタッチターゲット最適化 (v144_mobile_opt)
+   ========================================================================== */
+@media (max-width: 1250px), (max-height: 800px) {
+  /* デッキビルダー各種ボタンの押しやすさ向上 */
+  .db-action-btn, 
+  .db-icon-btn, 
+  .tooltip-btn {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 2px !important;
+  }
+  
+  .deck-action-buttons {
+    gap: 12px !important;
+  }
+
+  .deck-slots-container {
+    gap: 8px !important;
+  }
+
+  .deck-slots .btn-icon {
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+
+  /* フィルター (ピルボタン) の高さ・押しやすさ向上 */
+  .pill-group {
+    gap: 8px !important;
+  }
+
+  .pill {
+    min-height: 44px !important;
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .tribe-filter {
+    min-width: 46px !important;
+    min-height: 46px !important;
+  }
+
+  .control-group .btn {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    font-size: 16px !important;
+  }
+}
+
+

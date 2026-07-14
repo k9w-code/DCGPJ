@@ -38,6 +38,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -2821,8 +2822,8 @@ body.targeting-mode {
 }
 
 /* 邵ｦ逕ｻ髱｢ (Portrait) 縺ｧ逕ｻ髱｢蟷・′迢ｭ縺・�ｴ蜷医・繧ｲ繝ｼ繝�譛ｬ菴薙ｒ髫�縺励※隴ｦ蜻翫ｒ蜃ｺ縺・*/
-@media screen and (max-width: 900px) and (orientation: portrait) {
-  #game-wrapper {
+@media screen and (orientation: portrait) {
+  #game-wrapper, .lobby-container, #game-container {
     display: none !important;
   }
   #rotate-prompt {

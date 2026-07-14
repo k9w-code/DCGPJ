@@ -425,11 +425,11 @@
       const scaleX = windowWidth / 1920;
       const scaleY = windowHeight / 1080;
       const scale = Math.min(scaleX, scaleY);
-      container.style.transform = `scale(${scale})`;
+      container.style.transform = `translate(-50%, -50%) scale(${scale})`;
       container.style.position = 'absolute';
-      container.style.left = `${(windowWidth - 1920 * scale) / 2}px`;
-      container.style.top = `${(windowHeight - 1080 * scale) / 2}px`;
-      container.style.transformOrigin = '0 0';
+      container.style.left = '50%';
+      container.style.top = '50%';
+      container.style.transformOrigin = 'center center';
     }
     window.addEventListener('resize', resizeGame);
     window.addEventListener('load', resizeGame);

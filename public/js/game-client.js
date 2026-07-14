@@ -1078,7 +1078,15 @@ function onPointerUp(e) {
     const dist = dragStartPos ? Math.hypot(e.clientX - dragStartPos.x, e.clientY - dragStartPos.y) : 0;
     
     if (dist < DRAG_THRESHOLD) {
-      console.log('    [CLIENT] Drag cancelled: Under threshold', dist);
+      console.log('    [CLIENT] Drag cancelled: Under threshold (click detected)', dist);
+      const clickedIndex = dragSource.index;
+      if (window.selectedCardIndex === clickedIndex) {
+        window.selectedCardIndex = null;
+        console.log('    [CLIENT] Card selection cleared');
+      } else {
+        window.selectedCardIndex = clickedIndex;
+        console.log('    [CLIENT] Card selected:', clickedIndex);
+      }
       cleanupDrag();
       return;
     } else {
@@ -1266,6 +1274,13 @@ function initInteractions() {
   document.addEventListener('pointermove', onPointerMove);
   document.addEventListener('pointerup', onPointerUp);
   document.addEventListener('pointercancel', onPointerUp);
+  
+  // ドラッグ操作中の画面スクロール・バウンス防止（iOS/Android対応）
+  document.addEventListener('touchmove', function(e) {
+    if (isDragging || isDraggingAttack) {
+      e.preventDefault();
+    }
+  }, { passive: false });
   
   const endBtn = document.getElementById('btn-end-turn');
   if (endBtn) {
