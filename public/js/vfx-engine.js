@@ -339,6 +339,15 @@ window.VFX = (function() {
     if (window.audioManager) {
       window.audioManager.playSE(event.destroyed ? 'shield_break' : 'impact');
     }
+    
+    // バイブレーション（シールド破壊は強ダブル、ヒットは単発）
+    if (navigator.vibrate) {
+      if (event.destroyed) {
+        navigator.vibrate([80, 50, 80]);
+      } else {
+        navigator.vibrate(40);
+      }
+    }
   }
 
   // ========== 共鳴（Resonance）演出 ==========

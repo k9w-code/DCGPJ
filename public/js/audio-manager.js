@@ -497,9 +497,57 @@ class SoundManager {
     noise.start(startTime);
     noise.stop(startTime + attackTime + decayTime + 0.1);
   }
+
+  unlock() {
+    if (this.audioCtx) {
+      const resumeContext = () => {
+        if (this.audioCtx.state === 'suspended') {
+          this.audioCtx.resume().then(() => {
+            console.log('✅ [Audio] AudioContext resumed successfully');
+            this._playDummyBuffer();
+          }).catch(err => {
+            console.error('❌ [Audio] Failed to resume AudioContext:', err);
+          });
+        } else {
+          this._playDummyBuffer();
+        }
+      };
+      resumeContext();
+    }
+  }
+
+  _playDummyBuffer() {
+    try {
+      const buffer = this.audioCtx.createBuffer(1, 1, 22050);
+      const source = this.audioCtx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(this.audioCtx.destination);
+      source.start(0);
+      source.onended = () => {
+        source.disconnect();
+        console.log('✅ [Audio] Dummy buffer played and unlocked successfully');
+      };
+    } catch (e) {
+      console.warn('⚠️ [Audio] Dummy buffer play failed:', e.message);
+    }
+  }
 }
 
 window.audioManager = new SoundManager();
+
+// iOS/Android向けオーディオアンロックリスナー
+const unlockAudio = () => {
+  if (window.audioManager) {
+    window.audioManager.unlock();
+  }
+  document.removeEventListener('pointerdown', unlockAudio);
+  document.removeEventListener('click', unlockAudio);
+  document.removeEventListener('keydown', unlockAudio);
+};
+document.addEventListener('pointerdown', unlockAudio);
+document.addEventListener('click', unlockAudio);
+document.addEventListener('keydown', unlockAudio);
+
 document.addEventListener('click', (e) => {
   // \u3059\u3067\u306b\u500b\u5225\u306e\u30cf\u30f3\u30c9\u30e9\u3067SE\u304c\u9cf4\u3089\u3055\u308c\u3066\u3044\u308b\u5834\u5408\u3084\u3001\u7279\u5b9a\u306e\u8981\u7d20\u306f\u7121\u8996\u3059\u308b
   const target = e.target.closest('button, .crystal-btn, .hand-card, .deck-item, .selectable');

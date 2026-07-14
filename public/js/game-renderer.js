@@ -1255,6 +1255,19 @@ window.updateUI = function() {
     const resultOverlay = document.getElementById('result-overlay');
     if (state.phase === 'game_over') {
       const isWinner = state.winner === state.me.id;
+      
+      // ゲーム終了時バイブレーション（初回1回のみ）
+      if (!window.hasVibratedGameOver) {
+        window.hasVibratedGameOver = true;
+        if (navigator.vibrate) {
+          if (isWinner) {
+            navigator.vibrate([100, 100, 100, 100, 300]);
+          } else {
+            navigator.vibrate(400);
+          }
+        }
+      }
+
       const header  = document.getElementById('result-header');
       const subtitle = document.getElementById('result-subtitle');
       const crystal = document.getElementById('result-crystal');
