@@ -24,29 +24,62 @@ socket.on('session_invalid', () => {
   window.location.href = '/';
 });
 
+// BGM再生
+if (window.audioManager) {
+  window.audioManager.playBGM('deck');
+}
+
+let allCards = [];
+let allShields = [];
+let deck = {};
+let selectedShields = [];
+
+// グローバル共有用
+window.allCards = allCards;
+window.allShields = allShields;
+window.deck = deck;
+window.selectedShields = selectedShields;
+
+let activeTab = 'cards';
+let activeColors = new Set(['red', 'blue', 'green', 'white', 'black']);
+let activeType = 'all';
+let activeCost = 'all';
+let activeSearchText = '';
+let activeKeyword = 'all';
+let currentPreviewItem = null;
+let currentSaveSlot = 0;
+
+const SAVE_KEY_PREFIX = 'dcg_deck_slot_';
+
 // データ取得と初期化
 async function loadData() {
-  const [cardsRes, shieldsRes, keywordsRes] = await Promise.all([
-    fetch('/api/cards'),
-    fetch('/api/shields'),
-    fetch('/api/keywords')
-  ]);
-  allCards = await cardsRes.json();
-  allShields = await shieldsRes.json();
-  window.keywordMap = await keywordsRes.json();
-  
-  // グローバル変数を更新
-  window.allCards = allCards;
-  window.allShields = allShields;
-  
-  console.log('Data loaded:', { cards: allCards.length, shields: allShields.length });
-  updateKeywordDropdown();
-  loadDeckFromSlot(currentSaveSlot);
-  initUI();
-  renderGrid();
-  renderDeckList();
-  renderShieldSlotsList();
-  updateSubmitButton();
+  try {
+    console.log('🚀 Starting loadData...');
+    const [cardsRes, shieldsRes, keywordsRes] = await Promise.all([
+      fetch('/api/cards'),
+      fetch('/api/shields'),
+      fetch('/api/keywords')
+    ]);
+    allCards = await cardsRes.json();
+    allShields = await shieldsRes.json();
+    window.keywordMap = await keywordsRes.json();
+    
+    // グローバル変数を更新
+    window.allCards = allCards;
+    window.allShields = allShields;
+    
+    console.log('Data loaded:', { cards: allCards.length, shields: allShields.length });
+    updateKeywordDropdown();
+    loadDeckFromSlot(currentSaveSlot);
+    initUI();
+    renderGrid();
+    renderDeckList();
+    renderShieldSlotsList();
+    updateSubmitButton();
+  } catch (err) {
+    console.error('❌ [loadData ERROR]:', err);
+    alert('❌ [loadData ERROR]: ' + err.message + '\n' + err.stack);
+  }
 }
 
 function updateKeywordDropdown() {
