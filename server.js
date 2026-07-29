@@ -347,14 +347,41 @@ io.on('connection', (socket) => {
 
   // デッキ提出
   socket.on('submit_deck', (data) => {
-    if (!currentRoom) return;
-    const room = rooms.get(currentRoom);
-    if (!room) return;
+    let targetSessionId = sessionId || (data && data.sessionId);
+    let targetRoomId = currentRoom;
 
-    const session = sessions.get(sessionId);
-    if (!session) return;
+    if (!targetRoomId && targetSessionId) {
+      const sess = sessions.get(targetSessionId);
+      if (sess) {
+        targetRoomId = sess.roomId;
+        sessionId = targetSessionId;
+        currentRoom = targetRoomId;
+        socket.join(targetRoomId);
+      }
+    }
+
+    if (!targetRoomId) {
+      socket.emit('error_msg', { message: 'ルームが特定できません。ロビーに戻り直してください。' });
+      return;
+    }
+
+    const room = rooms.get(targetRoomId);
+    if (!room) {
+      socket.emit('error_msg', { message: '該当の対戦ルームが存在しないか終了しました。ロビーに戻り直してください。' });
+      return;
+    }
+
+    const session = sessions.get(targetSessionId);
+    if (!session) {
+      socket.emit('error_msg', { message: 'セッションが無効です。ロビーに戻り直してください。' });
+      return;
+    }
+
     const player = room.players[session.playerIndex];
-    if (!player) return;
+    if (!player) {
+      socket.emit('error_msg', { message: 'プレイヤー情報が見つかりません。' });
+      return;
+    }
 
     // --- 厳密なサーバー側デッキバリデーション ---
     const deckCardIds = data.deckCardIds || [];

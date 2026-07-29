@@ -3,49 +3,21 @@
 
 const socket = io();
 
-// セッション復旧の試行
-const persistentSessionId = localStorage.getItem('dcg_session_id');
-if (persistentSessionId) {
-  socket.emit('reconnect_session', { sessionId: persistentSessionId });
-}
+// セッション復旧の試行（sessionStorage優先）
+const sessionId = sessionStorage.getItem('sessionId') || localStorage.getItem('dcg_session_id');
 
-socket.on('session_reconnected', (data) => {
-  console.log('✅ セッションが復旧しました:', data);
-});
-
-const sessionId = sessionStorage.getItem('sessionId');
-
-// BGM再生
-if (window.audioManager) {
-  window.audioManager.playBGM('deck');
-}
-
-let allCards = [];
-let allShields = [];
-let deck = {};
-let selectedShields = [];
-
-// グローバル共有用
-window.allCards = allCards;
-window.allShields = allShields;
-window.deck = deck;
-window.selectedShields = selectedShields;
-
-let activeTab = 'cards';
-let activeColors = new Set(['red', 'blue', 'green', 'white', 'black']);
-let activeType = 'all';
-let activeCost = 'all';
-let activeSearchText = '';
-let activeKeyword = 'all';
-let currentPreviewItem = null;
-let currentSaveSlot = 0;
-
-const SAVE_KEY_PREFIX = 'dcg_deck_slot_';
-
-// セッション復帰
 if (sessionId) {
+  sessionStorage.setItem('sessionId', sessionId);
   socket.emit('restore_session', { sessionId });
 }
+
+socket.on('session_restored', (data) => {
+  console.log('✅ セッションが復帰しました:', data);
+});
+
+socket.on('session_reconnected', (data) => {
+  console.log('✅ セッションが再接続されました:', data);
+});
 
 socket.on('session_invalid', () => {
   alert('セッションが無効です。ロビーに戻ります。');
@@ -1087,7 +1059,8 @@ document.getElementById('btn-submit-deck').addEventListener('click', () => {
     for (let i = 0; i < count; i++) deckCardIds.push(id);
   }
 
-  socket.emit('submit_deck', { deckCardIds, shieldIds: selectedShields });
+  const currentSessionId = sessionStorage.getItem('sessionId') || localStorage.getItem('dcg_session_id');
+  socket.emit('submit_deck', { sessionId: currentSessionId, deckCardIds, shieldIds: selectedShields });
   document.getElementById('btn-submit-deck').disabled = true;
   document.getElementById('btn-submit-deck').textContent = 'ゲーム準備中...';
 });
@@ -1098,7 +1071,16 @@ socket.on('game_started', () => {
 });
 
 socket.on('waiting_opponent_deck', () => {
-  document.getElementById('btn-submit-deck').textContent = '対戦相手のデッキ構築を完了待機...';
+  document.getElementById('btn-submit-deck').textContent = '対戦相手のデッキ構築完了を待機中...';
+});
+
+socket.on('error_msg', (data) => {
+  alert(data.message || 'エラーが発生しました');
+  const btn = document.getElementById('btn-submit-deck');
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = 'START GAME';
+  }
 });
 
 loadData();
