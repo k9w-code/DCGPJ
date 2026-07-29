@@ -760,24 +760,32 @@ function showPreview(type, data) {
       }
     }
 
-    const flavorHtml = data.flavorText ? `<div class="preview-flavor" style="font-size:14px; font-style:italic; margin-top:12px; color:#cbd5e1; border-left:3px solid #fbbf24; padding-left:10px;">${data.flavorText}</div>` : '';
+    const flavorHtml = data.flavorText ? `<div class="preview-flavor" style="font-size:13px; font-style:italic; margin-top:8px; color:#cbd5e1; border-left:3px solid #fbbf24; padding-left:8px; line-height:1.4;">${data.flavorText}</div>` : '';
     const statsHtml = data.type === 'unit' 
-      ? `<div class="preview-stats cd-stats" style="margin: 10px 0; justify-content: flex-start; gap: 12px;"><span class="atk-box">${data.attack}</span><span class="hp-box">${data.hp}</span></div>` 
-      : `<div class="preview-stats" style="margin: 8px 0;"><span class="ps-spell" style="background:rgba(147, 51, 234, 0.2); border:1px solid #c084fc; color:#e9d5ff; padding:3px 10px; border-radius:6px; font-weight:bold; font-size:13px;">SPELL</span></div>`;
+      ? `<div class="preview-stats" style="margin: 6px 0; display: flex; gap: 12px; align-items: center;"><span class="ps-atk">${data.attack}</span><span class="ps-hp">${data.hp}</span></div>` 
+      : `<div class="preview-stats" style="margin: 4px 0;"><span class="ps-spell" style="background:rgba(147, 51, 234, 0.2); border:1px solid #c084fc; color:#e9d5ff; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:12px;">SPELL</span></div>`;
+
+    const rarityText = window.getRarityName ? window.getRarityName(data.rarity || 1) : (data.rarity === 4 ? 'Legendary' : (data.rarity === 3 ? 'Majestic' : (data.rarity === 2 ? 'Rare' : 'Common')));
 
     container.innerHTML = `
       <div class="preview-card-image" style="background-image: url('${bgImage}')"></div>
-      <div class="preview-info">
-        <div class="preview-title">
-          <span class="preview-cost" style="background-image: url('/assets/images/icon/divine/${(data.color || 'neutral').toLowerCase()}.png');">${data.cost || (data.durability || 0)}</span>
-          <h2>${data.name}</h2>
-          <div class="cd-rarity rarity-${data.rarity || 1}" style="font-size: 11px; padding: 2px 8px; margin-left: 10px;">
-            ${(window.getRarityName ? window.getRarityName(data.rarity || 1) : (data.rarity === 4 ? 'Legendary' : (data.rarity === 3 ? 'Majestic' : (data.rarity === 2 ? 'Rare' : 'Common'))))}
+      <div class="preview-info" style="padding-top: 4px;">
+        <!-- 1行目: メタ（コストとレアリティ） -->
+        <div class="preview-header-meta" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <span class="preview-cost" style="background-image: url('/assets/images/icon/divine/${(data.color || 'neutral').toLowerCase()}.png'); margin: 0;">${data.cost || (data.durability || 0)}</span>
+          <div class="cd-rarity rarity-${data.rarity || 1}" style="font-size: 11px; padding: 2px 8px; margin: 0;">
+            ${rarityText}
           </div>
         </div>
+        
+        <!-- 2行目: カード名 (最大12文字も改行せず1行表示) -->
+        <div class="preview-title-row" style="margin-top: 4px; margin-bottom: 2px;">
+          <h2 style="font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; line-height: 1.3; color: #fff;" title="${data.name}">${data.name}</h2>
+        </div>
+
         ${statsHtml}
         ${keywordHtml}
-        <div class="preview-desc">${abilitiesHtml}</div>
+        <div class="preview-desc" style="margin-top: 4px;">${abilitiesHtml}</div>
         ${flavorHtml}
         ${tokenHtml}
       </div>
@@ -1185,24 +1193,42 @@ document.addEventListener('DOMContentLoaded', () => {
       const helpContent = document.getElementById('help-content');
       if (helpContent) {
         helpContent.innerHTML = `
-          <div style="margin-bottom: 20px;">
-            <h3 style="color:#fbbf24; border-bottom: 1px solid rgba(251,191,36,0.3); padding-bottom: 6px;">1. 基本構築ルール (Deck Rules)</h3>
-            <p>・デッキは<b>カード40枚</b>＋<b>シールド3枚</b>で構築します。</p>
-            <p>・中立（無色）カードを除き、デッキ内に組み込める神族属性（赤・青・緑・白・黑）は<b>最大2色まで</b>です。</p>
-            <p>・同一カードは<b>最大3枚まで</b>入れられます（一部レジェンド・トークンカードを除く）。</p>
+          <div style="margin-bottom: 18px;">
+            <h3 style="color:#fbbf24; border-bottom: 1px solid rgba(251,191,36,0.3); padding-bottom: 6px; margin-top:0;">1. 基本構築 ＆ ライフシステム</h3>
+            <p style="margin: 4px 0;">・デッキは<b>カード40枚</b>＋<b>シールド3枚</b>で構築します（同一カード最大3枚まで）。</p>
+            <p style="margin: 4px 0;">・<b>ライフポイントの総数</b>: プレイヤーの総ライフは <b>「配置した全シールドの耐久値の合計 ＋ 最後のダイレクトアタック1回分」</b> です。</p>
+            <p style="margin: 4px 0;">・シールドが全滅した状態で相手からダイレクトアタックを受けるか、山札切れ（ライブラリアウト）で負けとなります。</p>
           </div>
-          <div style="margin-bottom: 20px;">
-            <h3 style="color:#fbbf24; border-bottom: 1px solid rgba(251,191,36,0.3); padding-bottom: 6px;">2. 主なキーワード効果 (Keywords)</h3>
-            <ul style="list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-              <li><b style="color:#fbbf24;">【速攻】</b>: 召喚したターンから攻撃可能。</li>
-              <li><b style="color:#fbbf24;">【挑発】</b>: 相手はこのユニットを最優先で攻撃しなければならない。</li>
-              <li><b style="color:#fbbf24;">【連撃】</b>: 1回の攻撃宣言で2回連続ダメージを与える。</li>
-              <li><b style="color:#fbbf24;">【加護】</b>: 次に受けるダメージや効果破壊を1回無効化。</li>
-              <li><b style="color:#fbbf24;">【不屈】</b>: ダメージを受けても一度だけHP1で踏みとどまる。</li>
-              <li><b style="color:#fbbf24;">【必殺】</b>: ダメージを与えた敵ユニットを一撃で破壊。</li>
-              <li><b style="color:#fbbf24;">【貫通】</b>: 敵ユニット撃破時、超過分ダメージを敵本体へ与える。</li>
-              <li><b style="color:#fbbf24;">【吸命】</b>: 与えたダメージ分だけ自分のプレイヤーHPを回復。</li>
-            </ul>
+          <div style="margin-bottom: 18px;">
+            <h3 style="color:#fbbf24; border-bottom: 1px solid rgba(251,191,36,0.3); padding-bottom: 6px;">2. 実装キーワード効果一覧</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; line-height: 1.5;">
+              <div><b style="color:#fbbf24;">【速攻】</b>: 召喚ターンから攻撃可能</div>
+              <div><b style="color:#fbbf24;">【挑発】</b>: 敵は最優先でこのユニットを攻撃</div>
+              <div><b style="color:#fbbf24;">【連撃】</b>: 1回の攻撃宣言で2回ダメージ</div>
+              <div><b style="color:#fbbf24;">【加護】</b>: 次の被ダメージ/破壊を1回無効化</div>
+              <div><b style="color:#fbbf24;">【不屈】</b>: ダメージ受けても一度だけHP1で存続</div>
+              <div><b style="color:#fbbf24;">【必殺】</b>: ダメージを与えた敵を即死させる</div>
+              <div><b style="color:#fbbf24;">【貫通】</b>: 敵撃破時、過剰ダメージを本体へ</div>
+              <div><b style="color:#fbbf24;">【吸命】</b>: 与ダメージ分だけ自HP回復</div>
+              <div><b style="color:#fbbf24;">【潜伏】</b>: 攻撃するまで相手の攻撃/効果対象外</div>
+              <div><b style="color:#fbbf24;">【覚醒】</b>: 特定属性レベル達成で能力発動</div>
+              <div><b style="color:#fbbf24;">【逆転】</b>: 自分のシールド全滅時に真価発揮</div>
+              <div><b style="color:#fbbf24;">【背水】</b>: 手札0枚の時に発動する能力</div>
+              <div><b style="color:#fbbf24;">【狙撃】</b>: 前列ガードを無視して後衛/シールド攻撃</div>
+              <div><b style="color:#fbbf24;">【共鳴】</b>: 特定カード/種族が場にいると強化</div>
+              <div><b style="color:#fbbf24;">【沈黙】</b>: 対象のキーワード・効果を無効化</div>
+              <div><b style="color:#fbbf24;">【連携】</b>: 他ユニット展開時に効果増幅</div>
+              <div><b style="color:#fbbf24;">【先陣】</b>: 前列配置時にステータス向上</div>
+              <div><b style="color:#fbbf24;">【後衛】</b>: 後列配置時に真価を発揮</div>
+              <div><b style="color:#fbbf24;">【魔盾】</b>: 相手のスペル効果を受けない</div>
+              <div><b style="color:#fbbf24;">【代償】</b>: 自傷ダメージ/コストを払って強力効果</div>
+              <div><b style="color:#fbbf24;">【残響】</b>: 毎ターン開始時に発動する持続効果</div>
+              <div><b style="color:#fbbf24;">【暴走】</b>: 攻撃可能時、強制的に攻撃を行う</div>
+              <div><b style="color:#fbbf24;">【孤高】</b>: 自場に他ユニットがいない時強化</div>
+              <div><b style="color:#fbbf24;">【復讐】</b>: 自ユニット破壊時にカウンター</div>
+              <div><b style="color:#fbbf24;">【腐敗】</b>: ターン経過とともにHPが減少</div>
+              <div><b style="color:#fbbf24;">【遺言】</b>: 破壊された瞬間に発動する効果</div>
+            </div>
           </div>
         `;
       }

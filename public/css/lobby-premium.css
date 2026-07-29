@@ -677,77 +677,76 @@ input#player-name:focus {
 .preview-panel .cd-stats {
   display: flex !important;
   gap: 16px !important;
-  justify-content: center !important;
-  margin: 12px 0 !important;
+  justify-content: flex-start !important;
+  margin: 6px 0 !important;
 }
 
-/* 攻撃力（赤・剣）/ 体力（緑・盾）のグラフィックバッジ */
-.preview-panel .atk-box,
-.preview-panel .hp-box {
+/* 攻撃力（赤丸）/ 体力（緑丸）の元の洗練されたアイコン復元 */
+.ps-atk, .ps-hp {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  min-width: 48px !important;
-  height: 48px !important;
-  padding: 0 12px !important;
-  border-radius: 12px !important;
-  font-size: 22px !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  font-size: 15px !important;
   font-weight: 800 !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8) !important;
-}
-
-.preview-panel .atk-box {
-  background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%) !important;
-  border: 2px solid #fca5a5 !important;
   color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
 }
 
-.preview-panel .hp-box {
-  background: linear-gradient(135deg, #10b981 0%, #065f46 100%) !important;
-  border: 2px solid #6ee7b7 !important;
-  color: #ffffff !important;
+.ps-atk {
+  background: radial-gradient(circle, #ef4444 0%, #b91c1c 100%) !important;
+  border: 1.5px solid #fca5a5 !important;
 }
 
-/* 能力テキストのインデント解除＆左上詰め */
+.ps-hp {
+  background: radial-gradient(circle, #10b981 0%, #047857 100%) !important;
+  border: 1.5px solid #6ee7b7 !important;
+}
+
+/* 能力テキストのインデント解除＆画像直下からの左上詰め */
 .preview-panel .cd-effect-text,
 .preview-panel .cd-text,
-#preview-content .preview-text {
+#preview-content .preview-text,
+#preview-content .preview-desc,
+#preview-content .cd-abilities-list {
   text-align: left !important;
-  margin-top: 8px !important;
+  margin-top: 4px !important;
   padding-left: 0 !important;
   text-indent: 0 !important;
-  line-height: 1.6 !important;
+  line-height: 1.5 !important;
   white-space: pre-wrap !important;
-  font-size: 14px !important;
+  font-size: 13px !important;
 }
 
 /* 日本語キーワードバッジ */
 .kw-badge {
   display: inline-block !important;
-  padding: 3px 8px !important;
-  margin: 2px 4px 2px 0 !important;
+  padding: 2px 7px !important;
+  margin: 2px 3px 2px 0 !important;
   background: rgba(251, 191, 36, 0.15) !important;
   border: 1px solid rgba(251, 191, 36, 0.4) !important;
-  border-radius: 6px !important;
+  border-radius: 5px !important;
   color: #fbbf24 !important;
-  font-size: 12px !important;
+  font-size: 11px !important;
   font-weight: 700 !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
 }
 
 /* フレーバーテキストの拡大 */
 .preview-panel .cd-flavor-text,
 .preview-panel .flavor-text {
-  font-size: 14px !important;
+  font-size: 13px !important;
   font-style: italic !important;
   color: #cbd5e1 !important;
-  margin-top: 14px !important;
-  padding: 10px 14px !important;
+  margin-top: 8px !important;
+  padding: 6px 10px !important;
   background: rgba(255, 255, 255, 0.03) !important;
   border-left: 3px solid rgba(251, 191, 36, 0.6) !important;
   border-radius: 4px !important;
-  line-height: 1.5 !important;
+  line-height: 1.4 !important;
 }
 
 /* デッキ完成時（40/40 & 3/3）のゴールドパルスエフェクト */
