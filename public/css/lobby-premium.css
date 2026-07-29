@@ -765,7 +765,8 @@ input#player-name:focus {
   }
 }
 
-/* 左側プレビュー欄のステータスアイコン (添付2枚目のカード詳細と同じ素材SVGスタイル) */
+/* 左側プレビュー欄のステータスアイコン (添付2枚目のカード詳細と同一の素材SVGスタイル) */
+.cd-jewel-stat,
 .preview-panel .cd-jewel-stat {
   display: inline-flex !important;
   align-items: center !important;
@@ -774,28 +775,46 @@ input#player-name:focus {
   font-size: 15px !important;
   padding: 3px 10px !important;
   border-radius: 8px !important;
-  background: rgba(15, 23, 42, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(15, 23, 42, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+  width: auto !important;
+  height: auto !important;
 }
 
+.cd-jewel-atk,
 .preview-panel .cd-jewel-atk {
   color: #fca5a5 !important;
-  border-color: rgba(239, 68, 68, 0.4) !important;
+  border-color: rgba(239, 68, 68, 0.5) !important;
+  background: linear-gradient(135deg, rgba(127, 29, 29, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%) !important;
 }
 
+.cd-jewel-hp,
 .preview-panel .cd-jewel-hp {
   color: #6ee7b7 !important;
-  border-color: rgba(16, 185, 129, 0.4) !important;
+  border-color: rgba(16, 185, 129, 0.5) !important;
+  background: linear-gradient(135deg, rgba(6, 95, 70, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%) !important;
 }
 
+.cd-stat-decor,
 .preview-panel .cd-stat-decor {
   width: 16px !important;
   height: 16px !important;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)) !important;
+  flex-shrink: 0 !important;
 }
 
-/* プレビュー欄の絶対的左上詰め（無駄な縦スペース排除） */
+/* 丸型旧アイコンスタイルの上書き・徹底解除 */
+.ps-atk, .ps-hp {
+  border-radius: 0 !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* プレビュー欄の絶対的左上詰め（margin-top: auto 等の完全カット） */
 #preview-content {
   display: flex !important;
   flex-direction: column !important;
@@ -816,14 +835,17 @@ input#player-name:focus {
   width: 100% !important;
 }
 
+#preview-content .cd-text-box,
 #preview-content .preview-desc,
 #preview-content .cd-abilities-list,
 #preview-content .ability-item {
   margin-top: 0 !important;
+  margin-bottom: 0 !important;
   padding-top: 0 !important;
   text-align: left !important;
   align-self: flex-start !important;
   width: 100% !important;
+  min-height: 0 !important;
 }
 
 

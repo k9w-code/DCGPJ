@@ -720,17 +720,17 @@ function showPreview(type, data) {
     let abilitiesHtml = '';
     if (cleanText) {
       abilitiesHtml = `
-        <div class="cd-abilities-list" style="margin:0; padding:0;">
-          <div class="ability-item" style="border:none; text-align:left; text-indent:0; margin:0; padding:0; line-height:1.5; font-size:13px;">
+        <div class="cd-abilities-list" style="margin:2px 0 0 0; padding:0; background:transparent;">
+          <div class="ability-item" style="border:none; background:transparent; border-left:none; text-align:left; text-indent:0; margin:0; padding:2px 0; line-height:1.5; font-size:13px; color:#e2e8f0;">
             ${cleanText.replace(/\n/g, '<br>')}
           </div>
         </div>
       `;
     } else if (data.abilities && data.abilities.length > 0) {
       abilitiesHtml = `
-        <div class="cd-abilities-list" style="margin:0; padding:0;">
+        <div class="cd-abilities-list" style="margin:2px 0 0 0; padding:0; background:transparent;">
           ${data.abilities.map(a => `
-            <div class="ability-item" style="text-align:left; text-indent:0; margin-bottom:4px; line-height:1.5; font-size:13px;">
+            <div class="ability-item" style="border:none; background:transparent; border-left:none; text-align:left; text-indent:0; margin-bottom:2px; padding:2px 0; line-height:1.5; font-size:13px; color:#e2e8f0;">
               ${a.trigger && a.trigger !== 'none' ? `<span class="ability-trigger">${a.trigger.replace('on_', '').toUpperCase()}</span>` : ''}
               ${(a.text || a.effect || '').trim().replace(/\n/g, '<br>')}
             </div>
@@ -738,7 +738,7 @@ function showPreview(type, data) {
         </div>
       `;
     } else if (data.abilityEffect) {
-      abilitiesHtml = `<div class="cd-abilities-list" style="margin:0; padding:0;"><div class="ability-item" style="text-align:left; font-size:13px;">${data.abilityEffect.trim()}</div></div>`;
+      abilitiesHtml = `<div class="cd-abilities-list" style="margin:2px 0 0 0; padding:0; background:transparent;"><div class="ability-item" style="border:none; background:transparent; border-left:none; text-align:left; font-size:13px; padding:2px 0; color:#e2e8f0;">${data.abilityEffect.trim()}</div></div>`;
     } else {
       abilitiesHtml = '';
     }
@@ -768,9 +768,18 @@ function showPreview(type, data) {
       }
     }
 
-    const flavorHtml = data.flavorText ? `<div class="preview-flavor" style="font-size:13px; font-style:italic; margin-top:8px; color:#cbd5e1; border-left:3px solid #fbbf24; padding-left:8px; line-height:1.4;">${data.flavorText}</div>` : '';
+    const atkSvg = `<svg class="cd-stat-decor" viewBox="0 0 24 24" width="16" height="16" style="color:#ef4444;"><path d="M21.92 2.08a1 1 0 0 0-1.42 0l-5.59 5.58a5 5 0 0 0-7.07 0 1 1 0 0 0 0 1.42L11 12.24l-6.83 6.83a1 1 0 0 0 0 1.41l1.42 1.42a1 1 0 0 0 1.41 0L13.84 15l3.16 3.17a1 1 0 0 0 1.41 0 5 5 0 0 0 0-7.07l5.58-5.59a1 1 0 0 0 0-1.43z" fill="currentColor"/></svg>`;
+    const hpSvg = `<svg class="cd-stat-decor" viewBox="0 0 24 24" width="16" height="16" style="color:#10b981;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg>`;
+
     const statsHtml = data.type === 'unit' 
-      ? `<div class="preview-stats" style="margin: 6px 0; display: flex; gap: 12px; align-items: center;"><span class="ps-atk">${data.attack}</span><span class="ps-hp">${data.hp}</span></div>` 
+      ? `<div class="preview-stats cd-stats" style="margin: 4px 0; display: flex; gap: 12px; align-items: center;">
+          <div class="cd-jewel-stat cd-jewel-atk" title="攻撃力">
+            ${atkSvg}<span>${data.attack}</span>
+          </div>
+          <div class="cd-jewel-stat cd-jewel-hp" title="体力">
+            ${hpSvg}<span>${data.hp}</span>
+          </div>
+         </div>` 
       : `<div class="preview-stats" style="margin: 4px 0;"><span class="ps-spell" style="background:rgba(147, 51, 234, 0.2); border:1px solid #c084fc; color:#e9d5ff; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:12px;">SPELL</span></div>`;
 
     const rarityText = window.getRarityName ? window.getRarityName(data.rarity || 1) : (data.rarity === 4 ? 'Legendary' : (data.rarity === 3 ? 'Majestic' : (data.rarity === 2 ? 'Rare' : 'Common')));
