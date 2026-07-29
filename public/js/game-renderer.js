@@ -516,23 +516,30 @@ window.showCardDetail = function(card) {
     if (card.endureActive && !currentKws.includes('endure')) currentKws.push('endure');
     
     if (currentKws.length > 0) {
-      const validKws = currentKws.map(k => k.split(/[:_]/)[0]).filter(k => (window.keywordMap && window.keywordMap[k]));
-      if (validKws.length > 0) {
-        kwHTML = '<div class="cd-keywords-container">';
-        validKws.forEach(kw => {
-          const m = (window.keywordMap && window.keywordMap[kw]) || { name: kw, description: '' };
-          kwHTML += `
-            <div class="cd-keyword-tooltip-trigger">
-              【${m.name || kw}】
-              <span class="cd-keyword-tooltip-box">${m.description || ''}</span>
-            </div>
-          `;
-        });
-        kwHTML += '</div>';
-      }
+      const COLOR_JP = { red: '炎', blue: '水', green: '風', white: '光', black: '闇', neutral: '無' };
+      kwHTML = '<div class="cd-keywords-container" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">';
+      currentKws.forEach(fullKw => {
+        const parts = fullKw.split(':');
+        const baseKw = parts[0];
+        const rawVal = parts[1];
+        const m = (window.keywordMap && window.keywordMap[baseKw]) || { name: baseKw, description: '' };
+        let label = `【${m.name || baseKw}】`;
+        if (rawVal) {
+          const valJp = COLOR_JP[rawVal.toLowerCase()] || rawVal;
+          label = `【${m.name || baseKw}:${valJp}】`;
+        }
+        kwHTML += `
+          <div class="cd-keyword-tooltip-trigger" style="font-weight:bold; color:#fbbf24; background:rgba(251,191,36,0.15); border:1px solid rgba(251,191,36,0.4); border-radius:4px; padding:2px 8px; font-size:13px; cursor:help; position:relative;">
+            ${label}
+            <span class="cd-keyword-tooltip-box">${m.description || ''}</span>
+          </div>
+        `;
+      });
+      kwHTML += '</div>';
     }
 
-    safeSetText('cd-flavor', card.flavorText || (card.skill ? card.skill.description : ''));
+    const flavorTextContent = card.flavorText || card.description || (card.skill ? card.skill.description : '');
+    safeSetText('cd-flavor', flavorTextContent);
     
     // \u4fee\u6b63\u5c65\u6b74\uff08Modifiers\uff09\u306e\u8868\u793a
     let modHTML = '';

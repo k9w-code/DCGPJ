@@ -685,7 +685,11 @@ function showPreview(type, data) {
     const maxCopies = (typeof data.maxCopies !== 'undefined') ? data.maxCopies : 3;
     const bgImage = window.getCardImagePath(data);
     
-    // スキル・キーワード表示 (日本語名マッピング)
+    // スキル・キーワード表示 (日本語名＋属性名マッピング)
+    const COLOR_JP = {
+      red: '炎', blue: '水', green: '風', white: '光', black: '闇', neutral: '無'
+    };
+
     const KEYWORD_NAMES = {
       taunt: '挑発', rush: '速攻', speed: '速攻', stealth: '潜伏', double_strike: '連撃',
       barrier: '加護', endure: '不屈', siege: '攻城', comeback: '逆転', awaken: '覚醒',
@@ -696,13 +700,17 @@ function showPreview(type, data) {
     };
 
     const keywordHtml = data.keywords && data.keywords.length > 0 
-      ? `<div class="preview-keywords" style="margin: 8px 0; display: flex; flex-wrap: wrap; gap: 4px;">${data.keywords.map(kw => {
+      ? `<div class="preview-keywords" style="margin: 4px 0; display: flex; flex-wrap: wrap; gap: 4px;">${data.keywords.map(kw => {
           const parts = kw.split(':');
           const baseKw = parts[0];
-          const val = parts[1];
+          const rawVal = parts[1];
           const master = window.keywordMap && window.keywordMap[baseKw];
           const name = master ? master.name : (KEYWORD_NAMES[baseKw] || baseKw);
-          const label = val ? `【${name} ${val}】` : `【${name}】`;
+          let label = `【${name}】`;
+          if (rawVal) {
+            const valJp = COLOR_JP[rawVal.toLowerCase()] || rawVal;
+            label = `【${name}:${valJp}】`;
+          }
           return `<span class="kw-badge" data-kw="${baseKw}">${label}</span>`;
         }).join('')}</div>` 
       : '';
@@ -712,17 +720,17 @@ function showPreview(type, data) {
     let abilitiesHtml = '';
     if (cleanText) {
       abilitiesHtml = `
-        <div class="cd-abilities-list">
-          <div class="ability-item" style="border:none; text-align:left; text-indent:0; margin:0; padding:0; line-height:1.6;">
+        <div class="cd-abilities-list" style="margin:0; padding:0;">
+          <div class="ability-item" style="border:none; text-align:left; text-indent:0; margin:0; padding:0; line-height:1.5; font-size:13px;">
             ${cleanText.replace(/\n/g, '<br>')}
           </div>
         </div>
       `;
     } else if (data.abilities && data.abilities.length > 0) {
       abilitiesHtml = `
-        <div class="cd-abilities-list">
+        <div class="cd-abilities-list" style="margin:0; padding:0;">
           ${data.abilities.map(a => `
-            <div class="ability-item" style="text-align:left; text-indent:0; margin-bottom:4px;">
+            <div class="ability-item" style="text-align:left; text-indent:0; margin-bottom:4px; line-height:1.5; font-size:13px;">
               ${a.trigger && a.trigger !== 'none' ? `<span class="ability-trigger">${a.trigger.replace('on_', '').toUpperCase()}</span>` : ''}
               ${(a.text || a.effect || '').trim().replace(/\n/g, '<br>')}
             </div>
@@ -730,9 +738,9 @@ function showPreview(type, data) {
         </div>
       `;
     } else if (data.abilityEffect) {
-      abilitiesHtml = `<div class="cd-abilities-list"><div class="ability-item" style="text-align:left;">${data.abilityEffect.trim()}</div></div>`;
+      abilitiesHtml = `<div class="cd-abilities-list" style="margin:0; padding:0;"><div class="ability-item" style="text-align:left; font-size:13px;">${data.abilityEffect.trim()}</div></div>`;
     } else {
-      abilitiesHtml = '<div class="ability-item" style="border:none; text-align:left; color:#94a3b8;">アビリティを持たない。</div>';
+      abilitiesHtml = '';
     }
 
     // 召喚トークンセクション

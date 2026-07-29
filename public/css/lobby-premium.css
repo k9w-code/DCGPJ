@@ -765,4 +765,65 @@ input#player-name:focus {
   }
 }
 
+/* 左側プレビュー欄のステータスアイコン (添付2枚目のカード詳細と同じ素材SVGスタイル) */
+.preview-panel .cd-jewel-stat {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-weight: 800 !important;
+  font-size: 15px !important;
+  padding: 3px 10px !important;
+  border-radius: 8px !important;
+  background: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+}
+
+.preview-panel .cd-jewel-atk {
+  color: #fca5a5 !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+}
+
+.preview-panel .cd-jewel-hp {
+  color: #6ee7b7 !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+}
+
+.preview-panel .cd-stat-decor {
+  width: 16px !important;
+  height: 16px !important;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+}
+
+/* プレビュー欄の絶対的左上詰め（無駄な縦スペース排除） */
+#preview-content {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+  padding: 8px !important;
+  gap: 4px !important;
+}
+
+#preview-content .preview-info {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  gap: 2px !important;
+  width: 100% !important;
+}
+
+#preview-content .preview-desc,
+#preview-content .cd-abilities-list,
+#preview-content .ability-item {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  text-align: left !important;
+  align-self: flex-start !important;
+  width: 100% !important;
+}
+
 
