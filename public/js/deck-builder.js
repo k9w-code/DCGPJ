@@ -1079,13 +1079,13 @@ socket.on('error_msg', (data) => {
   const btn = document.getElementById('btn-submit-deck');
   if (btn) {
     btn.disabled = false;
-    btn.textContent = 'START GAME';
+    btn.textContent = 'このデッキで対戦開始';
   }
 });
 
 loadData();
 
-// Fullscreen Toggle
+// フルスクリーン＆デッキ操作ドロップダウンメニュー制御
 document.addEventListener('DOMContentLoaded', () => {
   const fsBtn = document.getElementById('fullscreen-btn');
   if (fsBtn) {
@@ -1097,6 +1097,30 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         if (document.exitFullscreen) document.exitFullscreen();
       }
+    });
+  }
+
+  // デッキ操作ドロップダウンメニューの制御
+  const menuTrigger = document.getElementById('btn-deck-menu');
+  const menuDropdown = document.getElementById('deck-menu-dropdown');
+
+  if (menuTrigger && menuDropdown) {
+    menuTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isVisible = menuDropdown.style.display !== 'none';
+      menuDropdown.style.display = isVisible ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!menuDropdown.contains(e.target) && !menuTrigger.contains(e.target)) {
+        menuDropdown.style.display = 'none';
+      }
+    });
+
+    menuDropdown.querySelectorAll('.deck-menu-item').forEach(item => {
+      item.addEventListener('click', () => {
+        menuDropdown.style.display = 'none';
+      });
     });
   }
 });
