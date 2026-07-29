@@ -685,18 +685,36 @@ function showPreview(type, data) {
     const maxCopies = (typeof data.maxCopies !== 'undefined') ? data.maxCopies : 3;
     const bgImage = window.getCardImagePath(data);
     
-    // スキル・キーワード表示 (DataLoaderのマッピングに合わせて調整)
+    // スキル・キーワード表示 (日本語名マッピング)
+    const KEYWORD_NAMES = {
+      taunt: '挑発', rush: '速攻', speed: '速攻', stealth: '潜伏', double_strike: '連撃',
+      barrier: '加護', endure: '不屈', siege: '攻城', comeback: '逆転', awaken: '覚醒',
+      pierce: '貫通', spread: '拡散', drain: '吸命', intimidate: '威圧', lethal: '必殺',
+      crisis: '背水', snipe: '狙撃', resonance: '共鳴', silence: '沈黙', link: '連携',
+      vanguard: '先陣', rearguard: '後衛', spellshield: '魔盾', sacrifice: '代償',
+      echo: '残響', overload: '暴走', loner: '孤高', avenger: '復讐', decay: '腐敗', legacy: '遺言'
+    };
+
     const keywordHtml = data.keywords && data.keywords.length > 0 
-      ? `<div class="preview-keywords">${data.keywords.map(kw => `<span class="kw-badge">${kw}</span>`).join('')}</div>` 
+      ? `<div class="preview-keywords" style="margin: 8px 0; display: flex; flex-wrap: wrap; gap: 4px;">${data.keywords.map(kw => {
+          const parts = kw.split(':');
+          const baseKw = parts[0];
+          const val = parts[1];
+          const master = window.keywordMap && window.keywordMap[baseKw];
+          const name = master ? master.name : (KEYWORD_NAMES[baseKw] || baseKw);
+          const label = val ? `【${name} ${val}】` : `【${name}】`;
+          return `<span class="kw-badge" data-kw="${baseKw}">${label}</span>`;
+        }).join('')}</div>` 
       : '';
 
-    // アビリティリストの表示 (複数能力対応。card.textが存在する場合は単一表示)
+    // アビリティリストの表示 (不要な先頭余白・インデントを除去して左上詰め)
+    let cleanText = (data.text || '').trim();
     let abilitiesHtml = '';
-    if (data.text) {
+    if (cleanText) {
       abilitiesHtml = `
         <div class="cd-abilities-list">
-          <div class="ability-item" style="border:none;">
-            ${data.text}
+          <div class="ability-item" style="border:none; text-align:left; text-indent:0; margin:0; padding:0; line-height:1.6;">
+            ${cleanText.replace(/\n/g, '<br>')}
           </div>
         </div>
       `;
@@ -704,20 +722,20 @@ function showPreview(type, data) {
       abilitiesHtml = `
         <div class="cd-abilities-list">
           ${data.abilities.map(a => `
-            <div class="ability-item">
+            <div class="ability-item" style="text-align:left; text-indent:0; margin-bottom:4px;">
               ${a.trigger && a.trigger !== 'none' ? `<span class="ability-trigger">${a.trigger.replace('on_', '').toUpperCase()}</span>` : ''}
-              ${(a.text || a.effect || '').replace(/\\n/g, '<br>')}
+              ${(a.text || a.effect || '').trim().replace(/\n/g, '<br>')}
             </div>
           `).join('')}
         </div>
       `;
     } else if (data.abilityEffect) {
-      abilitiesHtml = `<div class="cd-abilities-list"><div class="ability-item">${data.abilityEffect}</div></div>`;
+      abilitiesHtml = `<div class="cd-abilities-list"><div class="ability-item" style="text-align:left;">${data.abilityEffect.trim()}</div></div>`;
     } else {
-      abilitiesHtml = '<div class="ability-item" style="border:none;">アビリティを持たない。</div>';
+      abilitiesHtml = '<div class="ability-item" style="border:none; text-align:left; color:#94a3b8;">アビリティを持たない。</div>';
     }
 
-    // 召喚トークンセクションの追加 (プレビューパネル用)
+    // 召喚トークンセクション
     let tokenHtml = '';
     const tokenAbilities = (data.abilities || []).filter(a => a.effect === 'summon_token');
     if (tokenAbilities.length > 0) {
@@ -742,10 +760,10 @@ function showPreview(type, data) {
       }
     }
 
-    const flavorHtml = data.flavorText ? `<div class="preview-flavor">${data.flavorText}</div>` : '';
+    const flavorHtml = data.flavorText ? `<div class="preview-flavor" style="font-size:14px; font-style:italic; margin-top:12px; color:#cbd5e1; border-left:3px solid #fbbf24; padding-left:10px;">${data.flavorText}</div>` : '';
     const statsHtml = data.type === 'unit' 
-      ? `<div class="preview-stats"><span class="ps-atk">${data.attack}</span><span class="ps-hp">${data.hp}</span></div>` 
-      : `<div class="preview-stats"><span class="ps-spell">SPELL</span></div>`;
+      ? `<div class="preview-stats cd-stats" style="margin: 10px 0; justify-content: flex-start; gap: 12px;"><span class="atk-box">${data.attack}</span><span class="hp-box">${data.hp}</span></div>` 
+      : `<div class="preview-stats" style="margin: 8px 0;"><span class="ps-spell" style="background:rgba(147, 51, 234, 0.2); border:1px solid #c084fc; color:#e9d5ff; padding:3px 10px; border-radius:6px; font-weight:bold; font-size:13px;">SPELL</span></div>`;
 
     container.innerHTML = `
       <div class="preview-card-image" style="background-image: url('${bgImage}')"></div>
@@ -1154,6 +1172,54 @@ document.addEventListener('DOMContentLoaded', () => {
       item.addEventListener('click', () => {
         menuDropdown.style.display = 'none';
       });
+    });
+  }
+
+  // ヘルプモーダルダイアログの制御
+  const btnHelp = document.getElementById('btn-show-help');
+  const btnCloseHelp = document.getElementById('btn-close-help');
+  const helpOverlay = document.getElementById('help-overlay');
+
+  if (btnHelp && helpOverlay) {
+    btnHelp.addEventListener('click', () => {
+      const helpContent = document.getElementById('help-content');
+      if (helpContent) {
+        helpContent.innerHTML = `
+          <div style="margin-bottom: 20px;">
+            <h3 style="color:#fbbf24; border-bottom: 1px solid rgba(251,191,36,0.3); padding-bottom: 6px;">1. 基本構築ルール (Deck Rules)</h3>
+            <p>・デッキは<b>カード40枚</b>＋<b>シールド3枚</b>で構築します。</p>
+            <p>・中立（無色）カードを除き、デッキ内に組み込める神族属性（赤・青・緑・白・黑）は<b>最大2色まで</b>です。</p>
+            <p>・同一カードは<b>最大3枚まで</b>入れられます（一部レジェンド・トークンカードを除く）。</p>
+          </div>
+          <div style="margin-bottom: 20px;">
+            <h3 style="color:#fbbf24; border-bottom: 1px solid rgba(251,191,36,0.3); padding-bottom: 6px;">2. 主なキーワード効果 (Keywords)</h3>
+            <ul style="list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <li><b style="color:#fbbf24;">【速攻】</b>: 召喚したターンから攻撃可能。</li>
+              <li><b style="color:#fbbf24;">【挑発】</b>: 相手はこのユニットを最優先で攻撃しなければならない。</li>
+              <li><b style="color:#fbbf24;">【連撃】</b>: 1回の攻撃宣言で2回連続ダメージを与える。</li>
+              <li><b style="color:#fbbf24;">【加護】</b>: 次に受けるダメージや効果破壊を1回無効化。</li>
+              <li><b style="color:#fbbf24;">【不屈】</b>: ダメージを受けても一度だけHP1で踏みとどまる。</li>
+              <li><b style="color:#fbbf24;">【必殺】</b>: ダメージを与えた敵ユニットを一撃で破壊。</li>
+              <li><b style="color:#fbbf24;">【貫通】</b>: 敵ユニット撃破時、超過分ダメージを敵本体へ与える。</li>
+              <li><b style="color:#fbbf24;">【吸命】</b>: 与えたダメージ分だけ自分のプレイヤーHPを回復。</li>
+            </ul>
+          </div>
+        `;
+      }
+      helpOverlay.style.display = 'flex';
+      if (window.audioManager) window.audioManager.playSE('click');
+    });
+  }
+
+  if (btnCloseHelp && helpOverlay) {
+    btnCloseHelp.addEventListener('click', () => {
+      helpOverlay.style.display = 'none';
+    });
+  }
+
+  if (helpOverlay) {
+    helpOverlay.addEventListener('click', (e) => {
+      if (e.target === helpOverlay) helpOverlay.style.display = 'none';
     });
   }
 });

@@ -635,4 +635,135 @@ input#player-name:focus {
   margin: 6px 4px;
 }
 
+/* ==========================================================================
+   ★ v148 - デッキ編成UI/UX 商業レベルブラッシュアップ スタイル
+   ========================================================================== */
+
+/* ヘッダーナビゲーションボタン (ロビー・ヘルプ) */
+.db-nav-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 6px 14px !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #e2e8f0 !important;
+  transition: all 0.2s ease !important;
+}
+
+.db-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(255, 215, 0, 0.5) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* 右側デッキリストのHearthstone風バナー (顔・メイン被写体の最適な切り出し center 28%) */
+.deck-card-item,
+.deck-row-item,
+.deck-card-banner,
+.deck-list-container .card-row,
+.deck-list-container div[style*="background-image"] {
+  background-position: center 28% !important;
+  background-size: cover !important;
+}
+
+/* 左側カード詳細プレビュー欄の改善 */
+.preview-panel .cd-stats-container,
+.preview-panel .cd-stats {
+  display: flex !important;
+  gap: 16px !important;
+  justify-content: center !important;
+  margin: 12px 0 !important;
+}
+
+/* 攻撃力（赤・剣）/ 体力（緑・盾）のグラフィックバッジ */
+.preview-panel .atk-box,
+.preview-panel .hp-box {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 48px !important;
+  height: 48px !important;
+  padding: 0 12px !important;
+  border-radius: 12px !important;
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+}
+
+.preview-panel .atk-box {
+  background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%) !important;
+  border: 2px solid #fca5a5 !important;
+  color: #ffffff !important;
+}
+
+.preview-panel .hp-box {
+  background: linear-gradient(135deg, #10b981 0%, #065f46 100%) !important;
+  border: 2px solid #6ee7b7 !important;
+  color: #ffffff !important;
+}
+
+/* 能力テキストのインデント解除＆左上詰め */
+.preview-panel .cd-effect-text,
+.preview-panel .cd-text,
+#preview-content .preview-text {
+  text-align: left !important;
+  margin-top: 8px !important;
+  padding-left: 0 !important;
+  text-indent: 0 !important;
+  line-height: 1.6 !important;
+  white-space: pre-wrap !important;
+  font-size: 14px !important;
+}
+
+/* 日本語キーワードバッジ */
+.kw-badge {
+  display: inline-block !important;
+  padding: 3px 8px !important;
+  margin: 2px 4px 2px 0 !important;
+  background: rgba(251, 191, 36, 0.15) !important;
+  border: 1px solid rgba(251, 191, 36, 0.4) !important;
+  border-radius: 6px !important;
+  color: #fbbf24 !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* フレーバーテキストの拡大 */
+.preview-panel .cd-flavor-text,
+.preview-panel .flavor-text {
+  font-size: 14px !important;
+  font-style: italic !important;
+  color: #cbd5e1 !important;
+  margin-top: 14px !important;
+  padding: 10px 14px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-left: 3px solid rgba(251, 191, 36, 0.6) !important;
+  border-radius: 4px !important;
+  line-height: 1.5 !important;
+}
+
+/* デッキ完成時（40/40 & 3/3）のゴールドパルスエフェクト */
+.btn-start-game:not(:disabled) {
+  animation: goldPulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1) !important;
+  box-shadow: 0 0 25px rgba(251, 191, 36, 0.7) !important;
+}
+
+@keyframes goldPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.5), 0 0 30px rgba(147, 51, 234, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(251, 191, 36, 0.9), 0 0 50px rgba(245, 158, 11, 0.7);
+    transform: scale(1.02);
+  }
+}
+
 
