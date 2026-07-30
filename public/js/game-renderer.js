@@ -455,7 +455,8 @@ window.showCardDetail = function(card) {
     const cardType = (card.type || card.cardType || '').toLowerCase();
     const isUnit = cardType === 'unit';
     if (isUnit) {
-      statsContainer.style.display = 'flex';
+      statsContainer.classList.remove('is-hidden');
+      statsContainer.style.setProperty('display', 'flex', 'important');
       const atkEl = document.getElementById('cd-attack');
       const hpEl = document.getElementById('cd-hp');
       
@@ -473,7 +474,8 @@ window.showCardDetail = function(card) {
         hpEl.className = (currentHp > baseHp) ? 'stat-buffed' : (currentHp < baseHp ? 'stat-debuffed' : '');
       }
     } else {
-      statsContainer.style.display = 'none';
+      statsContainer.classList.add('is-hidden');
+      statsContainer.style.setProperty('display', 'none', 'important');
     }
   }
 
