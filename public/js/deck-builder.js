@@ -776,17 +776,18 @@ function showPreview(type, data) {
     const displayAtk = (typeof data.attack !== 'undefined' && data.attack !== null) ? data.attack : ((typeof data.atk !== 'undefined' && data.atk !== null) ? data.atk : 0);
     const displayHp = (typeof data.hp !== 'undefined' && data.hp !== null) ? data.hp : ((typeof data.life !== 'undefined' && data.life !== null) ? data.life : 0);
 
-    const atkSvg = `<svg class="cd-stat-decor" viewBox="0 0 24 24" width="16" height="16" style="color:#ef4444;"><path d="M21.92 2.08a1 1 0 0 0-1.42 0l-5.59 5.58a5 5 0 0 0-7.07 0 1 1 0 0 0 0 1.42L11 12.24l-6.83 6.83a1 1 0 0 0 0 1.41l1.42 1.42a1 1 0 0 0 1.41 0L13.84 15l3.16 3.17a1 1 0 0 0 1.41 0 5 5 0 0 0 0-7.07l5.58-5.59a1 1 0 0 0 0-1.43z" fill="currentColor"/></svg>`;
-    const hpSvg = `<svg class="cd-stat-decor" viewBox="0 0 24 24" width="16" height="16" style="color:#10b981;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg>`;
+    // 本物のアセット素材画像 (/assets/images/ui/gem_atk.png と gem_hp.png) を使用
+    const atkImg = `<span class="stat-icon-gem" style="width: 22px; height: 22px; display: inline-block; background: url('/assets/images/ui/gem_atk.png') center/contain no-repeat; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); flex-shrink: 0;"></span>`;
+    const hpImg = `<span class="stat-icon-gem" style="width: 22px; height: 22px; display: inline-block; background: url('/assets/images/ui/gem_hp.png') center/contain no-repeat; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); flex-shrink: 0;"></span>`;
 
     // ユニットの時のみ攻撃力・体力を表示。スペルの時はスタッツ非表示！
     const statsHtml = isUnit 
-      ? `<div class="preview-stats cd-stats" style="margin: 4px 0; display: flex; gap: 12px; align-items: center;">
-          <div class="cd-jewel-stat cd-jewel-atk" title="攻撃力">
-            ${atkSvg}<span>${displayAtk}</span>
+      ? `<div class="preview-stats cd-stats" style="margin: 6px 0; display: flex; gap: 16px; align-items: center; justify-content: flex-start;">
+          <div class="cd-jewel-stat cd-jewel-atk" style="display: inline-flex; align-items: center; gap: 8px; font-weight: 900; font-size: 17px; color: #fff; background: rgba(15, 23, 42, 0.8) !important; padding: 4px 14px !important; border-radius: 10px !important; border: 1.5px solid rgba(239, 68, 68, 0.6) !important; box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;" title="攻撃力">
+            ${atkImg}<span style="font-size: 17px; font-weight: 900; color: #fff;">${displayAtk}</span>
           </div>
-          <div class="cd-jewel-stat cd-jewel-hp" title="体力">
-            ${hpSvg}<span>${displayHp}</span>
+          <div class="cd-jewel-stat cd-jewel-hp" style="display: inline-flex; align-items: center; gap: 8px; font-weight: 900; font-size: 17px; color: #fff; background: rgba(15, 23, 42, 0.8) !important; padding: 4px 14px !important; border-radius: 10px !important; border: 1.5px solid rgba(16, 185, 129, 0.6) !important; box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;" title="体力">
+            ${hpImg}<span style="font-size: 17px; font-weight: 900; color: #fff;">${displayHp}</span>
           </div>
          </div>` 
       : '';
