@@ -449,25 +449,28 @@ window.showCardDetail = function(card) {
     }
   }
 
-  // ステータス表示
+  // ステータス表示（ユニットの時のみ表示し、スペルやシールドの時は完全に非表示）
   const statsContainer = document.getElementById('cd-stats-container');
   if (statsContainer) {
-    const cardType = (card.type || '').toLowerCase();
-    if (cardType === 'unit') {
+    const cardType = (card.type || card.cardType || '').toLowerCase();
+    const isUnit = cardType === 'unit';
+    if (isUnit) {
       statsContainer.style.display = 'flex';
       const atkEl = document.getElementById('cd-attack');
       const hpEl = document.getElementById('cd-hp');
       
-      const currentAtk = card.currentAttack !== undefined ? card.currentAttack : (card.attack || 0);
-      const currentHp = card.currentHp !== undefined ? card.currentHp : (card.hp || 0);
+      const baseAtk = (typeof card.attack !== 'undefined' && card.attack !== null) ? card.attack : ((typeof card.atk !== 'undefined' && card.atk !== null) ? card.atk : 0);
+      const baseHp = (typeof card.hp !== 'undefined' && card.hp !== null) ? card.hp : ((typeof card.life !== 'undefined' && card.life !== null) ? card.life : 0);
+      const currentAtk = card.currentAttack !== undefined ? card.currentAttack : baseAtk;
+      const currentHp = card.currentHp !== undefined ? card.currentHp : baseHp;
       
       if (atkEl) {
         atkEl.textContent = currentAtk;
-        atkEl.className = (currentAtk > card.attack) ? 'stat-buffed' : (currentAtk < card.attack ? 'stat-debuffed' : '');
+        atkEl.className = (currentAtk > baseAtk) ? 'stat-buffed' : (currentAtk < baseAtk ? 'stat-debuffed' : '');
       }
       if (hpEl) {
         hpEl.textContent = currentHp;
-        hpEl.className = (currentHp > card.hp) ? 'stat-buffed' : (currentHp < card.hp ? 'stat-debuffed' : '');
+        hpEl.className = (currentHp > baseHp) ? 'stat-buffed' : (currentHp < baseHp ? 'stat-debuffed' : '');
       }
     } else {
       statsContainer.style.display = 'none';
