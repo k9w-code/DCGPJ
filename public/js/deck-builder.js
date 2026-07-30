@@ -769,6 +769,10 @@ function showPreview(type, data) {
       }
     }
 
+    const flavorHtml = (data.flavorText || data.description) 
+      ? `<div class="preview-flavor" style="font-size:12px; font-style:italic; margin-top:6px; color:#cbd5e1; border-left:3px solid #fbbf24; padding-left:6px; line-height:1.4;">${data.flavorText || data.description}</div>` 
+      : '';
+
     const displayAtk = (typeof data.attack !== 'undefined' && data.attack !== null) ? data.attack : ((typeof data.atk !== 'undefined' && data.atk !== null) ? data.atk : 0);
     const displayHp = (typeof data.hp !== 'undefined' && data.hp !== null) ? data.hp : ((typeof data.life !== 'undefined' && data.life !== null) ? data.life : 0);
 
