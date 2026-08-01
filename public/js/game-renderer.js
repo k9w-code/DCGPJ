@@ -356,10 +356,12 @@ function renderUnitCard(unit, canAct) {
       <div class="card-overlay">
         ${badgesHtml}
         <div class="unit-stats">
-          <div class="atk">
+          <div class="atk" title="攻撃力">
+            <span class="stat-icon-gem atk-gem"></span>
             <span class="val${atkClass}">${unit.currentAttack !== undefined ? unit.currentAttack : (unit.attack || 0)}</span>
           </div>
-          <div class="hp">
+          <div class="hp" title="体力">
+            <span class="stat-icon-gem hp-gem"></span>
             <span class="val${isDamaged ? ' damaged' : ''}${hpClass}">${unit.currentHp !== undefined ? unit.currentHp : (unit.hp || 0)}</span>
           </div>
         </div>

@@ -5031,11 +5031,134 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
   color: #f1f5f9 !important;
 }
 
-.card-detail-overlay .cd-flavor-text,
-.card-detail-overlay #cd-flavor {
+/* ⚔️ Vol.147 商業レベル視認性 ＆ 操作性極大強化パッケージ */
+
+/* 1. 行動可能ユニット (.can-act) ＆ 手札プレイ可能カード (.can-play) の黄金パルス発光 */
+.unit-card.can-act,
+.hand-card.can-play {
+  box-shadow: 0 0 16px rgba(251, 191, 36, 0.9), inset 0 0 12px rgba(255, 215, 0, 0.6) !important;
+  border-color: #fbbf24 !important;
+  animation: actionGoldPulse 1.8s infinite ease-in-out !important;
+  cursor: pointer !important;
+}
+
+@keyframes actionGoldPulse {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.8), 0 0 20px rgba(245, 158, 11, 0.5);
+    transform: translateY(-2px);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(255, 215, 0, 1), 0 0 35px rgba(251, 191, 36, 0.9);
+    transform: translateY(-5px) scale(1.03);
+  }
+}
+
+/* 2. 攻撃対象・アビリティ対象となる敵スロット (.can-attack, .can-target) の赤金危険枠 */
+.board-slot.can-attack,
+.board-slot.can-target,
+.board-slot.can-spell-target {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.9), inset 0 0 15px rgba(220, 38, 38, 0.7) !important;
+  border: 2px solid #ef4444 !important;
+  animation: dangerRedPulse 1.4s infinite ease-in-out !important;
+  cursor: pointer !important;
+}
+
+@keyframes dangerRedPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.8), inset 0 0 10px rgba(220, 38, 38, 0.6);
+    border-color: #fca5a5 !important;
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(239, 68, 68, 1), inset 0 0 25px rgba(185, 28, 28, 0.9);
+    border-color: #ef4444 !important;
+    transform: scale(1.02);
+  }
+}
+
+/* 3. 盤面ユニットのステータス数値・ジュエル視認性強化 */
+.unit-card .unit-stats {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
+  padding: 0 4px !important;
+  position: absolute !important;
+  bottom: 4px !important;
+  left: 0 !important;
+  z-index: 10 !important;
+}
+
+.unit-card .unit-stats .atk,
+.unit-card .unit-stats .hp {
+  display: flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+  background: rgba(15, 23, 42, 0.85) !important;
+  padding: 2px 7px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.7) !important;
+}
+
+.unit-card .unit-stats .atk {
+  border: 1px solid rgba(239, 68, 68, 0.7) !important;
+}
+
+.unit-card .unit-stats .hp {
+  border: 1px solid rgba(16, 185, 129, 0.7) !important;
+}
+
+.unit-card .unit-stats .stat-icon-gem {
+  width: 16px !important;
+  height: 16px !important;
+  display: inline-block !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  flex-shrink: 0 !important;
+}
+
+.unit-card .unit-stats .atk-gem {
+  background-image: url('/assets/images/ui/gem_atk.png') !important;
+}
+
+.unit-card .unit-stats .hp-gem {
+  background-image: url('/assets/images/ui/gem_hp.png') !important;
+}
+
+.unit-card .unit-stats .val {
   font-size: 15px !important;
-  line-height: 1.6 !important;
-  color: #cbd5e1 !important;
-  font-style: italic !important;
+  font-weight: 900 !important;
+  color: #ffffff !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9) !important;
+}
+
+.unit-card .unit-stats .val.stat-buffed {
+  color: #6ee7b7 !important;
+  text-shadow: 0 0 6px rgba(16, 185, 129, 0.9) !important;
+}
+
+.unit-card .unit-stats .val.stat-debuffed {
+  color: #fca5a5 !important;
+  text-shadow: 0 0 6px rgba(239, 68, 68, 0.9) !important;
+}
+
+/* 4. 自分のターン時のターン終了ボタン (.btn-end-turn) の圧倒的脈動ゴールド発光 */
+.btn-end-turn.my-turn {
+  background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.8), 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  border: 1.5px solid #fef08a !important;
+  animation: turnEndPulse 2s infinite ease-in-out !important;
+}
+
+@keyframes turnEndPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.7), 0 0 30px rgba(251, 191, 36, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(251, 191, 36, 1), 0 0 50px rgba(245, 158, 11, 0.8);
+    transform: scale(1.04);
+  }
 }
 
