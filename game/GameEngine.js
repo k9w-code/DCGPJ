@@ -1182,9 +1182,9 @@ class GameEngine {
     const opponentId = Object.keys(gs.players).find(id => id !== playerId);
     const opponent = gs.players[opponentId];
 
-    // \u30b7\u30fc\u30eb\u30c9\u306e\u79d8\u533f\u5316\uff08\u672a\u7834\u58ca\u306e\u3082\u306e\u306f\u60c5\u5831\u3092\u96a0\u3059\uff09
-    // AI\u30d7\u30ec\u30a4\u30e4\u30fc\u306b\u306f\u5b8c\u5168\u306a\u60c5\u5831\u3092\u6e21\u3059\uff08\u653b\u6483\u5224\u5b9a\u306b\u5fc5\u8981\uff09
-    const hiddenShields = player.isAI ? opponent.shields : opponent.shields.map(s => {
+    if (!player) return null;
+    const isAiPlayer = player.isAI || false;
+    const hiddenShields = (opponent && opponent.shields) ? (isAiPlayer ? opponent.shields : opponent.shields.map(s => {
       if (!s.destroyed) {
         return {
           id: s.id,
@@ -1198,7 +1198,7 @@ class GameEngine {
         };
       }
       return s;
-    });
+    })) : [];
 
     return {
       ...this.getGameStateForClients(),

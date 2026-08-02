@@ -9,24 +9,54 @@ const AIPlayer = require('../game/AIPlayer');
 
 const LOG_FILE = path.join(__dirname, '../data/simulation_error.log');
 
-// デッキの自動構築（server.js からコピー）
-function buildRandomDeck(cardPool, color1, color2) {
+// デッキの自動構築（server.js からコピーし、極端なタイプに対応）
+function buildExtremeDeck(cardPool, color1, color2, type = 'normal') {
   const validCards = cardPool.filter(c => c.color === color1 || c.color === color2 || c.color === 'neutral');
+  let filtered = [...validCards];
+
+  if (type === 'spell_heavy') {
+    // スペルカードを最優先
+    filtered.sort((a, b) => {
+      if (a.type === 'spell' && b.type !== 'spell') return -1;
+      if (a.type !== 'spell' && b.type === 'spell') return 1;
+      return 0;
+    });
+  } else if (type === 'heavy') {
+    // コスト高めを最優先
+    filtered.sort((a, b) => b.cost - a.cost);
+  } else if (type === 'light') {
+    // 低コストかつバニラ優先
+    filtered.sort((a, b) => {
+      const aVanilla = !a.text && (!a.keywords || a.keywords.length === 0) ? 1 : 0;
+      const bVanilla = !b.text && (!b.keywords || b.keywords.length === 0) ? 1 : 0;
+      if (aVanilla !== bVanilla) return bVanilla - aVanilla;
+      return a.cost - b.cost;
+    });
+  } else {
+    // ランダムシャッフル
+    filtered.sort(() => Math.random() - 0.5);
+  }
+
   const deck = [];
-  for (const card of validCards) {
+  // 優先度の高いカードから順に投入
+  for (const card of filtered) {
+    if (deck.length >= 40) break;
     const copies = Math.min(card.maxCopies || 3, 3);
     for (let i = 0; i < copies; i++) {
-      deck.push(card.id);
+      if (deck.length < 40) {
+        deck.push(card.id);
+      }
     }
   }
-  while (deck.length > 40) {
-    deck.splice(Math.floor(Math.random() * deck.length), 1);
-  }
+
+  // 40枚に満たない場合は補填
   while (deck.length < 40) {
     const randomCard = validCards[Math.floor(Math.random() * validCards.length)];
     deck.push(randomCard.id);
   }
-  return deck;
+
+  // シャッフルして返す
+  return deck.sort(() => Math.random() - 0.5);
 }
 
 function getRandomShields(shieldPool, count) {
@@ -52,7 +82,7 @@ async function runSimulation() {
   });
   const shieldPool = gameData.shields;
 
-  const totalMatches = 100;
+  const totalMatches = 1000;
   let p1Wins = 0;
   let p2Wins = 0;
   let totalTurns = 0;
@@ -70,13 +100,18 @@ async function runSimulation() {
     const p2c1 = colors[Math.floor(Math.random() * colors.length)];
     const p2c2 = colors[colors.indexOf(p2c1) === 0 ? 1 : 0] || 'neutral';
 
-    const p1Deck = buildRandomDeck(cardPool, p1c1, p1c2);
-    const p2Deck = buildRandomDeck(cardPool, p2c1, p2c2);
+    // デッキタイプの決定（確率ブレンド）
+    const deckTypes = ['normal', 'spell_heavy', 'heavy', 'light'];
+    const p1Type = deckTypes[Math.floor(Math.random() * deckTypes.length)];
+    const p2Type = deckTypes[Math.floor(Math.random() * deckTypes.length)];
+
+    const p1Deck = buildExtremeDeck(cardPool, p1c1, p1c2, p1Type);
+    const p2Deck = buildExtremeDeck(cardPool, p2c1, p2c2, p2Type);
     const p1Shields = getRandomShields(shieldPool, 3);
     const p2Shields = getRandomShields(shieldPool, 3);
 
-    const p1Info = { id: 'p1', name: `AI_1_${p1c1}_${p1c2}`, avatar: '1', deckCardIds: p1Deck, shieldIds: p1Shields, isAI: true };
-    const p2Info = { id: 'p2', name: `AI_2_${p2c1}_${p2c2}`, avatar: '2', deckCardIds: p2Deck, shieldIds: p2Shields, isAI: true };
+    const p1Info = { id: 'p1', name: `AI_1_${p1c1}_${p1c2}_(${p1Type})`, avatar: '1', deckCardIds: p1Deck, shieldIds: p1Shields, isAI: true };
+    const p2Info = { id: 'p2', name: `AI_2_${p2c1}_${p2c2}_(${p2Type})`, avatar: '2', deckCardIds: p2Deck, shieldIds: p2Shields, isAI: true };
 
     const engine = new GameEngine(gameData);
     const ai1 = new AIPlayer('p1', gameData.cardMap, 'hard');

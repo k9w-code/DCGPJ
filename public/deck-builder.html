@@ -93,9 +93,18 @@
               <button class="pill" data-durability="3">3</button>
             </div>
           </div>
-          <!-- 検索/キーワードフィルタ -->
+          <!-- 検索/キーワード/パック/ソートフィルタ -->
           <div class="search-filter-bar">
             <input type="text" id="search-input" placeholder="カードを検索..." class="glass-input">
+            <select id="sort-order" class="glass-select" title="カードの並び替え">
+              <option value="cost">ソート: コスト順</option>
+              <option value="rarity">ソート: レアリティ順</option>
+              <option value="atk">ソート: ATK順</option>
+              <option value="hp">ソート: HP順</option>
+            </select>
+            <select id="expansion-filter" class="glass-select" title="パック/拡張セット切り替え">
+              <option value="all">すべてのパック</option>
+            </select>
             <select id="keyword-filter" class="glass-select">
               <option value="all">すべてのキーワード</option>
             </select>
@@ -128,7 +137,7 @@
             </svg>
             <span>ヘルプ</span>
           </button>
-          <h1 style="margin-left: 4px; font-size: 15px; font-weight: 700; color: #fbbf24; white-space: nowrap;">デッキ編成 Vol.148</h1>
+          <h1 style="margin-left: 4px; font-size: 15px; font-weight: 700; color: #fbbf24; white-space: nowrap;">デッキ編成 Vol.149</h1>
         </div>
         <div class="header-actions">
           <div class="deck-slots-container">
@@ -151,6 +160,11 @@
               </button>
               
               <div class="deck-menu-dropdown" id="deck-menu-dropdown" style="display: none;">
+                <button class="deck-menu-item" id="btn-export-image" style="color: #fbbf24; font-weight: 600;">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <span>SNS用デッキ画像を出力</span>
+                </button>
+                <div class="deck-menu-divider"></div>
                 <button class="deck-menu-item" id="btn-export-code">
                   <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                   <span>デッキコードをコピー</span>
@@ -158,6 +172,15 @@
                 <button class="deck-menu-item" id="btn-import-code">
                   <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                   <span>デッキコードから読込</span>
+                </button>
+                <div class="deck-menu-divider"></div>
+                <button class="deck-menu-item" id="btn-copy-slot">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  <span>他スロットへ複製...</span>
+                </button>
+                <button class="deck-menu-item" id="btn-compare-slots">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                  <span>スロット間比較...</span>
                 </button>
                 <div class="deck-menu-divider"></div>
                 <button class="deck-menu-item" id="btn-clear-deck">
@@ -179,8 +202,13 @@
         </div>
       </div>
 
-      <div class="deck-panel-header">
-        <h2>編成中のデッキ</h2>
+      <div class="deck-panel-header" style="display: flex; align-items: center; justify-content: space-between;">
+        <div class="deck-title-editable" style="display: flex; align-items: center; gap: 6px;">
+          <h2 id="deck-title-display" style="margin: 0; font-size: 15px; color: #fbbf24;">スロット 1 のデッキ</h2>
+          <button class="btn-icon-sm" id="btn-edit-deck-name" title="デッキ名を変更" style="background: none; border: none; color: #94a3b8; cursor: pointer; padding: 2px;">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </button>
+        </div>
         <div class="deck-counts">
           <span class="deck-count-badge"><span id="deck-count">0</span>/40</span>
           <span class="deck-count-badge shield-badge"><span id="shield-count">0</span>/3</span>
@@ -260,10 +288,25 @@
     </div>
   </div>
 
+  <!-- スロット間比較モーダル -->
+  <div class="overlay compare-modal-overlay" id="compare-modal" style="display: none; z-index: 99999999; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(10, 15, 26, 0.85); backdrop-filter: blur(8px); align-items: center; justify-content: center;">
+    <div class="compare-modal-content" style="background: rgba(15, 23, 42, 0.95); border: 1px solid #fbbf24; border-radius: 12px; padding: 20px; width: 90%; max-width: 700px; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(251,191,36,0.3); padding-bottom: 10px; margin-bottom: 15px;">
+        <h2 style="margin: 0; font-size: 18px; color: #fbbf24;">🔍 スロットデッキ比較</h2>
+        <button id="btn-close-compare" class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;">閉じる ✖</button>
+      </div>
+      <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
+        <label style="font-size: 13px; color: #94a3b8;">比較対象:</label>
+        <select id="compare-target-slot" class="glass-select" style="padding: 4px 10px; font-size: 13px;"></select>
+      </div>
+      <div id="compare-result-area" style="max-height: 400px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 12px;"></div>
+    </div>
+  </div>
+
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/audio-manager.js?v=v148_real_browser_perfection"></script>
-  <script src="/js/game-renderer.js?v=v148_real_browser_perfection"></script>
-  <script src="/js/deck-builder.js?v=v148_real_browser_perfection"></script>
+  <script src="/js/audio-manager.js?v=v149_deck_bu_and_unreleased_hiding"></script>
+  <script src="/js/game-renderer.js?v=v149_deck_bu_and_unreleased_hiding"></script>
+  <script src="/js/deck-builder.js?v=v149_deck_bu_and_unreleased_hiding"></script>
   <script>
     function resizeGame() {
       const container = document.getElementById('game-container');

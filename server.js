@@ -37,9 +37,27 @@ async function initServer() {
 }
 initServer();
 
+// リリース済みエキスパンション設定（未リリースのvol2等は完全遮断）
+const ALLOWED_EXPANSIONS = ['basic'];
+
 // カードデータAPI
-app.get('/api/cards', (req, res) => res.json(gameData.cards));
-app.get('/api/shields', (req, res) => res.json(gameData.shields));
+app.get('/api/cards', (req, res) => {
+  if (req.query.dev === 'true') {
+    return res.json(gameData.cards);
+  }
+  const released = gameData.cards.filter(c => !c.expansion || ALLOWED_EXPANSIONS.includes(c.expansion));
+  res.json(released);
+});
+
+// シールドデータAPI
+app.get('/api/shields', (req, res) => {
+  if (req.query.dev === 'true') {
+    return res.json(gameData.shields);
+  }
+  const released = gameData.shields.filter(s => !s.expansion || ALLOWED_EXPANSIONS.includes(s.expansion));
+  res.json(released);
+});
+
 app.get('/api/keywords', (req, res) => res.json(gameData.keywordMap));
 
 // マスターデータ再読み込みAPI
@@ -85,7 +103,7 @@ function buildRandomDeck(cardPool, color1, color2) {
 
 // 難易度に応じた高度なAI自動構築デッキ生成
 function generateAIBalancedDeck(difficulty) {
-  const cardPool = gameData.cards;
+  const cardPool = gameData.cards.filter(c => !c.expansion || ALLOWED_EXPANSIONS.includes(c.expansion));
   let deck = [];
   
   if (difficulty === 'easy') {
@@ -146,7 +164,8 @@ function generateAIBalancedDeck(difficulty) {
 }
 
 function getRandomShields(count) {
-  const shuffled = [...gameData.shields].sort(() => Math.random() - 0.5);
+  const releasedShields = gameData.shields.filter(s => !s.expansion || ALLOWED_EXPANSIONS.includes(s.expansion));
+  const shuffled = [...releasedShields].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count).map(s => s.id);
 }
 
@@ -382,6 +401,10 @@ io.on('connection', (socket) => {
       socket.emit('error_msg', { message: 'プレイヤー情報が見つかりません。' });
       return;
     }
+
+    // 最新のソケット接続とルーム所属を担保
+    player.socket = socket;
+    socket.join(targetRoomId);
 
     // --- 厳密なサーバー側デッキバリデーション ---
     const deckCardIds = data.deckCardIds || [];
@@ -660,7 +683,8 @@ function startGame(room) {
     }
   }
 
-  // 通知: ゲーム開始 → ゲーム画面へ遷移を促す
+  // 通知: ゲーム開始 → ゲーム画面へ遷移を促す（ルーム全体同報 ＋ 個別ソケット念押し）
+  io.to(room.roomId).emit('game_started', { roomId: room.roomId });
   for (const p of room.players) {
     if (p.socket) {
       p.socket.emit('game_started', { roomId: room.roomId });

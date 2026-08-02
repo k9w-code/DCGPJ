@@ -15,6 +15,7 @@ class AIPlayer {
    * 1手ずつアクションを決定する（逐次意思決定）
    */
   decideNextAction(playerView) {
+    if (!playerView || !playerView.me) return null;
     const me = playerView.me;
     const opponent = playerView.opponent;
     const phase = playerView.phase;
@@ -315,7 +316,16 @@ class AIPlayer {
     for (const { card, originalIndex } of sortedHand) {
       if (playedIndices.has(originalIndex)) continue;
       if (availableSP < card.cost) continue;
-      if ((currentLevels[card.color] || 0) < card.cost) continue;
+      // 神族レベルのコストチェック（多色対応）
+      const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
+      let levelOk = true;
+      for (const col of colors) {
+        if (col !== 'neutral' && (currentLevels[col] || 0) < card.cost) {
+          levelOk = false;
+          break;
+        }
+      }
+      if (!levelOk) continue;
 
       if (card.type === 'unit') {
         const rowOrder = ['front', 'back'];
@@ -496,7 +506,9 @@ class AIPlayer {
         } else if (target.type === 'shield') {
           const vShield = virtualOpponentShields.find(s => s.id === target.id);
           if (vShield) {
-            vShield.currentDurability -= 1;
+            const isSiege = attacker.unit.keywords && attacker.unit.keywords.includes('siege');
+            const damage = isSiege ? 2 : 1;
+            vShield.currentDurability -= damage;
             if (vShield.currentDurability <= 0) vShield.destroyed = true;
           }
         }

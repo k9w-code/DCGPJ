@@ -45,6 +45,8 @@ let activeColors = new Set(['red', 'blue', 'green', 'white', 'black']);
 let activeType = 'all';
 let activeCost = 'all';
 let activeSearchText = '';
+let activeExpansion = 'all';
+let activeSortOrder = 'cost';
 let activeKeyword = 'all';
 let currentPreviewItem = null;
 let currentSaveSlot = 0;
@@ -70,6 +72,7 @@ async function loadData() {
     
     console.log('Data loaded:', { cards: allCards.length, shields: allShields.length });
     updateKeywordDropdown();
+    updateExpansionDropdown();
     loadDeckFromSlot(currentSaveSlot);
     initUI();
     renderGrid();
@@ -80,6 +83,32 @@ async function loadData() {
     console.error('❌ [loadData ERROR]:', err);
     alert('❌ [loadData ERROR]: ' + err.message + '\n' + err.stack);
   }
+}
+
+function updateExpansionDropdown() {
+  const expansionSet = new Set();
+  allCards.forEach(c => {
+    if (c.expansion) expansionSet.add(c.expansion);
+  });
+  allShields.forEach(s => {
+    if (s.expansion) expansionSet.add(s.expansion);
+  });
+  
+  const select = document.getElementById('expansion-filter');
+  if (!select) return;
+  
+  while (select.options.length > 1) {
+    select.remove(1);
+  }
+  
+  const expMap = { basic: 'Basic (基本)', vol2: 'Vol.2 (拡張)' };
+  
+  Array.from(expansionSet).sort().forEach(exp => {
+    const opt = document.createElement('option');
+    opt.value = exp;
+    opt.textContent = expMap[exp] || exp.toUpperCase();
+    select.appendChild(opt);
+  });
 }
 
 function updateKeywordDropdown() {
@@ -199,12 +228,101 @@ function initUI() {
     });
   }
 
+  // フィルタ：ソート順プルダウン
+  const sortOrderFilter = document.getElementById('sort-order');
+  if (sortOrderFilter) {
+    sortOrderFilter.addEventListener('change', (e) => {
+      activeSortOrder = e.target.value;
+      renderGrid();
+    });
+  }
+
+  // フィルタ：パック/エキスパンションプルダウン
+  const expansionFilter = document.getElementById('expansion-filter');
+  if (expansionFilter) {
+    expansionFilter.addEventListener('change', (e) => {
+      activeExpansion = e.target.value;
+      renderGrid();
+    });
+  }
+
   // フィルタ：キーワードプルダウン
   const keywordFilter = document.getElementById('keyword-filter');
   if (keywordFilter) {
     keywordFilter.addEventListener('change', (e) => {
       activeKeyword = e.target.value;
       renderGrid();
+    });
+  }
+
+  // === ドラッグ＆ドロップ（DnD）受け入れ ===
+  const deckPanel = document.querySelector('.deck-panel');
+  if (deckPanel) {
+    deckPanel.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+      deckPanel.classList.add('drag-over');
+    });
+    deckPanel.addEventListener('dragleave', () => {
+      deckPanel.classList.remove('drag-over');
+    });
+    deckPanel.addEventListener('drop', (e) => {
+      e.preventDefault();
+      deckPanel.classList.remove('drag-over');
+      try {
+        const raw = e.dataTransfer.getData('text/plain');
+        if (!raw) return;
+        const item = JSON.parse(raw);
+        if (item.type === 'card') {
+          const card = allCards.find(c => c.id === item.id);
+          if (card) addToDeck(card);
+        } else if (item.type === 'shield') {
+          if (!selectedShields.includes(item.id)) {
+            toggleShield(item.id);
+          }
+        }
+      } catch (err) {
+        console.error('DnD Error:', err);
+      }
+    });
+  }
+
+  // === デッキ名直接編集 ===
+  const btnEditDeckName = document.getElementById('btn-edit-deck-name');
+  if (btnEditDeckName) {
+    btnEditDeckName.addEventListener('click', () => {
+      const currentName = localStorage.getItem(`dcg_deck_name_slot_${currentSaveSlot}`) || `スロット ${currentSaveSlot + 1}`;
+      const newName = prompt('新しいデッキ名を入力してください:', currentName);
+      if (newName !== null && newName.trim() !== '') {
+        localStorage.setItem(`dcg_deck_name_slot_${currentSaveSlot}`, newName.trim());
+        updateDeckTitleDisplay();
+        updateSlotIndicators();
+        if (window.audioManager) window.audioManager.playSE('click');
+      }
+    });
+  }
+
+  // === SNS用デッキ画像エクスポート ===
+  const btnExportImage = document.getElementById('btn-export-image');
+  if (btnExportImage) {
+    btnExportImage.addEventListener('click', () => {
+      exportDeckAsImage();
+    });
+  }
+
+  // === 他スロットへ複製 ===
+  const btnCopySlot = document.getElementById('btn-copy-slot');
+  if (btnCopySlot) {
+    btnCopySlot.addEventListener('click', () => {
+      copySlotModal();
+    });
+  }
+
+  // === スロット比較 ===
+  const btnCompareSlots = document.getElementById('btn-compare-slots');
+  if (btnCompareSlots) {
+    btnCompareSlots.addEventListener('click', () => {
+      openCompareModal();
     });
   }
 
@@ -530,6 +648,7 @@ function loadDeckFromSlot(slotIndex) {
     deck = {};
     selectedShields = [];
   }
+  updateDeckTitleDisplay();
 }
 
 function updateSlotIndicators() {
@@ -576,17 +695,31 @@ function renderCardGrid() {
     const passKeyword = activeKeyword === 'all' || 
       (c.keywords && c.keywords.some(kw => kw.split(':')[0] === activeKeyword));
 
+    // エキスパンションによるフィルタ
+    const passExpansion = activeExpansion === 'all' || (c.expansion || 'basic') === activeExpansion;
+
     // 枚数制限が0のカード(トークン用)はコレクションに表示しない
     const passLimit = (typeof c.maxCopies !== 'undefined') ? c.maxCopies > 0 : true;
 
-    return passColor && passType && passCost && passSearch && passKeyword && passLimit;
+    return passColor && passType && passCost && passSearch && passKeyword && passExpansion && passLimit;
   });
   
   console.log(`Rendering Grid: Tab=${activeTab}, Total=${allCards.length}, Filtered=${filtered.length}`);
   
   filtered.sort((a, b) => {
-    const costDiff = (a.cost || 0) - (b.cost || 0);
-    if (costDiff !== 0) return costDiff;
+    if (activeSortOrder === 'cost') {
+      const costDiff = (a.cost || 0) - (b.cost || 0);
+      if (costDiff !== 0) return costDiff;
+    } else if (activeSortOrder === 'rarity') {
+      const rarityDiff = (b.rarity || 1) - (a.rarity || 1);
+      if (rarityDiff !== 0) return rarityDiff;
+    } else if (activeSortOrder === 'atk') {
+      const atkDiff = (b.attack || 0) - (a.attack || 0);
+      if (atkDiff !== 0) return atkDiff;
+    } else if (activeSortOrder === 'hp') {
+      const hpDiff = (b.hp || 0) - (a.hp || 0);
+      if (hpDiff !== 0) return hpDiff;
+    }
     const colorA = (a.colors && a.colors.length > 0 ? a.colors[0] : (a.color || 'neutral')).toLowerCase();
     const colorB = (b.colors && b.colors.length > 0 ? b.colors[0] : (b.color || 'neutral')).toLowerCase();
     return colorA.localeCompare(colorB);
@@ -597,6 +730,11 @@ function renderCardGrid() {
     const el = document.createElement('div');
     const rarityClass = card.rarity ? ` rarity-${card.rarity}` : ' rarity-1';
     el.className = `grid-item card-item${count > 0 ? ' in-deck' : ''}${rarityClass}`;
+    el.setAttribute('draggable', 'true');
+    
+    el.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'card', id: card.id }));
+    });
     
     const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
     const primaryColor = getColorCSS(colors[0]);
@@ -645,8 +783,9 @@ function renderShieldGrid() {
   grid.innerHTML = '';
   
   const filteredShields = allShields.filter(s => {
-    if (!window.activeDurability || window.activeDurability === 'all') return true;
-    return s.durability === parseInt(window.activeDurability);
+    const passDurability = !window.activeDurability || window.activeDurability === 'all' || s.durability === parseInt(window.activeDurability);
+    const passExpansion = activeExpansion === 'all' || (s.expansion || 'basic') === activeExpansion;
+    return passDurability && passExpansion;
   });
 
   for (const shield of filteredShields) {
@@ -654,6 +793,10 @@ function renderShieldGrid() {
     const el = document.createElement('div');
     el.className = `card-item shield-item${isSelected ? ' in-deck' : ''}`;
     el.style.backgroundImage = `url('${getShieldImagePath(shield)}')`;
+    el.setAttribute('draggable', 'true');
+    el.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'shield', id: shield.id }));
+    });
     
     el.innerHTML = `
       <div class="grid-card-overlay">
@@ -1152,7 +1295,11 @@ document.getElementById('btn-submit-deck').addEventListener('click', () => {
 });
 
 // ゲーム開始 → ゲーム画面へ遷移
+let isNavigatingToGame = false;
 socket.on('game_started', () => {
+  if (isNavigatingToGame) return;
+  isNavigatingToGame = true;
+  console.log('🎮 [CLIENT] game_started received, redirecting to /game.html...');
   window.location.href = '/game.html';
 });
 
@@ -1297,3 +1444,216 @@ document.addEventListener('pointerout', (e) => {
     card.style.setProperty('--foil-y', '50%');
   }
 });
+
+// ======== BU機能群: デッキ名表示・複製・比較・SNS画像生成 ========
+
+function updateDeckTitleDisplay() {
+  const display = document.getElementById('deck-title-display');
+  if (display) {
+    const savedName = localStorage.getItem(`dcg_deck_name_slot_${currentSaveSlot}`);
+    display.textContent = savedName || `スロット ${currentSaveSlot + 1} のデッキ`;
+  }
+}
+
+function copySlotModal() {
+  const targetStr = prompt(`現在のスロット ${currentSaveSlot + 1} のデッキをどのスロットに複製しますか？ (1 〜 5)`, '2');
+  if (!targetStr) return;
+  const targetNum = parseInt(targetStr.trim());
+  if (isNaN(targetNum) || targetNum < 1 || targetNum > 5) {
+    alert('1 〜 5 のスロット番号を指定してください。');
+    return;
+  }
+  const targetIndex = targetNum - 1;
+  saveDeckToSlot(targetIndex);
+  
+  const currentName = localStorage.getItem(`dcg_deck_name_slot_${currentSaveSlot}`) || `スロット ${currentSaveSlot + 1}`;
+  localStorage.setItem(`dcg_deck_name_slot_${targetIndex}`, `${currentName} (コピー)`);
+  
+  alert(`スロット ${currentSaveSlot + 1} の内容をスロット ${targetNum} に複製しました！`);
+  updateSlotIndicators();
+}
+
+function openCompareModal() {
+  const modal = document.getElementById('compare-modal');
+  const targetSelect = document.getElementById('compare-target-slot');
+  const closeBtn = document.getElementById('btn-close-compare');
+  const resultArea = document.getElementById('compare-result-area');
+  if (!modal || !targetSelect || !resultArea) return;
+
+  targetSelect.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    if (i === currentSaveSlot) continue;
+    const name = localStorage.getItem(`dcg_deck_name_slot_${i}`) || `スロット ${i + 1}`;
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `スロット ${i + 1}: ${name}`;
+    targetSelect.appendChild(opt);
+  }
+
+  const renderComparison = () => {
+    const otherSlot = parseInt(targetSelect.value);
+    if (isNaN(otherSlot)) return;
+
+    let otherDeck = {};
+    let otherShields = [];
+    try {
+      const raw = localStorage.getItem(SAVE_KEY_PREFIX + otherSlot);
+      if (raw) {
+        const d = JSON.parse(raw);
+        otherDeck = d.deck || {};
+        otherShields = d.selectedShields || [];
+      }
+    } catch (e) {}
+
+    const currentName = localStorage.getItem(`dcg_deck_name_slot_${currentSaveSlot}`) || `スロット ${currentSaveSlot + 1}`;
+    const otherName = localStorage.getItem(`dcg_deck_name_slot_${otherSlot}`) || `スロット ${otherSlot + 1}`;
+
+    const allCardIds = new Set([...Object.keys(deck), ...Object.keys(otherDeck)]);
+    let html = `<div style="font-size:13px; color:#fbbf24; margin-bottom:10px;">[現在] <b>${currentName}</b>  VS  [対象] <b>${otherName}</b></div>`;
+    html += `<table style="width:100%; border-collapse:collapse; font-size:12px; text-align:left;">`;
+    html += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2); color:#94a3b8;"><th style="padding:4px 0;">カード名</th><th style="text-align:center;">現在</th><th style="text-align:center;">対象</th><th style="text-align:center;">差分</th></tr>`;
+
+    let diffCount = 0;
+    allCardIds.forEach(id => {
+      const card = allCards.find(c => c.id === id);
+      const c1 = deck[id] || 0;
+      const c2 = otherDeck[id] || 0;
+      const diff = c1 - c2;
+      if (diff !== 0) diffCount++;
+
+      const diffStr = diff > 0 ? `<span style="color:#22c55e;">+${diff}</span>` : (diff < 0 ? `<span style="color:#ef4444;">${diff}</span>` : '0');
+      html += `<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+        <td style="padding:4px 0;">${card ? card.name : id}</td>
+        <td style="text-align:center;">${c1}</td>
+        <td style="text-align:center;">${c2}</td>
+        <td style="text-align:center;">${diffStr}</td>
+      </tr>`;
+    });
+
+    if (allCardIds.size === 0) {
+      html += `<tr><td colspan="4" style="padding:10px; text-align:center; color:#94a3b8;">比較データがありません</td></tr>`;
+    }
+
+    html += `</table>`;
+
+    html += `<div style="margin-top:15px; font-weight:600; color:#fbbf24;">🛡️ シールド比較</div>`;
+    html += `<div style="font-size:12px; margin-top:4px;">`;
+    html += `<div>[現在]: ${selectedShields.map(id => (allShields.find(s => s.id === id) || {}).name || id).join(', ') || '未選択'}</div>`;
+    html += `<div>[対象]: ${otherShields.map(id => (allShields.find(s => s.id === id) || {}).name || id).join(', ') || '未選択'}</div>`;
+    html += `</div>`;
+
+    resultArea.innerHTML = html;
+  };
+
+  targetSelect.onchange = renderComparison;
+  closeBtn.onclick = () => { modal.style.display = 'none'; };
+  renderComparison();
+  modal.style.display = 'flex';
+}
+
+function exportDeckAsImage() {
+  const currentName = localStorage.getItem(`dcg_deck_name_slot_${currentSaveSlot}`) || `スロット ${currentSaveSlot + 1}`;
+  
+  const canvas = document.createElement('canvas');
+  canvas.width = 1200;
+  canvas.height = 700;
+  const ctx = canvas.getContext('2d');
+
+  const grad = ctx.createLinearGradient(0, 0, 1200, 700);
+  grad.addColorStop(0, '#0f172a');
+  grad.addColorStop(0.5, '#1e1b4b');
+  grad.addColorStop(1, '#020617');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1200, 700);
+
+  ctx.strokeStyle = '#fbbf24';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(10, 10, 1180, 680);
+
+  ctx.fillStyle = '#fbbf24';
+  ctx.font = 'bold 28px "Outfit", "Inter", sans-serif';
+  ctx.fillText(`神理創世 DCG — ${currentName}`, 30, 50);
+
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '14px sans-serif';
+  ctx.fillText(`作成日: ${new Date().toLocaleDateString()} | カード40枚 / シールド3枚`, 30, 75);
+
+  const deckEntries = Object.entries(deck).map(([id, count]) => {
+    return { card: allCards.find(c => c.id === id), count };
+  }).filter(e => e.card).sort((a, b) => a.card.cost - b.card.cost);
+
+  const startX = 30;
+  const startY = 100;
+  const cardW = 130;
+  const cardH = 38;
+  const gapX = 12;
+  const gapY = 10;
+
+  deckEntries.forEach((entry, idx) => {
+    const col = idx % 8;
+    const row = Math.floor(idx / 8);
+    const x = startX + col * (cardW + gapX);
+    const y = startY + row * (cardH + gapY);
+
+    ctx.fillStyle = 'rgba(30, 41, 59, 0.9)';
+    ctx.fillRect(x, y, cardW, cardH);
+    ctx.strokeStyle = getColorCSS(entry.card.color);
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, cardW, cardH);
+
+    ctx.fillStyle = getColorCSS(entry.card.color);
+    ctx.fillRect(x, y, 24, cardH);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 14px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(entry.card.cost, x + 12, y + 24);
+
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(entry.card.name.slice(0, 7), x + 28, y + 23);
+
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(`×${entry.count}`, x + cardW - 6, y + 23);
+  });
+
+  const shieldY = 460;
+  ctx.fillStyle = '#fbbf24';
+  ctx.font = 'bold 18px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('🛡️ 選択シールド', 30, shieldY);
+
+  selectedShields.forEach((id, idx) => {
+    const shield = allShields.find(s => s.id === id);
+    const x = 30 + idx * 370;
+    const y = shieldY + 15;
+    ctx.fillStyle = 'rgba(30, 41, 59, 0.9)';
+    ctx.fillRect(x, y, 350, 45);
+    ctx.strokeStyle = '#b8860b';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, 350, 45);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 14px sans-serif';
+    ctx.fillText(shield ? shield.name : id, x + 15, y + 27);
+
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = '12px sans-serif';
+    ctx.fillText(`耐久${shield ? shield.durability : 1}`, x + 290, y + 27);
+  });
+
+  ctx.fillStyle = '#64748b';
+  ctx.font = '12px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Generated by Antigravity DCG Engine', 600, 675);
+
+  const link = document.createElement('a');
+  link.download = `DCG_Deck_${currentName.replace(/\s+/g, '_')}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+
+  if (window.audioManager) window.audioManager.playSE('levelUp');
+  alert('📸 デッキのPNG画像を出力してダウンロードしました！');
+}

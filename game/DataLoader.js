@@ -239,17 +239,18 @@ async function loadAllData(options = {}) {
       rarity: isNaN(rarity) ? 1 : rarity,
       durability: isNaN(life) ? 1 : life,
       abilities: abilities,
-      text: row.text || '', // \u30c8\u30c3\u30d7\u30ec\u30d9\u30eb\u306b\u3082\u8ffd\u52a0
-      // \u904e\u53bb\u306e\u30b3\u30fc\u30c9\u3068\u306e\u4e92\u63db\u6027\u306e\u305f\u3081\u306b skill \u30aa\u30d6\u30b8\u30a7\u30af\u30c8\u3082\u30e1\u30a4\u30f3\u306e\u30a2\u30d3\u30ea\u30c6\u30a3\u3067\u69cb\u7bc9
+      text: row.text || '', // トップレベルにも追加
+      // 過去のコードとの互換性のために skill オブジェクトもメインのアビリティで構築
       skill: abilities.length > 0 ? {
         id: abilities[0].id,
-        name: row.name + '\u306e\u30b9\u30ad\u30eb',
+        name: row.name + 'のスキル',
         effectType: abilities[0].effect,
         effectValue: abilities[0].value,
         target: abilities[0].target,
         text: row.text || '',
         description: row.description || ''
-      } : null
+      } : null,
+      expansion: row.expansion || 'basic'
     };
   });
 

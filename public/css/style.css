@@ -4121,3 +4121,67 @@ body.targeting-mode {
     z-index: 1000 !important;
   }
 }
+
+/* === BU: Deck Builder UI Styles === */
+.deck-panel.drag-over {
+  border-color: #fbbf24 !important;
+  box-shadow: 0 0 25px rgba(251, 191, 36, 0.4) !important;
+}
+
+.mana-curve-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 48px;
+  gap: 4px;
+  padding: 4px 2px 0 2px;
+}
+
+.mana-bar-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.mana-bar-value {
+  font-size: 10px;
+  font-weight: 700;
+  color: #fbbf24;
+  height: 12px;
+  line-height: 12px;
+}
+
+.mana-bar-outer {
+  width: 100%;
+  flex: 1;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px 3px 0 0;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.mana-bar-inner {
+  width: 100%;
+  background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%);
+  border-radius: 2px 2px 0 0;
+  transition: height 0.3s ease;
+}
+
+.mana-bar-label {
+  font-size: 10px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.color-balance-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  margin-top: 4px;
+}
+
