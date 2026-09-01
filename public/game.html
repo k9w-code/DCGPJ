@@ -8,9 +8,9 @@
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#030712">
-  <title>DCG - ゲーム画面 Vol.148</title>
-  <link rel="stylesheet" href="/css/style.css?v=v148_real_browser_perfection">
-  <link rel="stylesheet" href="/css/battle-premium.css?v=v148_real_browser_perfection">
+  <title>DCG - ゲーム画面 Vol.203</title>
+  <link rel="stylesheet" href="/css/style.css?v=v203_PERFECT_BATTLE_FLOW_UNIFIED">
+  <link rel="stylesheet" href="/css/battle-premium.css?v=v203_PERFECT_BATTLE_FLOW_UNIFIED">
 </head>
 <body>
   <!-- 画面回転プロンプト -->
@@ -27,14 +27,22 @@
     <div style="font-size: 16px; color: #a09880;">Please rotate your device to landscape</div>
   </div>
 
-  <div class="overlay mulligan-overlay" id="mulligan-overlay" style="display: none;">
+  <div class="mulligan-overlay" id="mulligan-overlay" style="display: none; opacity: 0;">
     <div class="mulligan-panel glass-panel">
-      <h2>MULLIGAN</h2>
-      <p>交換したいカードをタップして、決定ボタンを押してください</p>
+      <div class="mulligan-header">
+        <h2>MULLIGAN</h2>
+        <p class="mulligan-subtitle">交換したいカードを選択してください<br><span class="mulligan-hint">選択したカードは新しいカードに引き直されます</span></p>
+      </div>
       <div class="mulligan-cards" id="mulligan-cards"></div>
       <div class="mulligan-actions">
-        <button class="btn btn-primary" id="btn-mulligan-confirm">選択したカードを交換</button>
-        <button class="btn" id="btn-mulligan-keep-all">すべてキープ</button>
+        <button class="btn btn-primary mulligan-confirm-btn" id="btn-mulligan-confirm">
+          <span class="btn-icon">↺</span>
+          <span class="btn-text">REDRAW<span class="btn-sub">選択したカードを交換</span></span>
+        </button>
+        <button class="btn mulligan-keep-btn" id="btn-mulligan-keep-all">
+          <span class="btn-icon">✓</span>
+          <span class="btn-text">KEEP ALL<span class="btn-sub">このままゲーム開始</span></span>
+        </button>
       </div>
     </div>
   </div>
@@ -213,7 +221,7 @@
   </div>
 
   <!-- 対戦開始のVS激突カットインオーバーレイ -->
-  <div id="vs-cutin-overlay" class="vs-cutin-overlay" style="display: none;">
+  <div id="vs-cutin-overlay" class="vs-cutin-overlay" style="display: none !important; pointer-events: none !important;">
     <div class="vs-bg-flash"></div>
     <div class="vs-curtain vs-left">
       <div class="vs-card">
@@ -249,7 +257,8 @@
   <!-- ゲーム本体（スケーリングの対象） -->
   <div class="game-wrapper" id="game-wrapper">
     <div class="game-container" id="game-container">
-      <div id="debug-signal" style="display:none;"></div>
+      <!-- debug-signal: 内部通信用（本番では非表示） -->
+      <div id="debug-signal" aria-hidden="true" style="display:none; position:absolute; pointer-events:none;"></div>
       
       <div class="side-area left-side">
         <div class="avatar-block opponent-block">
@@ -317,16 +326,16 @@
       </div>
 
       <div class="side-area right-side">
-        <div class="turn-indicator" id="turn-indicator">
+        <div class="turn-indicator" id="turn-indicator" style="opacity:0;transition:opacity 0.5s ease;">
           <div class="turn-number">TURN 1</div>
           <div class="turn-phase">YOUR TURN</div>
         </div>
-        <div class="turn-timer-container" id="turn-timer-container">
+        <div class="turn-timer-container idle" id="turn-timer-container">
           <svg class="timer-ring" width="70" height="70">
             <circle class="timer-ring-circle-bg" cx="35" cy="35" r="30"></circle>
             <circle class="timer-ring-circle" id="timer-ring-circle" cx="35" cy="35" r="30"></circle>
           </svg>
-          <div class="timer-seconds" id="timer-seconds">90</div>
+          <div class="timer-seconds" id="timer-seconds"></div>
         </div>
         <div class="log-toggle-btn" id="log-toggle-btn" title="戦闘履歴 (LOG)">
           <svg viewBox="0 0 24 24" class="svg-icon-btn">
@@ -353,7 +362,7 @@
           <div class="log-content" id="log-content"></div>
         </div>
         <div class="action-panel glass-panel">
-          <div class="panel-subtitle">DIVINE CRYSTAL (COST: 1 SP)</div>
+          <div class="panel-subtitle">神族強化 (1 SP)</div>
           <div class="crystal-buttons" id="tribe-raise-panel">
             <div id="crystal-confirm-popup" class="crystal-confirm-popup" style="display: none;">
               <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px;">
@@ -386,16 +395,36 @@
       <!-- 攻撃矢印 -->
       <svg id="attack-arrow-svg" viewBox="0 0 1920 1080" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:9000; display:none;">
         <defs>
-          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
-          <linearGradient id="arrow-gradient" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(244, 63, 94, 0.2)" /><stop offset="100%" stop-color="rgba(244, 63, 94, 1)" /></linearGradient>
-          <linearGradient id="timer-gradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#d97706"/><stop offset="50%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#fef08a"/></linearGradient>
-          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#f43f5e" /></marker>
+          <!-- 強化グロー -->
+          <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="6" result="blur1"/>
+            <feGaussianBlur stdDeviation="12" result="blur2"/>
+            <feMerge><feMergeNode in="blur2"/><feMergeNode in="blur1"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <!-- エネルギーライン（赤→オレンジ） -->
+          <linearGradient id="arrow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="rgba(244,63,94,0.0)"/>
+            <stop offset="40%" stop-color="rgba(244,63,94,0.7)"/>
+            <stop offset="100%" stop-color="#ff9f1c"/>
+          </linearGradient>
+          <linearGradient id="timer-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#d97706"/>
+            <stop offset="50%" stop-color="#fbbf24"/>
+            <stop offset="100%" stop-color="#fef08a"/>
+          </linearGradient>
+          <!-- 大型・鋭角な矢頭 -->
+          <marker id="arrowhead" markerWidth="14" markerHeight="10" refX="12" refY="5" orient="auto">
+            <path d="M0,0 L14,5 L0,10 L3,5 Z" fill="#ff9f1c"/>
+          </marker>
         </defs>
-        <path id="attack-arrow-line" d="" stroke="url(#arrow-gradient)" stroke-width="12" stroke-dasharray="30,20" marker-end="url(#arrowhead)" filter="url(#glow)" fill="none" />
+        <!-- 影線（深み） -->
+        <path id="attack-arrow-shadow" d="" stroke="rgba(0,0,0,0.5)" stroke-width="16" stroke-linecap="round" fill="none"/>
+        <!-- メイン矢印 -->
+        <path id="attack-arrow-line" d="" stroke="url(#arrow-gradient)" stroke-width="8" stroke-dasharray="20,12" stroke-linecap="round" marker-end="url(#arrowhead)" filter="url(#glow)" fill="none"/>
       </svg>
 
-      <div id="targeting-instruction" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; justify-content: center; align-items: center; z-index: 10000;">
-        <div class="targeting-message" style="background: rgba(0,0,0,0.8); color: #fbbf24; font-size: 42px; font-weight: 900; padding: 20px 60px; border: 4px solid #fbbf24; border-radius: 60px;">SELECT TARGET FOR ABILITY</div>
+      <div id="targeting-instruction" class="targeting-instruction-overlay">
+        <div class="targeting-message">対象を選択</div>
       </div>
 
 
@@ -413,10 +442,10 @@
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/audio-manager.js?v=v148_real_browser_perfection"></script>
-  <script src="/js/vfx-engine.js?v=v148_real_browser_perfection"></script>
-  <script src="/js/game-renderer.js?v=v148_real_browser_perfection"></script>
-  <script src="/js/game-client.js?v=v148_real_browser_perfection"></script>
+  <script src="/js/audio-manager.js?v=v203_PERFECT_BATTLE_FLOW_UNIFIED"></script>
+  <script src="/js/vfx-engine.js?v=v203_PERFECT_BATTLE_FLOW_UNIFIED"></script>
+  <script src="/js/game-renderer.js?v=v203_PERFECT_BATTLE_FLOW_UNIFIED"></script>
+  <script src="/js/game-client.js?v=v203_PERFECT_BATTLE_FLOW_UNIFIED"></script>
   
   <script>
     function resizeGame() {

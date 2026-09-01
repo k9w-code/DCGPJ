@@ -1000,7 +1000,7 @@ function renderHand(state, selectedCardIndex, onCardClick) {
     const firstColor = cardColors[0] ? cardColors[0].toLowerCase() : 'neutral';
     const rarityClass = ` rarity-${card.rarity || 1}`;
     const drawAnimClass = isNewCard ? ' draw-in-anim' : '';
-    el.className = `hand-card aura-${firstColor}${selectedCardIndex === index ? ' selected' : ''}${!canPlay ? ' unplayable' : ''}${rarityClass}${drawAnimClass}`;
+    el.className = `hand-card aura-${firstColor}${selectedCardIndex === index ? ' selected' : ''}${!canPlay ? ' playable' : ' unplayable'}${rarityClass}${drawAnimClass}`;
     
     const offset = handCount > 1 ? (index - (handCount - 1) / 2) : 0;
     const angle = handCount > 1 ? offset * (maxAngle / ((handCount - 1) || 1)) : 0;
@@ -1151,7 +1151,14 @@ function renderTurnInfo(state) {
   const isMyTurn = state.currentPlayerId === state.me.id;
   const indicator = document.getElementById('turn-indicator');
   if (indicator) {
-    indicator.innerHTML = `<div class="turn-number">TURN ${state.turnNumber}</div><div class="turn-phase">${isMyTurn ? 'YOUR TURN' : "ENEMY'S TURN"}</div>`;
+    let _nEl = indicator.querySelector('.turn-number');
+    let _pEl = indicator.querySelector('.turn-phase');
+    if (!_nEl) { _nEl = document.createElement('div'); indicator.appendChild(_nEl); }
+    if (!_pEl) { _pEl = document.createElement('div'); indicator.appendChild(_pEl); }
+    _nEl.className = 'turn-number';
+    _nEl.textContent = `TURN ${state.turnNumber}`;
+    _pEl.className = 'turn-phase' + (isMyTurn ? ' my-turn-phase' : '');
+    _pEl.textContent = isMyTurn ? 'YOUR TURN' : "ENEMY'S TURN";
   }
   const endBtn = document.getElementById('btn-end-turn');
   if (endBtn) {
@@ -1160,17 +1167,37 @@ function renderTurnInfo(state) {
     if (isMyTurn) {
       endBtn.classList.add('my-turn');
       endBtn.classList.remove('opp-turn');
-      endBtn.textContent = 'TURN END';
+      const _btxt1 = endBtn.querySelector('.btn-text'); if (_btxt1) _btxt1.textContent = 'TURN END'; else endBtn.textContent = 'TURN END';
     } else {
       endBtn.classList.remove('my-turn');
       endBtn.classList.add('opp-turn');
-      endBtn.textContent = 'ENEMY TURN';
+      const _btxt2 = endBtn.querySelector('.btn-text'); if (_btxt2) _btxt2.textContent = 'ENEMY TURN'; else endBtn.textContent = 'ENEMY TURN';
     }
   }
 }
 
 window.updateUI = function() {
   const state = window.gameState;
+
+  // Bulwark: main/action phase cleanup
+  if (state && (state.phase === 'main' || state.phase === 'action')) {
+    if (!window.battleIntroStarted) {
+      ['order-cutin-overlay','vs-cutin-overlay','battle-start-overlay'].forEach(function(id){
+        var el = document.getElementById(id);
+        if (el) el.remove();
+      });
+      var _mull = document.getElementById('mulligan-overlay');
+      if (_mull && _mull.style.display !== 'none') {
+        _mull.style.cssText = 'display:none!important;opacity:0!important;pointer-events:none!important;';
+      }
+    }
+    var _gc = document.getElementById('game-container');
+    if (_gc) { _gc.style.filter='none'; _gc.style.opacity='1'; _gc.style.pointerEvents='auto'; }
+    var _ti = document.getElementById('turn-indicator');
+    if (_ti && _ti.style.opacity === '0') _ti.style.opacity = '1';
+    var _tc = document.getElementById('turn-timer-container');
+    if (_tc) _tc.classList.remove('idle');
+  }
   if (!state || !state.me) {
     console.log('\u23f3 [RENDER] updateUI: No state yet');
     return;
@@ -1212,7 +1239,7 @@ window.updateUI = function() {
 
     // --- \u30bf\u30fc\u30f3\u958b\u59cb\u6f14\u51fa\uff08\u30b9\u30d7\u30e9\u30c3\u30b7\u30e5\uff09 ---
     // \u30bf\u30fc\u30f3\u6570\u307e\u305f\u306f\u624b\u756a\u30d7\u30ec\u30a4\u30e4\u30fc\u304c\u5909\u308f\u3063\u305f\u77ac\u9593\u306b\u4e00\u5ea6\u3060\u3051\u8868\u793a
-    if (state.phase === 'main' || state.phase === 'mulligan') {
+    if (state.phase === 'main') { // mulligan中はスプラッシュ表示しない
       if (state.turnNumber !== window.lastTurnNumber || state.currentPlayerId !== window.lastTurnPlayerId) {
         const splashPremium = document.getElementById('turn-splash-premium');
         const emblem = document.getElementById('turn-emblem');

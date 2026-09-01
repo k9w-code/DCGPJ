@@ -44,6 +44,18 @@ body, .card-name, .log-entry, .mulligan-title, .cd-name, .cd-flavor-text, .cd-ef
 .btn-end-turn:hover:not(:disabled), .mulligan-confirm-btn:hover {
   filter: brightness(1.2) drop-shadow(0 0 10px rgba(255, 215, 0, 0.6)) !important;
 }
+/* 相手ターン中 / disabled 状態は明確に暲暗調色にして識別させる */
+.btn-end-turn:disabled,
+.btn-end-turn.opp-turn {
+  background: linear-gradient(135deg, #1a1a2e, #16213e) !important;
+  border: 2px solid rgba(100, 100, 120, 0.4) !important;
+  color: rgba(160, 160, 180, 0.6) !important;
+  text-shadow: none !important;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.6) !important;
+  filter: none !important;
+  cursor: not-allowed !important;
+  opacity: 0.55 !important;
+}
 
 /* 4. Settings Icon */
 .settings-btn {
@@ -124,7 +136,13 @@ body, .card-name, .log-entry, .mulligan-title, .cd-name, .cd-flavor-text, .cd-ef
   justify-content: center !important;
 }
 .sp-orb-display .sp-label {
-  display: none !important; /* 'SP' という文字を隠す */
+  display: flex !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  color: rgba(255, 215, 0, 0.8) !important;
+  line-height: 1 !important;
+  margin-bottom: 2px !important;
 }
 .sp-orb-display .sp-value {
   margin-top: 0 !important; /* 値を中央に */
@@ -336,22 +354,22 @@ body, .card-name, .log-entry, .mulligan-title, .cd-name, .cd-flavor-text, .cd-ef
   font-weight: 800 !important;
 }
 
-/* --- 盤面スロットの枠の洗練（立体的な台座風） --- */
+/* --- 盤面スロットの枚の洗練（立体的な台座風）--- */
 .board-slot {
-  background: linear-gradient(180deg, rgba(20, 30, 45, 0.4) 0%, rgba(10, 15, 25, 0.8) 100%) !important;
-  border: 1px solid rgba(184, 134, 11, 0.4) !important;
-  border-top: 1px solid rgba(255, 215, 0, 0.6) !important; /* 天面のハイライト */
-  border-bottom: 4px solid rgba(100, 70, 0, 0.8) !important; /* 底面の厚み */
+  background: linear-gradient(180deg, rgba(25, 38, 58, 0.55) 0%, rgba(12, 18, 35, 0.85) 100%) !important;
+  border: 1px solid rgba(184, 134, 11, 0.45) !important;
+  border-top: 1px solid rgba(255, 215, 0, 0.5) !important;
+  border-bottom: 3px solid rgba(100, 70, 0, 0.7) !important;
   border-radius: 12px !important;
   box-shadow: 
-    0 10px 20px rgba(0,0,0,0.8), /* 落ち影 */
-    inset 0 2px 10px rgba(255, 215, 0, 0.1), /* 内側の反射 */
-    inset 0 0 30px rgba(0,0,0,0.9) !important; /* 深み */
-  backdrop-filter: blur(8px);
+    0 8px 16px rgba(0,0,0,0.7),
+    inset 0 2px 8px rgba(255, 215, 0, 0.08),
+    inset 0 0 20px rgba(0,0,0,0.7) !important;
+  backdrop-filter: blur(4px);
 }
 
 .board-slot.empty {
-  background: rgba(8, 12, 28, 0.6) !important;
+  background: rgba(14, 20, 42, 0.5) !important;
 }
 
 /* ============================================================
@@ -362,16 +380,16 @@ body, .card-name, .log-entry, .mulligan-title, .cd-name, .cd-flavor-text, .cd-ef
 
 /* 前列スロット — 戦場の最前線 */
 .board-slot.front {
-  border-color: rgba(220, 80, 60, 0.55) !important;
-  border-top-color: rgba(255, 140, 100, 0.7) !important;
-  border-bottom-color: rgba(140, 30, 10, 0.9) !important;
+  border-color: rgba(220, 80, 60, 0.6) !important;
+  border-top-color: rgba(255, 150, 110, 0.75) !important;
+  border-bottom-color: rgba(150, 35, 10, 0.9) !important;
   box-shadow:
-    0 10px 20px rgba(0,0,0,0.8),
-    inset 0 2px 8px rgba(255, 100, 60, 0.12),
-    inset 0 0 30px rgba(0,0,0,0.85) !important;
+    0 8px 16px rgba(0,0,0,0.7),
+    inset 0 2px 8px rgba(255, 100, 60, 0.1),
+    inset 0 0 25px rgba(0,0,0,0.8) !important;
 }
 .board-slot.front.empty {
-  background: rgba(28, 10, 8, 0.55) !important;
+  background: rgba(30, 10, 8, 0.5) !important;
 }
 
 /* 後列スロット — 後衛・魔法陣 */
@@ -388,7 +406,7 @@ body, .card-name, .log-entry, .mulligan-title, .cd-name, .cd-flavor-text, .cd-ef
   background: rgba(6, 12, 30, 0.6) !important;
 }
 
-/* 行ラベル（FRONT LINE / BACK LINE） */
+/* 行ラベル（FRONT LINE / BACK LINE）*/
 .board-row-label {
   font-family: var(--font-fantasy);
   font-size: 9px;
@@ -400,10 +418,12 @@ body, .card-name, .log-entry, .mulligan-title, .cd-name, .cd-flavor-text, .cd-ef
   user-select: none;
 }
 .board-row-label.front-label {
-  color: rgba(255, 130, 90, 0.55);
+  color: rgba(255, 140, 100, 0.75) !important;
+  text-shadow: 0 0 8px rgba(220, 80, 60, 0.5) !important;
 }
 .board-row-label.back-label {
-  color: rgba(90, 150, 255, 0.5);
+  color: rgba(110, 170, 255, 0.7) !important;
+  text-shadow: 0 0 8px rgba(60, 120, 255, 0.4) !important;
 }
 
 /* --- can-place 波紋パルスアニメーション --- */
@@ -602,21 +622,154 @@ body, .card-name, .log-entry, .mulligan-title, .cd-name, .cd-flavor-text, .cd-ef
   border-radius: 20px !important;
 }
 
+/* マリガンオーバーレイ全体に深い星空背景を付与 */
+#mulligan-overlay {
+  background: radial-gradient(ellipse at 50% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 70%),
+              radial-gradient(ellipse at 20% 70%, rgba(59, 130, 246, 0.1) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 80%, rgba(220, 38, 38, 0.08) 0%, transparent 60%),
+              linear-gradient(180deg, #030712 0%, #0a0f1e 50%, #030712 100%) !important;
+}
+
+/* MULLIGAN タイトルに金色ゴールドグロー + パルスアニメーション */
+@keyframes mulliganGoldGlow {
+  0%, 100% {
+    text-shadow: 0 0 20px rgba(251, 191, 36, 0.4),
+                 0 0 40px rgba(217, 119, 6, 0.2),
+                 0 4px 12px rgba(0,0,0,0.9);
+    -webkit-text-fill-color: transparent;
+  }
+  50% {
+    text-shadow: 0 0 40px rgba(254, 240, 138, 0.8),
+                 0 0 80px rgba(251, 191, 36, 0.5),
+                 0 0 120px rgba(217, 119, 6, 0.3),
+                 0 4px 12px rgba(0,0,0,0.9);
+    -webkit-text-fill-color: transparent;
+  }
+}
+
 .mulligan-panel h2 {
-  font-size: 42px !important;
-  letter-spacing: 12px !important;
-  background: linear-gradient(135deg, #fffbeb, #d4a017, #a78bfa) !important;
+  font-size: 48px !important;
+  letter-spacing: 14px !important;
+  margin: 0 0 8px 0 !important;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef08a 25%, #d4a017 50%, #fef08a 75%, #fffbeb 100%) !important;
+  background-size: 200% auto !important;
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
+  animation: mulliganGoldGlow 2.5s ease-in-out infinite,
+             shimmer 3s linear infinite !important;
 }
 
-.mulligan-actions .btn {
-  padding: 14px 36px !important;
-  font-size: 16px !important;
+@keyframes shimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* マリガンパネル本体をより広く */
+.mulligan-panel {
+  border-radius: 20px !important;
+  padding: 36px 40px 32px !important;
+  max-width: 800px !important;
+  width: 90vw !important;
+  border: 1px solid rgba(251, 191, 36, 0.25) !important;
+  box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 100px rgba(139, 92, 246, 0.15), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+}
+
+/* ヘッダーエリア */
+.mulligan-header {
+  text-align: center !important;
+  margin-bottom: 28px !important;
+}
+
+.mulligan-subtitle {
+  color: rgba(203, 213, 225, 0.85) !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  margin: 0 !important;
+  font-family: var(--font-jp) !important;
+}
+
+.mulligan-hint {
+  font-size: 11px !important;
+  color: rgba(148, 163, 184, 0.6) !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* カードコンテナ */
+.mulligan-cards {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: flex-end !important;
+  gap: 16px !important;
+  min-height: 200px !important;
+  padding: 8px 0 24px !important;
+}
+
+/* ボタンエリア */
+.mulligan-actions {
+  display: flex !important;
+  gap: 16px !important;
+  justify-content: center !important;
+  align-items: stretch !important;
+  margin-top: 8px !important;
+}
+
+/* REDRAW ボタン（メインアクション） */
+.mulligan-confirm-btn {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 14px 28px !important;
   border-radius: 12px !important;
+  letter-spacing: 1px !important;
+  min-width: 200px !important;
+}
+
+/* KEEP ALL ボタン（サブアクション） */
+.mulligan-keep-btn {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 14px 24px !important;
+  border-radius: 12px !important;
+  letter-spacing: 1px !important;
+  min-width: 180px !important;
+  background: rgba(30, 41, 59, 0.7) !important;
+  border: 1px solid rgba(100, 116, 139, 0.4) !important;
+  color: rgba(203, 213, 225, 0.9) !important;
+  transition: all 0.25s ease !important;
+}
+
+.mulligan-keep-btn:hover {
+  background: rgba(51, 65, 85, 0.8) !important;
+  border-color: rgba(148, 163, 184, 0.5) !important;
+  color: white !important;
+}
+
+.btn-icon {
+  font-size: 20px !important;
+  line-height: 1 !important;
+  flex-shrink: 0 !important;
+}
+
+.btn-text {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 2px !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
   letter-spacing: 2px !important;
 }
+
+.btn-sub {
+  font-size: 10px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.5px !important;
+  opacity: 0.75 !important;
+  font-family: var(--font-jp) !important;
+}
+
 
 /* --- リザルト画面のポリッシュ --- */
 .result-modal {
@@ -914,10 +1067,13 @@ body, .card-name, .log-entry, .mulligan-title, .cd-name, .cd-flavor-text, .cd-ef
 
 /* マリガンオーバーレイ時のカード配置の美化 */
 .mulligan-cards-container .hand-card {
-  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+              box-shadow 0.3s ease !important;
 }
 .mulligan-cards-container .hand-card:hover {
-  transform: translateY(-15px) scale(1.05) !important;
+  transform: translateY(-25px) scale(1.08) !important;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 30px rgba(251,191,36,0.3) !important;
+  z-index: 100 !important;
 }
 
 /* ==========================================================================
@@ -2485,18 +2641,7 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
 }
 
 .grid-type-label {
-  position: absolute !important;
-  bottom: 2px !important;
-  right: 2px !important;
-  background: rgba(139, 92, 246, 0.8) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 4px !important;
-  padding: 2px 6px !important;
-  font-size: 10px !important;
-  font-weight: 900 !important;
-  color: #fff !important;
-  text-shadow: 0 1px 2px #000 !important;
-  letter-spacing: 0.5px !important;
+  display: none !important;
 }
 
 /* ========================================================
@@ -3423,22 +3568,22 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
    ======================================================== */
 
 .mulligan-cards .hand-card {
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-  cursor: pointer;
-  position: relative;
+  transition: all 0.25s ease !important;
+  cursor: pointer !important;
+  position: relative !important;
 }
 
 .mulligan-cards .hand-card:hover {
-  transform: translateY(-8px) scale(1.05) !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+  transform: translateY(-8px) scale(1.03) !important;
+  box-shadow: 0 12px 30px rgba(251, 191, 36, 0.35) !important;
 }
 
 /* 交換対象として選択されたカード */
 .mulligan-cards .hand-card.selected-for-redraw {
-  border: 2px solid #ef4444 !important;
-  box-shadow: 0 0 25px rgba(239, 68, 68, 0.9) !important;
-  transform: translateY(-16px) !important;
-  filter: brightness(0.75) saturate(1.2) !important;
+  border: 3.5px solid #ef4444 !important;
+  box-shadow: 0 0 35px rgba(239, 68, 68, 0.9) !important;
+  transform: translateY(-14px) !important;
+  filter: brightness(1.1) !important;
 }
 
 .mulligan-cards .hand-card.selected-for-redraw::after {
@@ -4290,6 +4435,25 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
   transition: all 0.15s ease;
 }
 
+.cd-type-badge,
+.cd-rarity,
+.preview-rarity {
+  font-family: 'Shippori Mincho', 'Inter', system-ui, -apple-system, sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  height: 26px !important;
+  padding: 0 12px !important;
+  border-radius: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+}
+
 .btn-arrow:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.15);
   color: #fff;
@@ -4563,13 +4727,14 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
   flex-shrink: 0;
 }
 
-/* プレビュー情報エリア（スクロール可能） */
+/* プレビュー情報エリア（隙間なく吸着） */
 .preview-info {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 4px;
-  min-height: 0;
+  flex: 0 0 auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  padding-right: 0 !important;
+  min-height: 0 !important;
+  text-align: left !important;
 }
 
 .preview-info::-webkit-scrollbar {
@@ -4838,19 +5003,8 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
 
 /* --- 中央パネル: カードグリッド改善 --- */
 
-/* SPELLラベル */
 .grid-type-label {
-  font-family: 'Outfit', 'Inter', sans-serif;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: #a78bfa;
-  background: rgba(139, 92, 246, 0.25);
-  padding: 2px 8px;
-  border-radius: 4px;
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  text-transform: uppercase;
-  display: inline-block;
+  display: none !important;
 }
 
 /* カードグリッド内のカード名ラベル（ホバー時表示） */
@@ -5190,3 +5344,325 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
   filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.9)) !important;
 }
 
+/* ==========================================================================
+   📱 スマホ・モバイル端末（デバッグプレイ）専用 UI最適化レスポンシブスタイル
+   ========================================================================== */
+@media screen and (max-width: 932px), screen and (max-height: 550px) {
+  /* 1. タッチターゲット拡大（最小 44px〜48px 確保） */
+  button, .btn, .btn-primary, .btn-secondary, .btn-danger, .crystal-btn, .unit-slot, .card {
+    touch-action: manipulation !important;
+  }
+
+  /* ターン終了ボタンの操作性・極太視認性 */
+  #btn-end-turn, .btn-end-turn {
+    min-height: 48px !important;
+    min-width: 110px !important;
+    font-size: 17px !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.5px !important;
+    padding: 8px 16px !important;
+    border-radius: 24px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6) !important;
+  }
+
+  /* SP・プレイヤー名・神族レベルの文字拡大 */
+  .player-name {
+    font-size: 18px !important;
+    font-weight: 900 !important;
+  }
+
+  .sp-value, .sp-display, #p1-sp, #p2-sp {
+    font-size: 20px !important;
+    font-weight: 900 !important;
+  }
+
+  .status-badge {
+    font-size: 13px !important;
+    padding: 5px 12px !important;
+    font-weight: 800 !important;
+  }
+
+  /* 神族レベルアップ（クリスタル）のタップ領域拡大 */
+  .crystal-btn {
+    min-width: 48px !important;
+    min-height: 48px !important;
+    padding: 4px !important;
+  }
+
+  /* カード上のATK/HPバッジと文字の拡大 */
+  .unit-card .unit-stats .val {
+    font-size: 17px !important;
+    font-weight: 900 !important;
+  }
+
+  .unit-card .unit-stats .stat-badge {
+    padding: 3px 8px !important;
+    min-width: 32px !important;
+    min-height: 28px !important;
+  }
+
+  /* 盤面ユニットスロットのタップ枠拡大 */
+  .unit-slot {
+    min-width: 70px !important;
+    min-height: 90px !important;
+  }
+
+  /* 手札カードのタップ易化・浮き上がり応答性強化 */
+  .hand-card, .hand-container .card {
+    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out !important;
+  }
+
+  .hand-card:active, .hand-card.selected {
+    transform: translateY(-24px) scale(1.15) !important;
+    z-index: 999 !important;
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.9) !important;
+  }
+}
+
+
+
+
+/* ==========================================================================
+   UI/UX 全面改善パッチ v204
+   ========================================================================== */
+
+/* ① 分界線の大幅強化 */
+.battlefield-divider {
+  height: 8px !important;
+  position: relative !important;
+  overflow: visible !important;
+  flex-shrink: 0 !important;
+}
+.divider-glow {
+  position: absolute !important;
+  top: 50% !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 3px !important;
+  transform: translateY(-50%) !important;
+  background: linear-gradient(90deg,transparent 0%,rgba(218,165,32,0.3) 10%,rgba(255,220,80,0.95) 35%,#fff8c0 50%,rgba(255,220,80,0.95) 65%,rgba(218,165,32,0.3) 90%,transparent 100%) !important;
+  box-shadow: 0 0 6px 2px rgba(255,230,80,0.9), 0 0 20px 6px rgba(218,165,32,0.6), 0 0 50px 15px rgba(184,134,11,0.3) !important;
+  animation: dividerPulse 3s ease-in-out infinite !important;
+}
+@keyframes dividerPulse {
+  0%,100% { opacity: 0.85; }
+  50%      { opacity: 1; }
+}
+
+/* エリア帰属の色分け */
+.opponent-half {
+  background: linear-gradient(180deg, rgba(180,30,30,0.08) 0%, transparent 100%) !important;
+}
+.player-half {
+  background: linear-gradient(0deg, rgba(30,80,180,0.10) 0%, transparent 100%) !important;
+}
+
+/* ② ターン表示の大型化 */
+.turn-indicator {
+  text-align: center !important;
+  padding: 10px 8px !important;
+  border-radius: 12px !important;
+  transition: all 0.4s ease !important;
+}
+.turn-number {
+  font-size: 22px !important;
+  font-weight: 900 !important;
+  letter-spacing: 3px !important;
+  color: rgba(255,255,255,0.7) !important;
+}
+.turn-phase {
+  font-size: 17px !important;
+  font-weight: 900 !important;
+  letter-spacing: 2px !important;
+  margin-top: 4px !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  transition: all 0.35s ease !important;
+  display: inline-block !important;
+  color: rgba(160,160,180,0.65) !important;
+}
+.turn-phase.my-turn-phase {
+  color: #fef08a !important;
+  background: rgba(251,191,36,0.12) !important;
+  border: 1px solid rgba(251,191,36,0.35) !important;
+  text-shadow: 0 0 10px rgba(251,191,36,0.8), 0 0 25px rgba(218,165,32,0.4) !important;
+  animation: myTurnPhaseGlow 2s ease-in-out infinite !important;
+}
+@keyframes myTurnPhaseGlow {
+  0%,100% { box-shadow: 0 0 8px rgba(251,191,36,0.25); }
+  50%      { box-shadow: 0 0 18px rgba(251,191,36,0.55); }
+}
+.timer-seconds::after {
+  content: 's' !important;
+  font-size: 11px !important;
+  font-weight: 400 !important;
+  opacity: 0.6 !important;
+  margin-left: 1px !important;
+}
+
+/* ③ 手札視認性改善 */
+.hand-area-wrapper {
+  background: linear-gradient(0deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 60%, transparent 100%) !important;
+}
+.hand-card {
+  transition: transform 0.18s cubic-bezier(0.25,0.8,0.25,1), box-shadow 0.18s ease !important;
+  will-change: transform !important;
+}
+.hand-card.playable {
+  box-shadow: 0 0 0 2px rgba(251,191,36,0.7), 0 0 15px rgba(251,191,36,0.4), 0 6px 20px rgba(0,0,0,0.6) !important;
+}
+.hand-card.unplayable {
+  filter: brightness(0.55) saturate(0.7) !important;
+  cursor: not-allowed !important;
+}
+.hand-card.selected {
+  box-shadow: 0 0 0 3px rgba(251,191,36,1), 0 0 30px rgba(251,191,36,0.7), 0 12px 30px rgba(0,0,0,0.7) !important;
+}
+
+/* ④ TURN ENDボタン自分ターン時パルス */
+.btn-end-turn.my-turn {
+  animation: turnEndPulse 2.2s ease-in-out infinite !important;
+  border-color: rgba(255,215,0,0.8) !important;
+}
+@keyframes turnEndPulse {
+  0%,100% {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5), 0 0 20px rgba(255,215,0,0.25), inset 0 0 20px rgba(255,215,0,0.15);
+  }
+  50% {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.6), 0 0 40px rgba(255,215,0,0.55), inset 0 0 30px rgba(255,215,0,0.25);
+  }
+}
+
+/* ⑤ クリスタルボタンの位置コンテキスト確保 */
+.crystal-btn {
+  position: relative !important;
+}
+
+/* ⑥ ターゲット選択の演出強化 */
+.board-slot.can-target,
+.board-slot.can-spell-target {
+  outline: 3px solid rgba(251,191,36,0.9) !important;
+  outline-offset: 3px !important;
+  animation: targetHighlight 1.2s ease-in-out infinite !important;
+}
+@keyframes targetHighlight {
+  0%,100% {
+    box-shadow: 0 0 0 0 rgba(251,191,36,0.5), inset 0 0 20px rgba(251,191,36,0.15) !important;
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(251,191,36,0), inset 0 0 30px rgba(251,191,36,0.35) !important;
+  }
+}
+.targeting-message {
+  font-size: 20px !important;
+  padding: 10px 28px !important;
+  border: 2px solid rgba(251,191,36,0.6) !important;
+  border-radius: 8px !important;
+  letter-spacing: 3px !important;
+  background: rgba(10,15,25,0.88) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* ⑦ GYバッジ: タップ可能なことを明示 */
+.status-badge--grave {
+  cursor: pointer !important;
+  border-bottom: 1px dotted rgba(255,255,255,0.35) !important;
+  transition: all 0.2s ease !important;
+  padding-bottom: 2px !important;
+}
+.status-badge--grave:hover {
+  color: rgba(255,230,100,0.9) !important;
+  border-bottom-color: rgba(255,230,100,0.6) !important;
+  background: rgba(255,200,50,0.1) !important;
+  border-radius: 4px 4px 0 0 !important;
+}
+
+
+/* ==========================================================================
+   UI/UX 改善パッチ v205
+   ========================================================================== */
+
+/* ターゲット選択オーバーレイ */
+.targeting-instruction-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100dvh;
+  pointer-events: none;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 18px 24px;
+  z-index: 10000;
+  box-sizing: border-box;
+}
+.targeting-instruction-overlay.active {
+  display: flex !important;
+}
+.targeting-message {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  padding: 8px 20px !important;
+  border: 1.5px solid rgba(251,191,36,0.6) !important;
+  border-radius: 6px !important;
+  letter-spacing: 2px !important;
+  background: rgba(10,15,25,0.85) !important;
+  backdrop-filter: blur(10px) !important;
+  color: #fbbf24 !important;
+  box-shadow: 0 0 12px rgba(251,191,36,0.3) !important;
+  animation: targeting-message-pulse 1.5s ease-in-out infinite !important;
+}
+
+/* シールドの属性色分け */
+.shield-icon[data-color="red"]   { filter: hue-rotate(0deg)   drop-shadow(0 0 4px rgba(239,68,68,0.7)); }
+.shield-icon[data-color="blue"]  { filter: hue-rotate(220deg) drop-shadow(0 0 4px rgba(59,130,246,0.7)); }
+.shield-icon[data-color="green"] { filter: hue-rotate(110deg) drop-shadow(0 0 4px rgba(34,197,94,0.7)); }
+.shield-icon[data-color="white"] { filter: brightness(1.5)    drop-shadow(0 0 4px rgba(255,255,255,0.7)); }
+.shield-icon[data-color="black"] { filter: brightness(0.4)    drop-shadow(0 0 4px rgba(139,92,246,0.7)); }
+
+/* DIVINE CRYSTAL ラベル改善 */
+.panel-subtitle {
+  font-size: 10px !important;
+  letter-spacing: 2px !important;
+  color: rgba(255,255,255,0.3) !important;
+  text-transform: uppercase !important;
+  margin-bottom: 8px !important;
+}
+
+/* タイマー: ゲーム開始前は非表示 */
+.turn-timer-container.idle {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* DIVINE CRYSTAL コストバッジ */
+.crystal-btn::after {
+  content: '1 SP' !important;
+  position: absolute !important;
+  bottom: -18px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  color: rgba(255,215,0,0.55) !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+}
+
+/* タイマー秒数のスタイル改善 */
+.timer-seconds {
+  color: #fbbf24 !important;
+  font-weight: 900 !important;
+  font-size: 22px !important;
+}
+.turn-timer-container {
+  position: relative !important;
+}
+
+/* 攻撃矢印アニメーション */
+#attack-arrow-line {
+  animation: arrowDash 0.6s linear infinite !important;
+}
+@keyframes arrowDash {
+  to { stroke-dashoffset: -32; }
+}

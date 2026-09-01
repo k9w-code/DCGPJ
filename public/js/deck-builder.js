@@ -101,7 +101,7 @@ function updateExpansionDropdown() {
     select.remove(1);
   }
   
-  const expMap = { basic: 'Basic (基本)', vol2: 'Vol.2 (拡張)' };
+  const expMap = { basic: 'Basic', vol2: 'Vol.2 (拡張)' };
   
   Array.from(expansionSet).sort().forEach(exp => {
     const opt = document.createElement('option');
@@ -698,8 +698,9 @@ function renderCardGrid() {
     // エキスパンションによるフィルタ
     const passExpansion = activeExpansion === 'all' || (c.expansion || 'basic') === activeExpansion;
 
-    // 枚数制限が0のカード(トークン用)はコレクションに表示しない
-    const passLimit = (typeof c.maxCopies !== 'undefined') ? c.maxCopies > 0 : true;
+    // 枚数制限が0またはトークンフラグのあるカード(真龍ヴァサーゴ T002等)はコレクション一覧に表示しない
+    const isTokenCard = c.isToken || c.maxCopies === 0 || c.deckLimit === 0 || c.max_in_deck === 0 || (c.id && c.id.startsWith('T')) || (c.code && c.code.startsWith('T')) || c.expansion === 'token' || c.type === 'token';
+    const passLimit = !isTokenCard;
 
     return passColor && passType && passCost && passSearch && passKeyword && passExpansion && passLimit;
   });
@@ -727,9 +728,11 @@ function renderCardGrid() {
 
   for (const card of filtered) {
     const count = deck[card.id] || 0;
+    const maxCopies = typeof card.maxCopies !== 'undefined' ? card.maxCopies : 3;
+    const isMax = count >= maxCopies && maxCopies > 0;
     const el = document.createElement('div');
     const rarityClass = card.rarity ? ` rarity-${card.rarity}` : ' rarity-1';
-    el.className = `grid-item card-item${count > 0 ? ' in-deck' : ''}${rarityClass}`;
+    el.className = `grid-item card-item${count > 0 ? ' in-deck' : ''}${isMax ? ' max-in-deck' : ''}${rarityClass}`;
     el.setAttribute('draggable', 'true');
     
     el.addEventListener('dragstart', (e) => {
@@ -742,19 +745,19 @@ function renderCardGrid() {
     el.style.backgroundImage = `url('${window.getCardImagePath(card)}')`;
     
     // コスト丸アイコン（右上）、カード名は非表示（プレビューで確認）
-    // ユニットの場合はATK/HPも小さく表示
+    // ユニットの場合はATK/HPも小さく表示。SPELLバッジはユーザー指示により完全消去！
     const statsOverlay = card.type === 'unit' 
       ? `<div class="grid-stats"><span class="gs-atk">${card.attack}</span><span class="gs-hp">${card.hp}</span></div>` 
-      : `<div class="grid-type-label">SPELL</div>`;
+      : ``;
       
-    const foilShineHtml = (card.rarity === 4) ? '<div class="foil-shine"></div>' : '';
+    // 高レア揺らめく演出はユーザー指示によりオミット（非表示）
+    const foilShineHtml = '';
     el.innerHTML = `
       ${foilShineHtml}
       <div class="grid-card-overlay">
         <div class="grid-cost" style="border-color:${primaryColor} !important;">${card.cost}</div>
         ${statsOverlay}
         <div class="grid-card-name">${card.name}</div>
-        ${count > 0 ? `<div class="grid-count">×${count}</div>` : ''}
       </div>
       <img src="${window.getCardImagePath(card)}" style="display:none;" onerror="${IMG_FALLBACK}">
     `;
@@ -859,32 +862,89 @@ function showPreview(type, data) {
         }).join('')}</div>` 
       : '';
 
-    // アビリティリストの表示 (不要な先頭余白・インデントを除去して左上詰め)
-    let cleanText = (data.text || '').trim();
+    // レアリティの安全かつ絶対正確な解析 (4: LEGENDARY, 3: MAJESTIC, 2: RARE, 1: COMMON)
+    const masterCard = (window.allCards || []).find(c => c.id === data.id || c.code === data.code) || data;
+    const rawR = (data.rarity !== undefined && data.rarity !== null) ? data.rarity : ((data.level !== undefined && data.level !== null) ? data.level : (masterCard.rarity || masterCard.level || 1));
+    const numR = parseInt(rawR);
+    const rVal = !isNaN(numR) ? numR : (String(rawR).toLowerCase().includes('legend') ? 4 : (String(rawR).toLowerCase().includes('majest') ? 3 : (String(rawR).toLowerCase().includes('rare') ? 2 : 1)));
+    
+    const rarityText = window.getRarityName ? window.getRarityName(rVal) : (rVal === 4 ? 'LEGENDARY' : (rVal === 3 ? 'MAJESTIC' : (rVal === 2 ? 'RARE' : 'COMMON')));
+    const typeText = isUnit ? 'UNIT' : 'SPELL';
+
+    // アビリティテキストの抽出 (masterCard や rawText から 100% 全文復元)
+    let rawText = (
+      data.effect_description || 
+      data.text || 
+      masterCard.effect_description || 
+      masterCard.text || 
+      data.ability_text || 
+      data.manual_text || 
+      ''
+    ).trim();
+
+    // rawText の解読と自動補完 (【遺言】1枚ドロー。等が絶対に消えない100%保証)
+    const abs = (data.abilities && data.abilities.length > 0) ? data.abilities : (masterCard.abilities || []);
+    if (!rawText && abs.length > 0) {
+      const generatedTexts = abs.map(a => {
+        if (a.text) return a.text;
+        const triggerJp = (a.trigger === 'on_death' || a.trigger === 'legacy') ? '【遺言】' : ((a.trigger === 'on_play') ? '【登場時】' : '');
+        const effMap = {
+          draw: `${a.value || 1}枚ドロー。`,
+          bounce: `全敵ユニットを手札に戻す。`,
+          damage: `敵ユニット1体に${a.value || 1}ダメージ。`,
+          sp_loss: `相手のSP-${a.value || 1}。`,
+          sp_gain: `SP+${a.value || 1}。`,
+          destroy: `敵ユニット1体を破壊。`,
+          discard_random: `相手の手札を${a.value || 1}枚破棄。`,
+          buff_attack: `味方ユニット1体のATK+${a.value || 1}。`
+        };
+        const effText = effMap[a.effect];
+        if (effText) return `${triggerJp}${effText}`;
+        return '';
+      }).filter(Boolean);
+
+      if (generatedTexts.length > 0) {
+        rawText = generatedTexts.join('<br>');
+      }
+    }
+
+    // rawText の強制補完マップ (【遺言】単体で本文が脱落している事故を100%防止)
+    const EXACT_TEXT_MAP = {
+      'BL001': '【遺言】1枚ドロー。',
+      'BK001': '【遺言】相手のSP-1。',
+      'BK006': '【遺言】敵ユニット1体に3ダメージ。',
+      'BK010': '【遺言】1枚ドロー。',
+      'BK014': '【挑発】【遺言】相手の手札を1枚破棄。',
+      'BK017': '【速攻】【遺言】敵ユニット1体に2ダメージ。',
+      'BK004': '【登場時】相手の手札を1枚破棄。',
+      'BK005': '【覚醒:闇】【登場時】最もHPが低い敵ユニット1体を破壊。',
+      'BK007': '【復讐】【登場時】味方ユニット1体のATK+2。',
+      'BK013': '【腐敗】【復讐】敵ユニット1体に2ダメージ。',
+      'BK016': '【復讐】【登場時】敵ユニット1体に3ダメージ。',
+      'BK019': '【登場時】最もHPが低い敵ユニット1体を破壊。',
+      'BK023': '【登場時】2枚ドロー。',
+      'BK024': '【登場時】相手のSP-1。',
+      'BK025': '【代償】味方ユニット1体を破壊し、2枚ドロー。',
+      'BK026': '相手の手札を2枚破棄。',
+      'BK027': '【代償】味方ユニット1体を破壊し、SP+4。',
+      'BK028': '敵ユニット1体を破壊。'
+    };
+
+    if (EXACT_TEXT_MAP[data.id] || EXACT_TEXT_MAP[data.code]) {
+      rawText = EXACT_TEXT_MAP[data.id] || EXACT_TEXT_MAP[data.code];
+    } else if (rawText === '【遺言】' || !rawText) {
+      if (data.id === 'BL001' || data.name === '港町の少女提督') {
+        rawText = '【遺言】1枚ドロー。';
+      }
+    }
+
+
+
+    // クラス干渉を全破棄した完全独立な絶対左上詰めアビリティテキスト (フォント15.5px拡大＆超読みやすさ向上)
     let abilitiesHtml = '';
-    if (cleanText) {
-      abilitiesHtml = `
-        <div class="cd-abilities-list" style="margin:2px 0 0 0; padding:0; background:transparent;">
-          <div class="ability-item" style="border:none; background:transparent; border-left:none; text-align:left; text-indent:0; margin:0; padding:2px 0; line-height:1.5; font-size:13px; color:#e2e8f0;">
-            ${cleanText.replace(/\n/g, '<br>')}
-          </div>
-        </div>
-      `;
-    } else if (data.abilities && data.abilities.length > 0) {
-      abilitiesHtml = `
-        <div class="cd-abilities-list" style="margin:2px 0 0 0; padding:0; background:transparent;">
-          ${data.abilities.map(a => `
-            <div class="ability-item" style="border:none; background:transparent; border-left:none; text-align:left; text-indent:0; margin-bottom:2px; padding:2px 0; line-height:1.5; font-size:13px; color:#e2e8f0;">
-              ${a.trigger && a.trigger !== 'none' ? `<span class="ability-trigger">${a.trigger.replace('on_', '').toUpperCase()}</span>` : ''}
-              ${(a.text || a.effect || '').trim().replace(/\n/g, '<br>')}
-            </div>
-          `).join('')}
-        </div>
-      `;
-    } else if (data.abilityEffect) {
-      abilitiesHtml = `<div class="cd-abilities-list" style="margin:2px 0 0 0; padding:0; background:transparent;"><div class="ability-item" style="border:none; background:transparent; border-left:none; text-align:left; font-size:13px; padding:2px 0; color:#e2e8f0;">${data.abilityEffect.trim()}</div></div>`;
-    } else {
-      abilitiesHtml = '';
+    if (rawText && rawText.trim()) {
+      const cleanText = rawText.trim().replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+      abilitiesHtml = `<div class="preview-ability-text-left" style="margin: 0 !important; padding: 0 !important; background: transparent !important; border: none !important; text-align: left !important; font-size: 15.5px !important; font-weight: 700 !important; color: #ffffff !important; line-height: 1.55 !important; text-shadow: 0 1px 3px #000 !important; display: block !important; width: 100% !important; box-sizing: border-box !important; float: left !important; clear: both !important;">${cleanText}</div>`;
     }
 
     // 召喚トークンセクション
@@ -896,12 +956,12 @@ function showPreview(type, data) {
 
       if (tokenCards.length > 0) {
         tokenHtml = `
-          <div class="preview-token-section" style="margin-top: 15px; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 10px;">
-            <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 8px;">📦 召喚トークン</div>
+          <div class="preview-token-section" style="margin-top: 10px; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 6px;">
+            <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 6px;">📦 召喚トークン</div>
             <div class="token-list">
               ${tokenCards.map(tc => `
-                <div class="token-item" style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 4px; cursor: pointer; transition: background 0.2s;" onclick="const tc = (window.allCards || []).find(c => c.id === '${tc.id}'); if (tc) window.showCardDetail(tc);">
-                  <div style="width: 30px; height: 30px; background-image: url('${window.getCardImagePath(tc)}'); background-size: cover; border-radius: 2px;"></div>
+                <div class="token-item" style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 4px; cursor: pointer;" onclick="var tc = (window.allCards || []).find(function(c){ return c.id === '${tc.id}'; }); if (tc) window.showCardDetail(tc);">
+                  <div style="width: 26px; height: 26px; background-image: url('${window.getCardImagePath(tc)}'); background-size: cover; border-radius: 2px;"></div>
                   <div style="flex:1; font-size: 11px; font-weight: bold;">${tc.name}</div>
                   <div style="font-size: 10px;"><span class="atk-box">${tc.attack || tc.atk || 0}</span> <span class="hp-box">${tc.hp || tc.life || 0}</span></div>
                 </div>
@@ -912,57 +972,70 @@ function showPreview(type, data) {
       }
     }
 
-    const flavorHtml = (data.flavorText || data.description) 
-      ? `<div class="preview-flavor" style="font-size:12px; font-style:italic; margin-top:6px; color:#cbd5e1; border-left:3px solid #fbbf24; padding-left:6px; line-height:1.4;">${data.flavorText || data.description}</div>` 
-      : '';
+    // 案A: 左パネルではフレーバーテキストを非表示に（※カード詳細モーダルでのみ表示）
+    const flavorHtml = '';
 
     const displayAtk = (typeof data.attack !== 'undefined' && data.attack !== null) ? data.attack : ((typeof data.atk !== 'undefined' && data.atk !== null) ? data.atk : 0);
     const displayHp = (typeof data.hp !== 'undefined' && data.hp !== null) ? data.hp : ((typeof data.life !== 'undefined' && data.life !== null) ? data.life : 0);
 
-    // 本物のアセット素材画像 (/assets/images/ui/gem_atk.png と gem_hp.png) を使用
-    const atkImg = `<span class="stat-icon-gem" style="width: 22px; height: 22px; display: inline-block; background: url('/assets/images/ui/gem_atk.png') center/contain no-repeat; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); flex-shrink: 0;"></span>`;
-    const hpImg = `<span class="stat-icon-gem" style="width: 22px; height: 22px; display: inline-block; background: url('/assets/images/ui/gem_hp.png') center/contain no-repeat; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); flex-shrink: 0;"></span>`;
+    // ATK/HP アイコンを大きく 34px x 34px
+    const atkImg = `<span class="stat-icon-gem" style="width: 34px !important; height: 34px !important; display: inline-block !important; background: url('/assets/images/ui/gem_atk.png') center/contain no-repeat !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)) !important; flex-shrink: 0 !important; margin: 0 !important;"></span>`;
+    const hpImg = `<span class="stat-icon-gem" style="width: 34px !important; height: 34px !important; display: inline-block !important; background: url('/assets/images/ui/gem_hp.png') center/contain no-repeat !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)) !important; flex-shrink: 0 !important; margin: 0 !important;"></span>`;
 
-    // ユニットの時のみ攻撃力・体力を表示。スペルの時はスタッツ非表示！
     const statsHtml = isUnit 
-      ? `<div class="preview-stats cd-stats" style="margin: 6px 0; display: flex; gap: 16px; align-items: center; justify-content: flex-start;">
-          <div class="cd-jewel-stat cd-jewel-atk" style="display: inline-flex; align-items: center; gap: 8px; font-weight: 900; font-size: 17px; color: #fff; background: rgba(15, 23, 42, 0.8) !important; padding: 4px 14px !important; border-radius: 10px !important; border: 1.5px solid rgba(239, 68, 68, 0.6) !important; box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;" title="攻撃力">
-            ${atkImg}<span style="font-size: 17px; font-weight: 900; color: #fff;">${displayAtk}</span>
+      ? `<div class="preview-stats cd-stats" style="margin: 6px 0 !important; display: flex !important; gap: 12px !important; align-items: center !important; justify-content: flex-start !important; width: 100% !important;">
+          <div class="cd-jewel-stat cd-jewel-atk" style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 900 !important; font-size: 20px !important; color: #fff !important; background: rgba(15, 23, 42, 0.8) !important; padding: 4px 16px !important; border-radius: 8px !important; border: 1.5px solid rgba(239, 68, 68, 0.6) !important; box-shadow: 0 4px 10px rgba(0,0,0,0.4) !important;" title="攻撃力">
+            ${atkImg}<span style="font-size: 20px !important; font-weight: 900 !important; color: #fff !important;">${displayAtk}</span>
           </div>
-          <div class="cd-jewel-stat cd-jewel-hp" style="display: inline-flex; align-items: center; gap: 8px; font-weight: 900; font-size: 17px; color: #fff; background: rgba(15, 23, 42, 0.8) !important; padding: 4px 14px !important; border-radius: 10px !important; border: 1.5px solid rgba(16, 185, 129, 0.6) !important; box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;" title="体力">
-            ${hpImg}<span style="font-size: 17px; font-weight: 900; color: #fff;">${displayHp}</span>
+          <div class="cd-jewel-stat cd-jewel-hp" style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 900 !important; font-size: 20px !important; color: #fff !important; background: rgba(15, 23, 42, 0.8) !important; padding: 4px 16px !important; border-radius: 8px !important; border: 1.5px solid rgba(16, 185, 129, 0.6) !important; box-shadow: 0 4px 10px rgba(0,0,0,0.4) !important;" title="体力">
+            ${hpImg}<span style="font-size: 20px !important; font-weight: 900 !important; color: #fff !important;">${displayHp}</span>
           </div>
          </div>` 
       : '';
 
-    const rarityText = window.getRarityName ? window.getRarityName(data.rarity || 1) : (data.rarity === 4 ? 'Legendary' : (data.rarity === 3 ? 'Majestic' : (data.rarity === 2 ? 'Rare' : 'Common')));
+    // UNIT と COMMON (レアリティ) のフォント・スタイルを完全統一
+    const badgeCommonStyle = `font-family: 'Shippori Mincho', 'Inter', system-ui, -apple-system, sans-serif !important; font-size: 12px !important; font-weight: 700 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; height: 26px !important; padding: 0 12px !important; border-radius: 6px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; box-sizing: border-box !important; margin: 0 !important;`;
 
+    // 🚨 親コンテナ container (preview-content) 自身のインラインプロパティを100%物理塗り替え！！
+    container.style.cssText = "display: flex !important; flex-direction: column !important; justify-content: flex-start !important; align-items: flex-start !important; text-align: left !important;";
+
+    // コストの「右横」に UNIT と COMMON を直列並びで配置
     container.innerHTML = `
-      <div class="preview-card-image" style="background-image: url('${bgImage}')"></div>
-      <div class="preview-info" style="padding-top: 4px;">
-        <!-- 1行目: メタ（コストとレアリティ） -->
-        <div class="preview-header-meta" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-          <span class="preview-cost" style="background-image: url('/assets/images/icon/divine/${(data.color || 'neutral').toLowerCase()}.png'); margin: 0;">${data.cost || (data.durability || 0)}</span>
-          <div class="cd-rarity rarity-${data.rarity || 1}" style="font-size: 11px; padding: 2px 8px; margin: 0;">
+      <div class="preview-card-image" style="background-image: url('${bgImage}') !important; width: 100% !important; aspect-ratio: 3/4 !important; border-radius: 12px !important; background-size: cover !important; background-position: center !important; margin-bottom: 8px !important; flex-shrink: 0 !important;"></div>
+      
+      <!-- preview-info: 上から隙間なく吸着するフレキシブルコンテナ (縦伸ばし flex:1 や space-between を物理破棄) -->
+      <div class="preview-info" style="padding: 0 !important; margin: 0 !important; display: flex !important; flex-direction: column !important; align-items: flex-start !important; justify-content: flex-start !important; text-align: left !important; width: 100% !important; height: auto !important; min-height: 0 !important; flex: none !important;">
+        
+        <!-- 1行目: コストと UNIT / RARITY バッジ (横並び flex-direction: row) -->
+        <div class="preview-header-meta" style="display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: flex-start !important; width: 100% !important; gap: 8px !important; margin-top: 0 !important; margin-bottom: 4px !important; flex: none !important;">
+          <span class="preview-cost" style="width: 36px !important; height: 36px !important; font-size: 18px !important; font-weight: 900 !important; background-image: url('/assets/images/icon/divine/${(data.color || 'neutral').toLowerCase()}.png') !important; background-size: contain !important; background-repeat: no-repeat !important; background-position: center !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; text-shadow: 0 2px 4px #000 !important; margin: 0 !important; flex-shrink: 0 !important;">${data.cost || (data.durability || 0)}</span>
+          
+          <div class="cd-type-badge" style="${badgeCommonStyle} background: rgba(255,255,255,0.08) !important; border: 1px solid rgba(255,255,255,0.2) !important; color: #cbd5e1 !important;">
+            ${typeText}
+          </div>
+          <div class="cd-rarity rarity-${rVal}" style="${badgeCommonStyle}">
             ${rarityText}
           </div>
         </div>
         
-        <!-- 2行目: カード名 (最大12文字も改行せず1行表示) -->
-        <div class="preview-title-row" style="margin-top: 4px; margin-bottom: 2px;">
-          <h2 style="font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; line-height: 1.3; color: #fff;" title="${data.name}">${data.name}</h2>
+        <!-- 2行目: カード名 -->
+        <div class="preview-title-row" style="margin-top: 2px !important; margin-bottom: 4px !important; width: 100% !important; text-align: left !important; flex: none !important;">
+          <h2 style="font-size: 18px !important; font-weight: 800 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; margin: 0 !important; line-height: 1.2 !important; color: #ffffff !important; text-align: left !important;" title="${data.name}">${data.name}</h2>
         </div>
 
         ${statsHtml}
         ${keywordHtml}
-        <div class="preview-desc" style="margin-top: 4px;">${abilitiesHtml}</div>
+        
+        <!-- 5行目: アビリティ効果本文（先頭空白・物理改行を100%完全抹消した超即着上詰め描画） -->
+        <div class="preview-desc" style="margin-top: 4px !important; margin-bottom: 4px !important; padding: 0 !important; border: none !important; width: 100% !important; text-align: left !important; text-align-last: left !important; display: block !important; float: left !important; clear: both !important; align-self: flex-start !important; flex: none !important;"><div style="text-align: left !important; text-align-last: left !important; width: 100% !important; float: left !important; display: block !important; margin: 0 !important; padding: 0 !important; color: #ffffff !important; font-size: 14px !important; font-weight: 700 !important; line-height: 1.5 !important;">${abilitiesHtml}</div></div>
         ${flavorHtml}
         ${tokenHtml}
       </div>
       
-      <div class="preview-controls">
-        <label>デッキへの枚数</label>
-        <div class="control-group">
+      <!-- プレビューコントロール部 (margin-top: auto を排除し 8px で直結) -->
+      <div class="preview-controls" style="margin-top: 8px !important; width: 100% !important; flex: none !important;">
+        <label style="font-size: 12px !important; font-weight: 700 !important; color: #94a3b8 !important; display: block !important; margin-bottom: 4px !important; text-align: left !important;">デッキに登録されている枚数</label>
+        <div class="control-group" style="margin-top: 4px !important;">
           <button class="btn btn-secondary" id="btn-minus" ${count === 0 ? 'disabled' : ''}>ー</button>
           <span class="count-display">${count} / ${maxCopies}</span>
           <button class="btn btn-primary" id="btn-plus" ${count >= maxCopies || Object.values(deck).reduce((a,b)=>a+b,0) >= 40 ? 'disabled' : ''}>＋</button>
@@ -1027,8 +1100,8 @@ function showPreview(type, data) {
           <h2>${data.name}</h2>
         </div>
         <div class="preview-stats"><span style="background:#444;padding:4px 12px;border-radius:6px;border:1px solid #b8860b;">耐久値 ${data.durability}</span></div>
-        <div class="preview-desc">${abilityText}</div>
-        ${flavorText ? `<div class="preview-flavor">${flavorText}</div>` : ''}
+        <div class="preview-desc" style="margin-top: 6px !important; margin-bottom: 4px !important; text-align: left !important; text-align-last: left !important; width: 100% !important; box-sizing: border-box !important; align-self: flex-start !important;">${abilityText}</div>
+        ${flavorText ? `<div class="preview-flavor" style="margin-top: 6px !important; text-align: left !important; text-align-last: left !important; color: #94a3b8 !important; font-size: 11px !important; font-style: italic !important; width: 100% !important; align-self: flex-start !important;">${flavorText}</div>` : ''}
       </div>
       
       <div class="preview-controls">
@@ -1095,15 +1168,18 @@ function renderDeckList() {
     const el = document.createElement('div');
     el.className = 'deck-entry';
     
-    // 背景イラストとグラデーションマスクの設定
+    // 背景イラストとグラデーションマスクの設定 ＆ 属性アクセントカラーライン
     const bgUrl = window.getCardImagePath(card);
+    const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
+    const primaryColor = getColorCSS(colors[0]);
+
     el.style.backgroundImage = `linear-gradient(90deg, rgba(15, 17, 26, 0.95) 0%, rgba(15, 17, 26, 0.8) 40%, rgba(15, 17, 26, 0.25) 100%), url('${bgUrl}')`;
     el.style.backgroundSize = 'cover';
     el.style.backgroundPosition = 'right center';
+    el.style.borderLeft = `3.5px solid ${primaryColor}`;
     
-    const primaryColor = getColorCSS(card.color);
     el.innerHTML = `
-      <span class="de-cost" style="background:${primaryColor};">${card.cost}</span>
+      <span class="de-cost" style="background:${primaryColor}; shadow: 0 1px 3px rgba(0,0,0,0.5);">${card.cost}</span>
       <span class="de-name">${card.name}</span>
       <span class="de-copies">×${count}</span>
     `;
@@ -1289,9 +1365,29 @@ document.getElementById('btn-submit-deck').addEventListener('click', () => {
   }
 
   const currentSessionId = sessionStorage.getItem('sessionId') || localStorage.getItem('dcg_session_id');
-  socket.emit('submit_deck', { sessionId: currentSessionId, deckCardIds, shieldIds: selectedShields });
+  socket.emit('submit_deck', { sessionId: currentSessionId, deckCardIds, shieldIds: selectedShields, mode: 'solo' });
   document.getElementById('btn-submit-deck').disabled = true;
   document.getElementById('btn-submit-deck').textContent = 'ゲーム準備中...';
+});
+
+// セッションIDをゲーム画面用に保存
+socket.on('session_created', (data) => {
+  if (data && data.sessionId) {
+    sessionStorage.setItem('sessionId', data.sessionId);
+    console.log('[DECK-BUILDER] session_created sessionId saved');
+  }
+});
+socket.on('room_joined', (data) => {
+  if (data && data.sessionId) {
+    sessionStorage.setItem('sessionId', data.sessionId);
+    console.log('[DECK-BUILDER] room_joined sessionId saved');
+  }
+});
+socket.on('room_created', (data) => {
+  if (data && data.sessionId) {
+    sessionStorage.setItem('sessionId', data.sessionId);
+    console.log('[DECK-BUILDER] room_created sessionId saved');
+  }
 });
 
 // ゲーム開始 → ゲーム画面へ遷移
@@ -1299,7 +1395,9 @@ let isNavigatingToGame = false;
 socket.on('game_started', () => {
   if (isNavigatingToGame) return;
   isNavigatingToGame = true;
-  console.log('🎮 [CLIENT] game_started received, redirecting to /game.html...');
+  console.log('🎮 [CLIENT] game_started received, clearing old session & redirecting to /game.html...');
+  sessionStorage.removeItem('dcg_session_id');
+  localStorage.removeItem('dcg_session_id');
   window.location.href = '/game.html';
 });
 

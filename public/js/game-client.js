@@ -1,4 +1,10 @@
 // game-client.js
+// 古い残骸セッションによる過去の壊れたゲームへの自動誤復帰を100%遮断
+if (!localStorage.getItem('selectedDeck')) {
+  sessionStorage.removeItem('dcg_session_id');
+  localStorage.removeItem('dcg_session_id');
+}
+
 const socket = io();
 
 // ==========================================================================
@@ -501,7 +507,7 @@ function manageTurnTimer(state) {
   const isMyTurn = state.currentPlayerId === state.me.id;
   
   // ターン表示の初期化（HTML構造を崩さず、フェーズを綺麗に描画）
-  if (indicator) {
+  if (indicator && !battleIntroStarted) {
     indicator.innerHTML = `<div class="turn-number">TURN ${state.turnNumber}</div><div class="turn-phase">${isMyTurn ? 'YOUR TURN' : "OPPONENT TURN"}</div>`;
   }
   
@@ -596,6 +602,13 @@ socket.on('game_state', (state) => {
     if (typeof window.updateUI === 'function') {
       window.updateUI();
       console.log('   [CLIENT] UI Updated');
+
+      // UI画面更新完了
+      const container = document.getElementById('game-container');
+      if (container) {
+        container.style.opacity = '1';
+        container.style.pointerEvents = 'auto';
+      }
     } else {
       console.warn('   [CLIENT] updateUI not ready, retrying in 100ms...');
       setTimeout(tryUpdate, 100);
@@ -652,23 +665,35 @@ document.addEventListener('pointerdown', function(e) {
   e.preventDefault();
 }, true); // true = \u30ad\u30e3\u30d7\u30c1\u30e3\u30d5\u30a7\u30fc\u30ba\uff08\u6700\u512a\u5148\uff09
 
-socket.on('mulligan_phase', (data) => {
-  console.log('   [CLIENT] mulligan_phase received');
-  if (window.audioManager) window.audioManager.fadeToBGM('deck', 1200);
+let battleIntroStarted = false;
+window.battleIntroStarted = false; // renderer側から参照可能に
 
-  // VS激突カットインを発火
-  if (window.VFX && window.VFX.triggerVsCutin) {
-    window.VFX.triggerVsCutin();
+function startBattleIntroSequence(data) {
+  if (battleIntroStarted) return;
+  battleIntroStarted = true;
+  window.battleIntroStarted = true;
+
+  console.log('🚀 [GAME-CLIENT] 対戦開始フロー起動！');
+
+  // showMulliganを先に windowに公開してVFX側から参照できるようにする
+  window.showMulligan = showMulligan;
+
+  if (window.audioManager) window.audioManager.fadeToBGM('battle', 2000);
+
+  // VFX版に完全委譲（triggerVsCutin → triggerOrderCutin → showMulliganのコールバックチェーンをVFX内部に任せる）
+  if (window.VFX && window.VFX.startBattleIntroSequence) {
+    window.VFX.startBattleIntroSequence(data);
+  } else {
+    // VFXがまだ初期化されていない場合は少し待ってリトライ
+    console.warn('   [CLIENT] VFX not ready, retrying in 200ms...');
+    battleIntroStarted = false; window.battleIntroStarted = false; // リトライのためフラグをリセット
+    setTimeout(() => startBattleIntroSequence(data), 200);
   }
+}
 
-  // カットイン完了後（約2.2秒後）にマリガン選択画面を表示
-  setTimeout(() => {
-    if (typeof showMulligan === 'function') {
-      showMulligan(data.hand, (redrawIndices) => {
-        socket.emit('mulligan_decision', { redrawIndices });
-      });
-    }
-  }, 2200);
+socket.on('mulligan_phase', (data) => {
+  console.log(' 🎬 [CLIENT] mulligan_phase received', data);
+  startBattleIntroSequence(data);
 });
 
 socket.on('error_msg', (data) => {
@@ -676,12 +701,22 @@ socket.on('error_msg', (data) => {
   if (window.audioManager) window.audioManager.playSE('error');
 });
 
-// === \u30bf\u30fc\u30b2\u30c3\u30c8\u9078\u629e\u51e6\u7406 ===
+// === ターゲット選択処理 ===
 
 function requestSessionRestore() {
   const signal = document.getElementById('debug-signal');
+  const urlParams = new URLSearchParams(window.location.search);
+  const forceNew = urlParams.has('new') || !sessionStorage.getItem('sessionId');
+  
+  if (forceNew) {
+    console.log('🧹 [CLIENT] Clearing stale session for fresh battle sequence...');
+    sessionStorage.removeItem('sessionId');
+    localStorage.removeItem('dcg_session_id');
+  }
+
   const sessionId = sessionStorage.getItem('sessionId');
-  if (sessionId) {
+  
+  if (sessionId && !forceNew) {
     console.log('   [CLIENT] Requesting session restore for:', sessionId.slice(0, 8));
     socket.emit('restore_session', { sessionId });
     if (signal) {
@@ -689,10 +724,27 @@ function requestSessionRestore() {
       signal.style.background = 'rgba(0,191,255,0.8)';
     }
   } else {
-    console.warn('   [CLIENT] No sessionId found in sessionStorage');
-    if (signal) {
-      signal.textContent = 'STATUS: NO SESSION ID (Back to Lobby)';
-      signal.style.background = 'rgba(0,0,0,0.8)';
+    console.warn(' ⚠️ [CLIENT] Creating FRESH solo match in game.html...');
+    const deckData = localStorage.getItem('selectedDeck');
+    if (deckData) {
+      try {
+        const parsed = JSON.parse(deckData);
+        socket.emit('submit_deck', {
+          deckCardIds: parsed.deckCardIds || [],
+          shieldIds: parsed.shieldIds || [],
+          mode: 'solo',
+          difficulty: 'normal'
+        });
+        if (signal) {
+          signal.textContent = 'STATUS: CREATING FRESH SOLO MATCH...';
+          signal.style.background = 'rgba(255,215,0,0.8)';
+        }
+      } catch (e) {
+        console.error('❌ Failed to auto-create solo match:', e);
+      }
+    } else {
+      console.error('❌ No selectedDeck found. Returning to deck builder...');
+      window.location.href = '/deck-builder.html';
     }
   }
 }
@@ -1035,7 +1087,10 @@ function onPointerMove(e) {
       // 曲線(Quadratic Bezier)の描画
       const cpX = (attackerPos.x + targetX) / 2;
       const cpY = (attackerPos.y + targetY) / 2 - 150; // 少し上に膨らませる
-      line.setAttribute('d', `M ${attackerPos.x} ${attackerPos.y} Q ${cpX} ${cpY} ${targetX} ${targetY}`);
+      const pathD = `M ${attackerPos.x} ${attackerPos.y} Q ${cpX} ${cpY} ${targetX} ${targetY}`;
+      line.setAttribute('d', pathD);
+      const shadow = document.getElementById('attack-arrow-shadow');
+      if (shadow) shadow.setAttribute('d', pathD);
     }
   }
 }
@@ -1079,6 +1134,13 @@ function onPointerUp(e) {
     
     if (dist < DRAG_THRESHOLD) {
       console.log('    [CLIENT] Drag cancelled: Under threshold (click detected)', dist);
+      const state = window.gameState;
+      const isMyTurn = state && state.currentPlayerId === state.me.id;
+      // 相手ターン中は手札選択を允可しない
+      if (!isMyTurn) {
+        cleanupDrag();
+        return;
+      }
       const clickedIndex = dragSource.index;
       if (window.selectedCardIndex === clickedIndex) {
         window.selectedCardIndex = null;
@@ -1308,6 +1370,20 @@ function initInteractions() {
     document.getElementById('shield-confirm-overlay').style.display = 'none';
   });
 
+  // シールド確認モーダルの背景クリックでキャンセル
+  const shieldConfirmOverlay = document.getElementById('shield-confirm-overlay');
+  if (shieldConfirmOverlay) {
+    shieldConfirmOverlay.addEventListener('click', (e) => {
+      if (e.target === shieldConfirmOverlay) {
+        pendingShieldAttack = null;
+        isDraggingAttack = false;
+        dragSource = null;
+        if (typeof window.updateUI === 'function') window.updateUI();
+        shieldConfirmOverlay.style.display = 'none';
+      }
+    });
+  }
+
   // --- \u8a2d\u5b9a\u30d1\u30cd\u30eb ---
   const settingsBtn = document.getElementById('settings-btn');
   const settingsOverlay = document.getElementById('settings-overlay');
@@ -1372,7 +1448,7 @@ function initInteractions() {
     window.location.href = '/';
   });
 
-  // --- \u795e\u65cf\u30ec\u30d9\u30eb\u30a2\u30c3\u30d7 ---
+  // --- 神族レベルアップ ---
   const crystalConfirm = document.getElementById('crystal-confirm-popup');
   document.querySelectorAll('.crystal-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -1429,21 +1505,86 @@ function initInteractions() {
 }
 
 function showMulligan(hand, onSubmit) {
+  // マリガン表示時点で演出は完了 → フラグリセット
+  window.battleIntroStarted = false;
+  battleIntroStarted = false;
+  console.log('   [CLIENT] showMulligan executing...', hand);
+  window.showMulligan = showMulligan; // VFX側からも参照できるよう公開
+  window.renderMulliganScreen = showMulligan;
+
   const overlay = document.getElementById('mulligan-overlay');
   const container = document.getElementById('mulligan-cards');
   if (!overlay || !container) return;
+  
+  // インラインスタイルで表示・明度・クリック受け取りを100%確実に全開放
+  overlay.style.cssText = `
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    background-color: transparent !important;
+    backdrop-filter: blur(6px) !important;
+    z-index: 999999 !important;
+  `;
+
   container.innerHTML = '';
   
   const selectedIndices = new Set();
   
   hand.forEach((card, index) => {
     const el = document.createElement('div');
-    el.className = 'hand-card';
+    el.className = 'mulligan-card';
     const bgImage = (typeof window.getCardImagePath === 'function') 
       ? window.getCardImagePath(card) 
       : `/assets/images/cards/neutral/${card.artId || card.id}.webp`;
-    el.style.backgroundImage = `url('${bgImage}')`;
-    el.innerHTML = `<div class="card-overlay"><div class="cost-gem">${card.cost}</div></div>`;
+
+    // カードカラー取得
+    const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
+    const colorMap = { red:'#ef4444', blue:'#3b82f6', green:'#22c55e', white:'#e2e8f0', black:'#8b5cf6', neutral:'#6b7280' };
+    const borderColor = colorMap[colors[0]] || '#6b7280';
+    
+    el.style.cssText = `
+      width: 130px;
+      height: 190px;
+      border-radius: 10px;
+      background-image: url('${bgImage}'), url('/assets/images/ui/card_back.jpeg');
+      background-size: cover;
+      background-position: center top;
+      position: relative;
+      cursor: pointer;
+      border: 3px solid ${borderColor};
+      box-shadow: 0 4px 16px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08);
+      transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.25s ease, border-color 0.2s ease;
+      flex-shrink: 0;
+      overflow: hidden;
+    `;
+
+    // コスト表示（左上に宝石形式で）
+    const costColor = card.cost >= 5 ? '#ef4444' : card.cost >= 3 ? '#f59e0b' : '#10b981';
+    el.innerHTML = `
+      <div style="
+        position: absolute; top: 6px; left: 6px;
+        width: 28px; height: 28px; border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, ${costColor}, ${costColor}88);
+        border: 2px solid rgba(255,255,255,0.7);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.7), 0 0 8px ${costColor}66;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px; font-weight: 900; color: white;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+        z-index: 2;
+      ">${card.cost}</div>
+      <div style="
+        position: absolute; bottom: 0; left: 0; right: 0;
+        background: linear-gradient(transparent, rgba(0,0,0,0.85) 40%);
+        padding: 20px 6px 7px;
+        font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.9);
+        text-align: center; letter-spacing: 0.5px;
+        font-family: 'Shippori Mincho', serif;
+        line-height: 1.2;
+        z-index: 2;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      ">${card.name || ''}</div>
+    `;
     
     // カードをクリックした時の選択トグル処理
     el.addEventListener('click', (e) => {
@@ -1451,11 +1592,29 @@ function showMulligan(hand, onSubmit) {
       if (selectedIndices.has(index)) {
         selectedIndices.delete(index);
         el.classList.remove('selected-for-redraw');
+        el.style.border = `3px solid ${borderColor}`;
+        el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)';
         if (window.audioManager) window.audioManager.playSE('mulligan_select');
       } else {
         selectedIndices.add(index);
         el.classList.add('selected-for-redraw');
+        el.style.border = '3px solid #ef4444';
+        el.style.boxShadow = '0 4px 20px rgba(239,68,68,0.5), 0 0 0 2px rgba(239,68,68,0.3), inset 0 0 0 2px rgba(239,68,68,0.2)';
         if (window.audioManager) window.audioManager.playSE('mulligan_select');
+      }
+    });
+
+    // ホバーエフェクト
+    el.addEventListener('mouseenter', () => {
+      el.style.transform = 'translateY(-16px) scale(1.06)';
+      el.style.boxShadow = `0 12px 30px rgba(0,0,0,0.7), 0 0 20px ${borderColor}44`;
+      el.style.zIndex = '10';
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = '';
+      el.style.zIndex = '';
+      if (!el.classList.contains('selected-for-redraw')) {
+        el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)';
       }
     });
 
@@ -1463,6 +1622,7 @@ function showMulligan(hand, onSubmit) {
     container.appendChild(el);
   });
   overlay.style.display = 'flex';
+
   
   const setupBtn = (id, callback) => {
     const btn = document.getElementById(id);
@@ -1471,21 +1631,31 @@ function showMulligan(hand, onSubmit) {
     btn.replaceWith(newBtn);
     newBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      overlay.style.display = 'none';
+      overlay.style.cssText = 'display: none !important; opacity: 0 !important; pointer-events: none !important;';
       if (window.audioManager) window.audioManager.playSE('mulligan_swap');
-      if (callback) callback();
+      
+      // マリガン決定直後に BATTLE START 演出を発火
+      if (window.VFX && window.VFX.triggerBattleStartCutin) {
+        window.VFX.triggerBattleStartCutin(() => {
+          if (callback) callback();
+        });
+      } else {
+        if (callback) callback();
+      }
     });
   };
 
   // 「選択したカードを交換」ボタン
   setupBtn('btn-mulligan-confirm', () => {
     const redrawIndices = Array.from(selectedIndices);
-    onSubmit(redrawIndices);
+    if (typeof onSubmit === 'function') onSubmit(redrawIndices);
+    else if (window.socket) window.socket.emit('mulligan_decision', { redrawIndices });
   });
 
   // 「すべてキープ」ボタン
   setupBtn('btn-mulligan-keep-all', () => {
-    onSubmit([]);
+    if (typeof onSubmit === 'function') onSubmit([]);
+    else if (window.socket) window.socket.emit('mulligan_decision', { redrawIndices: [] });
   });
 }
 

@@ -358,20 +358,20 @@ h1, h2, h3 {
 
 /* 鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｹ鬩幢ｽ｢隴乗・・ｽ・ｺ陋ｹ・ｽ・ｽ・ｽ・ｽ・ｸ・ｽ・ｽ・ｽ・ｸ鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・｢鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・､鬩幢ｽ｢・ｽ・ｧ・ｽ・ｽ・ｽ・ｳ鬩幢ｽ｢隴趣ｽ｢・ｽ・ｽ・ｽ・ｳ驛｢譎｢・ｽ・ｻ髣費ｿｽ・ｽ・･髫ｰ・ｽ・ｽ・ｿ鬮｣蛹・ｽｽ・ｳ髯槭ｑ・ｿ・ｽ・ｽ・ｽ・ｽ・ｼ驛｢譎｢・ｽ・ｻ*/
 .grid-cost {
-  position: absolute;
-  top: 8px; right: 8px;
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-fantasy);
-  font-weight: 900;
-  font-size: 16px;
+  position: absolute !important;
+  top: 2px !important; right: 2px !important;
+  width: 22px !important; height: 22px !important;
+  border-radius: 50% !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  font-family: var(--font-fantasy) !important;
+  font-weight: 900 !important;
+  font-size: 13px !important;
   background: rgba(10, 12, 18, 0.92) !important;
   color: #ffffff !important;
-  border: 2px solid rgba(255,255,255,0.4);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.6);
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-  z-index: 5;
+  border: 1.5px solid rgba(255,255,255,0.4) !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.8) !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8) !important;
+  z-index: 5 !important;
 }
 
 .grid-stats {
@@ -1514,33 +1514,100 @@ input[type="range"]::-webkit-slider-thumb {
   z-index: 10000;
 }
 .mulligan-overlay {
-  z-index: 5000;
-  background: radial-gradient(circle at center, rgba(13, 19, 38, 0.95) 0%, rgba(0, 0, 0, 0.98) 100%);
+  z-index: 5000 !important;
+  background: rgba(3, 7, 18, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+  display: flex;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  box-sizing: border-box !important;
 }
 
 .mulligan-panel {
-  text-align: center;
-  padding: 60px 80px;
-  max-width: 1200px;
-  border: 2px solid var(--accent);
-  box-shadow: 0 0 50px rgba(139, 92, 246, 0.4);
+  text-align: center !important;
+  padding: 30px 40px !important;
+  width: 90% !important;
+  max-width: 1000px !important;
+  margin: 0 auto !important;
+  border: 1px solid rgba(251, 191, 36, 0.4) !important;
+  background: rgba(15, 23, 42, 0.92) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
 }
+
 .mulligan-cards {
-  display: flex;
-  gap: 30px;
-  margin: 40px 0;
-  justify-content: center;
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 20px !important;
+  margin: 24px 0 !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
+
 .mulligan-cards .hand-card {
-  position: static;
-  width: 220px; height: 308px;
+  position: relative !important;
+  width: 160px !important;
+  height: 224px !important;
+  aspect-ratio: 5/7 !important;
   transform: none !important;
   opacity: 1 !important;
+  filter: none !important;
+  border-radius: 10px !important;
+  background-size: cover !important;
+  background-position: center !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+  cursor: pointer !important;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+  border: 2px solid rgba(255, 255, 255, 0.15) !important;
 }
+
+.mulligan-cards .hand-card:hover {
+  transform: translateY(-6px) !important;
+  border-color: rgba(251, 191, 36, 0.8) !important;
+  box-shadow: 0 12px 32px rgba(251, 191, 36, 0.3) !important;
+}
+
+.mulligan-cards .hand-card.selected-for-redraw {
+  border: 3px solid #ef4444 !important;
+  transform: translateY(-12px) !important;
+  box-shadow: 0 14px 36px rgba(239, 68, 68, 0.5) !important;
+  filter: brightness(0.7) !important;
+}
+
+.mulligan-cards .hand-card.selected-for-redraw::after {
+  content: '交換対象' !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  background: rgba(239, 68, 68, 0.9) !important;
+  color: #ffffff !important;
+  font-weight: 900 !important;
+  font-size: 14px !important;
+  padding: 6px 14px !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6) !important;
+  pointer-events: none !important;
+}
+
 .mulligan-actions {
-  display: flex;
-  gap: 30px;
-  justify-content: center;
+  display: flex !important;
+  gap: 24px !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin-top: 10px !important;
 }
 
 #result-overlay {
@@ -1902,11 +1969,7 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
 }
-.hand-card:hover {
-  transform: scale(1.3) translateY(-25px);
-  filter: drop-shadow(0 15px 30px rgba(0,0,0,0.8)) drop-shadow(0 0 15px rgba(218, 165, 32, 0.5));
-  z-index: 100;
-}
+/* .hand-card:hover transform: removed — JS側(game-renderer.js)が制御するためCSSでの上書きは振動バグの原因になる */
 .hand-card.selected, .hand-card.dragging {
   transform: scale(1.1) translateY(-10px);
   filter: drop-shadow(0 0 20px var(--gold)) drop-shadow(0 10px 20px rgba(0,0,0,0.8));
@@ -3339,6 +3402,15 @@ body.targeting-mode {
   letter-spacing: 1px;
   margin-bottom: 8px;
 }
+html body #mulligan-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 99999 !important;
+  background: rgba(15, 23, 42, 0.4) !important;
+  backdrop-filter: blur(6px) !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
 .modifier-item {
   display: flex;
   justify-content: space-between;
@@ -3536,6 +3608,147 @@ body.targeting-mode {
   overflow: hidden;
 }
 
+/* ==========================================================================
+   🚨 デッキ構築画面 左プレビューパネル 完全上詰め＆枠内収容物理強制 (Vol.189)
+   ========================================================================== */
+#preview-panel,
+.deck-left-panel,
+.deck-builder-left {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 16px !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+
+#preview-panel #preview-content,
+.deck-left-panel #preview-content,
+.deck-builder-left #preview-content,
+html body #preview-content {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  text-align: left !important;
+  height: auto !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  gap: 6px !important;
+}
+
+#preview-panel .preview-info,
+.deck-left-panel .preview-info,
+.deck-builder-left .preview-info,
+html body .preview-info {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  margin-top: 6px !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  flex: 0 0 auto !important;
+  gap: 12px !important; /* 全カード共通の美しい要素間隔 */
+}
+
+#preview-panel .preview-desc,
+.deck-left-panel .preview-desc,
+#preview-panel .preview-ability-text-left,
+.deck-left-panel .preview-ability-text-left,
+html body .preview-desc,
+html body .preview-ability-text-left {
+  text-align: left !important;
+  text-align-last: left !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  margin-top: 6px !important;
+  margin-bottom: 4px !important;
+  padding: 10px 12px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  align-self: flex-start !important;
+  flex: 0 0 auto !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  background: rgba(0, 0, 0, 0.35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 8px !important;
+}
+
+#preview-panel .preview-flavor,
+.deck-left-panel .preview-flavor,
+html body .preview-flavor,
+#preview-content .preview-flavor,
+.preview-panel .preview-flavor {
+  text-align: left !important;
+  text-align-last: left !important;
+  margin-top: 6px !important;
+  margin-bottom: 8px !important;
+  color: #cbd5e1 !important;
+  font-size: 11.5px !important;
+  font-style: italic !important;
+  line-height: 1.45 !important;
+  letter-spacing: -0.1px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  align-self: flex-start !important;
+  flex: 0 0 auto !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  padding: 8px 10px !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+  border-left: 3px solid #fbbf24 !important;
+  border-radius: 0 6px 6px 0 !important;
+}
+
+#preview-panel .preview-controls,
+.deck-left-panel .preview-controls,
+html body .preview-controls {
+  margin-top: 12px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+#preview-panel .control-group,
+.deck-left-panel .control-group {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  gap: 8px !important;
+}
+
+/* モーダルバッジ群の横間隔20px & 右方向ゆとり配置 (Vol.185) */
+.card-detail-modal .cd-type-tags,
+.card-detail-modal .cd-header-meta {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 20px !important;
+  margin-top: 8px !important;
+  margin-bottom: 16px !important;
+}
+
 /* カード裏面 */
 .sb-card-back {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e293b 100%);
@@ -3729,10 +3942,7 @@ body.targeting-mode {
   .hand-card {
     filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)) !important;
   }
-  .hand-card:hover {
-    transform: scale(1.4) translateY(-3vh) !important; /* Stronger pop-up from lower position */
-    z-index: 500 !important;
-  }
+  /* .hand-card:hover transform: removed — JS側(game-renderer.js)が制御するためCSSでの上書きは振動バグの原因になる */
   * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 
   html body .card-detail-overlay {
@@ -3755,40 +3965,60 @@ body.targeting-mode {
     border-radius: 16px !important;
   }
 
-  /* IMAGE AREA: ULTRA-SLIM (28%) TO MAXIMIZE INFO */
-  html body .card-detail-overlay .cd-image-area { 
-    flex: 0 0 28% !important; 
-    height: 100% !important; 
-    background-size: cover !important; /* Allow cropping to keep layout stable */
+  /* IMAGE AREA: PERFECT 3:4 ASPECT RATIO (見切れ完全解体) */
+  html body .card-detail-overlay .cd-image-area,
+  html body .card-detail-modal #cd-image { 
+    flex: 0 0 340px !important; 
+    width: 340px !important;
+    min-width: 340px !important;
+    height: 453px !important; 
+    aspect-ratio: 3/4 !important;
+    background-size: cover !important;
     background-repeat: no-repeat !important;
-    background-position: center !important;
+    background-position: center top !important;
     border: none !important;
-    background-color: #000 !important;
-    border-radius: 8px !important;
+    border-radius: 12px !important;
   }
 
-  /* INFO AREA: MAXIMIZED (72%) */
+  /* INFO AREA */
   html body .card-detail-overlay .cd-info-area { 
     flex: 1 !important;
     height: 100% !important;
     padding: 0 !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 0.8vh !important;
-    overflow: hidden !important; /* STRICT: No scrolling allowed for one-view */
+    gap: 12px !important;
+    overflow: hidden !important;
     border: none !important;
   }
 
-  /* COMPACT FONT SCALING */
+  /* COMPACT FONT SCALING & UNIFIED BADGES (角丸6px・高さ30px完全一致) */
   html body .card-detail-overlay .cd-header { gap: 1.5vh !important; padding-bottom: 0.8vh !important; margin-bottom: 0 !important; }
   html body .card-detail-overlay .cd-name {
     min-height: 4vh !important; flex-shrink: 0 !important; font-size: 3.5vh !important; white-space: normal !important; line-height: 1.1 !important; }
   html body .card-detail-overlay .cd-cost { width: 6.5vh !important; height: 6.5vh !important; font-size: 3.5vh !important; }
-  html body .card-detail-overlay .cd-type-tags { gap: 0.8vh !important; margin-bottom: 0.5vh !important; }
-  html body .card-detail-overlay .cd-type-tag, html body .card-detail-overlay .cd-color-tag {
-    min-width: 60px !important; white-space: nowrap !important;
-    font-size: 2.5vh !important; min-width: 8vh !important; text-align: center !important; flex-shrink: 0 !important; font-size: 2.2vh !important; padding: 0.2vh 1.2vh !important; }
-  html body .cd-tribe-icon { width: 2.5vh !important; height: 2.5vh !important; }
+  html body .card-detail-overlay .cd-type-tags { gap: 10px !important; margin-bottom: 0.5vh !important; display: flex !important; flex-direction: row !important; align-items: center !important; }
+  
+  html body .card-detail-overlay .cd-type-tag, 
+  html body .card-detail-overlay #cd-type,
+  html body .card-detail-overlay .cd-rarity,
+  html body .card-detail-overlay #cd-rarity {
+    min-width: 70px !important; 
+    white-space: nowrap !important;
+    font-size: 13px !important; 
+    font-weight: 700 !important;
+    font-family: 'Shippori Mincho', sans-serif !important;
+    height: 30px !important;
+    padding: 0 14px !important;
+    border-radius: 6px !important; /* 楕円(20px)を物理解体し角丸6pxで完全一致 */
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important; 
+    flex-shrink: 0 !important; 
+  }
+  html body .cd-tribe-icon,
+  html body .cd-tribe-tag { width: 28px !important; height: 28px !important; order: 99 !important; margin-left: 4px !important; }
   html body .card-detail-overlay .cd-stats { gap: 4vh !important; margin-bottom: 0.8vh !important; }
   html body .card-detail-overlay .cd-stat { font-size: 3.5vh !important; }
   html body .cd-stat-icon { font-size: 3vh !important; }
@@ -3808,9 +4038,10 @@ body.targeting-mode {
   /* CLOSE BUTTON */
   html body .cd-close-btn { width: 7vh !important; height: 7vh !important; top: 1vh !important; right: 1vh !important; }
 
-  /* MULLIGAN */
+  /* MULLIGAN — mulligan-cardクラスに対応更新（hand-cardから変更） */
   #mulligan-overlay .card,
-  #mulligan-overlay .hand-card { height: 45vh !important; width: auto !important; aspect-ratio: 5/7 !important; }
+  #mulligan-overlay .hand-card,
+  #mulligan-overlay .mulligan-card { height: 180px !important; width: 126px !important; max-height: 200px !important; max-width: 140px !important; aspect-ratio: 5/7 !important; flex-shrink: 0 !important; }
 
   .settings-panel {
     max-width: 90vw !important;
@@ -3821,6 +4052,146 @@ body.targeting-mode {
   .settings-panel h2 { font-size: 24px !important; margin-bottom: 10px !important; }
   .setting-item { margin-bottom: 10px !important; }
 
+}
+
+html, body {
+  background-color: #030712 !important;
+  background: #030712 !important;
+  overflow: hidden !important;
+}
+
+html body #mulligan-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 99999 !important;
+  background: rgba(15, 23, 42, 0.45) !important; /* 透き通る明度45%のシースルー */
+  backdrop-filter: blur(6px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html body #mulligan-overlay .mulligan-panel,
+html body .mulligan-panel {
+  position: relative !important;
+  width: 860px !important;
+  max-width: 94vw !important;
+  margin: 0 auto !important;
+  padding: 32px 28px !important;
+  background: rgba(20, 30, 52, 0.95) !important;
+  border: 2px solid #fbbf24 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 50px rgba(251, 191, 36, 0.3) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  left: 0 !important;
+  right: 0 !important;
+  transform: none !important;
+}
+
+html body #mulligan-overlay .mulligan-cards,
+html body #mulligan-cards {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 20px !important;
+  width: 100% !important;
+  margin: 22px 0 !important;
+  padding: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  transform: none !important;
+}
+
+html body #mulligan-overlay .mulligan-panel h2 {
+  color: #fbbf24 !important;
+  font-size: 34px !important;
+  font-weight: 900 !important;
+  letter-spacing: 4px !important;
+  text-shadow: 0 0 25px rgba(251, 191, 36, 0.8) !important;
+  margin-bottom: 8px !important;
+}
+
+html body #mulligan-overlay .mulligan-panel p {
+  color: #ffffff !important;
+  font-size: 14.5px !important;
+  font-weight: 700 !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8) !important;
+}
+
+html body #mulligan-overlay .hand-card,
+html body #mulligan-cards .hand-card,
+html body #mulligan-overlay .mulligan-card,
+html body #mulligan-cards .mulligan-card {
+  position: relative !important;
+  width: 140px !important;
+  height: 196px !important;
+  aspect-ratio: 5/7 !important;
+  filter: brightness(1.15) contrast(1.05) !important;
+  opacity: 1 !important;
+  background-color: transparent !important;
+  border-radius: 10px !important;
+  background-size: cover !important;
+  background-position: center top !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+  margin: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 0 !important;
+  transform: none !important;
+}
+
+/* カード前面の黒暗転フィルムを物理完全削除 */
+html body #mulligan-overlay .hand-card .card-overlay,
+html body #mulligan-cards .hand-card .card-overlay {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+html body #mulligan-overlay .hand-card .card-overlay {
+  background: transparent !important;
+}
+
+html body #mulligan-actions .btn,
+html body .mulligan-actions .btn {
+  padding: 10px 24px !important;
+  font-weight: 800 !important;
+  font-size: 14px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+}
+
+html body #btn-mulligan-confirm {
+  background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%) !important;
+  color: #030712 !important;
+  border: 1px solid #fef08a !important;
+  box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4) !important;
+}
+
+html body #btn-mulligan-keep-all {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 選択状態（mulligan-cardクラス対応）*/
+html body #mulligan-overlay .hand-card.selected-for-redraw,
+html body #mulligan-cards .hand-card.selected-for-redraw,
+html body #mulligan-overlay .mulligan-card.selected-for-redraw,
+html body #mulligan-cards .mulligan-card.selected-for-redraw {
+  border: 3px solid #ef4444 !important;
+  box-shadow: 0 4px 20px rgba(239,68,68,0.5), 0 0 0 2px rgba(239,68,68,0.3) !important;
 }
 @media (max-height: 500px) {
   .card-detail-modal {
@@ -3978,6 +4349,8 @@ body.targeting-mode {
   }
 
 /* ==========================================
+   (v131 end)
+   ========================================== */
 }
 /* ==========================================
    MOBILE STABILIZATION: STABLE EXPANSION (v132)
@@ -4116,10 +4489,7 @@ body.targeting-mode {
     transform-origin: bottom center !important;
   }
   
-  .hand-card:hover {
-    transform: scale(1.4) translateY(-30px) !important; /* Pop up over the board when touched */
-    z-index: 1000 !important;
-  }
+  /* .hand-card:hover transform: removed — JS側(game-renderer.js)が制御するためCSSでの上書きは振動バグの原因になる */
 }
 
 /* === BU: Deck Builder UI Styles === */
@@ -4184,4 +4554,54 @@ body.targeting-mode {
   background: rgba(255, 255, 255, 0.1);
   margin-top: 4px;
 }
+
+/* ==========================================================================
+   🚨 デッキ構築プレビュー左パネル & カード詳細モーダル 絶対左上詰め強制上書き
+   ========================================================================== */
+.preview-panel,
+#preview-panel,
+#preview-content,
+#preview-content .preview-info {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  height: auto !important;
+  min-height: 0 !important;
+  text-align: left !important;
+}
+
+.preview-desc,
+#preview-content .preview-desc,
+.preview-ability-text-left,
+.cd-text-box,
+#cd-text,
+/* ==========================================================================
+   🃏 Vol.202 マリガン画面 100%完全表示・明るさ保証ルール (style.css 最下部)
+   ========================================================================== */
+
+#mulligan-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 999999 !important;
+  background: rgba(3, 7, 18, 0.75) !important;
+  backdrop-filter: blur(8px) !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#mulligan-overlay .mulligan-panel {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border: 2px solid #fbbf24 !important;
+  border-radius: 20px !important;
+  padding: 30px 40px !important;
+  box-shadow: 0 0 50px rgba(251, 191, 36, 0.4) !important;
+  text-align: center !important;
+  max-width: 90vw !important;
+}
+
+
 
