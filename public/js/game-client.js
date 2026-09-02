@@ -668,6 +668,7 @@ document.addEventListener('pointerdown', function(e) {
 let battleIntroStarted = false;
 window.battleIntroStarted = false; // renderer側から参照可能に
 
+let _vfxRetryCount = 0;
 function startBattleIntroSequence(data) {
   if (battleIntroStarted) return;
   battleIntroStarted = true;
@@ -675,19 +676,28 @@ function startBattleIntroSequence(data) {
 
   console.log('🚀 [GAME-CLIENT] 対戦開始フロー起動！');
 
-  // showMulliganを先に windowに公開してVFX側から参照できるようにする
   window.showMulligan = showMulligan;
 
   if (window.audioManager) window.audioManager.fadeToBGM('battle', 2000);
 
-  // VFX版に完全委譲（triggerVsCutin → triggerOrderCutin → showMulliganのコールバックチェーンをVFX内部に任せる）
   if (window.VFX && window.VFX.startBattleIntroSequence) {
+    _vfxRetryCount = 0;
     window.VFX.startBattleIntroSequence(data);
-  } else {
-    // VFXがまだ初期化されていない場合は少し待ってリトライ
-    console.warn('   [CLIENT] VFX not ready, retrying in 200ms...');
-    battleIntroStarted = false; window.battleIntroStarted = false; // リトライのためフラグをリセット
+  } else if (_vfxRetryCount < 15) {
+    // VFXがまだ初期化されていない場合は少し待ってリトライ（最大15回=3秒）
+    _vfxRetryCount++;
+    console.warn('   [CLIENT] VFX not ready, retrying... (' + _vfxRetryCount + '/15)');
+    battleIntroStarted = false; window.battleIntroStarted = false;
     setTimeout(() => startBattleIntroSequence(data), 200);
+  } else {
+    // VFXが3秒以内に起動しない場合はスキップしてマリガンへ直行
+    console.error('   [CLIENT] VFX failed to initialize. Falling back to direct mulligan.');
+    _vfxRetryCount = 0;
+    window.battleIntroStarted = false;
+    battleIntroStarted = true; // これ以上リトライしない
+    if (typeof showMulligan === 'function' && data && data.hand) {
+      setTimeout(() => showMulligan(data.hand, null), 100);
+    }
   }
 }
 
