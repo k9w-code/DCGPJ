@@ -72,6 +72,13 @@ class SoundManager {
     // すでに同じ曲が再生中なら何もしない
     if (this.bgmAudio.src.endsWith(src) && !this.bgmAudio.paused) return;
 
+    // AudioContextがsuspended（ユーザー未操作）の場合はキューに積む
+    if (this.audioCtx && this.audioCtx.state === 'suspended') {
+      this._pendingBGM = { key, durationMs };
+      console.log('[Audio] BGM queued (AudioContext suspended):', key);
+      return;
+    }
+
     if (this.bgmAudio.paused || !this.bgmAudio.src) {
       // 現在停止中なら直接プレイしてフェードイン
       this.playBGM(key, true);
@@ -151,9 +158,18 @@ class SoundManager {
 
   playSE(type) {
     if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
+    
+    // 同一SEの短時間(250ms)での重複爆音再生を防ぐクールダウンガード
+    if (!this.lastSETimes) this.lastSETimes = {};
+    const nowTime = Date.now();
+    if (this.lastSETimes[type] && (nowTime - this.lastSETimes[type]) < 250) {
+      return; // 短時間の重複再生をブロックしてサウンドをスムーズ化
+    }
+    this.lastSETimes[type] = nowTime;
+
     const now = this.audioCtx.currentTime;
     
-    // \u57fa\u672c\u3068\u306a\u308b\u30de\u30b9\u30bf\u30fc\u30b2\u30a4\u30f3
+    // 基本となるマスターゲイン
     const masterGain = this.audioCtx.createGain();
     masterGain.gain.value = this.seVolume;
     masterGain.connect(this.mainGain);
@@ -526,6 +542,13 @@ class SoundManager {
       source.onended = () => {
         source.disconnect();
         console.log('✅ [Audio] Dummy buffer played and unlocked successfully');
+        // キューに積まれていたBGMを再生
+        if (this._pendingBGM) {
+          const { key, durationMs } = this._pendingBGM;
+          this._pendingBGM = null;
+          console.log('[Audio] Playing queued BGM:', key);
+          this.fadeToBGM(key, durationMs);
+        }
       };
     } catch (e) {
       console.warn('⚠️ [Audio] Dummy buffer play failed:', e.message);
