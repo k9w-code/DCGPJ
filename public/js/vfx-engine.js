@@ -549,120 +549,415 @@ window.VFX = (function() {
     if (window.audioManager) window.audioManager.playSE('turn_start');
   }
 
-  // ========== ダイレクトアタック演出 ==========
-  function playDirectAttackEffect() {
-    const wrapper = document.getElementById('game-wrapper') || document.getElementById('game-container');
-    if (wrapper) {
-      wrapper.classList.add('screen-shake');
-      setTimeout(() => wrapper.classList.remove('screen-shake'), 500);
+  // 🎬 対戦開始シーケンス: VS激突 → 先攻後攻 → マリガン (コールバックチェーン版)
+  function startBattleIntroSequence(data) {
+    console.log('🎬 [VFX] Starting Battle Intro Sequence...', data);
+    const isFirst = data ? data.isFirst : true;
+
+    // まずマリガン画面を完全に隠す
+    const mulliganOverlay = document.getElementById('mulligan-overlay');
+    if (mulliganOverlay) {
+      mulliganOverlay.style.display = 'none';
+      mulliganOverlay.style.opacity = '0';
+      mulliganOverlay.style.pointerEvents = 'none';
     }
 
-    const layer = document.getElementById('vfx-layer');
-    if (layer) {
-      // 画面中央に大きな衝撃波
-      spawnImpactBurst(960, 540, '#ef4444');
-      setTimeout(() => spawnImpactBurst(960, 540, '#f59e0b'), 150);
-    }
+    // Step 1: VS激突カットイン (0s~2.5s)
+    triggerVsCutin();
 
-    if (window.audioManager) window.audioManager.playSE('direct_attack');
-  }
-
-  // instanceId から盤面のスロット要素を検索するヘルパー
-  function getBoardSlotElByInstanceId(instanceId) {
-    const state = window.gameState;
-    if (!state || !instanceId) return null;
-    for (const owner of ['me', 'opponent']) {
-      const board = state[owner] && state[owner].board;
-      if (!board) continue;
-      for (const row of ['front', 'back']) {
-        const slots = board[row];
-        if (!slots) continue;
-        for (let lane = 0; lane < 3; lane++) {
-          const unit = slots[lane];
-          if (unit && unit.instanceId === instanceId) {
-            return getBoardSlotEl(owner === 'me' ? 'me' : 'opp', row, lane);
+    // Step 2: 2.5秒後に先攻後攻カットイン、終了コールバックでマリガンを開く
+    setTimeout(() => {
+      triggerOrderCutin(isFirst, () => {
+        // Step 3: 先攻後攻演出終了後にマリガン画面を表示
+        if (window.showMulligan && data && data.hand) {
+          window.showMulligan(data.hand, (redrawIndices) => {
+            if (window.socket) {
+              window.socket.emit('mulligan_decision', { redrawIndices });
+            }
+          });
+        } else {
+          if (mulliganOverlay) {
+            mulliganOverlay.style.display = 'flex';
+            mulliganOverlay.style.opacity = '1';
+            mulliganOverlay.style.pointerEvents = 'auto';
           }
         }
-      }
-    }
-    return null;
+      });
+    }, 2500);
   }
 
-  // スクリーンシェイク（画面揺れ）
-  function triggerScreenShake() {
-    const gameWrapper = document.getElementById('game-wrapper');
-    if (!gameWrapper) return;
-    gameWrapper.classList.add('screen-shake');
-    setTimeout(() => gameWrapper.classList.remove('screen-shake'), 450);
-  }
-
-  // 対戦開始のVS激突カットイン
+  // 対戦開始のVS激突カットイン（左右スライドイン → 中央で谝為衝突）
   function triggerVsCutin() {
-    const overlay = document.getElementById('vs-cutin-overlay');
-    if (!overlay) return;
+    let vsOverlay = document.getElementById('vs-cutin-overlay');
+    if (vsOverlay) vsOverlay.remove();
 
-    const state = window.gameState;
-    if (!state) return;
+    const state = window.gameState || {};
+    const myName   = (state.me       && state.me.name)       ? state.me.name       : 'YOU';
+    const oppName  = (state.opponent && state.opponent.name) ? state.opponent.name : 'OPPONENT';
+    const myAvatar  = (state.me       && state.me.avatar)  ? state.me.avatar  : '1';
+    const oppAvatar = (state.opponent && state.opponent.avatar) ? state.opponent.avatar : '1';
 
-    // 自分の情報
-    const myNameEl = document.getElementById('vs-my-name');
-    const myAvatarEl = document.getElementById('vs-my-avatar');
-    if (state.me) {
-      if (myNameEl) myNameEl.textContent = state.me.name || 'YOU';
-      if (myAvatarEl) {
-        const avatarStr = String(state.me.avatar || '1');
-        myAvatarEl.style.backgroundImage = `url('/assets/images/avatar/${avatarStr}.png')`;
-      }
+    // アニメーションスタイルシート（一度だけ注入）
+    if (!document.getElementById('vs-cutin-anim-style')) {
+      const styleEl = document.createElement('style');
+      styleEl.id = 'vs-cutin-anim-style';
+      styleEl.innerHTML = `
+        @keyframes vsSlideInLeft {
+          0%   { transform: translateX(-120vw) rotate(-8deg); opacity: 0; }
+          60%  { transform: translateX(8px) rotate(-1deg); opacity: 1; }
+          80%  { transform: translateX(-6px) rotate(1deg); }
+          100% { transform: translateX(0) rotate(0deg); opacity: 1; }
+        }
+        @keyframes vsSlideInRight {
+          0%   { transform: translateX(120vw) rotate(8deg); opacity: 0; }
+          60%  { transform: translateX(-8px) rotate(1deg); opacity: 1; }
+          80%  { transform: translateX(6px) rotate(-1deg); }
+          100% { transform: translateX(0) rotate(0deg); opacity: 1; }
+        }
+        @keyframes vsBurst {
+          0%   { transform: scale(0) rotate(-30deg); opacity: 0; }
+          50%  { transform: scale(1.4) rotate(5deg); opacity: 1; }
+          70%  { transform: scale(0.9) rotate(-3deg); }
+          100% { transform: scale(1.1) rotate(0deg); opacity: 1; }
+        }
+        @keyframes vsGlow {
+          0%, 100% { text-shadow: 0 0 40px #fbbf24, 0 0 80px #d97706; }
+          50%       { text-shadow: 0 0 80px #fef08a, 0 0 120px #fbbf24, 0 0 200px #d97706; }
+        }
+        @keyframes vsFadeOut {
+          0%   { opacity: 1; transform: scale(1); }
+          100% { opacity: 0; transform: scale(1.08); }
+        }
+        @keyframes vsShockwave {
+          0%   { transform: translate(-50%, -50%) scale(0); opacity: 0.8; }
+          100% { transform: translate(-50%, -50%) scale(4); opacity: 0; }
+        }
+      `;
+      document.head.appendChild(styleEl);
     }
 
-    // 相手の情報
-    const oppNameEl = document.getElementById('vs-opp-name');
-    const oppAvatarEl = document.getElementById('vs-opp-avatar');
-    if (state.opponent) {
-      if (oppNameEl) oppNameEl.textContent = state.opponent.name || 'OPPONENT';
-      if (oppAvatarEl) {
-        const avatarStr = String(state.opponent.avatar || '1');
-        oppAvatarEl.style.backgroundImage = `url('/assets/images/avatar/${avatarStr}.png')`;
-      }
-    }
+    vsOverlay = document.createElement('div');
+    vsOverlay.id = 'vs-cutin-overlay';
+    vsOverlay.style.cssText = `
+      position: fixed !important;
+      top: 0 !important; left: 0 !important;
+      width: 100vw !important; height: 100vh !important;
+      z-index: 9999999 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      background: rgba(3, 7, 18, 0.92) !important;
+      backdrop-filter: blur(12px) !important;
+      pointer-events: none !important;
+      overflow: hidden !important;
+    `;
 
-    // クラスのリセットと表示
-    overlay.className = 'vs-cutin-overlay';
-    overlay.style.display = 'flex';
-    
-    // スライドイン発火
-    void overlay.offsetWidth; // リフロー
-    overlay.classList.add('active');
+    vsOverlay.innerHTML = `
+      <!-- 左: 自分 -->
+      <div id="vs-left-panel" style="
+        position: absolute; left: 0; top: 0; width: 45%; height: 100%;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        animation: vsSlideInLeft 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        background: linear-gradient(90deg, rgba(37, 99, 235, 0.3) 0%, transparent 100%);
+        border-right: 2px solid rgba(96, 165, 250, 0.4);
+        gap: 20px;
+      ">
+        <div style="
+          width: 140px; height: 140px; border-radius: 50%;
+          border: 4px solid #60a5fa; box-shadow: 0 0 40px #3b82f6, 0 0 80px rgba(59,130,246,0.4);
+          background: url('/assets/images/avatar/${myAvatar}.png') center/cover, #1e293b;
+          background-size: cover;
+          background-position: center;
+        "></div>
+        <div style="
+          font-family: 'Shippori Mincho', serif; font-size: 32px; font-weight: 900;
+          color: #93c5fd; text-shadow: 0 0 20px #3b82f6, 0 2px 4px rgba(0,0,0,0.9);
+          letter-spacing: 3px; text-align: center;
+          padding: 0 20px;
+        ">${myName}</div>
+        <div style="
+          font-size: 12px; color: rgba(147, 197, 253, 0.7); letter-spacing: 2px; font-family: 'Cinzel', serif;
+        ">YOUR DECK</div>
+      </div>
 
-    // 0.5秒後に中央で激突
+      <!-- 右: 相手 -->
+      <div id="vs-right-panel" style="
+        position: absolute; right: 0; top: 0; width: 45%; height: 100%;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        animation: vsSlideInRight 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        background: linear-gradient(270deg, rgba(220, 38, 38, 0.3) 0%, transparent 100%);
+        border-left: 2px solid rgba(248, 113, 113, 0.4);
+        gap: 20px;
+      ">
+        <div style="
+          width: 140px; height: 140px; border-radius: 50%;
+          border: 4px solid #f87171; box-shadow: 0 0 40px #ef4444, 0 0 80px rgba(239,68,68,0.4);
+          background: url('/assets/images/avatar/${oppAvatar}.png') center/cover, #1e293b;
+          background-size: cover;
+          background-position: center;
+        "></div>
+        <div style="
+          font-family: 'Cinzel', 'Shippori Mincho', serif; font-size: 32px; font-weight: 900;
+          color: #fca5a5; text-shadow: 0 0 20px #ef4444, 0 2px 4px rgba(0,0,0,0.9);
+          letter-spacing: 3px; text-align: center;
+          padding: 0 20px;
+        ">${oppName}</div>
+        <div style="
+          font-size: 12px; color: rgba(252, 165, 165, 0.7); letter-spacing: 2px; font-family: 'Cinzel', serif;
+        ">OPPONENT</div>
+      </div>
+
+      <!-- 中央: VS -->
+      <div id="vs-center" style="
+        position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+        font-family: 'Cinzel', serif; font-size: 120px; font-weight: 900;
+        color: #fef08a;
+        animation: vsBurst 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.5s both,
+                   vsGlow 1.5s ease-in-out 1s infinite;
+        z-index: 2;
+        pointer-events: none;
+        text-align: center;
+        line-height: 1;
+      ">VS</div>
+
+      <!-- 衝突波紋 -->
+      <div id="vs-shockwave" style="
+        position: absolute; left: 50%; top: 50%;
+        width: 200px; height: 200px;
+        border-radius: 50%; border: 4px solid rgba(251,191,36,0.8);
+        animation: vsShockwave 0.6s ease-out 0.5s both;
+        pointer-events: none;
+      "></div>
+    `;
+
+    document.body.appendChild(vsOverlay);
+    if (window.audioManager) window.audioManager.playSE('impact');
+
+    // 2.5秒後にフェードアウトしてDOM削除
     setTimeout(() => {
-      overlay.classList.add('clashed');
-      
-      // 激突SEの再生と本番バトルBGMへの移行
-      if (window.audioManager) {
-        window.audioManager.playSE('impact');
-        window.audioManager.fadeToBGM('game', 600);
-      }
-      
-      // スクリーンシェイク
-      triggerScreenShake();
-    }, 500);
-
-    // 1.5秒後にフェードアウト開始
-    setTimeout(() => {
-      overlay.classList.add('fade-out');
-    }, 1500);
-
-    // 2.1秒後に完全に消去＆クリーンアップ
-    setTimeout(() => {
-      overlay.style.display = 'none';
-      overlay.className = 'vs-cutin-overlay';
-      
-      // BATTLE START イントロ演出をトリガー！
-      if (window.VFX && window.VFX.playBattleStartIntro) {
-        window.VFX.playBattleStartIntro();
+      if (vsOverlay && vsOverlay.parentNode) {
+        vsOverlay.style.animation = 'vsFadeOut 0.4s ease-out forwards';
+        setTimeout(() => {
+          if (vsOverlay && vsOverlay.parentNode) vsOverlay.parentNode.removeChild(vsOverlay);
+        }, 400);
       }
     }, 2100);
+  }
+
+  // 🎲 先攻 / 後攻決定 コインフリップ演出
+  function triggerOrderCutin(isFirst, callback) {
+    let orderOverlay = document.getElementById('order-cutin-overlay');
+    if (orderOverlay) orderOverlay.remove();
+
+    // コインフリップアニメーションスタイル
+    if (!document.getElementById('order-cutin-anim-style')) {
+      const styleEl = document.createElement('style');
+      styleEl.id = 'order-cutin-anim-style';
+      styleEl.innerHTML = `
+        @keyframes coinSpin {
+          0%   { transform: rotateY(0deg) scale(1); }
+          40%  { transform: rotateY(1080deg) scale(1.2); }
+          70%  { transform: rotateY(1400deg) scale(1.05); }
+          85%  { transform: rotateY(1710deg) scale(1); }
+          100% { transform: rotateY(1800deg) scale(1); }
+        }
+        @keyframes coinLand {
+          0%   { transform: rotateY(1800deg) translateY(-30px); }
+          60%  { transform: rotateY(1800deg) translateY(8px); }
+          80%  { transform: rotateY(1800deg) translateY(-4px); }
+          100% { transform: rotateY(1800deg) translateY(0); }
+        }
+        @keyframes resultReveal {
+          0%   { opacity: 0; transform: translateY(30px) scale(0.8); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes orderSlashIn {
+          0%   { transform: rotate(-4deg) scaleX(0); opacity: 0; }
+          100% { transform: rotate(-4deg) scaleX(1); opacity: 1; }
+        }
+        @keyframes orderFadeOut {
+          0%   { opacity: 1; }
+          100% { opacity: 0; }
+        }
+      `;
+      document.head.appendChild(styleEl);
+    }
+
+    orderOverlay = document.createElement('div');
+    orderOverlay.id = 'order-cutin-overlay';
+    orderOverlay.style.cssText = `
+      position: fixed !important;
+      top: 0 !important; left: 0 !important;
+      width: 100vw !important; height: 100vh !important;
+      z-index: 9999998 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      background: rgba(3, 7, 18, 0.88) !important;
+      backdrop-filter: blur(10px) !important;
+      pointer-events: none !important;
+      overflow: hidden !important;
+      gap: 40px !important;
+    `;
+
+    const borderColor = isFirst ? '#fbbf24' : '#60a5fa';
+    const textColor   = isFirst ? '#fef08a' : '#93c5fd';
+    const titleText   = isFirst ? 'YOU GO FIRST' : 'YOU GO SECOND';
+    const subText     = isFirst ? '⚔️ あなたは【先攻】です' : '🛡️ あなたは【後攻】です';
+    // 表裏: 先攻=剣アイコン、後攻=盾アイコン
+    const coinFace = isFirst ? '⚔️' : '🛡️';
+
+    orderOverlay.innerHTML = `
+      <!-- コインフリップフェーズ -->
+      <div id="coin-flip-container" style="
+        display: flex; flex-direction: column; align-items: center; gap: 16px;
+      ">
+        <div style="
+          font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 4px;
+          color: rgba(255,255,255,0.5); text-transform: uppercase;
+        ">COIN FLIP</div>
+        <!-- コイン本体 -->
+        <div id="the-coin" style="
+          width: 120px; height: 120px; border-radius: 50%;
+          background: radial-gradient(circle at 35% 35%,
+            ${isFirst ? '#fef08a, #d97706, #92400e' : '#93c5fd, #2563eb, #1e3a8a'});
+          border: 4px solid ${borderColor};
+          box-shadow: 0 0 30px ${borderColor}, 0 0 60px ${borderColor}40,
+                      inset 0 4px 8px rgba(255,255,255,0.3),
+                      inset 0 -4px 8px rgba(0,0,0,0.5);
+          display: flex; align-items: center; justify-content: center;
+          font-size: 56px;
+          animation: coinSpin 1.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards,
+                     coinLand 0.4s ease-out 1.4s forwards;
+        ">${coinFace}</div>
+      </div>
+
+      <!-- 判定結果バナー -->
+      <div id="order-result-banner" style="
+        display: none;
+        width: 110%; transform: rotate(-3deg);
+        background: linear-gradient(135deg,
+          ${isFirst
+            ? '#1e1b4b 0%, #b45309 35%, #fbbf24 50%, #b45309 65%, #0f172a 100%'
+            : '#0f172a 0%, #1d4ed8 35%, #60a5fa 50%, #1d4ed8 65%, #0f172a 100%'});
+        border-top: 3px solid ${borderColor};
+        border-bottom: 3px solid ${borderColor};
+        box-shadow: 0 0 60px rgba(0,0,0,0.9), 0 0 40px ${borderColor}80;
+        padding: 28px 0;
+        text-align: center;
+        animation: orderSlashIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      ">
+        <div style="
+          font-family: 'Cinzel', 'Shippori Mincho', serif;
+          font-size: 52px; font-weight: 900; letter-spacing: 8px;
+          color: ${textColor};
+          text-shadow: 0 4px 15px rgba(0,0,0,0.9), 0 0 25px ${borderColor};
+          animation: resultReveal 0.4s ease-out 0.1s both;
+        ">${titleText}</div>
+        <div style="
+          font-family: 'Shippori Mincho', serif;
+          font-size: 22px; font-weight: 700; color: #ffffff;
+          letter-spacing: 3px; margin-top: 8px;
+          text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+          animation: resultReveal 0.4s ease-out 0.2s both;
+        ">${subText}</div>
+      </div>
+    `;
+
+    document.body.appendChild(orderOverlay);
+    if (window.audioManager) window.audioManager.playSE('impact');
+
+    // 1.8秒後(コイン着地後): 結果バナーを表示
+    setTimeout(() => {
+      const banner = document.getElementById('order-result-banner');
+      if (banner) {
+        banner.style.display = 'block';
+        if (window.audioManager) window.audioManager.playSE('levelUp');
+      }
+    }, 1800);
+
+    // 4秒後にフェードアウトしてコールバックでマリガンへ
+    setTimeout(() => {
+      if (orderOverlay && orderOverlay.parentNode) {
+        orderOverlay.style.animation = 'orderFadeOut 0.4s ease-out forwards';
+        setTimeout(() => {
+          if (orderOverlay && orderOverlay.parentNode) {
+            orderOverlay.parentNode.removeChild(orderOverlay);
+          }
+          if (typeof callback === 'function') callback();
+        }, 400);
+      } else {
+        if (typeof callback === 'function') callback();
+      }
+    }, 4000);
+  }
+
+  // ⚔️ BATTLE START カットイン演出 (マリガン完了時に発火)
+  function triggerBattleStartCutin(callback) {
+    let bsOverlay = document.getElementById('battle-start-overlay');
+    if (bsOverlay) bsOverlay.remove();
+
+    bsOverlay = document.createElement('div');
+    bsOverlay.id = 'battle-start-overlay';
+    bsOverlay.style.cssText = `
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 9999999 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      background: rgba(3, 7, 18, 0.7) !important;
+      backdrop-filter: blur(8px) !important;
+      pointer-events: none !important;
+      overflow: hidden !important;
+    `;
+
+    bsOverlay.innerHTML = `
+      <div style="
+        font-family: 'Cinzel', 'Shippori Mincho', serif !important;
+        font-size: 64px !important;
+        font-weight: 900 !important;
+        color: #fef08a !important;
+        background: linear-gradient(135deg, #78350f 0%, #d97706 40%, #fbbf24 50%, #d97706 60%, #451a03 100%) !important;
+        border: 4px solid #ffffff !important;
+        padding: 28px 100px !important;
+        border-radius: 24px !important;
+        box-shadow: 0 0 100px #fbbf24, 0 25px 60px rgba(0,0,0,0.9) !important;
+        letter-spacing: 12px !important;
+        text-shadow: 0 4px 20px rgba(0,0,0,0.9), 0 0 30px #fbbf24 !important;
+        text-align: center !important;
+        animation: battleStartPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+      ">
+        ⚔️ BATTLE START ⚔️
+      </div>
+    `;
+
+    if (!document.getElementById('battle-start-anim-style')) {
+      const styleEl = document.createElement('style');
+      styleEl.id = 'battle-start-anim-style';
+      styleEl.innerHTML = `
+        @keyframes battleStartPop {
+          0% { transform: scale(0.2); opacity: 0; }
+          70% { transform: scale(1.08); opacity: 1; }
+          100% { transform: scale(1.0); opacity: 1; }
+        }
+      `;
+      document.head.appendChild(styleEl);
+    }
+
+    document.body.appendChild(bsOverlay);
+    if (window.audioManager) window.audioManager.playSE('levelUp');
+
+    setTimeout(() => {
+      if (bsOverlay && bsOverlay.parentNode) {
+        bsOverlay.parentNode.removeChild(bsOverlay);
+      }
+      if (typeof callback === 'function') callback();
+    }, 1500);
   }
 
   // 物理突進・衝突バウンドアニメーション
@@ -1014,14 +1309,14 @@ window.VFX = (function() {
     playSpGainEffect,
     playAbilityTriggerEffect,
     playTurnStartEffect,
-    playDirectAttackEffect,
     processAnimationEvents,
     getBoardSlotEl,
-    getBoardSlotElByInstanceId,
     playCombatAnimation,
-    triggerScreenShake,
     triggerVsCutin,
+    triggerOrderCutin,
+    triggerBattleStartCutin,
     playBattleStartIntro,
     playGameOverParticles,
+    startBattleIntroSequence
   };
 })();
