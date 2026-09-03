@@ -1046,17 +1046,13 @@ function renderHand(state, selectedCardIndex, onCardClick) {
         const cTranslateY = Math.abs(cOffset) * 15;
 
         if (cIndex === hoveredIndex) {
-          // ホバー中のカード：大きく拡大して上に持ち上げる
+          // ホバー中のカードのみ：手前に浮き上がらせてチルト（隣接カードは動かさず振動を完全防止）
           c.style.transform = `translateX(${cTranslateX}px) rotate(${cAngle}deg) translateY(${cTranslateY - 45}px) scale(1.28) perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg)`;
           c.style.zIndex = '999';
-        } else if (cIndex < hoveredIndex) {
-          // ホバーされたカードより左側のカード：左にスライドし、少し傾ける
-          c.style.transform = `translateX(${cTranslateX - 25}px) rotate(${cAngle - 6}deg) translateY(${cTranslateY + 5}px) scale(0.95)`;
-          c.style.zIndex = '90';
         } else {
-          // ホバーされたカードより右側のカード：右にスライドし、少し傾ける
-          c.style.transform = `translateX(${cTranslateX + 25}px) rotate(${cAngle + 6}deg) translateY(${cTranslateY + 5}px) scale(0.95)`;
-          c.style.zIndex = '90';
+          // 隣接カードは定位置を保ち、マウス下でのカード出入り振動ループを根絶
+          c.style.transform = `translateX(${cTranslateX}px) rotate(${cAngle}deg) translateY(${cTranslateY}px) scale(1)`;
+          c.style.zIndex = cIndex < hoveredIndex ? '90' : '80';
         }
       });
 

@@ -1594,6 +1594,10 @@ function showMulligan(hand, onSubmit) {
         z-index: 2;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       ">${card.name || ''}</div>
+      <div class="mulligan-redraw-badge">
+        <span style="font-size: 16px;">↺</span>
+        <span>交換</span>
+      </div>
     `;
     
     // カードをクリックした時の選択トグル処理
@@ -1602,15 +1606,20 @@ function showMulligan(hand, onSubmit) {
       if (selectedIndices.has(index)) {
         selectedIndices.delete(index);
         el.classList.remove('selected-for-redraw');
-        el.style.border = `3px solid ${borderColor}`;
-        el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)';
         if (window.audioManager) window.audioManager.playSE('mulligan_select');
       } else {
         selectedIndices.add(index);
         el.classList.add('selected-for-redraw');
-        el.style.border = '3px solid #ef4444';
-        el.style.boxShadow = '0 4px 20px rgba(239,68,68,0.5), 0 0 0 2px rgba(239,68,68,0.3), inset 0 0 0 2px rgba(239,68,68,0.2)';
         if (window.audioManager) window.audioManager.playSE('mulligan_select');
+      }
+      // ボタンテキストを動的に更新
+      const confirmBtnText = document.querySelector('#btn-mulligan-confirm .btn-text');
+      if (confirmBtnText) {
+        if (selectedIndices.size > 0) {
+          confirmBtnText.innerHTML = `REDRAW (${selectedIndices.size}枚)<span class="btn-sub">選択したカードを交換</span>`;
+        } else {
+          confirmBtnText.innerHTML = `REDRAW<span class="btn-sub">選択したカードを交換</span>`;
+        }
       }
     });
 

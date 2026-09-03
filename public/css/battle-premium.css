@@ -2420,10 +2420,16 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
   transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s !important;
   will-change: transform;
 }
+/* .hand-card:hover transform removed: JS(game-renderer.js) handles transform cleanly to prevent oscillation jitter */
 .hand-card:hover {
-  transform: translateY(-70px) scale(1.25) rotate(0deg) !important;
-  z-index: 9999 !important;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.85), 0 0 30px rgba(139, 92, 246, 0.6) !important;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.85), 0 0 30px rgba(251, 191, 36, 0.5) !important;
+}
+/* 子要素がホバーイベントを奪ってチラつくのを完全防止 */
+.hand-card > * {
+  pointer-events: none !important;
+}
+.hand-card {
+  pointer-events: auto !important;
 }
 
 /* ==========================================================================
@@ -6098,4 +6104,192 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
   border-radius: 50%;
   background: linear-gradient(135deg, rgba(255,255,255,0.45) 0%, transparent 35%, transparent 65%, rgba(255,255,255,0.2) 100%);
   pointer-events: none;
+}
+
+
+/* PHASE 10: 商業DCG水準 マリガン画面プレミアムBU */
+
+/* ==========================================================================
+   PHASE 10: 商業DCG水準 マリガン画面プレミアムBU
+   ========================================================================== */
+
+/* 全画面オーバーレイ（深淵なコズミックアリーナ空間） */
+html body #mulligan-overlay,
+html body .mulligan-overlay {
+  background: radial-gradient(circle at center, rgba(15, 23, 42, 0.88) 0%, rgba(3, 7, 18, 0.97) 100%) !important;
+  backdrop-filter: blur(16px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* マリガンパネル（野暮ったい黄枠・箱型を撤廃し、優雅なアリーナレイアウトへ） */
+html body #mulligan-overlay .mulligan-panel,
+html body .mulligan-panel {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: 980px !important;
+  max-width: 96vw !important;
+  padding: 10px 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* ヘッダータイトル */
+html body #mulligan-overlay .mulligan-panel h2 {
+  font-family: 'Cinzel', serif !important;
+  font-size: 38px !important;
+  font-weight: 900 !important;
+  letter-spacing: 8px !important;
+  background: linear-gradient(180deg, #ffffff 0%, #fef08a 35%, #fbbf24 70%, #d97706 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 0 25px rgba(251, 191, 36, 0.75)) drop-shadow(0 4px 10px rgba(0,0,0,0.9)) !important;
+  margin-bottom: 6px !important;
+  text-align: center !important;
+}
+
+/* サブタイトル */
+html body #mulligan-overlay .mulligan-panel .mulligan-subtitle {
+  font-family: 'Shippori Mincho', 'Noto Serif JP', serif !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  letter-spacing: 2px !important;
+  color: #cbd5e1 !important;
+  text-align: center !important;
+  margin-bottom: 24px !important;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.8) !important;
+}
+
+html body #mulligan-overlay .mulligan-hint {
+  font-size: 12.5px !important;
+  color: rgba(251, 191, 36, 0.85) !important;
+  letter-spacing: 1px !important;
+}
+
+/* カードコンテナ */
+html body #mulligan-overlay .mulligan-cards,
+html body #mulligan-cards {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 22px !important;
+  margin: 15px 0 30px !important;
+}
+
+/* マリガンカード本体 */
+html body #mulligan-overlay .mulligan-card,
+html body #mulligan-cards .mulligan-card {
+  width: 145px !important;
+  height: 205px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.15) !important;
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.28s ease, filter 0.28s ease, border-color 0.28s ease !important;
+  position: relative !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  overflow: hidden !important;
+}
+
+/* マリガンカードのホバー */
+html body #mulligan-overlay .mulligan-card:hover,
+html body #mulligan-cards .mulligan-card:hover {
+  transform: translateY(-16px) scale(1.08) !important;
+  box-shadow: 0 20px 45px rgba(0,0,0,0.9), 0 0 30px rgba(251, 191, 36, 0.4) !important;
+  z-index: 20 !important;
+}
+
+/* 交換選択状態（selected-for-redraw） */
+html body #mulligan-overlay .mulligan-card.selected-for-redraw,
+html body #mulligan-cards .mulligan-card.selected-for-redraw {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 32px rgba(239, 68, 68, 0.85), 0 10px 25px rgba(0,0,0,0.9) !important;
+  filter: brightness(0.65) saturate(0.85) !important;
+  transform: translateY(-8px) scale(0.96) !important;
+}
+
+/* 交換選択スタンプバッジ */
+.mulligan-redraw-badge {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0) rotate(-12deg);
+  background: rgba(185, 28, 28, 0.9);
+  border: 2px solid #f87171;
+  border-radius: 50px;
+  padding: 8px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.8), 0 0 25px rgba(239, 68, 68, 0.8);
+  color: #ffffff;
+  font-family: 'Shippori Mincho', 'Cinzel', serif;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  pointer-events: none;
+  z-index: 15;
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
+  opacity: 0;
+  white-space: nowrap;
+}
+
+.mulligan-card.selected-for-redraw .mulligan-redraw-badge {
+  transform: translate(-50%, -50%) scale(1) rotate(-8deg);
+  opacity: 1;
+}
+
+/* アクションボタンバー */
+html body #mulligan-actions,
+html body .mulligan-actions {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 24px !important;
+}
+
+/* REDRAWボタン (交換決定ボタン) */
+html body #btn-mulligan-confirm {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #92400e 100%) !important;
+  color: #fffbeb !important;
+  border: 1.5px solid #fef08a !important;
+  box-shadow: 0 6px 24px rgba(217, 119, 6, 0.55), inset 0 1px 2px rgba(255,255,255,0.4) !important;
+  font-family: 'Cinzel', 'Shippori Mincho', serif !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: 2px !important;
+  padding: 12px 32px !important;
+  border-radius: 30px !important;
+  transition: all 0.25s ease !important;
+}
+
+html body #btn-mulligan-confirm:hover {
+  transform: translateY(-3px) scale(1.04) !important;
+  box-shadow: 0 10px 30px rgba(217, 119, 6, 0.75), 0 0 20px rgba(254, 240, 138, 0.6) !important;
+}
+
+/* KEEP ALLボタン (全キープボタン) */
+html body #btn-mulligan-keep-all {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #e2e8f0 !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6) !important;
+  font-family: 'Cinzel', 'Shippori Mincho', serif !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: 2px !important;
+  padding: 12px 32px !important;
+  border-radius: 30px !important;
+  transition: all 0.25s ease !important;
+}
+
+html body #btn-mulligan-keep-all:hover {
+  transform: translateY(-3px) scale(1.04) !important;
+  background: rgba(51, 65, 85, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.8), 0 0 15px rgba(255, 255, 255, 0.2) !important;
 }
