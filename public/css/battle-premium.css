@@ -5666,3 +5666,423 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
 @keyframes arrowDash {
   to { stroke-dashoffset: -32; }
 }
+
+
+/* SHADOWVERSE STYLE: 先攻・後攻 シネマティック演出 */
+
+/* ==========================================================================
+   SHADOWVERSE STYLE: 先攻・後攻 シネマティック演出 (Order Cutin)
+   ========================================================================== */
+
+/* 画面シェイクアニメーション基盤 */
+@keyframes screenShake {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  20% { transform: translate(-6px, 4px) rotate(-0.5deg); }
+  40% { transform: translate(6px, -4px) rotate(0.5deg); }
+  60% { transform: translate(-4px, -2px) rotate(-0.2deg); }
+  80% { transform: translate(3px, 2px) rotate(0.1deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+@keyframes screenShakeHeavy {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  15% { transform: translate(-12px, 8px) rotate(-1.2deg); }
+  30% { transform: translate(12px, -8px) rotate(1.2deg); }
+  45% { transform: translate(-8px, 6px) rotate(-0.8deg); }
+  60% { transform: translate(8px, -4px) rotate(0.6deg); }
+  75% { transform: translate(-4px, 2px) rotate(-0.3deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+.screen-shake-anim {
+  animation: screenShake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;
+}
+.screen-shake-heavy {
+  animation: screenShakeHeavy 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;
+}
+
+/* 全画面オーバーレイ */
+.order-overlay-sv {
+  position: fixed !important;
+  top: 0 !important; left: 0 !important;
+  width: 100vw !important; height: 100vh !important;
+  z-index: 9999998 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: radial-gradient(circle at center, rgba(15, 23, 42, 0.88) 0%, rgba(3, 7, 18, 0.96) 100%) !important;
+  backdrop-filter: blur(14px) !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+}
+
+/* 3D コインステージ */
+.sv-coin-stage {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  perspective: 1000px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.sv-coin-stage.fade-out {
+  opacity: 0;
+  transform: scale(0.65);
+}
+
+.sv-coin-halo {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, rgba(217, 119, 6, 0.1) 50%, transparent 70%);
+  animation: svHaloPulse 1.2s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes svHaloPulse {
+  0% { transform: scale(0.9); opacity: 0.5; }
+  100% { transform: scale(1.3); opacity: 0.9; }
+}
+
+/* 3D フリッパー */
+.sv-coin-flipper {
+  width: 130px;
+  height: 130px;
+  position: relative;
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 12px 28px rgba(0,0,0,0.85)) drop-shadow(0 0 25px rgba(251, 191, 36, 0.5));
+}
+
+.sv-coin-flipper.flip-to-heads {
+  animation: svCoinSpinHeads 1.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.sv-coin-flipper.flip-to-tails {
+  animation: svCoinSpinTails 1.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes svCoinSpinHeads {
+  0% {
+    transform: translateY(-80px) rotateY(0deg) scale(0.6);
+  }
+  35% {
+    transform: translateY(-160px) rotateY(1080deg) scale(1.35);
+  }
+  70% {
+    transform: translateY(-30px) rotateY(1800deg) scale(1.1);
+  }
+  88% {
+    transform: translateY(8px) rotateY(2140deg) scale(0.98);
+  }
+  100% {
+    transform: translateY(0) rotateY(2160deg) scale(1);
+  }
+}
+
+@keyframes svCoinSpinTails {
+  0% {
+    transform: translateY(-80px) rotateY(0deg) scale(0.6);
+  }
+  35% {
+    transform: translateY(-160px) rotateY(1080deg) scale(1.35);
+  }
+  70% {
+    transform: translateY(-30px) rotateY(1800deg) scale(1.1);
+  }
+  88% {
+    transform: translateY(8px) rotateY(1960deg) scale(0.98);
+  }
+  100% {
+    transform: translateY(0) rotateY(1980deg) scale(1);
+  }
+}
+
+/* コイン表裏 */
+.sv-coin-face {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.sv-coin-heads {
+  transform: rotateY(0deg);
+  background: radial-gradient(circle at 35% 30%, #fffbeb 0%, #fef08a 20%, #d97706 65%, #78350f 100%);
+  border: 4px solid #fef08a;
+  box-shadow: inset 0 3px 6px rgba(255,255,255,0.85), inset 0 -4px 8px rgba(0,0,0,0.7);
+}
+
+.sv-coin-tails {
+  transform: rotateY(180deg);
+  background: radial-gradient(circle at 35% 30%, #f0fdf4 0%, #e0f2fe 20%, #38bdf8 55%, #0284c7 85%, #0f172a 100%);
+  border: 4px solid #bae6fd;
+  box-shadow: inset 0 3px 6px rgba(255,255,255,0.85), inset 0 -4px 8px rgba(0,0,0,0.7);
+}
+
+.sv-coin-svg {
+  width: 82%;
+  height: 82%;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+}
+
+/* 斬撃フラッシュ (Screen Slash & Flash) */
+.sv-order-slash {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 250vw;
+  height: 8px;
+  transform: translate(-50%, -50%) rotate(-8deg) scaleX(0);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.sv-order-slash.active {
+  animation: svSlashBeam 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.sv-order-slash.first-color {
+  background: linear-gradient(90deg, transparent 0%, rgba(254, 240, 138, 0.9) 25%, #ffffff 50%, rgba(254, 240, 138, 0.9) 75%, transparent 100%);
+  box-shadow: 0 0 30px #fbbf24, 0 0 70px #f59e0b, 0 0 120px #d97706;
+}
+
+.sv-order-slash.second-color {
+  background: linear-gradient(90deg, transparent 0%, rgba(186, 230, 253, 0.9) 25%, #ffffff 50%, rgba(186, 230, 253, 0.9) 75%, transparent 100%);
+  box-shadow: 0 0 30px #38bdf8, 0 0 70px #0284c7, 0 0 120px #0369a1;
+}
+
+@keyframes svSlashBeam {
+  0% {
+    transform: translate(-50%, -50%) rotate(-8deg) scaleX(0);
+    opacity: 0;
+  }
+  30% {
+    transform: translate(-50%, -50%) rotate(-8deg) scaleX(1);
+    opacity: 1;
+    height: 14px;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(-8deg) scaleX(1.1);
+    opacity: 0;
+    height: 2px;
+  }
+}
+
+.sv-screen-flash {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #ffffff;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9;
+}
+
+.sv-screen-flash.flash {
+  animation: svFlashAnim 0.35s ease-out forwards;
+}
+
+@keyframes svFlashAnim {
+  0% { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+
+/* シャドウバース風 特大決戦バナー */
+.sv-order-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100vw;
+  z-index: 5;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sv-order-banner.active {
+  animation: svBannerSlam 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes svBannerSlam {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2.8);
+    filter: blur(16px);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.95);
+    filter: blur(0px);
+  }
+  80% {
+    transform: translate(-50%, -50%) scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    filter: blur(0px);
+  }
+}
+
+/* 背景魔法陣・エネルギー */
+.sv-magic-circle-bg {
+  position: absolute;
+  width: 440px;
+  height: 440px;
+  border-radius: 50%;
+  border: 2px dashed rgba(251, 191, 36, 0.35);
+  box-shadow: 0 0 80px rgba(245, 158, 11, 0.25), inset 0 0 60px rgba(245, 158, 11, 0.2);
+  animation: svRotateCircle 20s linear infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.sv-order-banner.second .sv-magic-circle-bg {
+  border-color: rgba(56, 189, 248, 0.35);
+  box-shadow: 0 0 80px rgba(2, 132, 199, 0.25), inset 0 0 60px rgba(2, 132, 199, 0.2);
+}
+
+@keyframes svRotateCircle {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 巨大漢字: 先 攻 / 後 攻 */
+.sv-kanji-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  line-height: 1;
+  user-select: none;
+}
+
+.sv-kanji-char {
+  font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+  font-size: 130px;
+  font-weight: 800;
+  letter-spacing: 8px;
+  display: inline-block;
+  position: relative;
+}
+
+/* 先攻: 黄金の神聖爆熱スタイル */
+.sv-order-banner.first .sv-kanji-char {
+  background: linear-gradient(180deg, #ffffff 0%, #fef08a 25%, #f59e0b 55%, #b45309 82%, #78350f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 35px rgba(245, 158, 11, 0.95))
+          drop-shadow(0 0 75px rgba(217, 119, 6, 0.65))
+          drop-shadow(0 6px 12px rgba(0,0,0,0.95));
+}
+
+/* 後攻: 蒼天・月光・白銀スタイル */
+.sv-order-banner.second .sv-kanji-char {
+  background: linear-gradient(180deg, #ffffff 0%, #e0f2fe 25%, #38bdf8 55%, #0284c7 82%, #0f172a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 35px rgba(56, 189, 248, 0.95))
+          drop-shadow(0 0 75px rgba(2, 132, 199, 0.65))
+          drop-shadow(0 6px 12px rgba(0,0,0,0.95));
+}
+
+/* サブテキスト (FIRST TURN / SECOND TURN) */
+.sv-roman-sub {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 14px;
+}
+
+.sv-sub-line {
+  display: inline-block;
+  width: 80px;
+  height: 2px;
+}
+
+.sv-order-banner.first .sv-sub-line {
+  background: linear-gradient(90deg, transparent, #fbbf24);
+}
+.sv-order-banner.first .sv-sub-line.right {
+  background: linear-gradient(270deg, transparent, #fbbf24);
+}
+
+.sv-order-banner.second .sv-sub-line {
+  background: linear-gradient(90deg, transparent, #60a5fa);
+}
+.sv-order-banner.second .sv-sub-line.right {
+  background: linear-gradient(270deg, transparent, #60a5fa);
+}
+
+.sv-sub-text {
+  font-family: 'Cinzel', serif;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 10px;
+}
+
+.sv-order-banner.first .sv-sub-text {
+  color: #fef08a;
+  text-shadow: 0 0 20px #f59e0b, 0 2px 6px rgba(0,0,0,0.9);
+}
+
+.sv-order-banner.second .sv-sub-text {
+  color: #bae6fd;
+  text-shadow: 0 0 20px #0284c7, 0 2px 6px rgba(0,0,0,0.9);
+}
+
+/* 戦術バッジ */
+.sv-turn-badge {
+  margin-top: 18px;
+  padding: 8px 28px;
+  border-radius: 30px;
+  font-family: 'Shippori Mincho', 'Noto Sans JP', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  backdrop-filter: blur(10px);
+}
+
+.sv-order-banner.first .sv-turn-badge {
+  background: rgba(180, 83, 9, 0.4);
+  border: 1px solid rgba(251, 191, 36, 0.7);
+  color: #fef08a;
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.35);
+}
+
+.sv-order-banner.second .sv-turn-badge {
+  background: rgba(3, 105, 161, 0.4);
+  border: 1px solid rgba(96, 165, 250, 0.7);
+  color: #bae6fd;
+  box-shadow: 0 0 25px rgba(2, 132, 199, 0.35);
+}
+
+/* 終了時のディゾルブ消滅 */
+.order-overlay-sv.order-fade-out {
+  animation: svOrderFadeOut 0.45s ease-out forwards;
+}
+
+@keyframes svOrderFadeOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.08);
+    filter: blur(8px);
+  }
+}

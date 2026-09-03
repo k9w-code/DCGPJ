@@ -587,7 +587,19 @@ window.VFX = (function() {
   }
 
   // 対戦開始のVS激突カットイン（左右スライドイン → 中央で谝為衝突）
-  function triggerVsCutin() {
+    // 📳 画面振動 (スクリーンシェイク)
+  function triggerScreenShake(intensity) {
+    const container = document.getElementById('game-container') || document.body;
+    const animClass = intensity === 'heavy' ? 'screen-shake-heavy' : 'screen-shake-anim';
+    container.classList.remove('screen-shake-heavy', 'screen-shake-anim');
+    void container.offsetWidth; // リフロー
+    container.classList.add(animClass);
+    setTimeout(() => {
+      container.classList.remove('screen-shake-heavy', 'screen-shake-anim');
+    }, 450);
+  }
+
+function triggerVsCutin() {
     let vsOverlay = document.getElementById('vs-cutin-overlay');
     if (vsOverlay) vsOverlay.remove();
 
@@ -744,153 +756,146 @@ window.VFX = (function() {
     }, 2100);
   }
 
-  // 🎲 先攻 / 後攻決定 コインフリップ演出
+  // 🎲 先攻 / 後攻決定 シャドウバース風シネマティック演出
   function triggerOrderCutin(isFirst, callback) {
     let orderOverlay = document.getElementById('order-cutin-overlay');
     if (orderOverlay) orderOverlay.remove();
 
-    // コインフリップアニメーションスタイル
-    if (!document.getElementById('order-cutin-anim-style')) {
-      const styleEl = document.createElement('style');
-      styleEl.id = 'order-cutin-anim-style';
-      styleEl.innerHTML = `
-        @keyframes coinSpin {
-          0%   { transform: rotateY(0deg) scale(1); }
-          40%  { transform: rotateY(1080deg) scale(1.2); }
-          70%  { transform: rotateY(1400deg) scale(1.05); }
-          85%  { transform: rotateY(1710deg) scale(1); }
-          100% { transform: rotateY(1800deg) scale(1); }
-        }
-        @keyframes coinLand {
-          0%   { transform: rotateY(1800deg) translateY(-30px); }
-          60%  { transform: rotateY(1800deg) translateY(8px); }
-          80%  { transform: rotateY(1800deg) translateY(-4px); }
-          100% { transform: rotateY(1800deg) translateY(0); }
-        }
-        @keyframes resultReveal {
-          0%   { opacity: 0; transform: translateY(30px) scale(0.8); }
-          100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes orderSlashIn {
-          0%   { transform: rotate(-4deg) scaleX(0); opacity: 0; }
-          100% { transform: rotate(-4deg) scaleX(1); opacity: 1; }
-        }
-        @keyframes orderFadeOut {
-          0%   { opacity: 1; }
-          100% { opacity: 0; }
-        }
-      `;
-      document.head.appendChild(styleEl);
-    }
-
     orderOverlay = document.createElement('div');
     orderOverlay.id = 'order-cutin-overlay';
-    orderOverlay.style.cssText = `
-      position: fixed !important;
-      top: 0 !important; left: 0 !important;
-      width: 100vw !important; height: 100vh !important;
-      z-index: 9999998 !important;
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: center !important;
-      justify-content: center !important;
-      background: rgba(3, 7, 18, 0.88) !important;
-      backdrop-filter: blur(10px) !important;
-      pointer-events: none !important;
-      overflow: hidden !important;
-      gap: 40px !important;
+    orderOverlay.className = 'order-overlay-sv';
+
+    const firstBadgeText = '1ターン目の行動権を獲得（先手イニシアチブ）';
+    const secondBadgeText = '後攻ボーナス: 初期SP +1 ＆ 手札ドロー優先';
+
+    // SVG コインアイコン (先攻: 太陽と聖剣 / 後攻: 月光と神聖盾)
+    const headsSvg = `
+      <svg viewBox="0 0 100 100" class="sv-coin-svg">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="#fef08a" stroke-width="2.5" stroke-dasharray="3,2" />
+        <circle cx="50" cy="50" r="41" fill="none" stroke="#b45309" stroke-width="1.5" />
+        <!-- 太陽の光芒 -->
+        <g stroke="#fef08a" stroke-width="2" stroke-linecap="round">
+          <line x1="50" y1="12" x2="50" y2="18" />
+          <line x1="50" y1="82" x2="50" y2="88" />
+          <line x1="12" y1="50" x2="18" y2="50" />
+          <line x1="82" y1="50" x2="88" y2="50" />
+          <line x1="23" y1="23" x2="28" y2="28" />
+          <line x1="72" y1="72" x2="77" y2="77" />
+          <line x1="77" y1="23" x2="72" y2="28" />
+          <line x1="28" y1="72" x2="23" y2="77" />
+        </g>
+        <!-- 交差する聖剣 -->
+        <path d="M30 70 L70 30 M65 25 L75 35 M63 33 L67 37 M26 74 L34 66 M25 75 L22 78" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" />
+        <path d="M70 70 L30 30 M25 35 L35 25 M33 37 L37 33 M66 66 L74 74 M75 75 L78 78" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" />
+        <circle cx="50" cy="50" r="8" fill="#fef08a" />
+      </svg>
     `;
 
-    const borderColor = isFirst ? '#fbbf24' : '#60a5fa';
-    const textColor   = isFirst ? '#fef08a' : '#93c5fd';
-    const titleText   = isFirst ? 'YOU GO FIRST' : 'YOU GO SECOND';
-    const subText     = isFirst ? '⚔️ あなたは【先攻】です' : '🛡️ あなたは【後攻】です';
-    // 表裏: 先攻=剣アイコン、後攻=盾アイコン
-    const coinFace = isFirst ? '⚔️' : '🛡️';
+    const tailsSvg = `
+      <svg viewBox="0 0 100 100" class="sv-coin-svg">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="#bae6fd" stroke-width="2.5" stroke-dasharray="3,2" />
+        <circle cx="50" cy="50" r="41" fill="none" stroke="#0284c7" stroke-width="1.5" />
+        <!-- 守護の盾 -->
+        <path d="M50 20 C62 20, 72 26, 72 44 C72 62, 50 78, 50 78 C50 78, 28 62, 28 44 C28 26, 38 20, 50 20 Z" fill="rgba(56, 189, 248, 0.25)" stroke="#ffffff" stroke-width="3" stroke-linejoin="round" />
+        <!-- 三日月モチーフ -->
+        <path d="M50 28 C42 34, 42 56, 50 64 C40 60, 36 44, 44 32 C46 30, 48 29, 50 28 Z" fill="#e0f2fe" />
+        <circle cx="50" cy="46" r="5" fill="#38bdf8" />
+      </svg>
+    `;
 
     orderOverlay.innerHTML = `
-      <!-- コインフリップフェーズ -->
-      <div id="coin-flip-container" style="
-        display: flex; flex-direction: column; align-items: center; gap: 16px;
-      ">
-        <div style="
-          font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 4px;
-          color: rgba(255,255,255,0.5); text-transform: uppercase;
-        ">COIN FLIP</div>
-        <!-- コイン本体 -->
-        <div id="the-coin" style="
-          width: 120px; height: 120px; border-radius: 50%;
-          background: radial-gradient(circle at 35% 35%,
-            ${isFirst ? '#fef08a, #d97706, #92400e' : '#93c5fd, #2563eb, #1e3a8a'});
-          border: 4px solid ${borderColor};
-          box-shadow: 0 0 30px ${borderColor}, 0 0 60px ${borderColor}40,
-                      inset 0 4px 8px rgba(255,255,255,0.3),
-                      inset 0 -4px 8px rgba(0,0,0,0.5);
-          display: flex; align-items: center; justify-content: center;
-          font-size: 56px;
-          animation: coinSpin 1.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards,
-                     coinLand 0.4s ease-out 1.4s forwards;
-        ">${coinFace}</div>
+      <!-- 1. 3D コインフリップ -->
+      <div id="sv-coin-stage" class="sv-coin-stage">
+        <div class="sv-coin-halo"></div>
+        <div id="sv-coin-flipper" class="sv-coin-flipper ${isFirst ? 'flip-to-heads' : 'flip-to-tails'}">
+          <!-- 表: 先攻 -->
+          <div class="sv-coin-face sv-coin-heads">
+            ${headsSvg}
+          </div>
+          <!-- 裏: 後攻 -->
+          <div class="sv-coin-face sv-coin-tails">
+            ${tailsSvg}
+          </div>
+        </div>
       </div>
 
-      <!-- 判定結果バナー -->
-      <div id="order-result-banner" style="
-        display: none;
-        width: 110%; transform: rotate(-3deg);
-        background: linear-gradient(135deg,
-          ${isFirst
-            ? '#1e1b4b 0%, #b45309 35%, #fbbf24 50%, #b45309 65%, #0f172a 100%'
-            : '#0f172a 0%, #1d4ed8 35%, #60a5fa 50%, #1d4ed8 65%, #0f172a 100%'});
-        border-top: 3px solid ${borderColor};
-        border-bottom: 3px solid ${borderColor};
-        box-shadow: 0 0 60px rgba(0,0,0,0.9), 0 0 40px ${borderColor}80;
-        padding: 28px 0;
-        text-align: center;
-        animation: orderSlashIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      ">
-        <div style="
-          font-family: 'Cinzel', 'Shippori Mincho', serif;
-          font-size: 52px; font-weight: 900; letter-spacing: 8px;
-          color: ${textColor};
-          text-shadow: 0 4px 15px rgba(0,0,0,0.9), 0 0 25px ${borderColor};
-          animation: resultReveal 0.4s ease-out 0.1s both;
-        ">${titleText}</div>
-        <div style="
-          font-family: 'Shippori Mincho', serif;
-          font-size: 22px; font-weight: 700; color: #ffffff;
-          letter-spacing: 3px; margin-top: 8px;
-          text-shadow: 0 2px 8px rgba(0,0,0,0.9);
-          animation: resultReveal 0.4s ease-out 0.2s both;
-        ">${subText}</div>
+      <!-- 2. 斬撃ビーム ＆ フラッシュ -->
+      <div id="sv-order-slash" class="sv-order-slash ${isFirst ? 'first-color' : 'second-color'}"></div>
+      <div id="sv-screen-flash" class="sv-screen-flash"></div>
+
+      <!-- 3. シャドウバース風 巨大漢字タイトル -->
+      <div id="sv-order-banner" class="sv-order-banner ${isFirst ? 'first' : 'second'}">
+        <div class="sv-magic-circle-bg"></div>
+
+        <!-- 巨大漢字: 先 攻 / 後 攻 -->
+        <div class="sv-kanji-wrap">
+          <span class="sv-kanji-char">${isFirst ? '先' : '後'}</span>
+          <span class="sv-kanji-char">攻</span>
+        </div>
+
+        <!-- 英語サブタイトル: ── FIRST TURN ── -->
+        <div class="sv-roman-sub">
+          <span class="sv-sub-line"></span>
+          <span class="sv-sub-text">${isFirst ? 'FIRST TURN' : 'SECOND TURN'}</span>
+          <span class="sv-sub-line right"></span>
+        </div>
+
+        <!-- 戦術バッジ -->
+        <div class="sv-turn-badge">
+          ${isFirst ? firstBadgeText : secondBadgeText}
+        </div>
       </div>
     `;
 
     document.body.appendChild(orderOverlay);
-    if (window.audioManager) window.audioManager.playSE('impact');
 
-    // 1.8秒後(コイン着地後): 結果バナーを表示
+    // [0.0s] コイン回転音
+    if (window.audioManager) {
+      window.audioManager.playSE('select');
+    }
+
+    // [1.35s] コイン着地 → 斬撃ビーム・画面閃光・シェイク
     setTimeout(() => {
-      const banner = document.getElementById('order-result-banner');
-      if (banner) {
-        banner.style.display = 'block';
-        if (window.audioManager) window.audioManager.playSE('levelUp');
-      }
-    }, 1800);
+      const coinStage = document.getElementById('sv-coin-stage');
+      const slash = document.getElementById('sv-order-slash');
+      const flash = document.getElementById('sv-screen-flash');
+      const banner = document.getElementById('sv-order-banner');
 
-    // 4秒後にフェードアウトしてコールバックでマリガンへ
+      if (coinStage) coinStage.classList.add('fade-out');
+      if (slash) slash.classList.add('active');
+      if (flash) flash.classList.add('flash');
+
+      // 画面強振動
+      triggerScreenShake('heavy');
+
+      // 斬撃音 ＆ 激突音
+      if (window.audioManager) {
+        window.audioManager.playSE('attack');
+        setTimeout(() => {
+          window.audioManager.playSE('levelUp');
+        }, 120);
+      }
+
+      // [1.45s] 巨大漢字バナー着弾
+      setTimeout(() => {
+        if (banner) banner.classList.add('active');
+      }, 100);
+    }, 1350);
+
+    // [3.6s] フェードアウトしてマリガン画面へ接続
     setTimeout(() => {
       if (orderOverlay && orderOverlay.parentNode) {
-        orderOverlay.style.animation = 'orderFadeOut 0.4s ease-out forwards';
+        orderOverlay.classList.add('order-fade-out');
         setTimeout(() => {
           if (orderOverlay && orderOverlay.parentNode) {
             orderOverlay.parentNode.removeChild(orderOverlay);
           }
           if (typeof callback === 'function') callback();
-        }, 400);
+        }, 450);
       } else {
         if (typeof callback === 'function') callback();
       }
-    }, 4000);
+    }, 3600);
   }
 
   // ⚔️ BATTLE START カットイン演出 (マリガン完了時に発火)
@@ -1317,6 +1322,7 @@ window.VFX = (function() {
     triggerBattleStartCutin,
     playBattleStartIntro,
     playGameOverParticles,
-    startBattleIntroSequence
+    startBattleIntroSequence,
+    triggerScreenShake
   };
 })();
