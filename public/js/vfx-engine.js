@@ -764,10 +764,6 @@ function triggerVsCutin() {
     orderOverlay = document.createElement('div');
     orderOverlay.id = 'order-cutin-overlay';
     orderOverlay.className = 'order-overlay-sv';
-
-    const firstBadgeText = '1ターン目の行動権を獲得（先手イニシアチブ）';
-    const secondBadgeText = '後攻ボーナス: 初期SP +1 ＆ 手札ドロー優先';
-
     // SVG コインアイコン (先攻: 太陽と聖剣 / 後攻: 月光と神聖盾)
     const headsSvg = `
       <svg viewBox="0 0 100 100" class="sv-coin-svg">
@@ -838,11 +834,6 @@ function triggerVsCutin() {
           <span class="sv-sub-line"></span>
           <span class="sv-sub-text">${isFirst ? 'FIRST TURN' : 'SECOND TURN'}</span>
           <span class="sv-sub-line right"></span>
-        </div>
-
-        <!-- 戦術バッジ -->
-        <div class="sv-turn-badge">
-          ${isFirst ? firstBadgeText : secondBadgeText}
         </div>
       </div>
     `;

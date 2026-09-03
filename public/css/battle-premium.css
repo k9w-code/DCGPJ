@@ -6086,3 +6086,5 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
     filter: blur(8px);
   }
 }
+
+.sv-turn-badge { display: none !important; }
