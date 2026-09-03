@@ -1246,8 +1246,10 @@ window.updateUI = function() {
           emblemText.textContent = isMyTurn ? 'YOUR TURN' : "OPPONENT'S TURN";
           if (isMyTurn) {
             emblemText.classList.remove('opponent');
+            emblem.classList.remove('is-opponent');
           } else {
             emblemText.classList.add('opponent');
+            emblem.classList.add('is-opponent');
           }
           
           splashPremium.style.display = 'flex';
@@ -1258,20 +1260,19 @@ window.updateUI = function() {
           
           emblem.classList.add('enter');
           
+          // MTGアリーナ風の上品なターン開始音
           if (window.audioManager) {
-            window.audioManager.playSE(isMyTurn ? 'levelUp' : 'click');
+            window.audioManager.playSE(isMyTurn ? 'turn_start' : 'select');
           }
-          
-          // 黄金の火花（CSSパーティクル）の放出演出
-          spawnTurnParticles(isMyTurn);
 
+          // スマート＆スピーディな表示時間 (約0.95秒でスッと消えて盤面操作へ)
           setTimeout(() => {
             emblem.classList.add('exit');
             setTimeout(() => {
               splashPremium.style.display = 'none';
               emblem.classList.remove('enter', 'exit');
-            }, 400);
-          }, 2000);
+            }, 350);
+          }, 950);
         }
         window.lastTurnNumber = state.turnNumber;
         window.lastTurnPlayerId = state.currentPlayerId;

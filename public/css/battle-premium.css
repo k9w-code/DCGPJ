@@ -6293,3 +6293,154 @@ html body #btn-mulligan-keep-all:hover {
   border-color: rgba(255, 255, 255, 0.5) !important;
   box-shadow: 0 10px 25px rgba(0,0,0,0.8), 0 0 15px rgba(255, 255, 255, 0.2) !important;
 }
+
+
+/* MTG ARENA STYLE: 洗練されたターン開始インジケーター */
+
+/* ==========================================================================
+   MTG ARENA STYLE: 洗練されたターン開始インジケーター
+   ========================================================================== */
+
+/* 全画面オーバーレイ（盤面を一切邪魔しない透明レイヤー） */
+.turn-splash-premium {
+  display: none;
+  position: fixed !important;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  z-index: 49000 !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  pointer-events: none !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.emblem-wrapper {
+  perspective: 1000px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* MTGアリーナ風の洗練された水平光条バナー（380x140の箱型を完全廃止） */
+.turn-emblem {
+  width: auto !important;
+  min-width: 460px !important;
+  height: 58px !important;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(15, 23, 42, 0.75) 20%, 
+    rgba(15, 23, 42, 0.92) 50%, 
+    rgba(15, 23, 42, 0.75) 80%, 
+    transparent 100%
+  ) !important;
+  border: none !important;
+  border-top: 1.5px solid rgba(251, 191, 36, 0.75) !important;
+  border-bottom: 1.5px solid rgba(251, 191, 36, 0.75) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 0 30px rgba(0,0,0,0.8), 0 0 25px rgba(245, 158, 11, 0.25) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  overflow: visible !important;
+  transform: none !important;
+  opacity: 0;
+  padding: 0 40px !important;
+}
+
+/* 相手ターンのバナー色 */
+.turn-emblem.is-opponent {
+  border-top: 1.5px solid rgba(148, 163, 184, 0.5) !important;
+  border-bottom: 1.5px solid rgba(148, 163, 184, 0.5) !important;
+  box-shadow: 0 0 30px rgba(0,0,0,0.8), 0 0 20px rgba(100, 116, 139, 0.2) !important;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(15, 23, 42, 0.65) 20%, 
+    rgba(15, 23, 42, 0.85) 50%, 
+    rgba(15, 23, 42, 0.65) 80%, 
+    transparent 100%
+  ) !important;
+}
+
+/* MTGアリーナ風の優雅なスライドイン＆アウト */
+.turn-emblem.enter {
+  animation: mtgTurnEnter 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+.turn-emblem.exit {
+  animation: mtgTurnExit 0.32s cubic-bezier(0.7, 0, 0.84, 0) forwards !important;
+}
+
+@keyframes mtgTurnEnter {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.75) translateY(6px);
+    letter-spacing: 14px;
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleX(1) translateY(0);
+    letter-spacing: 8px;
+    filter: blur(0px);
+  }
+}
+
+@keyframes mtgTurnExit {
+  0% {
+    opacity: 1;
+    transform: scaleX(1) translateY(0);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1.04) translateY(-6px);
+    filter: blur(4px);
+  }
+}
+
+/* テキスト本体 */
+.turn-emblem .emblem-text {
+  font-family: 'Cinzel', serif !important;
+  font-size: 25px !important;
+  font-weight: 800 !important;
+  letter-spacing: 8px !important;
+  text-transform: uppercase !important;
+  color: #fffbeb !important;
+  text-shadow: 0 0 20px rgba(251, 191, 36, 0.8), 0 2px 4px rgba(0,0,0,0.9) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+}
+
+/* 左右の洗練された水平ウィスプライン (── YOUR TURN ──) */
+.turn-emblem .emblem-text::before,
+.turn-emblem .emblem-text::after {
+  content: '' !important;
+  display: inline-block !important;
+  width: 45px !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, transparent, #fbbf24) !important;
+}
+.turn-emblem .emblem-text::after {
+  background: linear-gradient(270deg, transparent, #fbbf24) !important;
+}
+
+/* 相手ターンのテキスト */
+.turn-emblem .emblem-text.opponent {
+  color: #cbd5e1 !important;
+  font-size: 21px !important;
+  letter-spacing: 6px !important;
+  text-shadow: 0 0 15px rgba(148, 163, 184, 0.5), 0 2px 4px rgba(0,0,0,0.9) !important;
+}
+
+.turn-emblem .emblem-text.opponent::before,
+.turn-emblem .emblem-text.opponent::after {
+  background: linear-gradient(90deg, transparent, #94a3b8) !important;
+}
+.turn-emblem .emblem-text.opponent::after {
+  background: linear-gradient(270deg, transparent, #94a3b8) !important;
+}
