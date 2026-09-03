@@ -765,39 +765,6 @@ function triggerVsCutin() {
     orderOverlay.id = 'order-cutin-overlay';
     orderOverlay.className = 'order-overlay-sv';
     // SVG コインアイコン (先攻: 太陽と聖剣 / 後攻: 月光と神聖盾)
-    const headsSvg = `
-      <svg viewBox="0 0 100 100" class="sv-coin-svg">
-        <circle cx="50" cy="50" r="46" fill="none" stroke="#fef08a" stroke-width="2.5" stroke-dasharray="3,2" />
-        <circle cx="50" cy="50" r="41" fill="none" stroke="#b45309" stroke-width="1.5" />
-        <!-- 太陽の光芒 -->
-        <g stroke="#fef08a" stroke-width="2" stroke-linecap="round">
-          <line x1="50" y1="12" x2="50" y2="18" />
-          <line x1="50" y1="82" x2="50" y2="88" />
-          <line x1="12" y1="50" x2="18" y2="50" />
-          <line x1="82" y1="50" x2="88" y2="50" />
-          <line x1="23" y1="23" x2="28" y2="28" />
-          <line x1="72" y1="72" x2="77" y2="77" />
-          <line x1="77" y1="23" x2="72" y2="28" />
-          <line x1="28" y1="72" x2="23" y2="77" />
-        </g>
-        <!-- 交差する聖剣 -->
-        <path d="M30 70 L70 30 M65 25 L75 35 M63 33 L67 37 M26 74 L34 66 M25 75 L22 78" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" />
-        <path d="M70 70 L30 30 M25 35 L35 25 M33 37 L37 33 M66 66 L74 74 M75 75 L78 78" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" />
-        <circle cx="50" cy="50" r="8" fill="#fef08a" />
-      </svg>
-    `;
-
-    const tailsSvg = `
-      <svg viewBox="0 0 100 100" class="sv-coin-svg">
-        <circle cx="50" cy="50" r="46" fill="none" stroke="#bae6fd" stroke-width="2.5" stroke-dasharray="3,2" />
-        <circle cx="50" cy="50" r="41" fill="none" stroke="#0284c7" stroke-width="1.5" />
-        <!-- 守護の盾 -->
-        <path d="M50 20 C62 20, 72 26, 72 44 C72 62, 50 78, 50 78 C50 78, 28 62, 28 44 C28 26, 38 20, 50 20 Z" fill="rgba(56, 189, 248, 0.25)" stroke="#ffffff" stroke-width="3" stroke-linejoin="round" />
-        <!-- 三日月モチーフ -->
-        <path d="M50 28 C42 34, 42 56, 50 64 C40 60, 36 44, 44 32 C46 30, 48 29, 50 28 Z" fill="#e0f2fe" />
-        <circle cx="50" cy="46" r="5" fill="#38bdf8" />
-      </svg>
-    `;
 
     orderOverlay.innerHTML = `
       <!-- 1. 3D コインフリップ -->
@@ -806,11 +773,11 @@ function triggerVsCutin() {
         <div id="sv-coin-flipper" class="sv-coin-flipper ${isFirst ? 'flip-to-heads' : 'flip-to-tails'}">
           <!-- 表: 先攻 -->
           <div class="sv-coin-face sv-coin-heads">
-            ${headsSvg}
+            <div class="sv-coin-shine"></div>
           </div>
           <!-- 裏: 後攻 -->
           <div class="sv-coin-face sv-coin-tails">
-            ${tailsSvg}
+            <div class="sv-coin-shine"></div>
           </div>
         </div>
       </div>

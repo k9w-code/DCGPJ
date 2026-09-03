@@ -5749,8 +5749,8 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
 
 /* 3D フリッパー */
 .sv-coin-flipper {
-  width: 130px;
-  height: 130px;
+  width: 146px;
+  height: 146px;
   position: relative;
   transform-style: preserve-3d;
   filter: drop-shadow(0 12px 28px rgba(0,0,0,0.85)) drop-shadow(0 0 25px rgba(251, 191, 36, 0.5));
@@ -5815,16 +5815,18 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
 
 .sv-coin-heads {
   transform: rotateY(0deg);
-  background: radial-gradient(circle at 35% 30%, #fffbeb 0%, #fef08a 20%, #d97706 65%, #78350f 100%);
-  border: 4px solid #fef08a;
-  box-shadow: inset 0 3px 6px rgba(255,255,255,0.85), inset 0 -4px 8px rgba(0,0,0,0.7);
+  background: url('/assets/images/vfx/coin_heads.jpg') center/cover no-repeat !important;
+  border: 2px solid rgba(254, 240, 138, 0.85) !important;
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.75), inset 0 0 16px rgba(0,0,0,0.7) !important;
+  overflow: hidden !important;
 }
 
 .sv-coin-tails {
   transform: rotateY(180deg);
-  background: radial-gradient(circle at 35% 30%, #f0fdf4 0%, #e0f2fe 20%, #38bdf8 55%, #0284c7 85%, #0f172a 100%);
-  border: 4px solid #bae6fd;
-  box-shadow: inset 0 3px 6px rgba(255,255,255,0.85), inset 0 -4px 8px rgba(0,0,0,0.7);
+  background: url('/assets/images/vfx/coin_tails.jpg') center/cover no-repeat !important;
+  border: 2px solid rgba(186, 230, 253, 0.85) !important;
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.75), inset 0 0 16px rgba(0,0,0,0.7) !important;
+  overflow: hidden !important;
 }
 
 .sv-coin-svg {
@@ -6088,3 +6090,12 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
 }
 
 .sv-turn-badge { display: none !important; }
+
+/* コイン金属光沢レイヤー */
+.sv-coin-shine {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.45) 0%, transparent 35%, transparent 65%, rgba(255,255,255,0.2) 100%);
+  pointer-events: none;
+}
