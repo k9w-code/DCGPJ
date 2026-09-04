@@ -1594,6 +1594,7 @@ function showMulligan(hand, onSubmit) {
         z-index: 2;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       ">${card.name || ''}</div>
+      <div class="mulligan-detail-btn" title="カード詳細を表示">🔍</div>
       <div class="mulligan-redraw-badge">
         <span style="font-size: 16px;">↺</span>
         <span>交換</span>
@@ -1637,7 +1638,39 @@ function showMulligan(hand, onSubmit) {
       }
     });
 
-    if (typeof attachCardDetailEvent === 'function') attachCardDetailEvent(el, card);
+    // 🔍 詳細ボタンのクリック
+    const detailBtn = el.querySelector('.mulligan-detail-btn');
+    if (detailBtn) {
+      detailBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (typeof window.showCardDetail === 'function') {
+          window.showCardDetail(card);
+        }
+      });
+    }
+
+    // 右クリックで詳細を表示
+    el.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof window.showCardDetail === 'function') {
+        window.showCardDetail(card);
+      }
+    });
+
+    // モバイル長押し判定 (450ms)
+    let touchTimer = null;
+    el.addEventListener('touchstart', (e) => {
+      touchTimer = setTimeout(() => {
+        if (typeof window.showCardDetail === 'function') {
+          window.showCardDetail(card);
+        }
+      }, 450);
+    }, { passive: true });
+    el.addEventListener('touchend', () => clearTimeout(touchTimer));
+    el.addEventListener('touchmove', () => clearTimeout(touchTimer));
+
     container.appendChild(el);
   });
   overlay.style.display = 'flex';

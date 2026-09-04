@@ -615,11 +615,20 @@ window.showCardDetail = function(card) {
 
   const closeBtn = document.getElementById('btn-close-detail');
   if (closeBtn) {
-    closeBtn.onclick = () => { overlay.style.display = 'none'; };
+    closeBtn.onclick = (e) => {
+      e.stopPropagation();
+      overlay.style.display = 'none';
+    };
   }
+  // 背景オーバーレイのクリックでも閉じる
+  overlay.onclick = (e) => {
+    if (e.target === overlay || e.target.classList.contains('card-detail-overlay')) {
+      overlay.style.display = 'none';
+    }
+  };
 };
 
-function attachCardDetailEvent(el, card) {
+window.attachCardDetailEvent = function attachCardDetailEvent(el, card) {
   el.addEventListener('contextmenu', (e) => {
     e.preventDefault();
     window.showCardDetail(card);
@@ -651,19 +660,15 @@ function renderPlayerInfo(state, selectedAttacker) {
     const avatarStr = String(state.me.avatar || '1');
     console.log(`[RENDERER] My Avatar State: "${state.me.avatar}", Rendering ID: "${avatarStr}"`);
     
-    // 画像パスの生成 (1〜99 番の数値を想定)
-    let avatarPath = `/assets/images/avatar/${avatarStr}.png`;
-    
-    // 数値でない、または特殊な文字列が含まれる場合のエラーガード (以前の仕様との互換性)
-    if (isNaN(avatarStr) && avatarStr.includes('/')) {
-        avatarPath = avatarStr;
-    }
+    // 画像パスの解決 (新5神族アバター対応)
+    const avatarInfo = window.getAvatarInfo ? window.getAvatarInfo(avatarStr) : { path: `/assets/images/avatar/炎の魔女.jpeg` };
+    const avatarPath = avatarInfo.path;
 
     if (avatarPath) {
       myAvatarEl.style.backgroundImage = `url('${avatarPath}')`;
       myAvatarEl.innerHTML = '';
       myAvatarEl.style.backgroundSize = 'cover';
-      myAvatarEl.style.backgroundPosition = 'center';
+      myAvatarEl.style.backgroundPosition = 'top center';
       myAvatarEl.style.display = 'block';
     }
   }
@@ -750,12 +755,13 @@ function renderPlayerInfo(state, selectedAttacker) {
     safeSetText('opp-name', state.opponent.name);
     const oppAvatarEl = document.getElementById('opp-avatar');
     if (oppAvatarEl) {
-      const oppAvatarStr = String(state.opponent.avatar || '1');
-      const oppAvatarPath = `/assets/images/avatar/${oppAvatarStr}.png`;
+      const oppAvatarStr = String(state.opponent.avatar || '5');
+      const oppInfo = window.getAvatarInfo ? window.getAvatarInfo(oppAvatarStr) : { path: `/assets/images/avatar/闇の剣士.jpeg` };
+      const oppAvatarPath = oppInfo.path;
       oppAvatarEl.style.backgroundImage = `url('${oppAvatarPath}')`;
       oppAvatarEl.innerHTML = '';
       oppAvatarEl.style.backgroundSize = 'cover';
-      oppAvatarEl.style.backgroundPosition = 'center';
+      oppAvatarEl.style.backgroundPosition = 'top center';
       oppAvatarEl.style.display = 'block';
     }
     

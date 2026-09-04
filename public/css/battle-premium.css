@@ -5313,16 +5313,17 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
 
 /* 👑 アバター画像・プレイヤーネーム・神族パネルのプレミアム可視化 */
 .avatar-image {
-  background-image: url('/assets/images/avatar/1.png');
+  background-image: url('/assets/images/avatar/炎の魔女.jpeg');
   background-size: cover;
-  background-position: center;
+  background-position: top center;
   border-radius: 50%;
   width: 100% !important;
   height: 100% !important;
 }
 
 #opp-avatar {
-  background-image: url('/assets/images/avatar/2.png');
+  background-image: url('/assets/images/avatar/闇の剣士.jpeg');
+  background-position: top center;
 }
 
 .player-name {
@@ -6443,4 +6444,43 @@ html body #btn-mulligan-keep-all:hover {
 }
 .turn-emblem .emblem-text.opponent::after {
   background: linear-gradient(270deg, transparent, #94a3b8) !important;
+}
+
+
+/* カード詳細モーダルをマリガン画面(z-index: 999999)の最前面に配置 */
+
+/* ==========================================================================
+   カード詳細モーダルをマリガン画面(z-index: 999999)の最前面に配置
+   ========================================================================== */
+#card-detail-overlay,
+.card-detail-overlay {
+  z-index: 10000000 !important;
+}
+
+/* マリガンカードの右上詳細ボタン（🔍） */
+.mulligan-detail-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1.5px solid rgba(251, 191, 36, 0.8);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 0 8px rgba(251, 191, 36, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: #fef08a;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.mulligan-detail-btn:hover {
+  transform: scale(1.18);
+  background: rgba(30, 41, 59, 0.95);
+  border-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.9), 0 0 15px rgba(251, 191, 36, 0.6);
 }
