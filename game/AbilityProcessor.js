@@ -69,7 +69,18 @@ function getAbilityTargets(targetId, currentPlayer, opponentPlayer, value, unit)
     case 'self_unit_highest_cost': candidates = selectByCriteria(selfUnits, 'cost', 'max'); break;
     case 'self_unit_lowest_cost': candidates = selectByCriteria(selfUnits, 'cost', 'min'); break;
 
-    case 'self': return [currentPlayer];
+    case 'enemy_unit_atk_lte_all':
+      candidates = enemyUnits.filter(u => {
+        const curAtk = u.currentAttack !== undefined ? u.currentAttack : u.attack;
+        return curAtk <= (value || 2);
+      });
+      return candidates;
+    case 'enemy_unit_atk_lte_1':
+      candidates = enemyUnits.filter(u => {
+        const curAtk = u.currentAttack !== undefined ? u.currentAttack : u.attack;
+        return curAtk <= (value || 2);
+      });
+      break;
     case 'enemy': return [opponentPlayer];
     case 'this_unit': return unit ? [unit] : []; // \u81ea\u8eab\u3092\u5bfe\u8c61\u306b\u3059\u308b
     case 'enemy_shield': return opponentPlayer.shields.filter(s => !s.destroyed).slice(0, 1);

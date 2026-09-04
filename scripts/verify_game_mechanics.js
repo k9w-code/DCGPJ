@@ -1,12 +1,12 @@
-// scripts/debug_match.js
-// 1試合の全対戦ログを出力し、ターンごとのアタック・ダメージ・シールド破壊を徹底トレース
+// scripts/verify_game_mechanics.js
+// 1試合の毎ターンの「盤面」「シールド耐久」「AIのアクション選択」を詳細にトラッキング
 'use strict';
 
 const { loadAllData } = require('../game/DataLoader');
 const GameEngine = require('../game/GameEngine');
 const AIPlayer   = require('../game/AIPlayer');
 
-async function debugMatch() {
+async function verifyMechanics() {
   const gameData = await loadAllData({ sync: false });
   const shieldPool = gameData.shields.filter(s => (s.expansion || 'basic') === 'basic');
 
@@ -23,8 +23,7 @@ async function debugMatch() {
   const p2Info = { id:'p2', name:'【白単】耐久ビート', avatar:'2', deckCardIds:whiteBeatCards, shieldIds:selectShields(shieldPool), isAI:true };
 
   const engine = new GameEngine(gameData);
-  const logs = [];
-  engine.log = (msg) => logs.push(msg);
+  engine.log = (msg) => console.log('  [LOG]', msg);
 
   const ai1 = new AIPlayer('p1', gameData.cardMap, 'hard');
   const ai2 = new AIPlayer('p2', gameData.cardMap, 'hard');
@@ -40,10 +39,14 @@ async function debugMatch() {
   engine.startTurn();
 
   let step = 0;
-  while (engine.gameState.phase !== 'game_over' && step < 2000) {
+  while (engine.gameState.phase !== 'game_over' && step < 1000) {
     step++;
     const phase = engine.gameState.phase;
-    if (phase === 'shield_break_anim') { engine.resolvePendingShieldBreak(); continue; }
+    if (phase === 'shield_break_anim') {
+      console.log('⚡ [シールド破壊アニメ処理]');
+      engine.resolvePendingShieldBreak();
+      continue;
+    }
 
     let cid = engine.gameState.playerOrder[engine.gameState.currentPlayerIndex];
     if (phase === 'targeting' && engine.gameState.pendingAbilitySource) {
@@ -52,6 +55,9 @@ async function debugMatch() {
 
     const action = aiFor(cid).decideNextAction(engine.getPlayerView(cid));
     if (!action) { engine.endTurn(cid); continue; }
+
+    const curPlayerName = engine.gameState.players[cid].name;
+    console.log(`\n▶ [Action Step ${step}] ${curPlayerName}:`, JSON.stringify(action));
 
     let res;
     switch (action.type) {
@@ -62,14 +68,17 @@ async function debugMatch() {
       case 'end_turn':      res = engine.endTurn(cid); break;
       default: res = { error: 'unknown' };
     }
-    if (res?.error) engine.endTurn(cid);
+    if (res?.error) console.log('  ⚠️ アクションエラー:', res.error);
+
+    // 各アクション後のシールド状況を表示
+    const p1ShieldsStr = engine.gameState.players.p1.shields.map(s => `${s.name}(${s.currentDurability}/${s.maxDurability}${s.destroyed?':破':''})`).join(', ');
+    const p2ShieldsStr = engine.gameState.players.p2.shields.map(s => `${s.name}(${s.currentDurability}/${s.maxDurability}${s.destroyed?':破':''})`).join(', ');
+    console.log(`  📊 P1(赤)シールド: [${p1ShieldsStr}] | P2(白)シールド: [${p2ShieldsStr}]`);
   }
 
-  console.log('=== 全対戦ログ ===');
-  console.log(logs.join('\n'));
-  console.log('\n=== 勝敗結果 ===');
-  console.log('勝者:', engine.gameState.winner === 'p1' ? '【赤単】ラッシュ' : '【白単】耐久ビート');
+  console.log('\n=== 最終結果 ===');
+  console.log('勝者:', engine.gameState.winner);
   console.log('ターン数:', engine.gameState.turnNumber);
 }
 
-debugMatch().catch(console.error);
+verifyMechanics().catch(console.error);

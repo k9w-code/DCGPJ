@@ -14,8 +14,16 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// 静的ファイル配信
-app.use(express.static(path.join(__dirname, 'public')));
+// 静的ファイル配信（開発・デバッグプレイ用にキャッシュを100%完全無効化）
+app.use(express.static(path.join(__dirname, 'public'), {
+  etag: false,
+  lastModified: false,
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+}));
 
 // マスターデータ読み込み
 let gameData;
@@ -185,7 +193,7 @@ io.on('connection', (socket) => {
     if (session) {
       currentRoom = session.roomId;
       const room = rooms.get(currentRoom);
-      if (room) {
+      if (room && room.status === 'playing') {
         // プレイヤーのsocketを更新
         const player = room.players[session.playerIndex];
         if (player) {
@@ -212,8 +220,9 @@ io.on('connection', (socket) => {
               
               // マリガン未完了の場合のみ、追加でマリガン指示を送る
               if (room.engine.gameState.phase === 'mulligan' && !player.mulliganDone) {
-                socket.emit('mulligan_phase', { hand: sanitizedView.me.hand });
-                console.log(`✅ [SERVER] mulligan_phase sent`);
+                const isFirst = (room.engine.gameState.playerOrder[0] === player.id);
+                socket.emit('mulligan_phase', { hand: sanitizedView.me.hand, isFirst: isFirst });
+                console.log(`✅ [SERVER] mulligan_phase sent to ${player.name} (isFirst: ${isFirst})`);
               }
             } catch (e) {
               console.error(`💥 [SERVER] restore_session data send failed:`, e.message);
@@ -336,8 +345,44 @@ io.on('connection', (socket) => {
 
   // ルーム参加
   socket.on('join_room', (data) => {
-    const room = rooms.get(data.roomId);
-    if (!room || room.players.length >= 2) {
+    let targetRoomId = currentRoom || data.roomId || sessionStorage.getItem('dcg_room_id');
+    let room = rooms.get(targetRoomId);
+
+    // ルームが存在しない場合、単体デッキ構築からの対戦開始とみなし、即座にSoloルームを物理自動作成
+    if (!room) {
+      console.log(`🚀 [SERVER] ルーム未所属のため、新Soloルームを自動作成: ${socket.id}`);
+      const newRoomId = `room_${Date.now()}`;
+      const p1SessionId = generateSessionId();
+      const p2SessionId = generateSessionId();
+
+      const newRoom = {
+        roomId: newRoomId,
+        mode: 'solo',
+        status: 'waiting',
+        engine: null,
+        players: [
+          { id: `p1_${newRoomId}`, name: 'プレイヤー', avatar: 'player', isAI: false, socket: socket, deck: null, shields: null, mulliganDone: false },
+          { id: `p2_${newRoomId}`, name: 'NPC (NORMAL)', avatar: 'opponent', isAI: true, ai: new AIPlayer('normal'), deck: null, shields: null, mulliganDone: false }
+        ]
+      };
+
+      rooms.set(newRoomId, newRoom);
+      sessions.set(p1SessionId, { roomId: newRoomId, playerIndex: 0 });
+      sessions.set(p2SessionId, { roomId: newRoomId, playerIndex: 1 });
+
+      currentRoom = newRoomId;
+      sessionId = p1SessionId;
+      targetRoomId = newRoomId;
+      room = newRoom;
+      socket.join(newRoomId);
+      socket.emit('session_created', { sessionId: p1SessionId, roomId: newRoomId, playerIndex: 0 });
+    }
+
+    const player = room.players[0]; // プレイヤー
+    player.socket = socket;
+    socket.join(targetRoomId);
+
+    if (room.players.length >= 2) {
       socket.emit('error_msg', { message: 'ルームに参加できません' });
       return;
     }
@@ -379,22 +424,45 @@ io.on('connection', (socket) => {
       }
     }
 
-    if (!targetRoomId) {
-      socket.emit('error_msg', { message: 'ルームが特定できません。ロビーに戻り直してください。' });
-      return;
+    const requestMode = (data && data.mode) || 'solo';
+
+    if (!targetRoomId || !rooms.get(targetRoomId)) {
+      // マルチ対戦(multi / room)の場合は絶対NPC化させず、正しいエラーを返す
+      if (requestMode !== 'solo') {
+        socket.emit('error_msg', { message: '対戦ルームが特定できません。ロビーから再度マッチングを行ってください。' });
+        return;
+      }
+
+      console.log(`🚀 [SERVER] submit_deck: ソロプレイ要請のため、Solo対戦ルームを新設: ${socket.id}`);
+      const newRoomId = `room_${Date.now()}`;
+      const p1SessionId = generateSessionId();
+      const p2SessionId = generateSessionId();
+
+      const newRoom = {
+        roomId: newRoomId,
+        mode: 'solo',
+        status: 'waiting',
+        engine: null,
+        players: [
+          { id: `p1_${newRoomId}`, name: 'プレイヤー', avatar: 'player', isAI: false, socket: socket, deck: null, shields: null, mulliganDone: false },
+          { id: `p2_${newRoomId}`, name: 'NPC (NORMAL)', avatar: 'opponent', isAI: true, ai: new AIPlayer('normal'), deck: null, shields: null, mulliganDone: false }
+        ]
+      };
+
+      rooms.set(newRoomId, newRoom);
+      sessions.set(p1SessionId, { roomId: newRoomId, playerIndex: 0 });
+      sessions.set(p2SessionId, { roomId: newRoomId, playerIndex: 1 });
+
+      currentRoom = newRoomId;
+      sessionId = p1SessionId;
+      targetRoomId = newRoomId;
+      targetSessionId = p1SessionId;
+      socket.join(newRoomId);
+      socket.emit('session_created', { sessionId: p1SessionId, roomId: newRoomId, playerIndex: 0 });
     }
 
     const room = rooms.get(targetRoomId);
-    if (!room) {
-      socket.emit('error_msg', { message: '該当の対戦ルームが存在しないか終了しました。ロビーに戻り直してください。' });
-      return;
-    }
-
-    const session = sessions.get(targetSessionId);
-    if (!session) {
-      socket.emit('error_msg', { message: 'セッションが無効です。ロビーに戻り直してください。' });
-      return;
-    }
+    const session = sessions.get(targetSessionId) || { playerIndex: 0 };
 
     const player = room.players[session.playerIndex];
     if (!player) {
@@ -673,7 +741,14 @@ function startGame(room) {
 
   console.log(`🎮 ゲーム開始: ${p1.name} vs ${p2.name}`);
 
-  // AIマリガン
+  // 人間プレイヤーのマリガン状態を false に初期化
+  for (const p of room.players) {
+    if (!p.isAI) {
+      p.mulliganDone = false;
+    }
+  }
+
+  // AIのマリガン処理のみ先行実行
   for (const p of room.players) {
     if (p.isAI) {
       const hand = engine.gameState.players[p.id].hand;
@@ -683,29 +758,27 @@ function startGame(room) {
     }
   }
 
-  // 通知: ゲーム開始 → ゲーム画面へ遷移を促す（ルーム全体同報 ＋ 個別ソケット念押し）
-  io.to(room.roomId).emit('game_started', { roomId: room.roomId });
+  // フェーズをマリガン待機 ('mulligan') に固定
+  engine.gameState.phase = 'mulligan';
+
+  // 通知: ゲーム開始 ＆ マリガンフェーズ通知（先攻後攻データを含める）
+  const firstPlayerId = engine.gameState.playerOrder[0];
+
+  // 1. まず全プレイヤーに game_state を確実に同期配信
+  sendGameStateToAll(room);
+
+  // 2. その後、対戦開始シーケンス (VS激突 -> 先攻後攻 -> マリガン) を発火
   for (const p of room.players) {
     if (p.socket) {
+      const isFirst = (p.id === firstPlayerId);
+      const playerHand = engine.gameState.players[p.id] ? engine.gameState.players[p.id].hand : [];
+      
       p.socket.emit('game_started', { roomId: room.roomId });
-    }
-  }
-
-  // 全員がマリガン完了（AI vs AI等）の場合、直ちにメインフェーズへ
-  const allMulliganDone = room.players.every(p => p.mulliganDone);
-  console.log(`[startGame] All mulligan done: ${allMulliganDone}`);
-
-  if (allMulliganDone) {
-    room.engine.gameState.phase = 'main';
-    const firstTurnState = room.engine.startTurn();
-    console.log(`[startGame] AI match: First turn started. SP: ${room.engine.gameState.players[room.engine.gameState.playerOrder[0]].sp}`);
-    sendGameStateToAll(room);
-    
-    const currentId = room.engine.gameState.playerOrder[room.engine.gameState.currentPlayerIndex];
-    const currentPlayerObj = room.players.find(p => p.id === currentId);
-    if (currentPlayerObj && currentPlayerObj.isAI) {
-      console.log(`[startGame] Scheduling first AI turn for ${currentPlayerObj.name}`);
-      setTimeout(() => executeAITurn(room, currentPlayerObj), 2000);
+      p.socket.emit('mulligan_phase', {
+        isFirst: isFirst,
+        hand: playerHand,
+        opponentName: room.players.find(other => other.id !== p.id)?.name || 'OPPONENT'
+      });
     }
   }
 }

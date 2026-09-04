@@ -29,3 +29,9 @@ logs/
 # Antigravity/Temp files
 .gemini/
 tmp/
+scratch/
+*.log
+data/*_result.json
+public/assets/images/avatar/bk/
+public/assets/images/vfx/vs_metallic_emblem.jpg
+public/assets/images/battlefield_board_grid.jpg

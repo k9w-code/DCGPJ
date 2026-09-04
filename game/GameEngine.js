@@ -278,9 +278,9 @@ class GameEngine {
       player.cardsPlayedThisTurn++;
 
       // 暴走 (Overload) ペナルティの適用
-      if (card.keywords && card.keywords.includes('overload')) {
-        player.spModifiers -= 1;
-        this.log(`⚡ ${card.name} の「暴走」！ 次ターンの獲得SPが1減少する（確定）`);
+      if (hasKeyword(card, 'overload')) {
+        player.spModifiers = (player.spModifiers || 0) - 1;
+        this.log(`⚡ ${card.name} の「暴走」！ 次ターンの獲得SPが1減少する（現在ペナルティ: ${player.spModifiers}）`);
       }
 
       const unit = createUnitInstance(card, playerId);
@@ -345,9 +345,9 @@ class GameEngine {
       player.cardsPlayedThisTurn++;
       
       // 暴走 (Overload) ペナルティの適用
-      if (card.keywords && card.keywords.includes('overload')) {
-        player.spModifiers -= 1;
-        this.log(`⚡ ${card.name} の「暴走」！ 次ターンの獲得SPが1減少する（確定）`);
+      if (hasKeyword(card, 'overload')) {
+        player.spModifiers = (player.spModifiers || 0) - 1;
+        this.log(`⚡ ${card.name} の「暴走」！ 次ターンの獲得SPが1減少する（現在ペナルティ: ${player.spModifiers}）`);
       }
       
       this.log(`✨ ${player.name}: スペル「${card.name}」を発動 (SP: ${player.sp})`);

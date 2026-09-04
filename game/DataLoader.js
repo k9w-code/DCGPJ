@@ -165,12 +165,15 @@ async function loadAllData(options = {}) {
 
     const firstAbility = abilities.length > 0 ? abilities[0] : {};
     
-    // \u6570\u5024\u30c7\u30fc\u30bf\u306e\u5b89\u5168\u306a\u30d1\u30fc\u30b9
-    const cost = parseInt(row.cost || row.\u30b3\u30b9\u30c8 || 0);
-    const attack = parseInt(row.atk || row.attack || row.\u653b\u6483\u529b || 0);
-    const hp = parseInt(row.life || row.hp || row.\u4f53\u529b || 0);
-    const rarity = parseInt(row.rarity || row.\u30ec\u30a2\u30ea\u30c6\u30a3 || 1);
-    const deckLimit = parseInt(row.limit || row.deck_limit || row.max_copies || row.\u679a\u6570\u5236\u9650 || 3);
+    // 数値データの安全なパース (cards.csv の第5カラム level がレアリティ)
+    const cost = parseInt(row.cost || row.コスト || 0);
+    const attack = parseInt(row.atk || row.attack || row.攻撃力 || 0);
+    const hp = parseInt(row.life || row.hp || row.体力 || 0);
+    const rawRarity = row.level || row.rarity || row.レアリティ || 1;
+    const rarity = parseInt(rawRarity);
+    const deckLimit = parseInt(row.max_in_deck || row.limit || row.deck_limit || row.max_copies || row.枚数制限 || 0);
+    
+    const isTokenCard = isNaN(deckLimit) || deckLimit === 0 || row.is_token === 'true' || row.type === 'token' || row.id.startsWith('T');
     
     return {
       id: row.id,
@@ -179,23 +182,25 @@ async function loadAllData(options = {}) {
       colors: row.color ? row.color.split(',').map(c => c.trim()).filter(c => c) : ['neutral'],
       color: row.color ? row.color.split(',')[0].trim() : 'neutral',
       rarity: isNaN(rarity) ? 1 : rarity,
+      level: isNaN(rarity) ? 1 : rarity,
       type: row.type || 'unit',
-      isToken: isNaN(deckLimit) || deckLimit === 0, // \u5236\u96500\u306a\u3089\u30c8\u30fc\u30af\u30f3
+      isToken: isTokenCard, // 制限0ならトークン
       cost: isNaN(cost) ? 0 : cost,
       attack: isNaN(attack) ? 0 : attack,
       hp: isNaN(hp) ? 0 : hp,
       keywords: row.keywords ? row.keywords.split(',').map(k => k.trim()).filter(k => k) : [],
       
-      // \u65e7\u5b9f\u88c5\u3068\u306e\u4e92\u63db\u6027
+      // 旧実装との互換性
       abilityTrigger: firstAbility.trigger || 'none',
       abilityEffect: firstAbility.effect || '',
       abilityValue: isNaN(parseInt(firstAbility.value)) ? (firstAbility.value || '') : parseInt(firstAbility.value),
       
-      // \u65b0\u30a2\u30d3\u30ea\u30c6\u30a3\u30ea\u30b9\u30c8
+      // 新アビリティリスト
       abilities: abilities,
       
-      flavorText: row.description || row.flavor_text || row.flavor || row.desc || row.\u30d5\u30ec\u30fc\u30d0\u30fc\u30c6\u30ad\u30b9\u30c8 || row.\u8aac\u660e || '',
-      text: row.text || row.\u30c6\u30ad\u30b9\u30c8 || row.ability_text || row.manual_text || '',
+      flavorText: row.flavor_text || row.description || row.flavor || row.desc || '',
+      text: row.effect_description || row.text || row.ability_text || row.manual_text || '',
+      effect_description: row.effect_description || row.text || row.ability_text || '',
       maxCopies: isNaN(deckLimit) ? 3 : deckLimit,
       expansion: row.expansion || 'basic',
     };

@@ -227,8 +227,8 @@ html, body {
   width: 48px !important; height: 48px !important;
   border-radius: 50% !important;
   border: 2px solid rgba(255, 255, 255, 0.15) !important;
-  background-size: cover;
-  background-position: center;
+  background-size: cover !important;
+  background-position: top center !important;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
   position: relative;
@@ -816,14 +816,17 @@ input#player-name:focus {
 
 /* プレビュー欄の絶対的左上詰め（margin-top: auto や flex: 1 による縦伸びの完全解体） */
 .preview-panel,
-#preview-content {
+#preview-content,
+#preview-panel {
   display: flex !important;
   flex-direction: column !important;
   justify-content: flex-start !important;
-  align-items: stretch !important;
+  align-items: flex-start !important;
   padding: 8px !important;
-  gap: 6px !important;
-  height: 100% !important;
+  gap: 4px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  text-align: left !important;
 }
 
 #preview-content .preview-info {
@@ -833,9 +836,10 @@ input#player-name:focus {
   align-items: flex-start !important;
   margin: 0 !important;
   padding: 0 !important;
-  gap: 4px !important;
+  gap: 2px !important;
   width: 100% !important;
   flex: none !important; /* flex: 1 による縦の空きスペース展開を防止 */
+  text-align: left !important;
 }
 
 #preview-content .preview-stats,
@@ -843,14 +847,18 @@ input#player-name:focus {
 #preview-content .preview-desc,
 #preview-content .preview-flavor,
 #preview-content .cd-abilities-list,
-#preview-content .ability-item {
+#preview-content .ability-item,
+.preview-ability-text-left {
   margin-top: 2px !important;
   margin-bottom: 2px !important;
   padding-top: 0 !important;
   text-align: left !important;
+  text-align-last: left !important;
   align-self: flex-start !important;
   width: 100% !important;
   flex: none !important;
+  float: left !important;
+  clear: both !important;
 }
 
 /* 素材SVG交差剣・ハートアイコンジュエルプレートの最優先スタイリング */
@@ -892,5 +900,567 @@ input#player-name:focus {
   padding: 4px 12px !important;
   display: inline-flex !important;
 }
+
+/* ==========================================================================
+   📱 デッキ編成画面 スマホ・モバイル最適化レスポンシブスタイル
+   ========================================================================== */
+@media screen and (max-width: 932px) {
+  /* 1. 全体ボタン・操作部のタッチ領域拡大 */
+  .btn, .pill, .filter-btn, .deck-action-btn, .deck-save-btn {
+    min-height: 46px !important;
+    font-size: 15px !important;
+    touch-action: manipulation !important;
+  }
+
+  /* デッキ保存・クリア・自動編成ボタン */
+  .deck-actions .btn {
+    min-height: 48px !important;
+    padding: 10px 18px !important;
+    font-size: 16px !important;
+    font-weight: 800 !important;
+  }
+
+  /* カード選択一覧（カードグリッド）とデッキ枠のテキスト拡大 */
+  .card-count-badge, .deck-card-count {
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    padding: 3px 8px !important;
+  }
+
+  /* デッキ枚数カウント (40/40) の可視化強化 */
+  .deck-counter, #deck-count-display {
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    color: #fbbf24 !important;
+  }
+
+  /* フィルターピルボタン（色・コスト・種類）のタップサイズ */
+  .pill-group .pill {
+    min-height: 44px !important;
+    padding: 8px 14px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* ==========================================================================
+   🎯 ユーザー指定：カード一覧 ＆ 左詳細プレビュー 精密デザインカスタマイズ
+   ========================================================================== */
+
+/* 1. 中央カード一覧の「SPELL」バッジ表示オミット */
+.grid-type-label, .spell-badge, .card-type-label {
+  display: none !important;
+}
+
+/* 2. 中央カード一覧の右上コスト表示のコンパクト化 & 右上詰め (イラストの顔に被らないよう配置) */
+.grid-item .grid-cost, .card-item .grid-cost {
+  top: 2px !important;
+  right: 2px !important;
+  width: 24px !important;
+  height: 24px !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.8) !important;
+  z-index: 10 !important;
+}
+
+/* 3. 高レアカードの揺らめくアニメーション演出のオミット（見やすさ最優先） */
+.foil-shine, .card-shine, .card-shimmer {
+  display: none !important;
+  animation: none !important;
+}
+
+.grid-item.rarity-4, .grid-item.rarity-3, .card-item.rarity-4, .card-item.rarity-3 {
+  animation: none !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4) !important;
+  filter: none !important;
+}
+
+/* 4. 左側カード詳細プレビューのテキスト「【遺言】～」の完璧な左上詰め */
+.preview-desc, .cd-abilities-list, .cd-abilities-list .ability-item, .preview-info {
+  text-align: left !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  display: block !important;
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+}
+
+.preview-desc .ability-item {
+  text-align: left !important;
+  padding: 2px 0 !important;
+  margin: 0 !important;
+  line-height: 1.5 !important;
+  color: #e2e8f0 !important;
+}
+
+/* 5. 左詳細プレビュー枠の「上下中央揃え」解体を徹底（文頭を左上詰めに完全固定） */
+.preview-panel, .preview-content, .preview-content .preview-info {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+}
+
+/* プレビュー左パネル全体のスクロール制御と崩れ防止 */
+.preview-panel,
+#preview-panel {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  max-height: 100% !important;
+}
+
+/* ==========================================================================
+   🔒 プレビュー詳細枠：縦長3:4黄金比と完全左上詰めの完璧な両立
+   ========================================================================== */
+
+/* デッキ構築画面のプレビューカード画像表示の完全絶対固定（幅240px・アスペクト比3/4・自動伸縮ゼロ） */
+.preview-panel #preview-content .preview-card-image,
+#cd-image,
+.preview-card-image {
+  width: 240px !important;
+  min-width: 240px !important;
+  max-width: 240px !important;
+  height: 320px !important;
+  min-height: 320px !important;
+  max-height: 320px !important;
+  aspect-ratio: 3 / 4 !important;
+  align-self: center !important;
+  flex: 0 0 320px !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  border-radius: 12px !important;
+  margin-bottom: 8px !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* フレーバーテキスト：点線を削除しフォントを 18px に大きく読みやすく拡大 */
+.preview-flavor,
+#preview-content .preview-flavor,
+.preview-panel .preview-flavor {
+  border-top: none !important;
+  border-bottom: none !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin-top: 10px !important;
+  margin-bottom: 6px !important;
+  font-size: 18px !important;
+  font-style: italic !important;
+  font-weight: 500 !important;
+  line-height: 1.5 !important;
+  color: #f1f5f9 !important;
+  border-left: 4px solid #fbbf24 !important;
+  padding-left: 10px !important;
+  text-align: left !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* キーワードバッジのスマホ視認性強化 (フォント 13px, パディング 4px 10px) */
+.kw-badge {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  line-height: 1.3 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+/* 親コンテナの flex: 1 や height: 100% による縦引き伸ばし・空間自動分配を物理的に完全消去 */
+.preview-panel #preview-content,
+.preview-info {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  height: auto !important;
+  min-height: 0 !important;
+  flex: 0 0 auto !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* コストアイコンと UNIT / RARITY バッジを横一列に並べるコンテナ */
+.preview-header-meta,
+#preview-content .preview-header-meta {
+  display: flex !important;
+  flex-direction: row !important; /* 横並びを絶対維持 */
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  width: 100% !important;
+  margin-bottom: 6px !important;
+}
+
+/* プレビュー左パネル全体のスクロール制御・縦伸び物理拒否・完全上詰め */
+.preview-panel,
+#preview-panel,
+.preview-content,
+#preview-content,
+.preview-info {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  flex: 0 0 auto !important; /* flex: 1 による縦引き伸ばしを物理拒否 */
+  text-align: left !important;
+}
+
+/* カードテキスト領域・本文・キーワード・フレーバー等の100%絶対左上詰め固定 */
+.preview-info > div,
+.preview-info > h2,
+.preview-info > p,
+.preview-desc,
+.preview-ability-text-left,
+#preview-content .preview-desc,
+.preview-panel .preview-desc {
+  border: none !important;
+  padding: 0 !important;
+  margin-top: 2px !important;
+  margin-bottom: 4px !important;
+  margin-left: 0 !important;
+  margin-right: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  flex: 0 0 auto !important;
+  text-align: left !important; /* 横方向の中央揃え center を完全物理拒否 */
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  display: block !important;
+  align-self: flex-start !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* フレーバーテキスト（1行に収まりやすい 11px 指定） */
+.preview-flavor,
+.preview-info .preview-flavor {
+  font-size: 11px !important; /* 20文字超でも1行に収まるコンパクトサイズ */
+  font-style: italic !important;
+  color: #cbd5e1 !important;
+  border-left: 3px solid #fbbf24 !important;
+  padding-left: 6px !important;
+  margin-top: 6px !important;
+  margin-bottom: 6px !important;
+  line-height: 1.3 !important;
+  width: 100% !important;
+  text-align: left !important;
+  white-space: nowrap !important; /* 1行に収めるため自動改行を抑制 */
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* アビリティ効果本文の直上・直下マージンを最小限にし、直前のキーワード/スタッツのすぐ下にビシッと配置 */
+#preview-content .preview-desc,
+.preview-desc,
+#preview-content .cd-abilities-list,
+.cd-abilities-list {
+  margin-top: 2px !important;
+  margin-bottom: 4px !important;
+  padding: 0 !important;
+  text-align: left !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  line-height: 1.5 !important;
+  display: block !important;
+}
+
+#preview-content .preview-desc .ability-item,
+.preview-desc .ability-item {
+  color: #ffffff !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  text-align: left !important;
+}
+
+/* ==========================================================================
+   🚨 カード詳細モーダル (.card-detail-modal / .cd-text-box) の絶対左上詰め強制
+   ========================================================================== */
+.cd-text-box,
+#cd-text,
+.cd-effect-text,
+.cd-abilities-list,
+.card-detail-modal .cd-text-box,
+.card-detail-overlay .cd-text-box {
+  margin-top: 4px !important;
+  margin-bottom: 6px !important;
+  padding: 10px !important;
+  text-align: left !important;
+  text-align-last: left !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  display: block !important;
+  width: 100% !important;
+  flex: none !important;
+}
+
+/* ==========================================================================
+   🚨 全画面カード詳細モーダル (.card-detail-modal) レイアウト・スタイル完全修復
+   ========================================================================== */
+.card-detail-modal {
+  max-width: 1080px !important;
+  width: 92vw !important;
+  height: 580px !important;
+  min-height: 580px !important;
+  padding: 32px !important;
+  gap: 32px !important;
+  background: rgba(15, 23, 42, 0.96) !important;
+  border: 1px solid rgba(251, 191, 36, 0.4) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.9) !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start !important;
+}
+
+/* 1. イラスト領域の完全 3:4 アスペクト比大迫力表示（360px x 480px） */
+.card-detail-modal .cd-image-area,
+.card-detail-modal #cd-image,
+#cd-image {
+  width: 360px !important;
+  min-width: 360px !important;
+  height: 480px !important; 
+  min-height: 480px !important;
+  aspect-ratio: 3/4 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.8) !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center top !important;
+  flex: 0 0 360px !important;
+}
+
+/* 2. 右側詳細ペイン (.cd-info-area) のエレガント垂直余白間隔調整 & 左イラスト枠からの十分な離脱 (24px) */
+.card-detail-modal .cd-info-area {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  gap: 16px !important;
+  padding: 4px 0 4px 24px !important; /* 左側に 24px の十分な隙間を空けて UNIT ボタン等の張り付きを解体 */
+  flex: 1 !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.card-detail-modal .cd-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  margin-bottom: 4px !important;
+  padding-bottom: 8px !important;
+  border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+.card-detail-modal .cd-name {
+  font-size: 24px !important;
+  font-weight: 800 !important;
+  margin: 0 !important;
+  color: #ffffff !important;
+  letter-spacing: 1px !important;
+}
+
+/* 3. UNIT / SPELL と RARITY のフォント・ボックス（角丸6px・高さ30px）完全統一揃え */
+.card-detail-modal .cd-type-tags,
+.card-detail-modal .cd-header-meta {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 20px !important;
+  margin-top: 8px !important;
+  margin-bottom: 16px !important;
+}
+
+.card-detail-modal .cd-type-badge,
+.card-detail-modal .cd-type-tag,
+.card-detail-modal #cd-type,
+.card-detail-modal .cd-rarity,
+.card-detail-modal #cd-rarity,
+.card-detail-modal .cd-tribe-tag {
+  font-family: 'Shippori Mincho', 'Inter', system-ui, -apple-system, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  height: 30px !important;
+  padding: 0 14px !important;
+  border-radius: 6px !important; /* UNIT / LEGENDARY と完全一致する角丸6px・高さ30px */
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+}
+
+.card-detail-modal .cd-type-badge,
+.card-detail-modal .cd-type-tag,
+.card-detail-modal #cd-type {
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  color: #cbd5e1 !important;
+}
+
+/* 神族アイコン（単体丸アイコン・30px）の正しい配置 */
+.card-detail-modal .cd-tribe-tag,
+.card-detail-modal #cd-tribe-icon,
+.card-detail-modal .cd-tribe-icon {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  border-radius: 50% !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  border: none !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline-block !important;
+  order: 99 !important;
+  flex-shrink: 0 !important;
+}
+
+.card-detail-modal .cd-tribe-text {
+  display: none !important; /* 余計なテキスト表示は完全非表示 */
+}
+
+/* LEGENDARY レアリティの揺らめきアニメーションの完全オミット（静的上品ゴールド固定） */
+.cd-rarity.rarity-4,
+.preview-rarity.rarity-4,
+.card-detail-modal .cd-rarity.rarity-4 {
+  animation: none !important; /* 揺らめくアニメーションを削除 */
+  background: linear-gradient(135deg, #b45309 0%, #78350f 100%) !important;
+  border: 1px solid #f59e0b !important;
+  color: #fef3c7 !important;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3) !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8) !important;
+}
+
+.card-detail-modal .cd-stats {
+  display: flex !important;
+  gap: 16px !important;
+  margin-bottom: 8px !important;
+}
+
+.card-detail-modal .cd-text-box {
+  background: rgba(0, 0, 0, 0.35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important;
+  padding: 16px 20px !important;
+  margin-top: 4px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  flex: 1 !important;
+}
+
+/* 3. 神族アイコン（色）を一番右に配置 */
+.card-detail-modal .cd-header-meta,
+.card-detail-modal .cd-badges-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+}
+
+.card-detail-modal #cd-tribe-icon,
+.card-detail-modal .cd-tribe-tag {
+  order: 99 !important; /* 一番右に配置 */
+  margin-left: 4px !important;
+}
+
+/* 4. 枠外に飛び出していた縦書きキーワード（【狙撃】等）の異常表示を完全無効化・削除 */
+.card-detail-modal .cd-keywords-container,
+.card-detail-modal .cd-keyword-tooltip-trigger {
+  position: static !important;
+  float: none !important;
+  writing-mode: horizontal-tb !important;
+  display: inline-block !important;
+  margin: 2px 4px 2px 0 !important;
+}
+
+/* フレーバーテキストも下に吹き飛ばさず、効果文章のすぐ直下に配置 */
+#preview-content .preview-flavor,
+.preview-flavor {
+  margin-top: 6px !important;
+  margin-bottom: 0 !important;
+  border-left: 3px solid #fbbf24 !important;
+  padding-left: 6px !important;
+  font-size: 12px !important;
+  font-style: italic !important;
+  color: #cbd5e1 !important;
+  line-height: 1.4 !important;
+}
+
+/* ==========================================================================
+   🚨 Vol.190 画面視認性＆ソリッドUIデザイン強化 (極上高視認性スタイル)
+   ========================================================================== */
+
+/* 1. デッキ採用上限（3枚）到達カードの上品なモノトーン調表示（イラストの質感を美しく維持） */
+.card-item.max-in-deck {
+  filter: grayscale(45%) brightness(0.85) !important;
+  opacity: 0.9 !important;
+}
+.card-item.max-in-deck:hover {
+  filter: grayscale(20%) brightness(0.95) !important;
+  opacity: 1 !important;
+}
+
+/* 右上の上品なブラックゴールド枚数ミニバッジ */
+.grid-card-overlay .grid-count.max-count {
+  position: absolute !important;
+  top: 6px !important;
+  right: 6px !important;
+  background: rgba(15, 23, 42, 0.85) !important;
+  color: #fbbf24 !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  padding: 3px 7px !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(251, 191, 36, 0.5) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6) !important;
+  line-height: 1 !important;
+}
+
+/* 2. 上部フィルターアクティブ状態：シックな画面に馴染む上品なシャンパンゴールド */
+.filter-btn.active,
+.cost-filter-btn.active,
+.tab-btn.active,
+.type-btn.active,
+.btn-filter.active,
+.btn-tab.active {
+  background: rgba(251, 191, 36, 0.15) !important;
+  color: #fbbf24 !important;
+  font-weight: 800 !important;
+  border: 1px solid #fbbf24 !important;
+  box-shadow: 0 2px 10px rgba(251, 191, 36, 0.2) !important;
+}
+
+/* 3. デッキリストのコスト丸バッジ装飾 */
+.deck-entry .de-cost {
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: 900 !important;
+  font-size: 12px !important;
+  color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8) !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5) !important;
+}
+
+
+
+
+
 
 

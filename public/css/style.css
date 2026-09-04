@@ -2442,12 +2442,11 @@ body.targeting-mode {
   box-shadow: var(--shadow-glow);
 }
 
-.avatar-option[data-avatar="1"] { background-image: url('/assets/images/avatar/1.png'); background-size: cover; }
-.avatar-option[data-avatar="2"] { background-image: url('/assets/images/avatar/2.png'); background-size: cover; }
-.avatar-option[data-avatar="3"] { background-image: url('/assets/images/avatar/3.png'); background-size: cover; }
-.avatar-option[data-avatar="4"] { background-image: url('/assets/images/avatar/4.png'); background-size: cover; }
-.avatar-option[data-avatar="5"] { background-image: url('/assets/images/avatar/5.png'); background-size: cover; }
-.avatar-option[data-avatar="6"] { background-image: url('/assets/images/avatar/6.png'); background-size: cover; }
+.avatar-option[data-avatar="1"] { background-image: url('/assets/images/avatar/炎の魔女.jpeg'); background-size: cover; background-position: top center; }
+.avatar-option[data-avatar="2"] { background-image: url('/assets/images/avatar/水の魔法剣士.jpeg'); background-size: cover; background-position: top center; }
+.avatar-option[data-avatar="3"] { background-image: url('/assets/images/avatar/森のエルフ.jpeg'); background-size: cover; background-position: top center; }
+.avatar-option[data-avatar="4"] { background-image: url('/assets/images/avatar/光の王子.jpeg'); background-size: cover; background-position: top center; }
+.avatar-option[data-avatar="5"] { background-image: url('/assets/images/avatar/闇の剣士.jpeg'); background-size: cover; background-position: top center; }
 
 .player-avatar {
   font-size: 1.5em;

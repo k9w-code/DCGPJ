@@ -1,6 +1,30 @@
 // vfx-engine.js - DCG Visual Effects Engine
 // 全演出ロジックをここに集約する
-'use strict';
+// 5神族アバター設定と共通解決ヘルパー
+window.AVATAR_CONFIG = {
+  '1': { id: '1', name: '炎の魔女', tribe: 'red', title: '緋炎の魔術導師', file: '炎の魔女.jpeg', path: '/assets/images/avatar/炎の魔女.jpeg', color: '#ef4444', glow: 'rgba(239, 68, 68, 0.7)' },
+  '2': { id: '2', name: '水の魔法剣士', tribe: 'blue', title: '蒼流の魔導剣士', file: '水の魔法剣士.jpeg', path: '/assets/images/avatar/水の魔法剣士.jpeg', color: '#0ea5e9', glow: 'rgba(14, 165, 233, 0.7)' },
+  '3': { id: '3', name: '森のエルフ', tribe: 'green', title: '翠緑の精霊姫', file: '森のエルフ.jpeg', path: '/assets/images/avatar/森のエルフ.jpeg', color: '#10b981', glow: 'rgba(16, 185, 129, 0.7)' },
+  '4': { id: '4', name: '光の王子', tribe: 'white', title: '光輝の聖君主', file: '光の王子.jpeg', path: '/assets/images/avatar/光の王子.jpeg', color: '#f59e0b', glow: 'rgba(245, 158, 11, 0.7)' },
+  '5': { id: '5', name: '闇の剣士', tribe: 'black', title: '冥影の黒剣士', file: '闇の剣士.jpeg', path: '/assets/images/avatar/闇の剣士.jpeg', color: '#a855f7', glow: 'rgba(168, 85, 247, 0.7)' }
+};
+
+window.getAvatarInfo = function(avatarId) {
+  if (!avatarId) return window.AVATAR_CONFIG['1'];
+  const str = String(avatarId).trim();
+  if (window.AVATAR_CONFIG[str]) return window.AVATAR_CONFIG[str];
+  for (const k in window.AVATAR_CONFIG) {
+    if (window.AVATAR_CONFIG[k].name === str || str.includes(window.AVATAR_CONFIG[k].name)) {
+      return window.AVATAR_CONFIG[k];
+    }
+  }
+  if (str === 'player') return window.AVATAR_CONFIG['1'];
+  if (str === 'opponent' || str === '6') return window.AVATAR_CONFIG['5'];
+  if (str.includes('/')) {
+    return { id: str, name: 'アバター', title: '決闘者', path: str, color: '#60a5fa', glow: 'rgba(96,165,250,0.6)' };
+  }
+  return window.AVATAR_CONFIG['1'];
+};
 
 window.VFX = (function() {
   // ボードスロット要素を取得するユーティリティ
@@ -606,43 +630,57 @@ function triggerVsCutin() {
     const state = window.gameState || {};
     const myName   = (state.me       && state.me.name)       ? state.me.name       : 'YOU';
     const oppName  = (state.opponent && state.opponent.name) ? state.opponent.name : 'OPPONENT';
-    const myAvatar  = (state.me       && state.me.avatar)  ? state.me.avatar  : '1';
-    const oppAvatar = (state.opponent && state.opponent.avatar) ? state.opponent.avatar : '1';
+    const myAvatarRaw  = (state.me       && state.me.avatar)  ? state.me.avatar  : '1';
+    const oppAvatarRaw = (state.opponent && state.opponent.avatar) ? state.opponent.avatar : '5';
+
+    const myInfo  = window.getAvatarInfo(myAvatarRaw);
+    const oppInfo = window.getAvatarInfo(oppAvatarRaw);
 
     // アニメーションスタイルシート（一度だけ注入）
     if (!document.getElementById('vs-cutin-anim-style')) {
       const styleEl = document.createElement('style');
       styleEl.id = 'vs-cutin-anim-style';
       styleEl.innerHTML = `
-        @keyframes vsSlideInLeft {
-          0%   { transform: translateX(-120vw) rotate(-8deg); opacity: 0; }
-          60%  { transform: translateX(8px) rotate(-1deg); opacity: 1; }
-          80%  { transform: translateX(-6px) rotate(1deg); }
-          100% { transform: translateX(0) rotate(0deg); opacity: 1; }
+        @keyframes vsSlideLeft {
+          0%   { transform: translateY(-50%) translateX(-120vw) skewX(-8deg); opacity: 0; }
+          65%  { transform: translateY(-50%) translateX(20px) skewX(-8deg); opacity: 1; }
+          85%  { transform: translateY(-50%) translateX(-8px) skewX(-8deg); opacity: 1; }
+          100% { transform: translateY(-50%) translateX(0) skewX(-8deg); opacity: 1; }
         }
-        @keyframes vsSlideInRight {
-          0%   { transform: translateX(120vw) rotate(8deg); opacity: 0; }
-          60%  { transform: translateX(-8px) rotate(1deg); opacity: 1; }
-          80%  { transform: translateX(6px) rotate(-1deg); }
-          100% { transform: translateX(0) rotate(0deg); opacity: 1; }
+        @keyframes vsSlideRight {
+          0%   { transform: translateY(-50%) translateX(120vw) skewX(-8deg); opacity: 0; }
+          65%  { transform: translateY(-50%) translateX(-20px) skewX(-8deg); opacity: 1; }
+          85%  { transform: translateY(-50%) translateX(8px) skewX(-8deg); opacity: 1; }
+          100% { transform: translateY(-50%) translateX(0) skewX(-8deg); opacity: 1; }
         }
-        @keyframes vsBurst {
-          0%   { transform: scale(0) rotate(-30deg); opacity: 0; }
-          50%  { transform: scale(1.4) rotate(5deg); opacity: 1; }
-          70%  { transform: scale(0.9) rotate(-3deg); }
-          100% { transform: scale(1.1) rotate(0deg); opacity: 1; }
+        @keyframes vsShineSweep {
+          0%   { transform: translateX(-120%) rotate(25deg); opacity: 0; }
+          20%  { opacity: 0.7; }
+          60%  { transform: translateX(240%) rotate(25deg); opacity: 0; }
+          100% { transform: translateX(240%) rotate(25deg); opacity: 0; }
         }
-        @keyframes vsGlow {
-          0%, 100% { text-shadow: 0 0 40px #fbbf24, 0 0 80px #d97706; }
-          50%       { text-shadow: 0 0 80px #fef08a, 0 0 120px #fbbf24, 0 0 200px #d97706; }
+        @keyframes vsSlam {
+          0%   { transform: translate(-50%, -50%) scale(4); opacity: 0; filter: blur(10px); }
+          50%  { transform: translate(-50%, -50%) scale(0.85); opacity: 1; filter: blur(0); }
+          75%  { transform: translate(-50%, -50%) scale(1.1); }
+          100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
-        @keyframes vsFadeOut {
-          0%   { opacity: 1; transform: scale(1); }
-          100% { opacity: 0; transform: scale(1.08); }
+        @keyframes vsPulseGlow {
+          0%, 100% { filter: drop-shadow(0 0 25px #fbbf24) drop-shadow(0 0 60px #f59e0b); }
+          50%      { filter: drop-shadow(0 0 50px #fef08a) drop-shadow(0 0 100px #fbbf24) drop-shadow(0 0 150px #d97706); }
         }
-        @keyframes vsShockwave {
-          0%   { transform: translate(-50%, -50%) scale(0); opacity: 0.8; }
-          100% { transform: translate(-50%, -50%) scale(4); opacity: 0; }
+        @keyframes vsShockwaveRing {
+          0%   { transform: translate(-50%, -50%) scale(0.1); opacity: 1; border-width: 8px; }
+          100% { transform: translate(-50%, -50%) scale(5); opacity: 0; border-width: 1px; }
+        }
+        @keyframes vsClashSlash {
+          0%   { transform: translate(-50%, -50%) rotate(-35deg) scaleX(0); opacity: 1; }
+          30%  { transform: translate(-50%, -50%) rotate(-35deg) scaleX(1.4); opacity: 1; }
+          100% { transform: translate(-50%, -50%) rotate(-35deg) scaleX(1.8); opacity: 0; }
+        }
+        @keyframes vsFadeOutFast {
+          0%   { opacity: 1; transform: scale(1); filter: blur(0); }
+          100% { opacity: 0; transform: scale(1.06); filter: blur(8px); }
         }
       `;
       document.head.appendChild(styleEl);
@@ -658,97 +696,205 @@ function triggerVsCutin() {
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
-      background: rgba(3, 7, 18, 0.92) !important;
+      background: radial-gradient(circle at center, rgba(15, 23, 42, 0.92) 0%, rgba(2, 6, 23, 0.98) 100%) !important;
       backdrop-filter: blur(12px) !important;
       pointer-events: none !important;
       overflow: hidden !important;
     `;
 
     vsOverlay.innerHTML = `
-      <!-- 左: 自分 -->
+      <!-- 背景: スピードラインと斜め分割シャドウ -->
+      <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, transparent 50%, rgba(0,0,0,0.6) 100%); pointer-events: none;"></div>
+
+      <!-- 左側: プレイヤーパネル (斜めスラッシュカード) -->
       <div id="vs-left-panel" style="
-        position: absolute; left: 0; top: 0; width: 45%; height: 100%;
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        animation: vsSlideInLeft 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        background: linear-gradient(90deg, rgba(37, 99, 235, 0.3) 0%, transparent 100%);
-        border-right: 2px solid rgba(96, 165, 250, 0.4);
-        gap: 20px;
+        position: absolute; left: 6%; top: 50%;
+        transform: translateY(-50%) skewX(-8deg);
+        width: clamp(280px, 25vw, 400px);
+        height: clamp(440px, 70vh, 600px);
+        border-radius: 18px;
+        overflow: hidden;
+        border: 3px solid ${myInfo.color};
+        box-shadow: 0 0 50px ${myInfo.glow}, 0 20px 60px rgba(0,0,0,0.9);
+        animation: vsSlideLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        background: #090d16;
       ">
+        <!-- 3:4ポートレート本体 (逆skewで歪み補正) -->
         <div style="
-          width: 140px; height: 140px; border-radius: 50%;
-          border: 4px solid #60a5fa; box-shadow: 0 0 40px #3b82f6, 0 0 80px rgba(59,130,246,0.4);
-          background: url('/assets/images/avatar/${myAvatar}.png') center/cover, #1e293b;
+          width: 100%; height: 100%;
+          background-image: url('${myInfo.path}');
           background-size: cover;
-          background-position: center;
+          background-position: top center;
+          transform: skewX(8deg) scale(1.15);
+          filter: contrast(1.06) brightness(1.02);
         "></div>
+        <!-- 属性オーラグラデーション -->
         <div style="
-          font-family: 'Shippori Mincho', serif; font-size: 32px; font-weight: 900;
-          color: #93c5fd; text-shadow: 0 0 20px #3b82f6, 0 2px 4px rgba(0,0,0,0.9);
-          letter-spacing: 3px; text-align: center;
-          padding: 0 20px;
-        ">${myName}</div>
+          position: absolute; inset: 0;
+          background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.2) 45%, transparent 100%),
+                      radial-gradient(circle at 50% 100%, ${myInfo.glow} 0%, transparent 70%);
+          pointer-events: none;
+        "></div>
+        <!-- 光の走査ライン -->
         <div style="
-          font-size: 12px; color: rgba(147, 197, 253, 0.7); letter-spacing: 2px; font-family: 'Cinzel', serif;
-        ">YOUR DECK</div>
+          position: absolute; inset: 0;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+          width: 50%; height: 100%;
+          animation: vsShineSweep 1.8s ease-in-out infinite 0.4s;
+          pointer-events: none;
+        "></div>
+        <!-- ネームプレート -->
+        <div style="
+          position: absolute; bottom: 20px; left: 0; width: 100%;
+          display: flex; flex-direction: column; align-items: center; justify-content: center;
+          gap: 4px; padding: 0 16px;
+          transform: skewX(8deg);
+        ">
+          <div style="
+            font-size: 11px; font-weight: 900; letter-spacing: 3px;
+            color: ${myInfo.color};
+            background: rgba(0,0,0,0.75);
+            border: 1px solid ${myInfo.color};
+            padding: 3px 12px; border-radius: 999px;
+            text-transform: uppercase;
+          ">PLAYER • ${myInfo.title}</div>
+          <div style="
+            font-family: 'Cinzel', 'Shippori Mincho', serif; font-size: clamp(22px, 2.5vw, 32px); font-weight: 900;
+            color: #ffffff; text-shadow: 0 0 20px ${myInfo.color}, 0 2px 6px rgba(0,0,0,0.95);
+            letter-spacing: 2px; text-align: center;
+            max-width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+          ">${myName}</div>
+        </div>
       </div>
 
-      <!-- 右: 相手 -->
+      <!-- 右側: 相手パネル (斜めスラッシュカード) -->
       <div id="vs-right-panel" style="
-        position: absolute; right: 0; top: 0; width: 45%; height: 100%;
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        animation: vsSlideInRight 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        background: linear-gradient(270deg, rgba(220, 38, 38, 0.3) 0%, transparent 100%);
-        border-left: 2px solid rgba(248, 113, 113, 0.4);
-        gap: 20px;
+        position: absolute; right: 6%; top: 50%;
+        transform: translateY(-50%) skewX(-8deg);
+        width: clamp(280px, 25vw, 400px);
+        height: clamp(440px, 70vh, 600px);
+        border-radius: 18px;
+        overflow: hidden;
+        border: 3px solid ${oppInfo.color};
+        box-shadow: 0 0 50px ${oppInfo.glow}, 0 20px 60px rgba(0,0,0,0.9);
+        animation: vsSlideRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        background: #090d16;
       ">
+        <!-- 3:4ポートレート本体 (逆skewで歪み補正) -->
         <div style="
-          width: 140px; height: 140px; border-radius: 50%;
-          border: 4px solid #f87171; box-shadow: 0 0 40px #ef4444, 0 0 80px rgba(239,68,68,0.4);
-          background: url('/assets/images/avatar/${oppAvatar}.png') center/cover, #1e293b;
+          width: 100%; height: 100%;
+          background-image: url('${oppInfo.path}');
           background-size: cover;
-          background-position: center;
+          background-position: top center;
+          transform: skewX(8deg) scale(1.15);
+          filter: contrast(1.06) brightness(1.02);
         "></div>
+        <!-- 属性オーラグラデーション -->
         <div style="
-          font-family: 'Cinzel', 'Shippori Mincho', serif; font-size: 32px; font-weight: 900;
-          color: #fca5a5; text-shadow: 0 0 20px #ef4444, 0 2px 4px rgba(0,0,0,0.9);
-          letter-spacing: 3px; text-align: center;
-          padding: 0 20px;
-        ">${oppName}</div>
+          position: absolute; inset: 0;
+          background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.2) 45%, transparent 100%),
+                      radial-gradient(circle at 50% 100%, ${oppInfo.glow} 0%, transparent 70%);
+          pointer-events: none;
+        "></div>
+        <!-- 光の走査ライン -->
         <div style="
-          font-size: 12px; color: rgba(252, 165, 165, 0.7); letter-spacing: 2px; font-family: 'Cinzel', serif;
-        ">OPPONENT</div>
+          position: absolute; inset: 0;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+          width: 50%; height: 100%;
+          animation: vsShineSweep 1.8s ease-in-out infinite 0.6s;
+          pointer-events: none;
+        "></div>
+        <!-- ネームプレート -->
+        <div style="
+          position: absolute; bottom: 20px; left: 0; width: 100%;
+          display: flex; flex-direction: column; align-items: center; justify-content: center;
+          gap: 4px; padding: 0 16px;
+          transform: skewX(8deg);
+        ">
+          <div style="
+            font-size: 11px; font-weight: 900; letter-spacing: 3px;
+            color: ${oppInfo.color};
+            background: rgba(0,0,0,0.75);
+            border: 1px solid ${oppInfo.color};
+            padding: 3px 12px; border-radius: 999px;
+            text-transform: uppercase;
+          ">OPPONENT • ${oppInfo.title}</div>
+          <div style="
+            font-family: 'Cinzel', 'Shippori Mincho', serif; font-size: clamp(22px, 2.5vw, 32px); font-weight: 900;
+            color: #ffffff; text-shadow: 0 0 20px ${oppInfo.color}, 0 2px 6px rgba(0,0,0,0.95);
+            letter-spacing: 2px; text-align: center;
+            max-width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+          ">${oppName}</div>
+        </div>
       </div>
 
-      <!-- 中央: VS -->
+      <!-- 中央: 激突スラッシュ光線 -->
+      <div id="vs-slash" style="
+        position: absolute; left: 50%; top: 50%;
+        width: 160vw; height: 6px;
+        background: linear-gradient(90deg, transparent, #ffffff, #fef08a, #ffffff, transparent);
+        box-shadow: 0 0 30px #fbbf24, 0 0 60px #fff;
+        animation: vsClashSlash 0.7s cubic-bezier(0.1, 0.8, 0.2, 1) 0.38s both;
+        pointer-events: none;
+        z-index: 10;
+      "></div>
+
+      <!-- 中央: VSシンボルロゴ -->
       <div id="vs-center" style="
-        position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-        font-family: 'Cinzel', serif; font-size: 120px; font-weight: 900;
-        color: #fef08a;
-        animation: vsBurst 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.5s both,
-                   vsGlow 1.5s ease-in-out 1s infinite;
-        z-index: 2;
+        position: absolute; left: 50%; top: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Cinzel', 'Trajan Pro', serif;
+        font-size: clamp(100px, 12vw, 160px);
+        font-weight: 900;
+        font-style: italic;
+        line-height: 1;
+        letter-spacing: -2px;
+        background: linear-gradient(180deg, #ffffff 0%, #fef08a 40%, #f59e0b 70%, #b45309 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: vsSlam 0.5s cubic-bezier(0.18, 0.9, 0.32, 1.25) 0.35s both,
+                   vsPulseGlow 1.5s ease-in-out 0.85s infinite;
+        z-index: 20;
         pointer-events: none;
         text-align: center;
-        line-height: 1;
+        user-select: none;
       ">VS</div>
 
-      <!-- 衝突波紋 -->
-      <div id="vs-shockwave" style="
+      <!-- 激突衝撃波リング -->
+      <div id="vs-shockwave-1" style="
         position: absolute; left: 50%; top: 50%;
-        width: 200px; height: 200px;
-        border-radius: 50%; border: 4px solid rgba(251,191,36,0.8);
-        animation: vsShockwave 0.6s ease-out 0.5s both;
+        width: 180px; height: 180px;
+        border-radius: 50%; border: 6px solid rgba(254, 240, 138, 0.9);
+        box-shadow: 0 0 40px #fbbf24;
+        animation: vsShockwaveRing 0.75s cubic-bezier(0.1, 0.7, 0.3, 1) 0.35s both;
         pointer-events: none;
+        z-index: 15;
+      "></div>
+      <div id="vs-shockwave-2" style="
+        position: absolute; left: 50%; top: 50%;
+        width: 180px; height: 180px;
+        border-radius: 50%; border: 4px solid rgba(251, 191, 36, 0.7);
+        animation: vsShockwaveRing 0.9s cubic-bezier(0.1, 0.7, 0.3, 1) 0.42s both;
+        pointer-events: none;
+        z-index: 14;
       "></div>
     `;
 
     document.body.appendChild(vsOverlay);
-    if (window.audioManager) window.audioManager.playSE('impact');
 
-    // 2.5秒後にフェードアウトしてDOM削除
+    // 激突タイミング (0.35s) でサウンドと画面振動
+    setTimeout(() => {
+      triggerScreenShake('heavy');
+      if (window.audioManager) {
+        window.audioManager.playSE('impact');
+        window.audioManager.playSE('start');
+      }
+    }, 350);
+
+    // 2.1秒後にフェードアウトし、2.5秒で完全削除
     setTimeout(() => {
       if (vsOverlay && vsOverlay.parentNode) {
-        vsOverlay.style.animation = 'vsFadeOut 0.4s ease-out forwards';
+        vsOverlay.style.animation = 'vsFadeOutFast 0.4s cubic-bezier(0.4, 0, 1, 1) forwards';
         setTimeout(() => {
           if (vsOverlay && vsOverlay.parentNode) vsOverlay.parentNode.removeChild(vsOverlay);
         }, 400);
