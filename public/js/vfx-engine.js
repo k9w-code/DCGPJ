@@ -828,10 +828,10 @@ function triggerVsCutin() {
 
       // 斬撃音 ＆ 激突音
       if (window.audioManager) {
-        window.audioManager.playSE('attack');
+        window.audioManager.playSE('coin_land');
         setTimeout(() => {
-          window.audioManager.playSE('levelUp');
-        }, 120);
+          window.audioManager.playSE('attack');
+        }, 80);
       }
 
       // [1.45s] 巨大漢字バナー着弾
@@ -979,7 +979,7 @@ function triggerVsCutin() {
           triggerScreenShake();
           if (window.audioManager) window.audioManager.playSE('direct_attack');
         } else if (targetType === 'shield') {
-          if (window.audioManager) window.audioManager.playSE('impact');
+          if (window.audioManager) window.audioManager.playSE('shield_hit');
         } else {
           if (window.audioManager) window.audioManager.playSE('attack');
         }

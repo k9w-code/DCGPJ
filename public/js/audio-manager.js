@@ -13,6 +13,18 @@ class SoundManager {
     // ローカルストレージから音量をロードする（デフォルトは0.3）
     this.bgmVolume = parseFloat(localStorage.getItem('dcg_bgm_volume') ?? '0.3');
     this.seVolume = parseFloat(localStorage.getItem('dcg_se_volume') ?? '0.3');
+    this.seBuffers = {};
+    this.seFiles = {
+      shield_break: '/assets/se/shield_break.wav',
+      shield_hit: '/assets/se/shield_hit.wav',
+      attack: '/assets/se/attack.wav',
+      impact: '/assets/se/attack.wav',
+      direct_attack: '/assets/se/direct_attack.wav',
+      coin_land: '/assets/se/coin_land.wav',
+      sword_draw: '/assets/se/sword_draw.wav',
+      turn_start: '/assets/se/turn_start.wav'
+    };
+    this._preloadSE();
     this.files = {
       bgm: {
         game: '/assets/bgm/battle1.mp3',
@@ -30,6 +42,37 @@ class SoundManager {
   }
 
   
+  _preloadSE() {
+    for (const [key, url] of Object.entries(this.seFiles)) {
+      fetch(url)
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.arrayBuffer();
+        })
+        .then(ab => this.audioCtx.decodeAudioData(ab))
+        .then(buf => {
+          this.seBuffers[key] = buf;
+        })
+        .catch(() => {
+          // ロード失敗時は従来のシンセ音に自動フォールバック
+        });
+    }
+  }
+
+  _playLoadedSE(type, masterGain) {
+    const buf = this.seBuffers[type];
+    if (!buf) return false;
+    try {
+      const src = this.audioCtx.createBufferSource();
+      src.buffer = buf;
+      src.connect(masterGain);
+      src.start();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   playBGM(key, force = false) {
     const src = this.files.bgm[key];
     if (!src) return;
@@ -173,6 +216,11 @@ class SoundManager {
     const masterGain = this.audioCtx.createGain();
     masterGain.gain.value = this.seVolume;
     masterGain.connect(this.mainGain);
+
+    // 実録音のスタジオWAVバッファがあれば最優先再生
+    if (this._playLoadedSE(type, masterGain)) {
+      return;
+    }
 
     switch (type) {
       // ========================================
