@@ -4256,7 +4256,6 @@ html body #mulligan-cards .mulligan-card.selected-for-redraw {
 /* ==========================================
    (v131 end)
    ========================================== */
-}
 /* ==========================================
    MOBILE STABILIZATION: STABLE EXPANSION (v132)
    Safe, non-destructive UI enlargement
@@ -4478,11 +4477,12 @@ html body #mulligan-cards .mulligan-card.selected-for-redraw {
 
 .preview-desc,
 #preview-content .preview-desc,
-.preview-ability-text-left,
-.cd-text-box,
-#cd-text,
+.preview-ability-text-left {
+  text-align: left !important;
+}
+
 /* ==========================================================================
-   🃏 Vol.202 マリガン画面 100%完全表示・明るさ保証ルール (style.css 最下部)
+   マリガン画面 100%完全表示・明るさ保証ルール (style.css 最下部)
    ========================================================================== */
 
 #mulligan-overlay {

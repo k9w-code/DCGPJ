@@ -768,7 +768,6 @@ function renderCardGrid() {
       addToDeck(card);
       showPreview('card', card);
     });
-    el.addEventListener('contextmenu', (e) => { e.preventDefault(); removeFromDeck(card.id); });
     
     // バトル画面と同じ詳細表示を有効化
     if (typeof attachCardDetailEvent === 'function') {

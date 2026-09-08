@@ -6890,7 +6890,14 @@ html body #card-detail-overlay #btn-close-detail::after,
 }
 
 /* 7. テキストボックス（効果文 ＆ フレーバーテキスト） */
+html body #card-detail-overlay .cd-text-box,
 .card-detail-modal .cd-text-box {
+  position: static !important;
+  inset: auto !important;
+  top: auto !important;
+  left: auto !important;
+  width: 100% !important;
+  height: auto !important;
   background: rgba(0, 0, 0, 0.45) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 10px !important;
@@ -6902,14 +6909,26 @@ html body #card-detail-overlay #btn-close-detail::after,
   flex: 1 1 auto !important;
   overflow-y: auto !important;
   box-sizing: border-box !important;
+  z-index: auto !important;
 }
 
+html body #card-detail-overlay .cd-effect-text,
+html body #card-detail-overlay #cd-text,
 .card-detail-modal .cd-effect-text,
 .card-detail-modal #cd-text {
+  position: static !important;
+  inset: auto !important;
+  top: auto !important;
+  left: auto !important;
+  width: 100% !important;
+  height: auto !important;
+  background: transparent !important;
+  z-index: auto !important;
   font-size: 13.5px !important;
   line-height: 1.6 !important;
   color: #f8fafc !important;
   margin: 0 !important;
+  text-align: left !important;
 }
 
 .card-detail-modal .cd-flavor-text,
