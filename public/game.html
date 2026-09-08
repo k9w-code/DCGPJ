@@ -12,8 +12,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Shippori+Mincho:wght@500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css?v=v235_fix_cd_text_overlay">
-  <link rel="stylesheet" href="/css/battle-premium.css?v=v235_fix_cd_text_overlay">
+  <link rel="stylesheet" href="/css/style.css?v=v236_unify_card_detail">
+  <link rel="stylesheet" href="/css/battle-premium.css?v=v236_unify_card_detail">
 </head>
 <body>
   <!-- 開戦前 タップゲート（AudioContext アンロック ＆ BGM確実起動） -->
@@ -114,7 +114,7 @@
     </div>
   </div>
 
-  <div class="overlay card-detail-overlay" id="card-detail-overlay" style="display: none; z-index: 10000000 !important; width: 100dvw !important; height: 100dvh !important; position: fixed !important; top: 0 !important; left: 0 !important;">
+  <div class="overlay card-detail-overlay" id="card-detail-overlay" style="display: none; z-index: 2147483647 !important; width: 100dvw !important; height: 100dvh !important; position: fixed !important; top: 0 !important; left: 0 !important;">
     <div class="card-detail-modal">
       <div class="cd-close-btn" id="btn-close-detail"></div>
       <div class="cd-image-area" id="cd-image"></div>
@@ -144,14 +144,6 @@
         <div class="cd-text-box">
           <div class="cd-effect-text" id="cd-text"></div>
           <div class="cd-flavor-text" id="cd-flavor"></div>
-        </div>
-        <div class="cd-mulligan-action-bar" id="cd-mulligan-action-bar" style="display: none;">
-          <button class="cd-mulligan-btn" id="btn-cd-mulligan-toggle" type="button">
-            <svg class="cd-mulligan-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-            </svg>
-            <span id="cd-mulligan-btn-text">CHANGEに設定（交換する）</span>
-          </button>
         </div>
       </div>
     </div>
@@ -471,10 +463,10 @@
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/audio-manager.js?v=v235_fix_cd_text_overlay"></script>
-  <script src="/js/vfx-engine.js?v=v235_fix_cd_text_overlay"></script>
-  <script src="/js/game-renderer.js?v=v235_fix_cd_text_overlay"></script>
-  <script src="/js/game-client.js?v=v235_fix_cd_text_overlay"></script>
+  <script src="/js/audio-manager.js?v=v236_unify_card_detail"></script>
+  <script src="/js/vfx-engine.js?v=v236_unify_card_detail"></script>
+  <script src="/js/game-renderer.js?v=v236_unify_card_detail"></script>
+  <script src="/js/game-client.js?v=v236_unify_card_detail"></script>
   
   <script>
     function resizeGame() {

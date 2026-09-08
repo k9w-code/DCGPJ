@@ -6567,47 +6567,6 @@ html body #mulligan-cards .mulligan-card.selected-for-redraw {
   color: #ffffff !important;
 }
 
-/* カード詳細モーダル内のマリガン連動アクションバー */
-.cd-mulligan-action-bar {
-  margin-top: 15px !important;
-  padding-top: 12px !important;
-  border-top: 1px solid rgba(251, 191, 36, 0.25) !important;
-  display: flex !important;
-  justify-content: flex-end !important;
-  align-items: center !important;
-}
-
-.cd-mulligan-btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  padding: 10px 24px !important;
-  border-radius: 8px !important;
-  font-family: 'Cinzel', 'Shippori Mincho', serif !important;
-  font-size: 15px !important;
-  font-weight: 800 !important;
-  letter-spacing: 1.5px !important;
-  cursor: pointer !important;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98)) !important;
-  border: 1.5px solid #fbbf24 !important;
-  color: #fbbf24 !important;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.5), 0 0 12px rgba(251, 191, 36, 0.3) !important;
-  transition: all 0.2s ease !important;
-}
-
-.cd-mulligan-btn:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.7), 0 0 20px rgba(251, 191, 36, 0.6) !important;
-  border-color: #ffffff !important;
-  color: #ffffff !important;
-}
-
-.cd-mulligan-btn.is-change-active {
-  background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%) !important;
-  border-color: #f87171 !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.6), 0 0 20px rgba(239, 68, 68, 0.5) !important;
-}
 
 /* ==========================================================================
    🚨 カード詳細モーダル (card-detail-modal) マスターワーク完全修復
@@ -6943,43 +6902,6 @@ html body #card-detail-overlay #cd-text,
   margin: 0 !important;
 }
 
-/* 8. マリガン連動アクションバー */
-.card-detail-modal .cd-mulligan-action-bar,
-#cd-mulligan-action-bar {
-  margin-top: auto !important;
-  padding-top: 6px !important;
-  flex-shrink: 0 !important;
-  display: flex !important;
-}
-
-.card-detail-modal .cd-mulligan-btn,
-#btn-cd-mulligan-toggle {
-  width: 100% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 8px !important;
-  padding: 9px 16px !important;
-  border-radius: 8px !important;
-  font-family: 'Cinzel', 'Shippori Mincho', serif !important;
-  font-size: 13.5px !important;
-  font-weight: 800 !important;
-  letter-spacing: 1px !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-  background: linear-gradient(135deg, #b91c1c, #dc2626) !important;
-  border: 1px solid #f87171 !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4) !important;
-}
-
-.card-detail-modal .cd-mulligan-btn.is-change-active,
-#btn-cd-mulligan-toggle.is-change-active {
-  background: linear-gradient(135deg, #1e293b, #334155) !important;
-  border: 1px solid #94a3b8 !important;
-  color: #e2e8f0 !important;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.4) !important;
-}
 
 
 /* ==========================================================================

@@ -613,66 +613,17 @@ window.showCardDetail = function(card) {
     }
   }
 
-  // --- マリガン画面との連動アクションバー ---
-  const mulliganActionBar = document.getElementById('cd-mulligan-action-bar');
-  const mulliganToggleBtn = document.getElementById('btn-cd-mulligan-toggle');
-  const mulliganBtnText = document.getElementById('cd-mulligan-btn-text');
-
-  const mulliganOverlay = document.getElementById('mulligan-overlay');
-  const isMulliganActive = mulliganOverlay && 
-    mulliganOverlay.style.display !== 'none' && 
-    mulliganOverlay.style.opacity !== '0' && 
-    Array.isArray(window._mulliganHand);
-
-  if (mulliganActionBar && isMulliganActive) {
-    const cardIndex = window._mulliganHand.findIndex(c => 
-      c === card || (c.id === card.id && (c.instanceId ? c.instanceId === card.instanceId : true))
-    );
-
-    if (cardIndex !== -1 && typeof window._toggleMulliganIndex === 'function') {
-      mulliganActionBar.style.display = 'flex';
-      
-      const syncBtnState = () => {
-        const isSelected = window._isMulliganIndexSelected ? window._isMulliganIndexSelected(cardIndex) : false;
-        if (isSelected) {
-          mulliganToggleBtn.classList.add('is-change-active');
-          if (mulliganBtnText) mulliganBtnText.textContent = 'CHANGE設定中（タップでKEEPに戻す）';
-        } else {
-          mulliganToggleBtn.classList.remove('is-change-active');
-          if (mulliganBtnText) mulliganBtnText.textContent = 'CHANGEに設定（交換する）';
-        }
-      };
-
-      syncBtnState();
-      window._syncMulliganModalButton = syncBtnState;
-
-      mulliganToggleBtn.onclick = (e) => {
-        e.stopPropagation();
-        window._toggleMulliganIndex(cardIndex);
-        syncBtnState();
-      };
-    } else {
-      mulliganActionBar.style.display = 'none';
-      window._syncMulliganModalButton = null;
-    }
-  } else if (mulliganActionBar) {
-    mulliganActionBar.style.display = 'none';
-    window._syncMulliganModalButton = null;
-  }
-
   const closeBtn = document.getElementById('btn-close-detail');
   if (closeBtn) {
     closeBtn.onclick = (e) => {
       e.stopPropagation();
       overlay.style.display = 'none';
-      window._syncMulliganModalButton = null;
     };
   }
   // 背景オーバーレイのクリックでも閉じる
   overlay.onclick = (e) => {
     if (e.target === overlay || e.target.classList.contains('card-detail-overlay')) {
       overlay.style.display = 'none';
-      window._syncMulliganModalButton = null;
     }
   };
 };

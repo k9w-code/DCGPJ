@@ -1658,10 +1658,6 @@ function showMulligan(hand, onSubmit) {
         confirmBtnText.innerHTML = `REDRAW<span class="btn-sub">選択したカードを交換</span>`;
       }
     }
-
-    if (typeof window._syncMulliganModalButton === 'function') {
-      window._syncMulliganModalButton();
-    }
   }
   window._updateMulliganUI = updateAllMulliganUI;
   
