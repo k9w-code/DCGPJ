@@ -20,8 +20,9 @@ socket.on('session_reconnected', (data) => {
 });
 
 socket.on('session_invalid', () => {
-  alert('セッションが無効です。ロビーに戻ります。');
-  window.location.href = '/';
+  console.log('ℹ️ [DECK-BUILDER] セッション未所属（スタンドアローン編成モードとして稼働中）');
+  sessionStorage.removeItem('sessionId');
+  localStorage.removeItem('dcg_session_id');
 });
 
 // BGM再生
@@ -1356,13 +1357,19 @@ document.getElementById('btn-submit-deck').addEventListener('click', () => {
   const totalCards = Object.values(deck).reduce((s, c) => s + c, 0);
   if (totalCards !== 40 || selectedShields.length !== 3) return;
 
-  // 自動保存
+  // 自動保存 & アクティブスロット更新
   saveDeckToSlot(currentSaveSlot);
+  localStorage.setItem('dcg_active_slot', currentSaveSlot);
 
   const deckCardIds = [];
   for (const [id, count] of Object.entries(deck)) {
     for (let i = 0; i < count; i++) deckCardIds.push(id);
   }
+
+  localStorage.setItem('selectedDeck', JSON.stringify({
+    deckCardIds,
+    shieldIds: selectedShields
+  }));
 
   const currentSessionId = sessionStorage.getItem('sessionId') || localStorage.getItem('dcg_session_id');
   socket.emit('submit_deck', { sessionId: currentSessionId, deckCardIds, shieldIds: selectedShields, mode: 'solo' });

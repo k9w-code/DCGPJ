@@ -221,7 +221,12 @@ io.on('connection', (socket) => {
               // マリガン未完了の場合のみ、追加でマリガン指示を送る
               if (room.engine.gameState.phase === 'mulligan' && !player.mulliganDone) {
                 const isFirst = (room.engine.gameState.playerOrder[0] === player.id);
-                socket.emit('mulligan_phase', { hand: sanitizedView.me.hand, isFirst: isFirst });
+                const opponent = room.players.find(other => other.id !== player.id);
+                socket.emit('mulligan_phase', {
+                  hand: sanitizedView.me.hand,
+                  isFirst: isFirst,
+                  opponentName: opponent ? opponent.name : 'OPPONENT'
+                });
                 console.log(`✅ [SERVER] mulligan_phase sent to ${player.name} (isFirst: ${isFirst})`);
               }
             } catch (e) {
