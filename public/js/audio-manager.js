@@ -15,14 +15,91 @@ class SoundManager {
     this.seVolume = parseFloat(localStorage.getItem('dcg_se_volume') ?? '0.3');
     this.seBuffers = {};
     this.seFiles = {
-      shield_break: '/assets/se/shield_break.wav',
-      shield_hit: '/assets/se/shield_hit.wav',
+      card_play: '/assets/se/card_play.wav',
+      draw: '/assets/se/draw.wav',
+      flick_snap: '/assets/se/flick_snap.wav',
+      click: '/assets/se/click.wav',
+      mulligan_select: '/assets/se/mulligan_select.wav',
+      mulligan_swap: '/assets/se/mulligan_swap.wav',
+      summon: '/assets/se/summon.wav',
+      spell: '/assets/se/spell.wav',
       attack: '/assets/se/attack.wav',
-      impact: '/assets/se/attack.wav',
-      direct_attack: '/assets/se/direct_attack.wav',
-      coin_land: '/assets/se/coin_land.wav',
+      impact: '/assets/se/impact.wav',
       sword_draw: '/assets/se/sword_draw.wav',
-      turn_start: '/assets/se/turn_start.wav'
+      shield_hit: '/assets/se/shield_hit.wav',
+      shield_break: '/assets/se/shield_break.wav',
+      direct_attack: '/assets/se/direct_attack.wav',
+      avatar_damaged: '/assets/se/avatar_damaged.wav',
+      death: '/assets/se/death.wav',
+      buff: '/assets/se/buff.wav',
+      debuff: '/assets/se/debuff.wav',
+      freeze: '/assets/se/freeze.wav',
+      silence: '/assets/se/silence.wav',
+      barrier: '/assets/se/barrier.wav',
+      barrier_pop: '/assets/se/barrier_pop.wav',
+      endure: '/assets/se/endure.wav',
+      heal: '/assets/se/heal.wav',
+      turn_start: '/assets/se/turn_start.wav',
+      turn_end: '/assets/se/turn_end.wav',
+      select: '/assets/se/select.wav',
+      start: '/assets/se/start.wav',
+      coin_land: '/assets/se/coin_land.wav',
+      resonance: '/assets/se/resonance.wav',
+      levelUp: '/assets/se/levelUp.wav',
+      timer_tick: '/assets/se/timer_tick.wav',
+      error: '/assets/se/error.wav',
+      victory_fanfare: '/assets/se/victory_fanfare.wav',
+      defeat_sound: '/assets/se/defeat_sound.wav'
+    };
+    this.seVolumeScales = {
+      click: 0.85,
+      flick_snap: 0.75,
+      timer_tick: 0.6,
+      card_play: 1.0,
+      draw: 0.9,
+      mulligan_select: 0.9,
+      mulligan_swap: 0.95,
+      summon: 1.0,
+      spell: 1.0,
+      attack: 1.0,
+      impact: 1.0,
+      sword_draw: 1.0,
+      shield_hit: 0.95,
+      shield_break: 1.1,
+      direct_attack: 1.15,
+      avatar_damaged: 1.05,
+      death: 0.95,
+      buff: 1.0,
+      debuff: 0.9,
+      freeze: 1.0,
+      silence: 0.9,
+      barrier: 1.0,
+      barrier_pop: 0.85,
+      endure: 1.0,
+      heal: 1.0,
+      turn_start: 1.0,
+      turn_end: 0.85,
+      select: 0.9,
+      start: 1.05,
+      coin_land: 0.95,
+      resonance: 1.0,
+      levelUp: 1.05,
+      error: 0.85,
+      victory_fanfare: 1.0,
+      defeat_sound: 1.0
+    };
+    this.seCooldowns = {
+      click: 60,
+      flick_snap: 50,
+      card_play: 80,
+      draw: 70,
+      timer_tick: 200,
+      direct_attack: 250,
+      shield_break: 250,
+      turn_start: 300,
+      levelUp: 300,
+      victory_fanfare: 500,
+      defeat_sound: 500
     };
     this._preloadSE();
     this.files = {
@@ -37,6 +114,9 @@ class SoundManager {
         battle7: '/assets/bgm/battle7.mp3',
         victory: '/assets/bgm/victory.mp3',
         defeat: '/assets/bgm/defeat.mp3',
+        lobby: '/assets/bgm/home.mp3',
+        home: '/assets/bgm/home.mp3',
+        deck: '/assets/bgm/deck.mp3',
       }
     };
   }
@@ -59,13 +139,25 @@ class SoundManager {
     }
   }
 
-  _playLoadedSE(type, masterGain) {
+  _playLoadedSE(type, masterGain, options = {}) {
     const buf = this.seBuffers[type];
     if (!buf) return false;
     try {
       const src = this.audioCtx.createBufferSource();
       src.buffer = buf;
-      src.connect(masterGain);
+      if (options && typeof options.playbackRate === 'number') {
+        src.playbackRate.value = options.playbackRate;
+      }
+      const baseScale = (this.seVolumeScales && this.seVolumeScales[type]) ?? 1.0;
+      const volScale = baseScale * ((options && options.volumeScale) ?? 1.0);
+      if (volScale !== 1.0) {
+        const subGain = this.audioCtx.createGain();
+        subGain.gain.value = volScale;
+        src.connect(subGain);
+        subGain.connect(masterGain);
+      } else {
+        src.connect(masterGain);
+      }
       src.start();
       return true;
     } catch (e) {
@@ -199,13 +291,14 @@ class SoundManager {
     this.bgmAudio.currentTime = 0;
   }
 
-  playSE(type) {
+  playSE(type, options = {}) {
     if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
     
-    // 同一SEの短時間(250ms)での重複爆音再生を防ぐクールダウンガード
+    // 同一SEの短時間での重複爆音再生を防ぐクールダウンガード
     if (!this.lastSETimes) this.lastSETimes = {};
     const nowTime = Date.now();
-    if (this.lastSETimes[type] && (nowTime - this.lastSETimes[type]) < 250) {
+    const cooldown = (this.seCooldowns && this.seCooldowns[type]) ?? 80;
+    if (this.lastSETimes[type] && (nowTime - this.lastSETimes[type]) < cooldown) {
       return; // 短時間の重複再生をブロックしてサウンドをスムーズ化
     }
     this.lastSETimes[type] = nowTime;
@@ -218,7 +311,7 @@ class SoundManager {
     masterGain.connect(this.mainGain);
 
     // 実録音のスタジオWAVバッファがあれば最優先再生
-    if (this._playLoadedSE(type, masterGain)) {
+    if (this._playLoadedSE(type, masterGain, options)) {
       return;
     }
 

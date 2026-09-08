@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DCGPJ - SE Audition Studio (効果音試聴・オーディション)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0b0e14;
+      --panel-bg: rgba(18, 24, 38, 0.85);
+      --card-bg: rgba(26, 34, 52, 0.7);
+      --card-hover: rgba(36, 48, 74, 0.9);
+      --gold-primary: #e6b450;
+      --gold-glow: rgba(230, 180, 80, 0.35);
+      --cyan-accent: #38bdf8;
+      --crimson-accent: #ef4444;
+      --emerald-accent: #10b981;
+      --text-main: #f1f5f9;
+      --text-sub: #94a3b8;
+      --border-color: rgba(230, 180, 80, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 10%, #151d2f 0%, var(--bg-dark) 100%);
+      color: var(--text-main);
+      font-family: 'Noto Sans JP', sans-serif;
+      min-height: 100vh;
+      padding: 24px 20px 60px;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .studio-header {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px 30px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .title-group h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 26px;
+      letter-spacing: 2px;
+      color: var(--gold-primary);
+      text-shadow: 0 0 16px var(--gold-glow);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .title-group p {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-top: 4px;
+    }
+
+    .controls-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .vol-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .vol-box label {
+      font-size: 12px;
+      color: var(--gold-primary);
+      font-weight: bold;
+    }
+
+    .vol-slider {
+      accent-color: var(--gold-primary);
+      width: 100px;
+      cursor: pointer;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .nav-btn:hover {
+      background: rgba(230, 180, 80, 0.15);
+      border-color: var(--gold-primary);
+      color: var(--gold-primary);
+    }
+
+    /* Simulation Bar */
+    .sim-bar {
+      background: rgba(18, 24, 38, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .sim-label {
+      font-size: 13px;
+      color: var(--gold-primary);
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sim-btn {
+      background: linear-gradient(135deg, rgba(230, 180, 80, 0.15), rgba(230, 180, 80, 0.05));
+      border: 1px solid var(--gold-primary);
+      color: #fef08a;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sim-btn:hover {
+      background: var(--gold-primary);
+      color: #000;
+      box-shadow: 0 0 12px var(--gold-glow);
+    }
+
+    /* Section Category */
+    .category-section {
+      margin-bottom: 32px;
+    }
+
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(230, 180, 80, 0.25);
+    }
+
+    .category-header h2 {
+      font-size: 18px;
+      font-family: 'Cinzel', serif;
+      letter-spacing: 1px;
+      color: var(--gold-primary);
+    }
+
+    .category-header .badge {
+      background: rgba(230, 180, 80, 0.15);
+      color: var(--gold-primary);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: bold;
+    }
+
+    /* Grid Layout */
+    .se-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
+      gap: 16px;
+    }
+
+    /* SE Card */
+    .se-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .se-card:hover {
+      background: var(--card-hover);
+      border-color: rgba(230, 180, 80, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .se-card.playing {
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 16px var(--gold-glow);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .card-title-group {
+      flex: 1;
+    }
+
+    .card-key {
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--cyan-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-label {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      margin: 2px 0 4px;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 1.4;
+    }
+
+    .duration-pill {
+      font-family: monospace;
+      font-size: 11px;
+      padding: 2px 7px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      color: #cbd5e1;
+      white-space: nowrap;
+    }
+
+    /* Buttons Row */
+    .button-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .play-btn-primary {
+      background: linear-gradient(135deg, #e6b450 0%, #b8860b 100%);
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .play-btn-primary:hover {
+      filter: brightness(1.15);
+      transform: scale(1.02);
+      box-shadow: 0 0 12px var(--gold-glow);
+    }
+
+    .play-btn-alt {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #e2e8f0;
+      border-radius: 6px;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .play-btn-alt:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--cyan-accent);
+      color: var(--cyan-accent);
+    }
+
+    /* Status indicator bar on bottom */
+    .playing-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: var(--gold-primary);
+      width: 0%;
+      opacity: 0;
+      transition: width linear, opacity 0.2s;
+    }
+
+    .se-card.playing .playing-bar {
+      opacity: 1;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Studio Header -->
+  <header class="studio-header">
+    <div class="title-group">
+      <h1>
+        <span>🔊</span> DCGPJ AUDIO STUDIO
+      </h1>
+      <p>スタジオ実録音WAV（アドビ公式SE素材集）全35音の実機オーディション & 聴き比べシステム</p>
+    </div>
+
+    <div class="controls-group">
+      <div class="vol-box">
+        <label for="masterVol">VOLUME</label>
+        <input type="range" id="masterVol" class="vol-slider" min="0" max="1" step="0.05" value="0.3">
+        <span id="volVal" style="font-size: 12px; font-family: monospace; min-width: 32px;">30%</span>
+      </div>
+      <a href="/game.html" class="nav-btn">⚔️ バトル画面へ</a>
+      <a href="/deck-builder.html" class="nav-btn">🎴 デッキ構築へ</a>
+    </div>
+  </header>
+
+  <!-- Simulation Bar -->
+  <div class="sim-bar">
+    <span class="sim-label">⚡ ゲーム内シーケンス連続再生テスト:</span>
+    <button class="sim-btn" onclick="simulateCombat()">⚔️ 戦闘・シールド破壊シークエンス</button>
+    <button class="sim-btn" onclick="simulateMulligan()">🔄 マリガン・引き直しシークエンス</button>
+    <button class="sim-btn" onclick="simulateSpellCombo()">🔮 召喚・スペル・バフコンボ</button>
+    <button class="sim-btn" onclick="simulateFinish()">👑 ダイレクトアタック & 勝利</button>
+  </div>
+
+  <!-- SE Categories Grid Container -->
+  <div id="categoriesContainer"></div>
+</div>
+
+<script>
+  // SE Definition Data Matrix
+  const seData = [
+    {
+      category: 'カード基本操作 & UI',
+      icon: '🎴',
+      items: [
+        {
+          key: 'card_play',
+          label: 'カード配置（卓上着地）',
+          desc: '手札から盤面へカードを置いた瞬間の小気味よい木製テーブル打撃音。',
+          primary: '/assets/se/card_play.wav',
+          dur: '0.29s',
+          alts: [
+            { label: '候補1 (メカスナップ)', file: '/assets/se/candidates/card_play_alt1.wav', dur: '0.16s' },
+            { label: '候補2 (硬質打撃)', file: '/assets/se/candidates/card_play_alt2.wav', dur: '0.35s' }
+          ]
+        },
+        {
+          key: 'draw',
+          label: 'カードドロー',
+          desc: '山札から手札へカードが滑り出すスムーズなエアスライド音。',
+          primary: '/assets/se/draw.wav',
+          dur: '0.20s',
+          alts: [
+            { label: '候補1 (スウッシュ)', file: '/assets/se/candidates/draw_alt1.wav', dur: '0.29s' }
+          ]
+        },
+        {
+          key: 'flick_snap',
+          label: 'カードホバー・スナップ',
+          desc: '手札に触れた時やカードをフリックした際の極小スナップ音。',
+          primary: '/assets/se/flick_snap.wav',
+          dur: '0.10s',
+          alts: [
+            { label: '候補1 (メカクリック)', file: '/assets/se/candidates/flick_snap_alt1.wav', dur: '0.12s' }
+          ]
+        },
+        {
+          key: 'click',
+          label: '汎用UIクリック',
+          desc: 'ボタンやタブを押下した時の小気味よくソリッドな決定タップ音。',
+          primary: '/assets/se/click.wav',
+          dur: '0.20s',
+          alts: [
+            { label: '候補1 (クリック06)', file: '/assets/se/candidates/click_alt1.wav', dur: '0.12s' },
+            { label: '候補2 (ショート04)', file: '/assets/se/candidates/click_alt2.wav', dur: '0.20s' }
+          ]
+        },
+        {
+          key: 'select',
+          label: '決定・フォーカス',
+          desc: '選択確定やアイテム決定時のポジティブなハードボタントーン。',
+          primary: '/assets/se/select.wav',
+          dur: '0.26s',
+          alts: [
+            { label: '候補1 (ハード13)', file: '/assets/se/candidates/select_alt1.wav', dur: '0.20s' }
+          ]
+        },
+        {
+          key: 'mulligan_select',
+          label: 'マリガンCHANGE選択',
+          desc: 'マリガン画面でカードの交換トグルを押した時のシャープな反転音。',
+          primary: '/assets/se/mulligan_select.wav',
+          dur: '0.20s',
+          alts: [
+            { label: '候補1 (メカ18)', file: '/assets/se/candidates/mulligan_select_alt1.wav', dur: '0.25s' }
+          ]
+        },
+        {
+          key: 'mulligan_swap',
+          label: 'マリガン交換・再配布',
+          desc: '交換対象カードがデッキへ引き込まれ再配布されるスウッシュ音。',
+          primary: '/assets/se/mulligan_swap.wav',
+          dur: '0.29s',
+          alts: [
+            { label: '候補1 (ショート03)', file: '/assets/se/candidates/mulligan_swap_alt1.wav', dur: '0.25s' }
+          ]
+        },
+        {
+          key: 'timer_tick',
+          label: 'タイマー秒針',
+          desc: 'ターン終了間際のカウントダウンを静かに刻む精密クリック音。',
+          primary: '/assets/se/timer_tick.wav',
+          dur: '0.12s',
+          alts: [
+            { label: '候補1 (クリック03)', file: '/assets/se/candidates/timer_tick_alt1.wav', dur: '0.10s' }
+          ]
+        },
+        {
+          key: 'error',
+          label: '操作不能・コスト不足',
+          desc: 'MP不足や対象外操作時に鳴る短音アクセス拒絶音。',
+          primary: '/assets/se/error.wav',
+          dur: '0.39s',
+          alts: [
+            { label: '候補1 (レーザー78)', file: '/assets/se/candidates/error_alt1.wav', dur: '0.41s' }
+          ]
+        }
+      ]
+    },
+    {
+      category: '戦闘 & 破壊演出',
+      icon: '⚔️',
+      items: [
+        {
+          key: 'attack',
+          label: '通常攻撃・剣撃斬撃',
+          desc: '大剣が激突し斬り裂く鋭利なスタジオ実録金属スラッシュ音。',
+          primary: '/assets/se/attack.wav',
+          dur: '0.30s',
+          alts: [
+            { label: '候補1 (ウィップ01)', file: '/assets/se/candidates/attack_alt1.wav', dur: '0.30s' },
+            { label: '候補2 (メタル03)', file: '/assets/se/candidates/attack_alt2.wav', dur: '0.32s' }
+          ]
+        },
+        {
+          key: 'impact',
+          label: '重打撃・会心打',
+          desc: '鈍器や格闘ユニットの強烈な一撃による肉弾骨響インパクト音。',
+          primary: '/assets/se/impact.wav',
+          dur: '0.23s',
+          alts: [
+            { label: '候補1 (ボディパンチ)', file: '/assets/se/candidates/impact_alt1.wav', dur: '0.24s' }
+          ]
+        },
+        {
+          key: 'sword_draw',
+          label: '抜刀・VS演出',
+          desc: 'マッチング成立時、両者のアバターが激突する鋭利な抜刀刃鳴り音。',
+          primary: '/assets/se/sword_draw.wav',
+          dur: '0.31s',
+          alts: [
+            { label: '候補1 (ウィップ01)', file: '/assets/se/candidates/sword_draw_alt1.wav', dur: '0.30s' }
+          ]
+        },
+        {
+          key: 'shield_hit',
+          label: 'シールド防御（金属弾き）',
+          desc: 'シールドが敵の斬撃を強固に跳ね返すソリッドな甲冑金属音。',
+          primary: '/assets/se/shield_hit.wav',
+          dur: '0.50s',
+          alts: [
+            { label: '候補1 (アーマー03)', file: '/assets/se/candidates/shield_hit_alt1.wav', dur: '0.57s' },
+            { label: '候補2 (アーマー01)', file: '/assets/se/candidates/shield_hit_alt2.wav', dur: '0.65s' }
+          ]
+        },
+        {
+          key: 'shield_break',
+          label: 'シールド全壊（粉砕クラッシュ）',
+          desc: '防壁シールドが粉々に砕け散るガラス破砕＋衝撃クラッシュ音。',
+          primary: '/assets/se/shield_break.wav',
+          dur: '1.39s',
+          alts: [
+            { label: '候補1 (ガラスメタル)', file: '/assets/se/candidates/shield_break_alt1.wav', dur: '1.13s' }
+          ]
+        },
+        {
+          key: 'direct_attack',
+          label: 'ダイレクトアタック（大爆発）',
+          desc: 'リーダー本体への直撃による地響きを伴う重低音サブベース爆裂音。',
+          primary: '/assets/se/direct_attack.wav',
+          dur: '0.69s',
+          alts: [
+            { label: '候補1 (ロングブラスト)', file: '/assets/se/candidates/direct_attack_alt1.wav', dur: '1.30s' }
+          ]
+        },
+        {
+          key: 'avatar_damaged',
+          label: 'リーダー被弾（防壁破損）',
+          desc: 'アバター防壁オーブにヒビが入りダメージを受ける重硬質被弾音。',
+          primary: '/assets/se/avatar_damaged.wav',
+          dur: '0.40s',
+          alts: [
+            { label: '候補1 (プラスチックチューブ)', file: '/assets/se/candidates/avatar_damaged_alt1.wav', dur: '0.41s' }
+          ]
+        },
+        {
+          key: 'endure',
+          label: '不屈発動（致死耐え）',
+          desc: '致死ダメージをHP1で踏みとどまる強固な金属反響ディフレクト音。',
+          primary: '/assets/se/endure.wav',
+          dur: '0.57s',
+          alts: [
+            { label: '候補1 (アーマー02)', file: '/assets/se/candidates/endure_alt1.wav', dur: '0.50s' }
+          ]
+        },
+        {
+          key: 'death',
+          label: 'ユニット撃破・墓場消滅',
+          desc: '体力を失った従者が崩れ落ち、虚無へと消え去る重い倒伏音。',
+          primary: '/assets/se/death.wav',
+          dur: '0.55s',
+          alts: [
+            { label: '候補1 (セメント倒伏)', file: '/assets/se/candidates/death_alt1.wav', dur: '0.50s' }
+          ]
+        }
+      ]
+    },
+    {
+      category: '魔法 & 特殊状態',
+      icon: '🔮',
+      items: [
+        {
+          key: 'summon',
+          label: 'ユニット召喚',
+          desc: '魔力陣からフォロワーが戦場へ現出する神秘的クリスタル共鳴音。',
+          primary: '/assets/se/summon.wav',
+          dur: '1.02s',
+          alts: [
+            { label: '候補1 (クリスタルグロウ)', file: '/assets/se/candidates/summon_alt1.wav', dur: '1.49s' }
+          ]
+        },
+        {
+          key: 'spell',
+          label: 'スペル詠唱・発動',
+          desc: '呪文カード使用時の鋭い魔力放出・放電ザップ音。',
+          primary: '/assets/se/spell.wav',
+          dur: '0.40s',
+          alts: [
+            { label: '候補1 (エレクトリカル12)', file: '/assets/se/candidates/spell_alt1.wav', dur: '0.54s' }
+          ]
+        },
+        {
+          key: 'buff',
+          label: 'バフ付与（能力強化）',
+          desc: '攻撃力・体力が上昇した際の祝福と輝きを帯びた鐘のチャイム音。',
+          primary: '/assets/se/buff.wav',
+          dur: '1.09s',
+          alts: [
+            { label: '候補1 (ベルヒット17)', file: '/assets/se/candidates/buff_alt1.wav', dur: '1.01s' }
+          ]
+        },
+        {
+          key: 'debuff',
+          label: 'デバフ付与（弱体化・呪い）',
+          desc: '攻撃低下や能力弱体化を告げるダークで不吉な骨軋み音。',
+          primary: '/assets/se/debuff.wav',
+          dur: '0.44s',
+          alts: [
+            { label: '候補1 (ボーンブレイク)', file: '/assets/se/candidates/debuff_alt1.wav', dur: '0.42s' }
+          ]
+        },
+        {
+          key: 'freeze',
+          label: '凍結付与',
+          desc: '氷の結晶が張りつめ、行動不能にする神秘的フリーズ音。',
+          primary: '/assets/se/freeze.wav',
+          dur: '1.49s',
+          alts: [
+            { label: '候補1 (クリスタル02)', file: '/assets/se/candidates/freeze_alt1.wav', dur: '1.02s' }
+          ]
+        },
+        {
+          key: 'silence',
+          label: '沈黙（効果封印）',
+          desc: 'カードの能力を無効化・封印する閉塞ディストーション音。',
+          primary: '/assets/se/silence.wav',
+          dur: '0.61s',
+          alts: [
+            { label: '候補1 (ディストーション02)', file: '/assets/se/candidates/silence_alt1.wav', dur: '0.70s' }
+          ]
+        },
+        {
+          key: 'barrier',
+          label: 'バリア展開',
+          desc: 'ダメージを1回防ぐエネルギー防壁シールドの展開パルス音。',
+          primary: '/assets/se/barrier.wav',
+          dur: '0.55s',
+          alts: [
+            { label: '候補1 (通信トランスミッション)', file: '/assets/se/candidates/barrier_alt1.wav', dur: '0.48s' }
+          ]
+        },
+        {
+          key: 'barrier_pop',
+          label: 'バリア破裂',
+          desc: 'バリアがダメージを受け止めて弾け飛ぶ軽快な破裂音。',
+          primary: '/assets/se/barrier_pop.wav',
+          dur: '0.12s',
+          alts: [
+            { label: '候補1 (ポップ05)', file: '/assets/se/candidates/barrier_pop_alt1.wav', dur: '0.15s' }
+          ]
+        },
+        {
+          key: 'heal',
+          label: 'HP回復',
+          desc: '傷を癒やす天上の澄み渡るベルチャイムヒーリング音。',
+          primary: '/assets/se/heal.wav',
+          dur: '1.01s',
+          alts: [
+            { label: '候補1 (ベルヒット01)', file: '/assets/se/candidates/heal_alt1.wav', dur: '1.50s' }
+          ]
+        },
+        {
+          key: 'resonance',
+          label: '共鳴（ハーモニクス）',
+          desc: '波紋のように魔力が広がり共鳴するベルウォーブル音。',
+          primary: '/assets/se/resonance.wav',
+          dur: '1.48s',
+          alts: [
+            { label: '候補1 (クリスタルグロウ)', file: '/assets/se/candidates/resonance_alt1.wav', dur: '1.49s' }
+          ]
+        }
+      ]
+    },
+    {
+      category: '進行 & ジングル',
+      icon: '👑',
+      items: [
+        {
+          key: 'start',
+          label: '試合開始（開戦）',
+          desc: '対戦の火蓋が切って落とされる勇壮なブラスアセンション音。',
+          primary: '/assets/se/start.wav',
+          dur: '1.54s',
+          alts: [
+            { label: '候補1 (ベルヒット01)', file: '/assets/se/candidates/start_alt1.wav', dur: '1.50s' }
+          ]
+        },
+        {
+          key: 'turn_start',
+          label: 'ターン開始',
+          desc: '自軍の手番開始を高らかに告げる神聖なベルチャイム音。',
+          primary: '/assets/se/turn_start.wav',
+          dur: '1.50s',
+          alts: [
+            { label: '候補1 (ベルチャイム01)', file: '/assets/se/candidates/turn_start_alt1.wav', dur: '1.09s' }
+          ]
+        },
+        {
+          key: 'turn_end',
+          label: 'ターン終了',
+          desc: 'ターン終了ボタンを押して相手へ権限を渡すスウッシュ音。',
+          primary: '/assets/se/turn_end.wav',
+          dur: '0.25s',
+          alts: [
+            { label: '候補1 (ショート02)', file: '/assets/se/candidates/turn_end_alt1.wav', dur: '0.20s' }
+          ]
+        },
+        {
+          key: 'coin_land',
+          label: 'コイントス着地',
+          desc: '先攻・後攻決定のコインがフェルト卓上に落ちて弾む硬貨音。',
+          primary: '/assets/se/coin_land.wav',
+          dur: '0.37s',
+          alts: [
+            { label: '候補1 (コイン05)', file: '/assets/se/candidates/coin_land_alt1.wav', dur: '0.63s' }
+          ]
+        },
+        {
+          key: 'levelUp',
+          label: '進化・レベルアップ',
+          desc: 'カードやアバターが一段階覚醒する栄光のファンファーレ音。',
+          primary: '/assets/se/levelUp.wav',
+          dur: '1.54s',
+          alts: [
+            { label: '候補1 (アセンド02)', file: '/assets/se/candidates/levelUp_alt1.wav', dur: '1.54s' }
+          ]
+        },
+        {
+          key: 'victory_fanfare',
+          label: '勝利ファンファーレ',
+          desc: '勝利画面への突入時に誇り高き勝者を讃えるアセンションジングル。',
+          primary: '/assets/se/victory_fanfare.wav',
+          dur: '1.69s',
+          alts: [
+            { label: '候補1 (アセンド04)', file: '/assets/se/candidates/victory_fanfare_alt1.wav', dur: '1.70s' }
+          ]
+        },
+        {
+          key: 'defeat_sound',
+          label: '敗北ジングル',
+          desc: '敗北画面突入時の深淵へと落ちていくダークディセンドジングル。',
+          primary: '/assets/se/defeat_sound.wav',
+          dur: '1.89s',
+          alts: [
+            { label: '候補1 (ディセンド07)', file: '/assets/se/candidates/defeat_sound_alt1.wav', dur: '1.67s' }
+          ]
+        }
+      ]
+    }
+  ];
+
+  // Audio Context Manager
+  let audioCtx = null;
+  let masterGain = null;
+  const audioCache = {};
+
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = parseFloat(document.getElementById('masterVol').value);
+      masterGain.connect(audioCtx.destination);
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
+  // Volume Slider Handler
+  const volSlider = document.getElementById('masterVol');
+  const volVal = document.getElementById('volVal');
+  volSlider.addEventListener('input', (e) => {
+    const val = parseFloat(e.target.value);
+    volVal.textContent = Math.round(val * 100) + '%';
+    if (masterGain) {
+      masterGain.gain.setValueAtTime(val, audioCtx.currentTime);
+    }
+    localStorage.setItem('dcg_se_volume', val);
+  });
+
+  // Play Sound with visual feedback
+  async function playSound(url, cardElement, durationSec = 1.0) {
+    initAudio();
+    try {
+      let buffer = audioCache[url];
+      if (!buffer) {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('File not found: ' + url);
+        const ab = await res.arrayBuffer();
+        buffer = await audioCtx.decodeAudioData(ab);
+        audioCache[url] = buffer;
+      }
+
+      const src = audioCtx.createBufferSource();
+      src.buffer = buffer;
+      src.connect(masterGain);
+      src.start();
+
+      if (cardElement) {
+        cardElement.classList.add('playing');
+        const bar = cardElement.querySelector('.playing-bar');
+        if (bar) {
+          bar.style.transitionDuration = buffer.duration + 's';
+        }
+        setTimeout(() => {
+          cardElement.classList.remove('playing');
+          if (bar) {
+            bar.style.transitionDuration = '0.2s';
+          }
+        }, Math.max(250, buffer.duration * 1000));
+      }
+    } catch (err) {
+      console.error('Play error:', err);
+    }
+  }
+
+  // Render Category Sections
+  const container = document.getElementById('categoriesContainer');
+  seData.forEach(cat => {
+    const section = document.createElement('section');
+    section.className = 'category-section';
+
+    const header = document.createElement('div');
+    header.className = 'category-header';
+    header.innerHTML = `
+      <h2>${cat.icon} ${cat.category}</h2>
+      <span class="badge">${cat.items.length} SOUNDS</span>
+    `;
+    section.appendChild(header);
+
+    const grid = document.createElement('div');
+    grid.className = 'se-grid';
+
+    cat.items.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'se-card';
+      card.id = 'card-' + item.key;
+
+      let altsHtml = '';
+      if (item.alts && item.alts.length > 0) {
+        item.alts.forEach((alt, idx) => {
+          altsHtml += `
+            <button class="play-btn-alt" onclick="playSound('${alt.file}', this.closest('.se-card'), parseFloat('${alt.dur}'))">
+              ▶ ${alt.label} (${alt.dur})
+            </button>
+          `;
+        });
+      }
+
+      card.innerHTML = `
+        <div class="card-top">
+          <div class="card-title-group">
+            <div class="card-key">${item.key}</div>
+            <div class="card-label">${item.label}</div>
+            <div class="card-desc">${item.desc}</div>
+          </div>
+          <span class="duration-pill">${item.dur}</span>
+        </div>
+        <div class="button-group">
+          <button class="play-btn-primary" onclick="playSound('${item.primary}', this.closest('.se-card'), parseFloat('${item.dur}'))">
+            ▶ 本採用
+          </button>
+          ${altsHtml}
+        </div>
+        <div class="playing-bar"></div>
+      `;
+      grid.appendChild(card);
+    });
+
+    section.appendChild(grid);
+    container.appendChild(section);
+  });
+
+  // Simulation Routines
+  function wait(ms) {
+    return new Promise(r => setTimeout(r, ms));
+  }
+
+  async function simulateCombat() {
+    initAudio();
+    const cAttack = document.getElementById('card-attack');
+    const cShieldHit = document.getElementById('card-shield_hit');
+    const cShieldBreak = document.getElementById('card-shield_break');
+    const cImpact = document.getElementById('card-impact');
+    const cDirect = document.getElementById('card-direct_attack');
+    const cDeath = document.getElementById('card-death');
+
+    await playSound('/assets/se/attack.wav', cAttack);
+    await wait(350);
+    await playSound('/assets/se/shield_hit.wav', cShieldHit);
+    await wait(550);
+    await playSound('/assets/se/attack.wav', cAttack);
+    await wait(350);
+    await playSound('/assets/se/shield_break.wav', cShieldBreak);
+    await wait(800);
+    await playSound('/assets/se/impact.wav', cImpact);
+    await wait(450);
+    await playSound('/assets/se/direct_attack.wav', cDirect);
+    await wait(750);
+    await playSound('/assets/se/death.wav', cDeath);
+  }
+
+  async function simulateMulligan() {
+    initAudio();
+    const cSelect = document.getElementById('card-mulligan_select');
+    const cSwap = document.getElementById('card-mulligan_swap');
+    const cStart = document.getElementById('card-turn_start');
+
+    await playSound('/assets/se/mulligan_select.wav', cSelect);
+    await wait(400);
+    await playSound('/assets/se/mulligan_select.wav', cSelect);
+    await wait(600);
+    await playSound('/assets/se/mulligan_swap.wav', cSwap);
+    await wait(800);
+    await playSound('/assets/se/turn_start.wav', cStart);
+  }
+
+  async function simulateSpellCombo() {
+    initAudio();
+    const cPlay = document.getElementById('card-card_play');
+    const cSummon = document.getElementById('card-summon');
+    const cSpell = document.getElementById('card-spell');
+    const cBuff = document.getElementById('card-buff');
+    const cFreeze = document.getElementById('card-freeze');
+
+    await playSound('/assets/se/card_play.wav', cPlay);
+    await wait(250);
+    await playSound('/assets/se/summon.wav', cSummon);
+    await wait(900);
+    await playSound('/assets/se/spell.wav', cSpell);
+    await wait(500);
+    await playSound('/assets/se/buff.wav', cBuff);
+    await wait(800);
+    await playSound('/assets/se/freeze.wav', cFreeze);
+  }
+
+  async function simulateFinish() {
+    initAudio();
+    const cDirect = document.getElementById('card-direct_attack');
+    const cVictory = document.getElementById('card-victory_fanfare');
+
+    await playSound('/assets/se/direct_attack.wav', cDirect);
+    await wait(900);
+    await playSound('/assets/se/victory_fanfare.wav', cVictory);
+  }
+
+  // Auto unlock audio on any user gesture
+  document.addEventListener('pointerdown', initAudio, { once: true });
+</script>
+
+</body>
+</html>

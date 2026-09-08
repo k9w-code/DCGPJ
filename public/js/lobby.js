@@ -38,7 +38,11 @@ document.querySelectorAll('.avatar-option').forEach(opt => {
     opt.classList.add('active');
     selectedAvatar = opt.dataset.avatar;
     localStorage.setItem('dcg_avatar', selectedAvatar);
-    if (window.audioManager) window.audioManager.playSE('click');
+    if (window.audioManager) {
+      const avatarIndex = parseInt(selectedAvatar, 10) || 1;
+      const pitch = 0.90 + (avatarIndex * 0.05); // 0.95, 1.00, 1.05, 1.10, 1.15
+      window.audioManager.playSE('select', { playbackRate: pitch });
+    }
   });
 });
 
@@ -54,7 +58,11 @@ document.querySelectorAll('.diff-btn').forEach(btn => {
     btn.classList.add('active');
     selectedDifficulty = btn.dataset.difficulty;
     localStorage.setItem('dcg_difficulty', selectedDifficulty);
-    if (window.audioManager) window.audioManager.playSE('click');
+    if (window.audioManager) {
+      const pitchMap = { easy: 0.95, normal: 1.05, hard: 1.18 };
+      const pitch = pitchMap[selectedDifficulty] || 1.0;
+      window.audioManager.playSE('flick_snap', { playbackRate: pitch });
+    }
   });
 });
 
@@ -66,22 +74,24 @@ const pvpContent = document.getElementById('pvp-content');
 
 if (modePve && modePvp) {
   modePve.addEventListener('click', () => {
+    if (selectedMode === 'pve') return;
     modePve.classList.add('active');
     modePvp.classList.remove('active');
     selectedMode = 'pve';
     if (pveContent) pveContent.style.display = 'block';
     if (pvpContent) pvpContent.style.display = 'none';
-    if (window.audioManager) window.audioManager.playSE('click');
+    if (window.audioManager) window.audioManager.playSE('turn_end', { playbackRate: 0.95 });
   });
 
   modePvp.addEventListener('click', () => {
+    if (selectedMode === 'pvp') return;
     modePvp.classList.add('active');
     modePve.classList.remove('active');
     selectedMode = 'pvp';
     if (pveContent) pveContent.style.display = 'none';
     if (pvpContent) pvpContent.style.display = 'block';
     socket.emit('get_rooms');
-    if (window.audioManager) window.audioManager.playSE('click');
+    if (window.audioManager) window.audioManager.playSE('turn_end', { playbackRate: 1.05 });
   });
 }
 
@@ -201,7 +211,14 @@ function renderDeckSelector() {
   select.addEventListener('change', (e) => {
     activeSlot = parseInt(e.target.value);
     localStorage.setItem('dcg_active_slot', activeSlot);
-    if (window.audioManager) window.audioManager.playSE('click');
+    if (window.audioManager) window.audioManager.playSE('draw');
+  });
+}
+
+const btnGotoDeck = document.getElementById('btn-goto-deck-builder');
+if (btnGotoDeck) {
+  btnGotoDeck.addEventListener('click', () => {
+    if (window.audioManager) window.audioManager.playSE('select');
   });
 }
 
@@ -224,6 +241,7 @@ function showStatus(text, allowCancel = false) {
       isWaitingGameStart = false;
       pendingDeckSubmission = null;
       hideStatus();
+      if (window.audioManager) window.audioManager.playSE('turn_end', { playbackRate: 0.85 });
     };
   }
 }
@@ -315,6 +333,7 @@ if (btnCreateRoom) {
     isWaitingGameStart = true;
     pendingDeckSubmission = { deckCardIds, shieldIds, mode: 'multi' };
 
+    if (window.audioManager) window.audioManager.playSE('sword_draw');
     showStatus('対戦相手の入室を待機中...', true);
     socket.emit('create_room', {
       playerName,
@@ -326,7 +345,10 @@ if (btnCreateRoom) {
 }
 
 // ルーム更新ボタン
-document.getElementById('btn-refresh')?.addEventListener('click', () => socket.emit('get_rooms'));
+document.getElementById('btn-refresh')?.addEventListener('click', () => {
+  if (window.audioManager) window.audioManager.playSE('flick_snap');
+  socket.emit('get_rooms');
+});
 
 // ルーム一覧の描画
 socket.on('room_list', (roomItems) => {
@@ -386,6 +408,7 @@ socket.on('room_list', (roomItems) => {
       isWaitingGameStart = true;
       pendingDeckSubmission = { deckCardIds, shieldIds, mode: 'multi' };
 
+      if (window.audioManager) window.audioManager.playSE('sword_draw');
       socket.emit('join_room', { roomId: room.roomId, playerName, avatar: selectedAvatar });
       showStatus('ルームに参加中...');
     });
