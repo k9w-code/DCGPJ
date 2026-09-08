@@ -584,7 +584,7 @@ window.showCardDetail = function(card) {
         const tokenSection = document.createElement('div');
         tokenSection.className = 'cd-token-section';
         tokenSection.innerHTML = `
-          <div class="cd-token-label">\ud83d\udce6 \u53ec\u559a\u30c8\u30fc\u30af\u30f3 (SUMMON TOKEN)</div>
+          <div class="cd-token-label">召喚トークン (SUMMON TOKEN)</div>
           <div class="cd-token-list">
             ${tokenCards.map(tc => `
               <div class="cd-token-item" data-token-id="${tc.id}">

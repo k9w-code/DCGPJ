@@ -17,10 +17,12 @@
       });
     }
   </script>
-  <link rel="stylesheet" href="/css/style.css?v=v223_complete_audio">
-  <link rel="stylesheet" href="/css/battle-premium.css?v=v223_complete_audio">
-  <link rel="stylesheet" href="/css/lobby-premium.css?v=v223_complete_audio">
-  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css?v=v234_audio_and_detail_overhaul">
+  <link rel="stylesheet" href="/css/battle-premium.css?v=v234_audio_and_detail_overhaul">
+  <link rel="stylesheet" href="/css/lobby-premium.css?v=v234_audio_and_detail_overhaul">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Shippori+Mincho:wght@500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
   <!-- プレミアム背景エフェクト -->
@@ -277,8 +279,14 @@
           <div class="cd-rarity" id="cd-rarity">Common</div>
         </div>
         <div class="cd-stats" id="cd-stats-container">
-          <div class="cd-stat"><span id="cd-attack" class="atk-box">0</span></div>
-          <div class="cd-stat"><span id="cd-hp" class="hp-box">0</span></div>
+          <div class="cd-jewel-stat cd-jewel-atk" title="攻撃力">
+            <svg class="cd-stat-decor" viewBox="0 0 24 24"><path d="M21.92 2.08a1 1 0 0 0-1.42 0l-5.59 5.58a5 5 0 0 0-7.07 0 1 1 0 0 0 0 1.42L11 12.24l-6.83 6.83a1 1 0 0 0 0 1.41l1.42 1.42a1 1 0 0 0 1.41 0L13.84 15l3.16 3.17a1 1 0 0 0 1.41 0 5 5 0 0 0 0-7.07l5.58-5.59a1 1 0 0 0 0-1.43z" fill="currentColor"/></svg>
+            <span id="cd-attack">0</span>
+          </div>
+          <div class="cd-jewel-stat cd-jewel-hp" title="体力">
+            <svg class="cd-stat-decor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg>
+            <span id="cd-hp">0</span>
+          </div>
         </div>
         <div class="cd-text-box">
           <div class="cd-effect-text" id="cd-text"></div>
@@ -306,7 +314,7 @@
   <div class="overlay compare-modal-overlay" id="compare-modal" style="display: none; z-index: 99999999; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(10, 15, 26, 0.85); backdrop-filter: blur(8px); align-items: center; justify-content: center;">
     <div class="compare-modal-content" style="background: rgba(15, 23, 42, 0.95); border: 1px solid #fbbf24; border-radius: 12px; padding: 20px; width: 90%; max-width: 700px; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(251,191,36,0.3); padding-bottom: 10px; margin-bottom: 15px;">
-        <h2 style="margin: 0; font-size: 18px; color: #fbbf24;">🔍 スロットデッキ比較</h2>
+        <h2 style="margin: 0; font-size: 18px; color: #fbbf24;">スロットデッキ比較</h2>
         <button id="btn-close-compare" class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;">閉じる ✖</button>
       </div>
       <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
@@ -318,9 +326,9 @@
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/audio-manager.js?v=v223_complete_audio"></script>
-  <script src="/js/game-renderer.js?v=v199_COMMERCIAL_GRADE_3D_BOARD_GRID_TEXTURE"></script>
-  <script src="/js/deck-builder.js?v=v199_COMMERCIAL_GRADE_3D_BOARD_GRID_TEXTURE"></script>
+  <script src="/js/audio-manager.js?v=v234_audio_and_detail_overhaul"></script>
+  <script src="/js/game-renderer.js?v=v234_audio_and_detail_overhaul"></script>
+  <script src="/js/deck-builder.js?v=v234_audio_and_detail_overhaul"></script>
   <script>
     function resizeGame() {
       const container = document.getElementById('game-container');

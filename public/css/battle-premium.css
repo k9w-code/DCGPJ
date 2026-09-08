@@ -6962,32 +6962,6 @@ html body #card-detail-overlay #btn-close-detail::after,
   box-shadow: 0 4px 14px rgba(0,0,0,0.4) !important;
 }
 
-/* 🔍 マリガンカード詳細ボタン */
-.mulligan-detail-btn {
-  position: absolute !important;
-  top: 6px !important;
-  right: 6px !important;
-  width: 28px !important;
-  height: 28px !important;
-  border-radius: 50% !important;
-  background: rgba(15, 23, 42, 0.9) !important;
-  border: 1.5px solid rgba(251, 191, 36, 0.8) !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 0 8px rgba(251, 191, 36, 0.4) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-size: 13px !important;
-  color: #fef08a !important;
-  cursor: pointer !important;
-  z-index: 20 !important;
-  transition: transform 0.2s ease, background 0.2s ease !important;
-}
-
-.mulligan-detail-btn:hover {
-  transform: scale(1.2) !important;
-  background: rgba(30, 41, 59, 0.98) !important;
-  border-color: #ffffff !important;
-}
 
 /* ==========================================================================
    開戦前 タップゲート（AudioContext アンロック ＆ BGM確実起動）
@@ -7024,16 +6998,6 @@ html body #card-detail-overlay #btn-close-detail::after,
   text-align: center !important;
 }
 
-.commence-crest {
-  font-size: 44px !important;
-  filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.6)) !important;
-  animation: crestBounce 2s infinite ease-in-out !important;
-}
-
-@keyframes crestBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
 
 .commence-badge {
   font-family: 'Cinzel', serif !important;

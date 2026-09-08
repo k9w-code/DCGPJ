@@ -719,7 +719,6 @@ function startBattleIntroSequence(data) {
       gate.className = 'battle-commence-gate';
       gate.innerHTML = `
         <div class="commence-inner">
-          <div class="commence-crest">⚔️</div>
           <div class="commence-badge">BATTLE READY</div>
           <h1 class="commence-title">DUEL START</h1>
           <div class="commence-prompt">
@@ -1723,7 +1722,6 @@ function showMulligan(hand, onSubmit) {
         z-index: 2;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       ">${card.name || ''}</div>
-      <div class="mulligan-detail-btn" title="カード詳細を表示">🔍</div>
       <div class="mulligan-change-ribbon" title="クリックで選択解除">
         <span class="ribbon-text">CHANGE</span>
         <span class="ribbon-sub">交換対象</span>
@@ -1740,30 +1738,9 @@ function showMulligan(hand, onSubmit) {
         e.preventDefault();
         return;
       }
-      // 🔍詳細ボタンが押された場合は詳細を開く
-      if (e.target.closest('.mulligan-detail-btn')) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (typeof window.showCardDetail === 'function') {
-          window.showCardDetail(card);
-        }
-        return;
-      }
       e.preventDefault();
       toggleMulliganIndex(index);
     });
-
-    // 🔍詳細ボタン直接ハンドラ
-    const detailBtn = el.querySelector('.mulligan-detail-btn');
-    if (detailBtn) {
-      detailBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (typeof window.showCardDetail === 'function') {
-          window.showCardDetail(card);
-        }
-      });
-    }
 
     // CHANGEリボンクリック: 交換選択をトグル
     const ribbon = el.querySelector('.mulligan-change-ribbon');

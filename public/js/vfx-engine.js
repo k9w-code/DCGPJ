@@ -1047,7 +1047,7 @@ function triggerVsCutin() {
         text-align: center !important;
         animation: battleStartPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
       ">
-        ⚔️ BATTLE START ⚔️
+        BATTLE START
       </div>
     `;
 

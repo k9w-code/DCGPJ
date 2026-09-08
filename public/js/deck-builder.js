@@ -335,7 +335,7 @@ function initUI() {
       
       const originalText = btnReload.textContent;
       btnReload.disabled = true;
-      btnReload.textContent = '🔄 更新中...';
+      btnReload.textContent = '更新中...';
       
       try {
         const res = await fetch('/api/reload', { method: 'POST' });
@@ -381,7 +381,7 @@ function initUI() {
         const code = btoa(unescape(encodeURIComponent(jsonStr)));
         
         navigator.clipboard.writeText(code).then(() => {
-          alert('🔑 デッキコードをクリップボードにコピーしました！\nこのコードをSNS等で共有したり、インポートして使ってください。');
+          alert('デッキコードをクリップボードにコピーしました！\nこのコードをSNS等で共有したり、インポートして使ってください。');
         }).catch(err => {
           prompt('以下のデッキコードをコピーしてください：', code);
         });
@@ -432,7 +432,7 @@ function initUI() {
           }
 
           if (colorsUsed.size > 2) {
-            alert(`⚠️ インポートに失敗しました。デッキに含まれる神族の属性（色）は、中立を除き最大2色までである必要があります。（検出された属性: ${Array.from(colorsUsed).join(', ')}）`);
+            alert(`インポートに失敗しました。デッキに含まれる神族の属性（色）は、中立を除き最大2色までである必要があります。（検出された属性: ${Array.from(colorsUsed).join(', ')}）`);
             return;
           }
 
@@ -449,7 +449,7 @@ function initUI() {
           updateSubmitButton();
           if (typeof renderDeckAnalysis === 'function') renderDeckAnalysis();
           
-          alert('🔌 デッキコードからデッキを正常に読み込みました！');
+          alert('デッキコードからデッキを正常に読み込みました！');
           if (window.audioManager) window.audioManager.playSE('levelUp');
         } else {
           alert('無効なデッキコード形式です。');
@@ -958,7 +958,7 @@ function showPreview(type, data) {
       if (tokenCards.length > 0) {
         tokenHtml = `
           <div class="preview-token-section" style="margin-top: 10px; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 6px;">
-            <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 6px;">📦 召喚トークン</div>
+            <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 6px;">召喚トークン</div>
             <div class="token-list">
               ${tokenCards.map(tc => `
                 <div class="token-item" style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 4px; cursor: pointer;" onclick="var tc = (window.allCards || []).find(function(c){ return c.id === '${tc.id}'; }); if (tc) window.showCardDetail(tc);">
@@ -1641,7 +1641,7 @@ function openCompareModal() {
 
     html += `</table>`;
 
-    html += `<div style="margin-top:15px; font-weight:600; color:#fbbf24;">🛡️ シールド比較</div>`;
+    html += `<div style="margin-top:15px; font-weight:600; color:#fbbf24;">シールド比較</div>`;
     html += `<div style="font-size:12px; margin-top:4px;">`;
     html += `<div>[現在]: ${selectedShields.map(id => (allShields.find(s => s.id === id) || {}).name || id).join(', ') || '未選択'}</div>`;
     html += `<div>[対象]: ${otherShields.map(id => (allShields.find(s => s.id === id) || {}).name || id).join(', ') || '未選択'}</div>`;
@@ -1728,7 +1728,7 @@ function exportDeckAsImage() {
   ctx.fillStyle = '#fbbf24';
   ctx.font = 'bold 18px sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText('🛡️ 選択シールド', 30, shieldY);
+  ctx.fillText('選択シールド', 30, shieldY);
 
   selectedShields.forEach((id, idx) => {
     const shield = allShields.find(s => s.id === id);
@@ -1760,5 +1760,5 @@ function exportDeckAsImage() {
   link.click();
 
   if (window.audioManager) window.audioManager.playSE('levelUp');
-  alert('📸 デッキのPNG画像を出力してダウンロードしました！');
+  alert('デッキのPNG画像を出力してダウンロードしました！');
 }
