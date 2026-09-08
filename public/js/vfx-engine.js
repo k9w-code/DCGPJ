@@ -50,6 +50,9 @@ window.VFX = (function() {
   // ========== ダメージ数値ポップアップ ==========
   function spawnDamageNumber(el, amount, type) {
     if (!el || amount <= 0) return;
+    if (type === 'heal' && window.audioManager) {
+      window.audioManager.playSE('heal');
+    }
     const layer = document.getElementById('vfx-layer');
     if (!layer) return;
 
@@ -624,6 +627,9 @@ window.VFX = (function() {
   }
 
 function triggerVsCutin() {
+    if (window.audioManager) {
+      window.audioManager.playSE('sword_draw');
+    }
     let vsOverlay = document.getElementById('vs-cutin-overlay');
     if (vsOverlay) vsOverlay.remove();
 

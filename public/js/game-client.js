@@ -1359,6 +1359,7 @@ function initInteractions() {
     endBtn.onclick = () => {
       const state = window.gameState;
       if (!state || state.currentPlayerId !== state.me.id) return;
+      if (window.audioManager) window.audioManager.playSE('turn_end');
       socket.emit('game_action', { action: 'end_turn' });
     };
   }
@@ -1540,8 +1541,74 @@ function showMulligan(hand, onSubmit) {
   container.innerHTML = '';
   
   const selectedIndices = new Set();
+  window._mulliganHand = hand;
+  window._mulliganSelectedIndices = selectedIndices;
+
+  const toggleMulliganIndex = (idx) => {
+    if (selectedIndices.has(idx)) {
+      selectedIndices.delete(idx);
+    } else {
+      selectedIndices.add(idx);
+    }
+    if (window.audioManager) window.audioManager.playSE('mulligan_select');
+    updateAllMulliganUI();
+  };
+  window._toggleMulliganIndex = toggleMulliganIndex;
+  window._isMulliganIndexSelected = (idx) => selectedIndices.has(idx);
+
+  function updateAllMulliganUI() {
+    const slots = container.querySelectorAll('.mulligan-card-slot');
+    slots.forEach((slotEl) => {
+      const idx = parseInt(slotEl.dataset.index, 10);
+      const isSelected = selectedIndices.has(idx);
+      slotEl.classList.toggle('selected-for-change', isSelected);
+      const cardNode = slotEl.querySelector('.mulligan-card');
+      if (cardNode) {
+        cardNode.classList.toggle('selected-for-change', isSelected);
+        cardNode.classList.toggle('selected-for-redraw', isSelected);
+      }
+      const btn = slotEl.querySelector('.mulligan-card-toggle-btn');
+      if (btn) {
+        if (isSelected) {
+          btn.classList.add('is-active');
+          btn.innerHTML = `
+            <svg class="mulligan-btn-svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span class="toggle-label">KEEPに戻す</span>
+          `;
+        } else {
+          btn.classList.remove('is-active');
+          btn.innerHTML = `
+            <svg class="mulligan-btn-svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+            </svg>
+            <span class="toggle-label">CHANGE</span>
+          `;
+        }
+      }
+    });
+
+    const confirmBtnText = document.querySelector('#btn-mulligan-confirm .btn-text');
+    if (confirmBtnText) {
+      if (selectedIndices.size > 0) {
+        confirmBtnText.innerHTML = `REDRAW (${selectedIndices.size}枚)<span class="btn-sub">選択したカードを交換</span>`;
+      } else {
+        confirmBtnText.innerHTML = `REDRAW<span class="btn-sub">選択したカードを交換</span>`;
+      }
+    }
+
+    if (typeof window._syncMulliganModalButton === 'function') {
+      window._syncMulliganModalButton();
+    }
+  }
+  window._updateMulliganUI = updateAllMulliganUI;
   
   hand.forEach((card, index) => {
+    const slot = document.createElement('div');
+    slot.className = 'mulligan-card-slot';
+    slot.dataset.index = String(index);
+
     const el = document.createElement('div');
     el.className = 'mulligan-card';
     const bgImage = (typeof window.getCardImagePath === 'function') 
@@ -1594,63 +1661,45 @@ function showMulligan(hand, onSubmit) {
         z-index: 2;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       ">${card.name || ''}</div>
-      <div class="mulligan-detail-btn" title="カード詳細を表示">🔍</div>
-      <div class="mulligan-redraw-badge">
-        <span style="font-size: 16px;">↺</span>
-        <span>交換</span>
+      <div class="mulligan-change-ribbon" title="クリックで選択解除">
+        <span class="ribbon-text">CHANGE</span>
+        <span class="ribbon-sub">交換対象</span>
       </div>
     `;
     
-    // カードをクリックした時の選択トグル処理
+    // カード本体クリック: 他画面と同じ専用カード詳細画面（card-detail-modal）を表示
     el.addEventListener('click', (e) => {
       e.preventDefault();
-      if (selectedIndices.has(index)) {
-        selectedIndices.delete(index);
-        el.classList.remove('selected-for-redraw');
-        if (window.audioManager) window.audioManager.playSE('mulligan_select');
-      } else {
-        selectedIndices.add(index);
-        el.classList.add('selected-for-redraw');
-        if (window.audioManager) window.audioManager.playSE('mulligan_select');
-      }
-      // ボタンテキストを動的に更新
-      const confirmBtnText = document.querySelector('#btn-mulligan-confirm .btn-text');
-      if (confirmBtnText) {
-        if (selectedIndices.size > 0) {
-          confirmBtnText.innerHTML = `REDRAW (${selectedIndices.size}枚)<span class="btn-sub">選択したカードを交換</span>`;
-        } else {
-          confirmBtnText.innerHTML = `REDRAW<span class="btn-sub">選択したカードを交換</span>`;
-        }
+      if (typeof window.showCardDetail === 'function') {
+        window.showCardDetail(card);
       }
     });
 
+    // CHANGEリボンクリック: 交換選択をトグル
+    const ribbon = el.querySelector('.mulligan-change-ribbon');
+    if (ribbon) {
+      ribbon.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleMulliganIndex(index);
+      });
+    }
+
     // ホバーエフェクト
     el.addEventListener('mouseenter', () => {
-      el.style.transform = 'translateY(-16px) scale(1.06)';
+      el.style.transform = 'translateY(-14px) scale(1.06)';
       el.style.boxShadow = `0 12px 30px rgba(0,0,0,0.7), 0 0 20px ${borderColor}44`;
       el.style.zIndex = '10';
     });
     el.addEventListener('mouseleave', () => {
       el.style.transform = '';
       el.style.zIndex = '';
-      if (!el.classList.contains('selected-for-redraw')) {
+      if (!slot.classList.contains('selected-for-change')) {
         el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)';
       }
     });
 
-    // 🔍 詳細ボタンのクリック
-    const detailBtn = el.querySelector('.mulligan-detail-btn');
-    if (detailBtn) {
-      detailBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (typeof window.showCardDetail === 'function') {
-          window.showCardDetail(card);
-        }
-      });
-    }
-
-    // 右クリックで詳細を表示
+    // 右クリックで詳細を表示（全画面一貫）
     el.addEventListener('contextmenu', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -1671,7 +1720,25 @@ function showMulligan(hand, onSubmit) {
     el.addEventListener('touchend', () => clearTimeout(touchTimer));
     el.addEventListener('touchmove', () => clearTimeout(touchTimer));
 
-    container.appendChild(el);
+    // 各カード直下のシャドバ風 CHANGE トグルボタン
+    const toggleBtn = document.createElement('button');
+    toggleBtn.type = 'button';
+    toggleBtn.className = 'mulligan-card-toggle-btn';
+    toggleBtn.innerHTML = `
+      <svg class="mulligan-btn-svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+      </svg>
+      <span class="toggle-label">CHANGE</span>
+    `;
+    toggleBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleMulliganIndex(index);
+    });
+
+    slot.appendChild(el);
+    slot.appendChild(toggleBtn);
+    container.appendChild(slot);
   });
   overlay.style.display = 'flex';
 
@@ -1684,6 +1751,8 @@ function showMulligan(hand, onSubmit) {
     newBtn.addEventListener('click', (e) => {
       e.preventDefault();
       overlay.style.cssText = 'display: none !important; opacity: 0 !important; pointer-events: none !important;';
+      const detailOverlay = document.getElementById('card-detail-overlay');
+      if (detailOverlay) detailOverlay.style.display = 'none';
       if (window.audioManager) window.audioManager.playSE('mulligan_swap');
       
       // マリガン決定直後に BATTLE START 演出を発火
