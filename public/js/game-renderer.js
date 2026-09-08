@@ -433,21 +433,23 @@ window.showCardDetail = function(card) {
 
   if (tribeIcon && tribeText) {
     const parentTag = tribeIcon.parentElement;
-    // ユーザー要望: テキストは不要、アイコンのみ表示
-    tribeText.style.display = 'none';
+    const COLOR_NAMES_JP = { red: '炎属性', blue: '水属性', green: '風属性', white: '光属性', black: '闇属性', neutral: '無属性' };
 
     if (isShield) {
       if (parentTag && parentTag.classList.contains('cd-tribe-tag')) {
         parentTag.style.display = 'none';
       }
       tribeIcon.style.display = 'none';
+      tribeText.style.display = 'none';
     } else {
       if (parentTag && parentTag.classList.contains('cd-tribe-tag')) {
-        parentTag.style.display = 'flex';
+        parentTag.style.display = 'inline-flex';
       }
-      tribeIcon.style.display = 'block';
+      tribeIcon.style.display = 'inline-block';
       const mainColor = firstColor;
       tribeIcon.style.backgroundImage = `url('/assets/images/icon/divine/${mainColor}.png')`;
+      tribeText.style.display = 'inline-block';
+      tribeText.textContent = COLOR_NAMES_JP[mainColor] || '無属性';
     }
   }
 
@@ -487,12 +489,16 @@ window.showCardDetail = function(card) {
                     (!card.keywords || card.keywords.length === 0) &&
                     (!card.skill);
 
+  // フレーバーテキスト表示
   const flavorEl = document.getElementById('cd-flavor');
+  const flavorTextContent = card.flavorText || card.description || (card.skill ? card.skill.description : '');
   if (flavorEl) {
-    if (isVanilla) {
-      flavorEl.classList.add('is-vanilla');
+    if (flavorTextContent && flavorTextContent.trim()) {
+      flavorEl.style.display = 'block';
+      const cleanFlavor = flavorTextContent.trim().replace(/^[「『]|[」』]$/g, '');
+      flavorEl.textContent = `「${cleanFlavor}」`;
     } else {
-      flavorEl.classList.remove('is-vanilla');
+      flavorEl.style.display = 'none';
     }
   }
 
@@ -508,7 +514,6 @@ window.showCardDetail = function(card) {
     if (card.text) {
       mainText = `<div class="cd-abilities-list"><div class="ability-item" style="border:none; background:transparent; padding:0;">${(card.text || '').replace(/\\n/g, '<br>')}</div></div>`;
     } else if (card.abilities && card.abilities.length > 0) {
-      // \u30b7\u30fc\u30eb\u30c9\u3084\u30a2\u30d3\u30ea\u30c6\u30a3\u914d\u5217\u3092\u6301\u305f\u306a\u3044\u30ab\u30fc\u30c9
       if (card.skill) {
         mainText = card.skill.text || '';
       } else {
@@ -516,48 +521,56 @@ window.showCardDetail = function(card) {
       }
     }
 
-    let kwHTML = '';
     const currentKws = [...(card.keywords || [])];
     if (card.barrierActive && !currentKws.includes('barrier')) currentKws.push('barrier');
     if (card.stealthActive && !currentKws.includes('stealth')) currentKws.push('stealth');
     if (card.endureActive && !currentKws.includes('endure')) currentKws.push('endure');
     
-    if (currentKws.length > 0) {
-      const COLOR_JP = { red: '炎', blue: '水', green: '風', white: '光', black: '闇', neutral: '無' };
-      kwHTML = '<div class="cd-keywords-container" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">';
-      currentKws.forEach(fullKw => {
-        const parts = fullKw.split(':');
-        const baseKw = parts[0];
-        const rawVal = parts[1];
-        const m = (window.keywordMap && window.keywordMap[baseKw]) || { name: baseKw, description: '' };
-        let label = `【${m.name || baseKw}】`;
-        if (rawVal) {
-          const valJp = COLOR_JP[rawVal.toLowerCase()] || rawVal;
-          label = `【${m.name || baseKw}:${valJp}】`;
-        }
-        kwHTML += `
-          <div class="cd-keyword-tooltip-trigger" style="font-weight:bold; color:#fbbf24; background:rgba(251,191,36,0.15); border:1px solid rgba(251,191,36,0.4); border-radius:4px; padding:2px 8px; font-size:13px; cursor:help; position:relative;">
-            ${label}
-            <span class="cd-keyword-tooltip-box">${m.description || ''}</span>
+    // キーワード用語解説セクション（公式ルール説明文を展開）
+    const glossaryEl = document.getElementById('cd-keywords-glossary');
+    if (glossaryEl) {
+      if (currentKws.length > 0) {
+        const COLOR_JP = { red: '炎', blue: '水', green: '風', white: '光', black: '闇', neutral: '無' };
+        glossaryEl.style.display = 'flex';
+        glossaryEl.innerHTML = `
+          <div class="cd-glossary-header">キーワード能力解説</div>
+          <div class="cd-glossary-list">
+            ${currentKws.map(fullKw => {
+              const parts = fullKw.split(':');
+              const baseKw = parts[0];
+              const rawVal = parts[1];
+              const m = (window.keywordMap && window.keywordMap[baseKw]) || { name: baseKw, description: '' };
+              let label = `【${m.name || baseKw}】`;
+              if (rawVal) {
+                const valJp = COLOR_JP[rawVal.toLowerCase()] || rawVal;
+                label = `【${m.name || baseKw}:${valJp}】`;
+              }
+              const desc = m.description || '';
+              return `
+                <div class="cd-glossary-item">
+                  <span class="cd-glossary-label">${label}</span>
+                  <span class="cd-glossary-desc">${desc}</span>
+                </div>
+              `;
+            }).join('')}
           </div>
         `;
-      });
-      kwHTML += '</div>';
+      } else {
+        glossaryEl.style.display = 'none';
+        glossaryEl.innerHTML = '';
+      }
     }
-
-    const flavorTextContent = card.flavorText || card.description || (card.skill ? card.skill.description : '');
-    safeSetText('cd-flavor', flavorTextContent);
     
-    // \u4fee\u6b63\u5c65\u6b74\uff08Modifiers\uff09\u306e\u8868\u793a
+    // 修正履歴（Modifiers）の表示
     let modHTML = '';
     if (card.modifiers && card.modifiers.length > 0) {
       modHTML += `
         <div class="cd-modifiers-container">
-          <div class="cd-modifiers-title">\u30b9\u30c6\u30fc\u30bf\u30b9\u4fee\u6b63\u5c65\u6b74 (Modifications)</div>
+          <div class="cd-modifiers-title">ステータス修正履歴 (Modifications)</div>
           ${card.modifiers.map(m => {
             const valChar = m.value > 0 ? '+' : '';
             const valClass = m.value > 0 ? 'plus' : 'minus';
-            const typeLabel = m.type === 'atk' ? '\u653b\u6483\u529b' : 'HP';
+            const typeLabel = m.type === 'atk' ? '攻撃力' : 'HP';
             return `
               <div class="modifier-item">
                 <span class="modifier-source">${m.source}</span>
@@ -572,9 +585,13 @@ window.showCardDetail = function(card) {
     if (mainText && !mainText.includes('<div')) {
       mainText = mainText.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
     }
-    textEl.innerHTML = mainText + kwHTML + modHTML;
+    // キーワード発光ハイライト
+    if (mainText) {
+      mainText = mainText.replace(/【(.*?)】/g, '<span class="cd-kw-highlight">【$1】</span>');
+    }
+    textEl.innerHTML = mainText + modHTML;
 
-    // --- \u53ec\u559a\u30c8\u30fc\u30af\u30f3\u30bb\u30af\u30b7\u30e7\u30f3\u306e\u8ffd\u52a0 ---
+    // --- 召喚トークンセクションの追加 ---
     const tokenAbilities = (card.abilities || []).filter(a => a.effect === 'summon_token');
     if (tokenAbilities.length > 0) {
       const tokenIds = [...new Set(tokenAbilities.map(a => a.tokenId || a.value))];
@@ -626,6 +643,19 @@ window.showCardDetail = function(card) {
       overlay.style.display = 'none';
     }
   };
+
+  // ESCキーで閉じるグローバルリスナー（初回のみ登録）
+  if (!window._cardDetailEscListenerAdded) {
+    window._cardDetailEscListenerAdded = true;
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const ov = document.getElementById('card-detail-overlay');
+        if (ov && ov.style.display === 'flex') {
+          ov.style.display = 'none';
+        }
+      }
+    });
+  }
 };
 
 window.attachCardDetailEvent = function attachCardDetailEvent(el, card) {

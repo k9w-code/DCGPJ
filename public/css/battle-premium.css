@@ -6607,17 +6607,17 @@ html body .card-detail-overlay .card-detail-modal,
   left: auto !important;
   top: auto !important;
   transform: none !important;
-  width: min(880px, 94vw) !important;
-  max-height: min(540px, 92vh) !important;
+  width: min(920px, 94vw) !important;
+  max-height: min(560px, 92vh) !important;
   height: auto !important;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 100%) !important;
-  border: 2px solid rgba(251, 191, 36, 0.5) !important;
-  border-radius: 18px !important;
-  box-shadow: 0 0 60px rgba(0,0,0,0.95), 0 0 35px rgba(251, 191, 36, 0.25), inset 0 0 20px rgba(0,0,0,0.7) !important;
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(10, 15, 29, 0.98) 100%) !important;
+  border: 1.5px solid rgba(251, 191, 36, 0.55) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.95), 0 0 40px rgba(251, 191, 36, 0.18), inset 0 0 1px rgba(255, 255, 255, 0.2) !important;
   display: flex !important;
   flex-direction: row !important;
   align-items: stretch !important;
-  padding: 20px 24px !important;
+  padding: 24px !important;
   gap: 24px !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
@@ -6625,29 +6625,29 @@ html body .card-detail-overlay .card-detail-modal,
 }
 
 @keyframes cdModalScaleIn {
-  from { opacity: 0; transform: scale(0.92); }
+  from { opacity: 0; transform: scale(0.94); }
   to { opacity: 1; transform: scale(1); }
 }
 
-/* 1. イラストエリア (3:4 比率大迫力表示) */
+/* 1. イラストエリア (3:4 比率大迫力表示 ＆ 高級額縁) */
 html body #card-detail-overlay .cd-image-area,
 html body #card-detail-overlay #cd-image,
 .card-detail-modal .cd-image-area,
 .card-detail-modal #cd-image,
 #cd-image {
-  flex: 0 0 clamp(160px, 26vw, 300px) !important;
-  width: clamp(160px, 26vw, 300px) !important;
-  min-width: clamp(160px, 26vw, 300px) !important;
-  max-height: min(440px, 80vh) !important;
+  flex: 0 0 clamp(180px, 28vw, 320px) !important;
+  width: clamp(180px, 28vw, 320px) !important;
+  min-width: clamp(180px, 28vw, 320px) !important;
+  max-height: 100% !important;
   height: auto !important;
   aspect-ratio: 3/4 !important;
-  border-radius: 12px !important;
-  border: 2px solid rgba(255, 255, 255, 0.4) !important;
-  box-shadow: 0 10px 28px rgba(0,0,0,0.85) !important;
+  border-radius: 14px !important;
+  border: 2px solid rgba(251, 191, 36, 0.4) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.9), 0 0 20px rgba(251, 191, 36, 0.12) !important;
   background-size: cover !important;
   background-position: center top !important;
   background-repeat: no-repeat !important;
-  background-color: #0d1326 !important;
+  background-color: #0b0f19 !important;
   box-sizing: border-box !important;
   align-self: center !important;
 }
@@ -6660,70 +6660,55 @@ html body #card-detail-overlay #cd-image,
   display: flex !important;
   flex-direction: column !important;
   justify-content: flex-start !important;
-  gap: 10px !important;
+  gap: 12px !important;
   overflow-y: auto !important;
-  padding-right: 6px !important;
+  padding-right: 4px !important;
   box-sizing: border-box !important;
 }
 
-/* 3. 閉じるボタン */
+/* 3. 閉じるボタン（ガラスモーフィズム ＆ SVGクロス） */
 html body #card-detail-overlay .cd-close-btn,
 html body #card-detail-overlay #btn-close-detail,
 .card-detail-modal .cd-close-btn,
 #btn-close-detail {
   position: absolute !important;
-  top: 12px !important;
-  right: 12px !important;
+  top: 16px !important;
+  right: 16px !important;
   width: 36px !important;
   height: 36px !important;
   border-radius: 50% !important;
-  background: rgba(239, 68, 68, 0.95) !important;
-  border: 2px solid #ffffff !important;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.6), 0 0 12px rgba(239, 68, 68, 0.5) !important;
+  background: rgba(30, 41, 59, 0.85) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
   cursor: pointer !important;
   z-index: 100 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  transition: transform 0.2s, background 0.2s !important;
+  padding: 0 !important;
+  color: #cbd5e1 !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
 }
+
 html body #card-detail-overlay .cd-close-btn:hover,
 html body #card-detail-overlay #btn-close-detail:hover,
 .card-detail-modal .cd-close-btn:hover,
 #btn-close-detail:hover {
-  transform: scale(1.12) rotate(90deg) !important;
-  background: #dc2626 !important;
+  transform: scale(1.1) rotate(90deg) !important;
+  background: rgba(220, 38, 38, 0.9) !important;
+  border-color: #f87171 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 16px rgba(220, 38, 38, 0.6) !important;
 }
-html body #card-detail-overlay .cd-close-btn::before,
-html body #card-detail-overlay .cd-close-btn::after,
-html body #card-detail-overlay #btn-close-detail::before,
-html body #card-detail-overlay #btn-close-detail::after,
-.card-detail-modal .cd-close-btn::before,
-.card-detail-modal .cd-close-btn::after,
-#btn-close-detail::before,
-#btn-close-detail::after {
-  content: "" !important;
-  position: absolute !important;
-  width: 16px !important;
-  height: 2.5px !important;
-  background: #ffffff !important;
-  border-radius: 2px !important;
-}
-html body #card-detail-overlay .cd-close-btn::before,
-html body #card-detail-overlay #btn-close-detail::before,
-.card-detail-modal .cd-close-btn::before,
-#btn-close-detail::before { transform: rotate(45deg) !important; }
-html body #card-detail-overlay .cd-close-btn::after,
-html body #card-detail-overlay #btn-close-detail::after,
-.card-detail-modal .cd-close-btn::after,
-#btn-close-detail::after { transform: rotate(-45deg) !important; }
 
 /* 4. ヘッダー部（コスト ＆ カード名） */
 .card-detail-modal .cd-header {
   display: flex !important;
   align-items: center !important;
-  gap: 12px !important;
-  padding-bottom: 6px !important;
+  gap: 14px !important;
+  padding-bottom: 8px !important;
   margin: 0 !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
   flex-shrink: 0 !important;
@@ -6731,33 +6716,33 @@ html body #card-detail-overlay #btn-close-detail::after,
 
 .card-detail-modal .cd-cost,
 #cd-cost {
-  width: 38px !important;
-  height: 38px !important;
-  min-width: 38px !important;
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
   border-radius: 50% !important;
-  background: radial-gradient(circle at 35% 35%, #3b82f6, #1d4ed8) !important;
-  border: 2px solid rgba(255, 255, 255, 0.8) !important;
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.6) !important;
+  background: radial-gradient(circle at 35% 30%, #60a5fa 0%, #2563eb 45%, #1e3a8a 100%) !important;
+  border: 2px solid rgba(251, 191, 36, 0.9) !important;
+  box-shadow: 0 0 14px rgba(59, 130, 246, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.5), inset 0 -2px 6px rgba(0, 0, 0, 0.6) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   font-family: 'Cinzel', serif !important;
-  font-size: 20px !important;
+  font-size: 22px !important;
   font-weight: 900 !important;
   color: #ffffff !important;
-  text-shadow: 0 1px 3px #000 !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9) !important;
   flex-shrink: 0 !important;
 }
 
 .card-detail-modal .cd-name,
 #cd-name {
   font-family: 'Cinzel', 'Shippori Mincho', serif !important;
-  font-size: 20px !important;
+  font-size: 22px !important;
   font-weight: 800 !important;
   color: #ffffff !important;
-  letter-spacing: 1px !important;
+  letter-spacing: 1.2px !important;
   margin: 0 !important;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.8) !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8) !important;
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
@@ -6774,16 +6759,14 @@ html body #card-detail-overlay #btn-close-detail::after,
 }
 
 .card-detail-modal .cd-type-tag,
-.card-detail-modal #cd-type,
-.card-detail-modal .cd-rarity,
-.card-detail-modal #cd-rarity {
-  font-family: 'Shippori Mincho', sans-serif !important;
+.card-detail-modal #cd-type {
+  font-family: 'Cinzel', sans-serif !important;
   font-size: 11px !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.8px !important;
+  font-weight: 800 !important;
+  letter-spacing: 1.2px !important;
   height: 24px !important;
   padding: 0 10px !important;
-  border-radius: 5px !important;
+  border-radius: 6px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -6791,64 +6774,108 @@ html body #card-detail-overlay #btn-close-detail::after,
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   color: #cbd5e1 !important;
   box-sizing: border-box !important;
+  text-transform: uppercase !important;
 }
 
-.card-detail-modal .cd-rarity.rarity-1 { border-color: #94a3b8 !important; color: #e2e8f0 !important; }
-.card-detail-modal .cd-rarity.rarity-2 { border-color: #38bdf8 !important; color: #7dd3fc !important; background: rgba(56, 189, 248, 0.15) !important; }
-.card-detail-modal .cd-rarity.rarity-3 { border-color: #c084fc !important; color: #e9d5ff !important; background: rgba(192, 132, 252, 0.15) !important; }
-.card-detail-modal .cd-rarity.rarity-4 { border-color: #fbbf24 !important; color: #fef08a !important; background: linear-gradient(135deg, rgba(180, 83, 9, 0.4), rgba(217, 119, 6, 0.4)) !important; }
-
-.card-detail-modal .cd-tribe-tag,
-.card-detail-modal #cd-tribe-icon {
-  width: 24px !important;
+.card-detail-modal .cd-tribe-tag {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
   height: 24px !important;
-  min-width: 24px !important;
+  padding: 0 8px 0 4px !important;
+  border-radius: 6px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-sizing: border-box !important;
+}
+
+.card-detail-modal .cd-tribe-icon,
+.card-detail-modal #cd-tribe-icon {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
   border-radius: 50% !important;
   background-size: contain !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
   border: none !important;
   display: inline-block !important;
-  margin-left: 4px !important;
-}
-
-/* 6. スタッツ（ATK / HP） */
-.card-detail-modal .cd-stats {
-  display: flex !important;
-  gap: 12px !important;
-  margin: 0 !important;
   flex-shrink: 0 !important;
 }
 
-.card-detail-modal .cd-jewel-stat {
-  display: flex !important;
-  align-items: center !important;
-  gap: 6px !important;
+.card-detail-modal .cd-tribe-text,
+.card-detail-modal #cd-tribe-text {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #cbd5e1 !important;
+  white-space: nowrap !important;
+}
+
+.card-detail-modal .cd-rarity,
+.card-detail-modal #cd-rarity {
   font-family: 'Cinzel', serif !important;
-  font-size: 18px !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 1px !important;
+  height: 24px !important;
+  padding: 0 10px !important;
+  border-radius: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  text-transform: uppercase !important;
+}
+
+.card-detail-modal .cd-rarity.rarity-1 { border: 1px solid #94a3b8 !important; color: #cbd5e1 !important; background: rgba(148, 163, 184, 0.12) !important; }
+.card-detail-modal .cd-rarity.rarity-2 { border: 1px solid #38bdf8 !important; color: #7dd3fc !important; background: rgba(56, 189, 248, 0.15) !important; box-shadow: 0 0 10px rgba(56, 189, 248, 0.25) !important; }
+.card-detail-modal .cd-rarity.rarity-3 { border: 1px solid #c084fc !important; color: #e9d5ff !important; background: rgba(192, 132, 252, 0.15) !important; box-shadow: 0 0 12px rgba(192, 132, 252, 0.3) !important; }
+.card-detail-modal .cd-rarity.rarity-4 { border: 1px solid #fbbf24 !important; color: #fef08a !important; background: linear-gradient(135deg, rgba(180, 83, 9, 0.4), rgba(217, 119, 6, 0.4)) !important; box-shadow: 0 0 16px rgba(251, 191, 36, 0.4) !important; }
+
+/* 6. スタッツ（ATK / HP ジュエルプレート） */
+.card-detail-modal .cd-stats {
+  display: flex !important;
+  gap: 14px !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+  align-items: center !important;
+}
+
+.card-detail-modal .cd-jewel-stat {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 20px !important;
   font-weight: 900 !important;
-  padding: 2px 10px !important;
+  padding: 4px 14px !important;
   border-radius: 8px !important;
+  box-sizing: border-box !important;
+  min-width: 78px !important;
+  justify-content: center !important;
 }
 
 .card-detail-modal .cd-jewel-atk {
-  background: rgba(239, 68, 68, 0.2) !important;
-  border: 1px solid rgba(239, 68, 68, 0.5) !important;
+  background: linear-gradient(135deg, rgba(153, 27, 27, 0.45) 0%, rgba(90, 15, 15, 0.3) 100%) !important;
+  border: 1.5px solid rgba(239, 68, 68, 0.65) !important;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.25) !important;
   color: #fca5a5 !important;
 }
 
 .card-detail-modal .cd-jewel-hp {
-  background: rgba(34, 197, 94, 0.2) !important;
-  border: 1px solid rgba(34, 197, 94, 0.5) !important;
+  background: linear-gradient(135deg, rgba(22, 101, 52, 0.45) 0%, rgba(15, 60, 30, 0.3) 100%) !important;
+  border: 1.5px solid rgba(34, 197, 94, 0.65) !important;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.25) !important;
   color: #86efac !important;
 }
 
 .card-detail-modal .cd-stat-decor {
-  width: 15px !important;
-  height: 15px !important;
+  width: 17px !important;
+  height: 17px !important;
+  flex-shrink: 0 !important;
 }
 
-/* 7. テキストボックス（効果文 ＆ フレーバーテキスト） */
+/* 7. テキストボックス（効果文・キーワード解説・フレーバーテキスト） */
 html body #card-detail-overlay .cd-text-box,
 .card-detail-modal .cd-text-box {
   position: static !important;
@@ -6857,17 +6884,18 @@ html body #card-detail-overlay .cd-text-box,
   left: auto !important;
   width: 100% !important;
   height: auto !important;
-  background: rgba(0, 0, 0, 0.45) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 10px !important;
-  padding: 10px 14px !important;
+  background: rgba(8, 12, 22, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 12px !important;
+  padding: 14px 16px !important;
   margin: 0 !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 6px !important;
+  gap: 10px !important;
   flex: 1 1 auto !important;
   overflow-y: auto !important;
   box-sizing: border-box !important;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5) !important;
   z-index: auto !important;
 }
 
@@ -6883,23 +6911,76 @@ html body #card-detail-overlay #cd-text,
   height: auto !important;
   background: transparent !important;
   z-index: auto !important;
-  font-size: 13.5px !important;
-  line-height: 1.6 !important;
+  font-size: 14.5px !important;
+  line-height: 1.65 !important;
   color: #f8fafc !important;
   margin: 0 !important;
   text-align: left !important;
+  font-weight: 500 !important;
+}
+
+.cd-kw-highlight {
+  font-weight: 800 !important;
+  color: #fbbf24 !important;
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.35) !important;
+}
+
+.card-detail-modal .cd-keywords-glossary,
+#cd-keywords-glossary {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  border-top: 1px dashed rgba(255, 255, 255, 0.15) !important;
+  padding-top: 8px !important;
+  margin-top: 2px !important;
+}
+
+.cd-glossary-header {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  color: #94a3b8 !important;
+  letter-spacing: 0.8px !important;
+  text-transform: uppercase !important;
+}
+
+.cd-glossary-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+}
+
+.cd-glossary-item {
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 8px !important;
+  font-size: 12.5px !important;
+  line-height: 1.5 !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.cd-glossary-label {
+  font-weight: 800 !important;
+  color: #fbbf24 !important;
+  flex-shrink: 0 !important;
+}
+
+.cd-glossary-desc {
+  color: #cbd5e1 !important;
 }
 
 .card-detail-modal .cd-flavor-text,
 .card-detail-modal #cd-flavor {
   font-family: 'Shippori Mincho', serif !important;
-  font-size: 11.5px !important;
-  line-height: 1.4 !important;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
   color: #94a3b8 !important;
   font-style: italic !important;
-  border-top: 1px dashed rgba(255, 255, 255, 0.12) !important;
-  padding-top: 6px !important;
-  margin: 0 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding-top: 8px !important;
+  margin-top: auto !important;
 }
 
 
