@@ -214,21 +214,25 @@ function showStatus(text, allowCancel = false) {
   const statusText = document.getElementById('status-text');
   const btnCancel = document.getElementById('btn-cancel-queue');
 
-  if (statusSection) statusSection.style.display = 'flex';
+  if (statusSection) {
+    statusSection.classList.add('active');
+  }
   if (statusText) statusText.textContent = text;
   if (btnCancel) {
     btnCancel.style.display = allowCancel ? 'inline-block' : 'none';
     btnCancel.onclick = () => {
       isWaitingGameStart = false;
       pendingDeckSubmission = null;
-      statusSection.style.display = 'none';
+      hideStatus();
     };
   }
 }
 
 function hideStatus() {
   const statusSection = document.getElementById('status-section');
-  if (statusSection) statusSection.style.display = 'none';
+  if (statusSection) {
+    statusSection.classList.remove('active');
+  }
 }
 
 // ==================== SOLO PLAY（AI対戦）直接対戦開始 ====================
@@ -396,14 +400,16 @@ socket.on('room_created', (data) => {
   sessionStorage.setItem('sessionId', data.sessionId);
   sessionStorage.setItem('playerId', data.playerId);
   sessionStorage.setItem('roomId', data.roomId);
-  console.log('🏠 [LOBBY] room_created:', data.roomId);
+  localStorage.setItem('dcg_session_id', data.sessionId);
+  console.log('🏠 [LOBBY] room_created:', data.roomId, data.sessionId);
 });
 
 socket.on('room_joined', (data) => {
   sessionStorage.setItem('sessionId', data.sessionId);
   sessionStorage.setItem('playerId', data.playerId);
   sessionStorage.setItem('roomId', data.roomId);
-  console.log('👤 [LOBBY] room_joined:', data.roomId);
+  localStorage.setItem('dcg_session_id', data.sessionId);
+  console.log('👤 [LOBBY] room_joined:', data.roomId, data.sessionId);
 });
 
 // ルームが揃った時 → 直ちに使用デッキを提出！
@@ -413,7 +419,7 @@ socket.on('room_ready', (data) => {
 
   if (isWaitingGameStart && pendingDeckSubmission) {
     showStatus('デッキを展開中...');
-    const curSessionId = sessionStorage.getItem('sessionId');
+    const curSessionId = sessionStorage.getItem('sessionId') || localStorage.getItem('dcg_session_id');
     socket.emit('submit_deck', {
       sessionId: curSessionId,
       deckCardIds: pendingDeckSubmission.deckCardIds,
@@ -430,9 +436,6 @@ socket.on('game_started', () => {
   isNavigatingToBattle = true;
   console.log('🎮 [LOBBY] game_started received! Redirecting directly to /game.html...');
   showStatus('対戦開始！盤面へ移動中...');
-
-  sessionStorage.removeItem('dcg_session_id');
-  localStorage.removeItem('dcg_session_id');
 
   window.location.href = '/game.html';
 });
