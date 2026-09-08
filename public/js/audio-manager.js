@@ -105,6 +105,7 @@ class SoundManager {
     this.files = {
       bgm: {
         game: '/assets/bgm/battle1.mp3',
+        battle: '/assets/bgm/battle1.mp3',
         battle1: '/assets/bgm/battle1.mp3',
         battle2: '/assets/bgm/battle2.mp3',
         battle3: '/assets/bgm/battle3.mp3',
@@ -166,7 +167,12 @@ class SoundManager {
   }
 
   playBGM(key, force = false) {
-    const src = this.files.bgm[key];
+    let targetKey = key;
+    if (key === 'battle' || key === 'game') {
+      const selected = localStorage.getItem('dcg_selected_bgm');
+      targetKey = (selected && this.files.bgm[selected]) ? selected : 'battle1';
+    }
+    const src = this.files.bgm[targetKey] || this.files.bgm[key];
     if (!src) return;
     if (!force && this.bgmAudio.src.endsWith(src) && !this.bgmAudio.paused) return;
     
@@ -202,15 +208,20 @@ class SoundManager {
 
   // === BGMのシームレスなフェードアウト＆イン移行システム ===
   fadeToBGM(key, durationMs = 800) {
-    const src = this.files.bgm[key];
+    let targetKey = key;
+    if (key === 'battle' || key === 'game') {
+      const selected = localStorage.getItem('dcg_selected_bgm');
+      targetKey = (selected && this.files.bgm[selected]) ? selected : 'battle1';
+    }
+    const src = this.files.bgm[targetKey] || this.files.bgm[key];
     if (!src) return;
     // すでに同じ曲が再生中なら何もしない
     if (this.bgmAudio.src.endsWith(src) && !this.bgmAudio.paused) return;
 
     // AudioContextがsuspended（ユーザー未操作）の場合はキューに積む
     if (this.audioCtx && this.audioCtx.state === 'suspended') {
-      this._pendingBGM = { key, durationMs };
-      console.log('[Audio] BGM queued (AudioContext suspended):', key);
+      this._pendingBGM = { key: targetKey, durationMs };
+      console.log('[Audio] BGM queued (AudioContext suspended):', targetKey);
       return;
     }
 

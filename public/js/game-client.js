@@ -671,33 +671,95 @@ window.battleIntroStarted = false; // renderer側から参照可能に
 let _vfxRetryCount = 0;
 function startBattleIntroSequence(data) {
   if (battleIntroStarted) return;
-  battleIntroStarted = true;
-  window.battleIntroStarted = true;
 
-  console.log('🚀 [GAME-CLIENT] 対戦開始フロー起動！');
+  const runIntro = () => {
+    battleIntroStarted = true;
+    window.battleIntroStarted = true;
 
-  window.showMulligan = showMulligan;
+    console.log('🚀 [GAME-CLIENT] 対戦開始フロー起動！');
+    window.showMulligan = showMulligan;
 
-  if (window.audioManager) window.audioManager.fadeToBGM('battle', 2000);
-
-  if (window.VFX && window.VFX.startBattleIntroSequence) {
-    _vfxRetryCount = 0;
-    window.VFX.startBattleIntroSequence(data);
-  } else if (_vfxRetryCount < 15) {
-    // VFXがまだ初期化されていない場合は少し待ってリトライ（最大15回=3秒）
-    _vfxRetryCount++;
-    console.warn('   [CLIENT] VFX not ready, retrying... (' + _vfxRetryCount + '/15)');
-    battleIntroStarted = false; window.battleIntroStarted = false;
-    setTimeout(() => startBattleIntroSequence(data), 200);
-  } else {
-    // VFXが3秒以内に起動しない場合はスキップしてマリガンへ直行
-    console.error('   [CLIENT] VFX failed to initialize. Falling back to direct mulligan.');
-    _vfxRetryCount = 0;
-    window.battleIntroStarted = false;
-    battleIntroStarted = true; // これ以上リトライしない
-    if (typeof showMulligan === 'function' && data && data.hand) {
-      setTimeout(() => showMulligan(data.hand, null), 100);
+    if (window.audioManager) {
+      window.audioManager.unlock();
+      window.audioManager.fadeToBGM('battle', 1500);
     }
+
+    if (window.VFX && window.VFX.startBattleIntroSequence) {
+      _vfxRetryCount = 0;
+      window.VFX.startBattleIntroSequence(data);
+    } else if (_vfxRetryCount < 15) {
+      // VFXがまだ初期化されていない場合は少し待ってリトライ（最大15回=3秒）
+      _vfxRetryCount++;
+      console.warn('   [CLIENT] VFX not ready, retrying... (' + _vfxRetryCount + '/15)');
+      battleIntroStarted = false; window.battleIntroStarted = false;
+      setTimeout(() => runIntro(), 200);
+    } else {
+      // VFXが3秒以内に起動しない場合はスキップしてマリガンへ直行
+      console.error('   [CLIENT] VFX failed to initialize. Falling back to direct mulligan.');
+      _vfxRetryCount = 0;
+      window.battleIntroStarted = false;
+      battleIntroStarted = true; // これ以上リトライしない
+      if (typeof showMulligan === 'function' && data && data.hand) {
+        setTimeout(() => showMulligan(data.hand, null), 100);
+      }
+    }
+  };
+
+  // AudioContextがsuspended（ブラウザの自動再生ブロック）状態かチェック
+  const isAudioSuspended = window.audioManager && 
+                           window.audioManager.audioCtx && 
+                           window.audioManager.audioCtx.state === 'suspended';
+
+  if (isAudioSuspended) {
+    console.log('🔒 [GAME-CLIENT] AudioContext is suspended. Presenting Battle Commence Gate.');
+    let gate = document.getElementById('battle-commence-gate');
+    if (!gate) {
+      gate = document.createElement('div');
+      gate.id = 'battle-commence-gate';
+      gate.className = 'battle-commence-gate';
+      gate.innerHTML = `
+        <div class="commence-inner">
+          <div class="commence-crest">⚔️</div>
+          <div class="commence-badge">BATTLE READY</div>
+          <h1 class="commence-title">DUEL START</h1>
+          <div class="commence-prompt">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>画面をタップして開戦</span>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(gate);
+    }
+    gate.style.display = 'flex';
+    gate.classList.remove('gate-dismissed');
+
+    const handleCommence = (e) => {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      gate.removeEventListener('pointerdown', handleCommence);
+      gate.removeEventListener('click', handleCommence);
+
+      if (window.audioManager) {
+        window.audioManager.unlock();
+        window.audioManager.playSE('start');
+      }
+
+      gate.classList.add('gate-dismissed');
+      setTimeout(() => {
+        gate.style.display = 'none';
+      }, 350);
+
+      runIntro();
+    };
+
+    gate.addEventListener('pointerdown', handleCommence, { once: true });
+    gate.addEventListener('click', handleCommence, { once: true });
+  } else {
+    runIntro();
   }
 }
 
@@ -1661,19 +1723,47 @@ function showMulligan(hand, onSubmit) {
         z-index: 2;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       ">${card.name || ''}</div>
+      <div class="mulligan-detail-btn" title="カード詳細を表示">🔍</div>
       <div class="mulligan-change-ribbon" title="クリックで選択解除">
         <span class="ribbon-text">CHANGE</span>
         <span class="ribbon-sub">交換対象</span>
       </div>
     `;
     
-    // カード本体クリック: 他画面と同じ専用カード詳細画面（card-detail-modal）を表示
+    let touchTimer = null;
+    let longPressed = false;
+
+    // カード本体クリック: CHANGE ↔ KEEP のトグル選択（シャドバ・DCG標準操作）
     el.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (typeof window.showCardDetail === 'function') {
-        window.showCardDetail(card);
+      if (longPressed) {
+        longPressed = false;
+        e.preventDefault();
+        return;
       }
+      // 🔍詳細ボタンが押された場合は詳細を開く
+      if (e.target.closest('.mulligan-detail-btn')) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (typeof window.showCardDetail === 'function') {
+          window.showCardDetail(card);
+        }
+        return;
+      }
+      e.preventDefault();
+      toggleMulliganIndex(index);
     });
+
+    // 🔍詳細ボタン直接ハンドラ
+    const detailBtn = el.querySelector('.mulligan-detail-btn');
+    if (detailBtn) {
+      detailBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (typeof window.showCardDetail === 'function') {
+          window.showCardDetail(card);
+        }
+      });
+    }
 
     // CHANGEリボンクリック: 交換選択をトグル
     const ribbon = el.querySelector('.mulligan-change-ribbon');
@@ -1708,10 +1798,11 @@ function showMulligan(hand, onSubmit) {
       }
     });
 
-    // モバイル長押し判定 (450ms)
-    let touchTimer = null;
+    // モバイル長押し判定 (450msでカード詳細を開く)
     el.addEventListener('touchstart', (e) => {
+      longPressed = false;
       touchTimer = setTimeout(() => {
+        longPressed = true;
         if (typeof window.showCardDetail === 'function') {
           window.showCardDetail(card);
         }

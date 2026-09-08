@@ -8,11 +8,29 @@
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#030712">
-  <title>DCG - ゲーム画面 Vol.203</title>
-  <link rel="stylesheet" href="/css/style.css?v=v221_shadowverse_mulligan">
-  <link rel="stylesheet" href="/css/battle-premium.css?v=v221_shadowverse_mulligan">
+  <title>DCG - ゲーム画面</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Shippori+Mincho:wght@500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css?v=v234_audio_and_detail_overhaul">
+  <link rel="stylesheet" href="/css/battle-premium.css?v=v234_audio_and_detail_overhaul">
 </head>
 <body>
+  <!-- 開戦前 タップゲート（AudioContext アンロック ＆ BGM確実起動） -->
+  <div class="battle-commence-gate" id="battle-commence-gate" style="display: none;">
+    <div class="commence-inner">
+      <div class="commence-crest">⚔️</div>
+      <div class="commence-badge">BATTLE READY</div>
+      <h1 class="commence-title">DUEL START</h1>
+      <div class="commence-prompt">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        <span>画面をタップして開戦</span>
+      </div>
+    </div>
+  </div>
+
   <!-- 画面回転プロンプト -->
   <div class="rotate-prompt" id="rotate-prompt">
     <div class="rotate-prompt-icon">
@@ -454,10 +472,10 @@
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/audio-manager.js?v=v223_complete_audio"></script>
-  <script src="/js/vfx-engine.js?v=v221_shadowverse_mulligan"></script>
-  <script src="/js/game-renderer.js?v=v221_shadowverse_mulligan"></script>
-  <script src="/js/game-client.js?v=v221_shadowverse_mulligan"></script>
+  <script src="/js/audio-manager.js?v=v234_audio_and_detail_overhaul"></script>
+  <script src="/js/vfx-engine.js?v=v234_audio_and_detail_overhaul"></script>
+  <script src="/js/game-renderer.js?v=v234_audio_and_detail_overhaul"></script>
+  <script src="/js/game-client.js?v=v234_audio_and_detail_overhaul"></script>
   
   <script>
     function resizeGame() {
