@@ -6607,7 +6607,7 @@ html body .card-detail-overlay .card-detail-modal,
   left: auto !important;
   top: auto !important;
   transform: none !important;
-  width: min(920px, 94vw) !important;
+  width: min(1020px, 94vw) !important;
   max-height: min(560px, 92vh) !important;
   height: auto !important;
   background: linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(10, 15, 29, 0.98) 100%) !important;
@@ -6736,6 +6736,16 @@ html body #card-detail-overlay #btn-close-detail:hover,
   line-height: 1 !important;
 }
 
+.card-detail-modal .cd-cost.is-shield-durability,
+#cd-cost.is-shield-durability {
+  background: url('/assets/images/ui/stat_durability.png') center/contain no-repeat !important;
+  color: #0f172a !important;
+  font-size: 26px !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  padding-top: 4px !important;
+  box-sizing: border-box !important;
+}
+
 .card-detail-modal .cd-name,
 #cd-name {
   font-family: 'Cinzel', 'Shippori Mincho', serif !important;
@@ -6789,6 +6799,10 @@ html body #card-detail-overlay #btn-close-detail:hover,
   background: rgba(255, 255, 255, 0.06) !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   box-sizing: border-box !important;
+}
+
+.card-detail-modal .cd-tribe-tag.is-hidden {
+  display: none !important;
 }
 
 .card-detail-modal .cd-tribe-icon,
@@ -7019,14 +7033,15 @@ html body #card-detail-overlay #cd-text,
 .card-detail-modal .cd-flavor-text,
 .card-detail-modal #cd-flavor {
   font-family: 'Shippori Mincho', serif !important;
-  font-size: 13px !important;
-  line-height: 1.6 !important;
+  font-size: 12.5px !important;
+  line-height: 1.7 !important;
   color: #94a3b8 !important;
   font-style: normal !important;
   border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
   padding-top: 10px !important;
   margin-top: auto !important;
-  letter-spacing: 0.4px !important;
+  letter-spacing: 0.15px !important;
+  white-space: pre-line !important;
 }
 
 

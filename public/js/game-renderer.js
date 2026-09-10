@@ -385,7 +385,7 @@ window.showCardDetail = function(card) {
   };
 
   overlay.style.display = 'flex';
-  const isShield = card.type === 'shield';
+  const isShield = card.type === 'shield' || card.cardType === 'shield';
   const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
   const firstColor = colors[0].toLowerCase();
 
@@ -396,11 +396,11 @@ window.showCardDetail = function(card) {
     console.log(`[DEBUG] Final Logic: Name=${card.name}, ID=${card.id}, Path=${bgImagePath}`);
   }
 
-  // \u8981\u7d20\u66f4\u65b0\u3092\u5b89\u5168\u306b\u884c\u3046
+  // 要素更新を安全に行う
   const safeSetText = (id, text) => {
     const el = document.getElementById(id);
     if (el) {
-      // \n \u3068\u3044\u3046\u4e8c\u6587\u5b57\u306e\u6587\u5b57\u5217\u3092\u5b9f\u969b\u306e\u6539\u884c\u30b3\u30fc\u30c9\u306b\u5909\u63db
+      // \n という二文字の文字列を実際の改行コードに変換
       const processedText = (text !== undefined ? text : '').toString().replace(/\\n/g, '\n');
       el.textContent = processedText;
     }
@@ -409,14 +409,20 @@ window.showCardDetail = function(card) {
   safeSetText('cd-name', card.name);
   const costEl = document.getElementById('cd-cost');
   if (costEl) {
-    if (card.cost !== undefined) {
+    if (isShield) {
+      costEl.classList.add('is-shield-durability');
+      costEl.style.display = 'flex';
+      costEl.textContent = (typeof card.durability !== 'undefined' && card.durability !== null) ? card.durability : (card.shieldHp || 1);
+    } else if (card.cost !== undefined) {
+      costEl.classList.remove('is-shield-durability');
       costEl.style.display = 'flex';
       costEl.textContent = card.cost;
     } else {
+      costEl.classList.remove('is-shield-durability');
       costEl.style.display = 'none';
     }
   }
-  safeSetText('cd-type', (card.type || 'Unit').toUpperCase());
+  safeSetText('cd-type', (isShield ? 'SHIELD' : (card.type || 'Unit')).toUpperCase());
   
   // レアリティ表示
   const rarityEl = document.getElementById('cd-rarity');
@@ -437,12 +443,14 @@ window.showCardDetail = function(card) {
 
     if (isShield) {
       if (parentTag && parentTag.classList.contains('cd-tribe-tag')) {
+        parentTag.classList.add('is-hidden');
         parentTag.style.display = 'none';
       }
       tribeIcon.style.display = 'none';
       tribeText.style.display = 'none';
     } else {
       if (parentTag && parentTag.classList.contains('cd-tribe-tag')) {
+        parentTag.classList.remove('is-hidden');
         parentTag.style.display = 'inline-flex';
       }
       tribeIcon.style.display = 'inline-block';
@@ -495,7 +503,7 @@ window.showCardDetail = function(card) {
   if (flavorEl) {
     if (flavorTextContent && flavorTextContent.trim()) {
       flavorEl.style.display = 'block';
-      const cleanFlavor = flavorTextContent.trim().replace(/^[「『]|[」』]$/g, '');
+      const cleanFlavor = flavorTextContent.trim().replace(/^[「『]|[」』]$/g, '').replace(/\\n/g, '\n');
       flavorEl.textContent = `「${cleanFlavor}」`;
     } else {
       flavorEl.style.display = 'none';

@@ -1135,7 +1135,6 @@ function showPreview(type, data) {
     const isSelected = selectedShields.includes(data.id);
     const bgImage = getShieldImagePath(data);
     const abilityText = (data.skill ? data.skill.text || '' : '能力なし').toString().replace(/\\n/g, '\n');
-    const flavorText = (data.skill ? data.skill.description || '' : '').toString().replace(/\\n/g, '\n');
     
     container.innerHTML = `
       <div class="preview-card-image" style="background-image: url('${bgImage}')"></div>
@@ -1143,9 +1142,10 @@ function showPreview(type, data) {
         <div class="preview-title">
           <h2>${data.name}</h2>
         </div>
-        <div class="preview-stats"><span style="background:#444;padding:4px 12px;border-radius:6px;border:1px solid #b8860b;">耐久値 ${data.durability}</span></div>
+        <div class="preview-stats" style="margin: 4px 0 !important; display: flex !important; align-items: center !important;">
+          <span style="background: rgba(15, 23, 42, 0.85); padding: 4px 14px; border-radius: 6px; border: 1.5px solid rgba(251, 191, 36, 0.5); font-weight: 800; font-size: 13px; color: #fbbf24; letter-spacing: 0.5px;">耐久値 ${data.durability || 1}</span>
+        </div>
         <div class="preview-desc" style="margin-top: 6px !important; margin-bottom: 4px !important; text-align: left !important; text-align-last: left !important; width: 100% !important; box-sizing: border-box !important; align-self: flex-start !important;">${abilityText}</div>
-        ${flavorText ? `<div class="preview-flavor" style="margin-top: 6px !important; text-align: left !important; text-align-last: left !important; color: #94a3b8 !important; font-size: 11px !important; font-style: italic !important; width: 100% !important; align-self: flex-start !important;">${flavorText}</div>` : ''}
       </div>
       
       <div class="preview-controls">
