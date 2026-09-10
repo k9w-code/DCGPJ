@@ -518,10 +518,17 @@ window.showCardDetail = function(card) {
   if (flavorEl) {
     if (flavorTextContent && flavorTextContent.trim()) {
       flavorEl.style.display = 'block';
+      if (isVanilla) {
+        flavorEl.classList.add('is-vanilla');
+      } else {
+        flavorEl.classList.remove('is-vanilla');
+      }
       const cleanFlavor = flavorTextContent.trim().replace(/^[「『]|[」』]$/g, '').replace(/\\n/g, '\n');
       flavorEl.textContent = `「${cleanFlavor}」`;
     } else {
       flavorEl.style.display = 'none';
+      flavorEl.classList.remove('is-vanilla');
+      flavorEl.textContent = '';
     }
   }
 
@@ -529,7 +536,8 @@ window.showCardDetail = function(card) {
   const textEl = document.getElementById('cd-text');
   if (textEl) {
     if (isVanilla) {
-      textEl.style.display = 'none';
+      textEl.style.setProperty('display', 'none', 'important');
+      textEl.innerHTML = '';
     } else {
       textEl.style.display = 'block';
     }
@@ -579,7 +587,7 @@ window.showCardDetail = function(card) {
           </div>
         `;
       } else {
-        glossaryEl.style.display = 'none';
+        glossaryEl.style.setProperty('display', 'none', 'important');
         glossaryEl.innerHTML = '';
       }
     }

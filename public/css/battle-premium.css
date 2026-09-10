@@ -5165,20 +5165,20 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
   animation: sp-flash-premium 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
 }
 
-/* バニラカード用詳細フレーバーテキストスタイル */
+/* バニラカード用詳細フレーバーテキストスタイル（過度な枠線や背景を排し、端正な明朝フォントで表現） */
 .cd-flavor-text.is-vanilla {
-  font-size: 16px !important;
-  line-height: 1.7 !important;
-  text-align: center !important;
-  padding: 24px 16px !important;
-  color: #f3f4f6 !important;
+  font-family: 'Shippori Mincho', serif !important;
+  font-size: 15px !important;
+  line-height: 1.8 !important;
+  text-align: left !important;
+  padding: 6px 4px !important;
+  color: #e2e8f0 !important;
   font-style: italic !important;
-  background: rgba(255, 255, 255, 0.03) !important;
-  border-radius: 8px !important;
-  border-left: 3px solid rgba(251, 191, 36, 0.4) !important;
-  border-right: 3px solid rgba(251, 191, 36, 0.4) !important;
-  box-shadow: inset 0 0 15px rgba(0,0,0,0.4) !important;
-  margin: 15px 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  letter-spacing: 0.4px !important;
 }
 
 /* 🔮 カード詳細モーダルのテキストサイズ大文字化 ＆ スペル時スタッツ完全消去 */
@@ -6775,19 +6775,19 @@ html body #card-detail-overlay #btn-close-detail:hover,
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
-  gap: 8px !important;
-  margin: 0 !important;
+  gap: 12px !important;
+  margin: 3px 0 6px 0 !important;
   flex-shrink: 0 !important;
 }
 
 .card-detail-modal .cd-type-tag,
 .card-detail-modal #cd-type {
-  font-family: 'Cinzel', sans-serif !important;
-  font-size: 11px !important;
-  font-weight: 800 !important;
-  letter-spacing: 1px !important;
+  font-family: 'Rajdhani', sans-serif !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1.2px !important;
   height: 26px !important;
-  padding: 0 10px !important;
+  padding: 0 14px !important;
   border-radius: 6px !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -6806,7 +6806,7 @@ html body #card-detail-overlay #btn-close-detail:hover,
   justify-content: center !important;
   gap: 6px !important;
   height: 26px !important;
-  padding: 0 10px 0 6px !important;
+  padding: 0 12px 0 8px !important;
   border-radius: 6px !important;
   background: rgba(255, 255, 255, 0.08) !important;
   border: 1px solid rgba(255, 255, 255, 0.18) !important;
@@ -6835,22 +6835,23 @@ html body #card-detail-overlay #btn-close-detail:hover,
 .card-detail-modal .cd-tribe-text,
 .card-detail-modal #cd-tribe-text {
   font-family: 'Noto Sans JP', sans-serif !important;
-  font-size: 11px !important;
+  font-size: 11.5px !important;
   font-weight: 700 !important;
   color: #e2e8f0 !important;
   white-space: nowrap !important;
   line-height: 1 !important;
+  letter-spacing: 0.5px !important;
 }
 
 .card-detail-modal .cd-rarity,
 .card-detail-modal #cd-rarity,
 #card-detail-overlay .cd-rarity {
-  font-family: 'Cinzel', serif !important;
-  font-size: 11px !important;
-  font-weight: 800 !important;
+  font-family: 'Rajdhani', sans-serif !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
   letter-spacing: 1.2px !important;
   height: 26px !important;
-  padding: 0 10px !important;
+  padding: 0 14px !important;
   border-radius: 6px !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -7137,17 +7138,28 @@ html body #card-detail-overlay #cd-text,
   text-shadow: 0 0 6px rgba(34, 197, 94, 0.8) !important;
 }
 
+/* 空のエフェクトテキストおよびキーワード解説の完全非表示（バニラカード用） */
+.card-detail-modal #cd-text:empty,
+#card-detail-overlay #cd-text:empty,
+.card-detail-modal #cd-keywords-glossary:empty,
+#card-detail-overlay #cd-keywords-glossary:empty {
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
 .card-detail-modal .cd-flavor-text,
 .card-detail-modal #cd-flavor {
   font-family: 'Shippori Mincho', serif !important;
-  font-size: 12.5px !important;
+  font-size: 14px !important;
   line-height: 1.75 !important;
   color: #cbd5e1 !important;
   font-style: normal !important;
   border-top: none !important;
   padding-top: 14px !important;
   margin-top: 6px !important;
-  letter-spacing: 0.2px !important;
+  letter-spacing: 0.3px !important;
   white-space: pre-line !important;
   position: relative !important;
 }
@@ -7161,6 +7173,22 @@ html body #card-detail-overlay #cd-text,
   right: 0 !important;
   height: 1px !important;
   background: linear-gradient(90deg, transparent 0%, rgba(251, 191, 36, 0.35) 25%, rgba(251, 191, 36, 0.35) 75%, transparent 100%) !important;
+}
+
+/* バニラカード（効果テキストなし）のフレーバーテキスト特別仕様 */
+.card-detail-modal .cd-flavor-text.is-vanilla,
+.card-detail-modal #cd-flavor.is-vanilla {
+  font-size: 15px !important;
+  line-height: 1.8 !important;
+  color: #e2e8f0 !important;
+  padding-top: 4px !important;
+  margin-top: 0 !important;
+  letter-spacing: 0.4px !important;
+}
+
+.card-detail-modal .cd-flavor-text.is-vanilla::before,
+.card-detail-modal #cd-flavor.is-vanilla::before {
+  display: none !important;
 }
 
 .card-detail-modal .cd-flavor-text:empty,
