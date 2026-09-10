@@ -17,9 +17,9 @@
       });
     }
   </script>
-  <link rel="stylesheet" href="/css/style.css?v=v237_card_detail_premium">
-  <link rel="stylesheet" href="/css/battle-premium.css?v=v237_card_detail_premium">
-  <link rel="stylesheet" href="/css/lobby-premium.css?v=v237_card_detail_premium">
+  <link rel="stylesheet" href="/css/style.css?v=v238_commercial_deck_builder">
+  <link rel="stylesheet" href="/css/battle-premium.css?v=v238_commercial_deck_builder">
+  <link rel="stylesheet" href="/css/lobby-premium.css?v=v238_commercial_deck_builder">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Shippori+Mincho:wght@500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -124,6 +124,9 @@
             <select id="keyword-filter" class="glass-select">
               <option value="all">すべてのキーワード</option>
             </select>
+            <div class="filter-count-badge" id="filter-count-badge">
+              <span id="filter-count-label">表示中: 0枚</span>
+            </div>
           </div>
         </div>
       </div>
@@ -218,27 +221,42 @@
         </div>
       </div>
 
-      <div class="deck-panel-header" style="display: flex; align-items: center; justify-content: space-between;">
-        <div class="deck-title-editable" style="display: flex; align-items: center; gap: 6px;">
-          <h2 id="deck-title-display" style="margin: 0; font-size: 15px; color: #fbbf24;">スロット 1 のデッキ</h2>
-          <button class="btn-icon-sm" id="btn-edit-deck-name" title="デッキ名を変更" style="background: none; border: none; color: #94a3b8; cursor: pointer; padding: 2px;">
+      <div class="deck-panel-header">
+        <div class="deck-title-editable">
+          <h2 id="deck-title-display">スロット 1 のデッキ</h2>
+          <button class="btn-icon-sm" id="btn-edit-deck-name" title="デッキ名を変更">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
           </button>
         </div>
         <div class="deck-counts">
-          <span class="deck-count-badge"><span id="deck-count">0</span>/40</span>
-          <span class="deck-count-badge shield-badge"><span id="shield-count">0</span>/3</span>
+          <span class="deck-count-badge" id="deck-count-badge"><span id="deck-count">0</span>/40</span>
+          <span class="deck-count-badge shield-badge" id="shield-count-badge"><span id="shield-count">0</span>/3</span>
         </div>
       </div>
       
-      <!-- デッキ分析パネル（コスト分布 ＆ 色バランス） -->
+      <!-- デッキ完成度プログレスバー -->
+      <div class="deck-progress-bar-container">
+        <div class="deck-progress-bar-track">
+          <div class="deck-progress-bar-fill" id="deck-progress-bar-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- デッキ分析パネル（属性バランス ＆ コスト曲線 ＆ 内訳） -->
       <div class="deck-analysis-panel" id="deck-analysis-panel">
         <div class="analysis-section">
-          <div class="analysis-title">属性バランス</div>
+          <div class="analysis-header-row">
+            <span class="analysis-title">属性・構成バランス</span>
+            <div class="deck-breakdown-tags" id="deck-breakdown-tags">
+              <span class="breakdown-tag tag-units"><span class="bt-label">UNIT</span><span id="unit-count">0</span></span>
+              <span class="breakdown-tag tag-spells"><span class="bt-label">SPELL</span><span id="spell-count">0</span></span>
+            </div>
+          </div>
           <div class="color-balance-bar" id="color-balance-bar"></div>
         </div>
         <div class="analysis-section">
-          <div class="analysis-title">コスト曲線</div>
+          <div class="analysis-header-row">
+            <span class="analysis-title">コスト曲線（タップで絞り込み）</span>
+          </div>
           <div class="mana-curve-chart" id="mana-curve-chart"></div>
         </div>
       </div>
@@ -247,15 +265,18 @@
         <!-- デッキ内のカード一覧 -->
       </div>
       
-      <!-- シールドの表示 -->
+      <!-- シールドの表示（3連聖遺物クレストソケット） -->
       <div class="shield-list-section">
-        <h3 class="shield-section-title">選択中のシールド (3枚)</h3>
-        <div id="shield-slots">
+        <div class="shield-section-header">
+          <span class="shield-section-title">シールド (3枠)</span>
+          <span class="shield-hint">空枠タップでシールド一覧へ</span>
+        </div>
+        <div class="shield-sockets-container" id="shield-slots">
           <!-- 選んだシールド一覧 -->
         </div>
       </div>
       
-    <button class="btn btn-primary btn-start-game" id="btn-submit-deck" disabled>このデッキで対戦開始</button>
+      <button class="btn btn-primary btn-start-game" id="btn-submit-deck" disabled>このデッキで対戦開始</button>
     </div>
   </div>
     </div>
@@ -310,7 +331,10 @@
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           ゲームガイド ＆ 遊び方
         </h2>
-        <button id="btn-close-help" class="btn btn-secondary" style="padding: 6px 12px; font-size: 14px;">閉じる ✖</button>
+        <button id="btn-close-help" class="btn btn-secondary" style="padding: 6px 14px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <span>閉じる</span>
+        </button>
       </div>
       <div id="help-content" class="help-body" style="font-size: 14px; line-height: 1.6;"></div>
     </div>
@@ -321,7 +345,10 @@
     <div class="compare-modal-content" style="background: rgba(15, 23, 42, 0.95); border: 1px solid #fbbf24; border-radius: 12px; padding: 20px; width: 90%; max-width: 700px; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(251,191,36,0.3); padding-bottom: 10px; margin-bottom: 15px;">
         <h2 style="margin: 0; font-size: 18px; color: #fbbf24;">スロットデッキ比較</h2>
-        <button id="btn-close-compare" class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;">閉じる ✖</button>
+        <button id="btn-close-compare" class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px; display: inline-flex; align-items: center; gap: 5px;">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <span>閉じる</span>
+        </button>
       </div>
       <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
         <label style="font-size: 13px; color: #94a3b8;">比較対象:</label>
@@ -332,9 +359,9 @@
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/audio-manager.js?v=v237_card_detail_premium"></script>
-  <script src="/js/game-renderer.js?v=v237_card_detail_premium"></script>
-  <script src="/js/deck-builder.js?v=v237_card_detail_premium"></script>
+  <script src="/js/audio-manager.js?v=v238_commercial_deck_builder"></script>
+  <script src="/js/game-renderer.js?v=v238_commercial_deck_builder"></script>
+  <script src="/js/deck-builder.js?v=v238_commercial_deck_builder"></script>
   <script>
     function resizeGame() {
       const container = document.getElementById('game-container');

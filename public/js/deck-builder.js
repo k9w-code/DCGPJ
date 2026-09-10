@@ -12,15 +12,15 @@ if (sessionId) {
 }
 
 socket.on('session_restored', (data) => {
-  console.log('✅ セッションが復帰しました:', data);
+  console.log('[CLIENT] セッションが復帰しました:', data);
 });
 
 socket.on('session_reconnected', (data) => {
-  console.log('✅ セッションが再接続されました:', data);
+  console.log('[CLIENT] セッションが再接続されました:', data);
 });
 
 socket.on('session_invalid', () => {
-  console.log('ℹ️ [DECK-BUILDER] セッション未所属（スタンドアローン編成モードとして稼働中）');
+  console.log('[CLIENT] セッション未所属（スタンドアローン編成モードとして稼働中）');
   sessionStorage.removeItem('sessionId');
   localStorage.removeItem('dcg_session_id');
 });
@@ -57,7 +57,7 @@ const SAVE_KEY_PREFIX = 'dcg_deck_slot_';
 // データ取得と初期化
 async function loadData() {
   try {
-    console.log('🚀 Starting loadData...');
+    console.log('[CLIENT] Starting loadData...');
     const [cardsRes, shieldsRes, keywordsRes] = await Promise.all([
       fetch('/api/cards'),
       fetch('/api/shields'),
@@ -81,8 +81,8 @@ async function loadData() {
     renderShieldSlotsList();
     updateSubmitButton();
   } catch (err) {
-    console.error('❌ [loadData ERROR]:', err);
-    alert('❌ [loadData ERROR]: ' + err.message + '\n' + err.stack);
+    console.error('[loadData ERROR]:', err);
+    alert('[loadData ERROR]: ' + err.message + '\n' + err.stack);
   }
 }
 
@@ -155,27 +155,33 @@ function updateKeywordDropdown() {
   });
 }
 
+function switchTab(tabName) {
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tabName);
+  });
+  activeTab = tabName;
+  
+  if (activeTab === 'cards') {
+    document.getElementById('card-grid').style.display = 'grid';
+    document.getElementById('shield-grid').style.display = 'none';
+    document.getElementById('card-specific-filters').style.display = 'flex';
+    document.getElementById('shield-specific-filters').style.display = 'none';
+  } else {
+    document.getElementById('card-grid').style.display = 'none';
+    document.getElementById('shield-grid').style.display = 'grid';
+    document.getElementById('card-specific-filters').style.display = 'none';
+    document.getElementById('shield-specific-filters').style.display = 'flex';
+  }
+  renderGrid();
+}
+
 function initUI() {
   // タブ切り替え
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', (e) => {
       const btn = e.target.closest('.tab');
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      btn.classList.add('active');
-      activeTab = btn.dataset.tab;
-      
-      if (activeTab === 'cards') {
-        document.getElementById('card-grid').style.display = 'grid';
-        document.getElementById('shield-grid').style.display = 'none';
-        document.getElementById('card-specific-filters').style.display = 'flex';
-        document.getElementById('shield-specific-filters').style.display = 'none';
-      } else {
-        document.getElementById('card-grid').style.display = 'none';
-        document.getElementById('shield-grid').style.display = 'grid';
-        document.getElementById('card-specific-filters').style.display = 'none';
-        document.getElementById('shield-specific-filters').style.display = 'flex';
-      }
-      renderGrid();
+      if (window.audioManager) window.audioManager.playSE('click');
+      switchTab(btn.dataset.tab);
     });
   });
 
@@ -708,6 +714,11 @@ function renderCardGrid() {
   
   console.log(`Rendering Grid: Tab=${activeTab}, Total=${allCards.length}, Filtered=${filtered.length}`);
   
+  const filterCountLabel = document.getElementById('filter-count-label');
+  if (filterCountLabel) {
+    filterCountLabel.textContent = `表示中: ${filtered.length}枚`;
+  }
+
   filtered.sort((a, b) => {
     if (activeSortOrder === 'cost') {
       const costDiff = (a.cost || 0) - (b.cost || 0);
@@ -745,31 +756,54 @@ function renderCardGrid() {
 
     el.style.backgroundImage = `url('${window.getCardImagePath(card)}')`;
     
-    // コスト丸アイコン（右上）、カード名は非表示（プレビューで確認）
-    // ユニットの場合はATK/HPも小さく表示。SPELLバッジはユーザー指示により完全消去！
+    // 採用枚数ピップス（0/3〜3/3）
+    let pipsHtml = '';
+    if (maxCopies > 0) {
+      pipsHtml = `<div class="card-pips-bar">`;
+      for (let p = 0; p < maxCopies; p++) {
+        pipsHtml += `<div class="card-pip${p < count ? ' filled' : ''}"></div>`;
+      }
+      pipsHtml += `</div>`;
+    }
+
+    const maxBadgeHtml = isMax ? `<div class="grid-count max-count">MAX</div>` : '';
+    
     const statsOverlay = card.type === 'unit' 
       ? `<div class="grid-stats"><span class="gs-atk">${card.attack}</span><span class="gs-hp">${card.hp}</span></div>` 
       : ``;
       
-    // 高レア揺らめく演出はユーザー指示によりオミット（非表示）
-    const foilShineHtml = '';
     el.innerHTML = `
-      ${foilShineHtml}
       <div class="grid-card-overlay">
         <div class="grid-cost" style="border-color:${primaryColor} !important;">${card.cost}</div>
+        ${maxBadgeHtml}
+        ${pipsHtml}
         ${statsOverlay}
         <div class="grid-card-name">${card.name}</div>
       </div>
       <img src="${window.getCardImagePath(card)}" style="display:none;" onerror="${IMG_FALLBACK}">
     `;
     
-    el.addEventListener('click', () => showPreview('card', card));
-    el.addEventListener('dblclick', () => {
-      addToDeck(card);
+    // ホバーでプレビュー連動（商用DCG仕様：クリック不要で即確認）
+    el.addEventListener('mouseenter', () => {
+      showPreview('card', card);
+    });
+
+    // シングルクリックで即座にデッキ追加
+    el.addEventListener('click', () => {
+      const cur = deck[card.id] || 0;
+      const totalCards = Object.values(deck).reduce((s, c) => s + c, 0);
+      if (cur >= maxCopies || totalCards >= 40) {
+        el.classList.remove('shake-reject');
+        void el.offsetWidth;
+        el.classList.add('shake-reject');
+        if (window.audioManager) window.audioManager.playSE('error');
+      } else {
+        addToDeck(card);
+      }
       showPreview('card', card);
     });
     
-    // バトル画面と同じ詳細表示を有効化
+    // バトル画面と同じ最高品質詳細表示を右クリック・長押しで有効化
     if (typeof attachCardDetailEvent === 'function') {
       attachCardDetailEvent(el, card);
     }
@@ -791,6 +825,11 @@ function renderShieldGrid() {
     return passDurability && passExpansion;
   });
 
+  const filterCountLabel = document.getElementById('filter-count-label');
+  if (filterCountLabel && activeTab === 'shields') {
+    filterCountLabel.textContent = `表示中: ${filteredShields.length}枚`;
+  }
+
   for (const shield of filteredShields) {
     const isSelected = selectedShields.includes(shield.id);
     const el = document.createElement('div');
@@ -801,15 +840,24 @@ function renderShieldGrid() {
       e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'shield', id: shield.id }));
     });
     
+    const setBadge = isSelected 
+      ? `<div class="grid-count max-count" style="display:inline-flex;align-items:center;gap:3px;"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>SET</div>` 
+      : '';
+
     el.innerHTML = `
       <div class="grid-card-overlay">
         <div class="grid-cost" style="background:#b8860b;">${shield.durability}</div>
-        ${isSelected ? `<div class="grid-count">✓</div>` : ''}
+        ${setBadge}
+        <div class="grid-card-name">${shield.name}</div>
       </div>
       <img src="${getShieldImagePath(shield)}" style="display:none;" onerror="${IMG_FALLBACK}">
     `;
     
-    el.addEventListener('click', () => showPreview('shield', shield));
+    el.addEventListener('mouseenter', () => showPreview('shield', shield));
+    el.addEventListener('click', () => {
+      toggleShield(shield.id);
+      showPreview('shield', shield);
+    });
     
     // 詳細モーダル表示イベントのアタッチ
     if (typeof attachCardDetailEvent === 'function') {
@@ -996,7 +1044,7 @@ function showPreview(type, data) {
     // UNIT と COMMON (レアリティ) のフォント・スタイルを完全統一
     const badgeCommonStyle = `font-family: 'Shippori Mincho', 'Inter', system-ui, -apple-system, sans-serif !important; font-size: 12px !important; font-weight: 700 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; height: 26px !important; padding: 0 12px !important; border-radius: 6px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; box-sizing: border-box !important; margin: 0 !important;`;
 
-    // 🚨 親コンテナ container (preview-content) 自身のインラインプロパティを100%物理塗り替え！！
+    // 親コンテナ container (preview-content) 自身のインラインプロパティを物理設定
     container.style.cssText = "display: flex !important; flex-direction: column !important; justify-content: flex-start !important; align-items: flex-start !important; text-align: left !important;";
 
     // コストの「右横」に UNIT と COMMON を直列並びで配置
@@ -1040,11 +1088,21 @@ function showPreview(type, data) {
           <span class="count-display">${count} / ${maxCopies}</span>
           <button class="btn btn-primary" id="btn-plus" ${count >= maxCopies || Object.values(deck).reduce((a,b)=>a+b,0) >= 40 ? 'disabled' : ''}>＋</button>
         </div>
+        <button class="btn btn-secondary btn-full-detail" id="btn-open-full-detail" style="width: 100% !important; margin-top: 6px !important; padding: 6px 12px !important; font-size: 12px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 6px !important; border: 1px solid rgba(251, 191, 36, 0.4) !important; color: #fbbf24 !important; background: rgba(15, 23, 42, 0.8) !important; border-radius: 6px !important; cursor: pointer !important;">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          <span>カード詳細を開く</span>
+        </button>
       </div>
     `;
     
     document.getElementById('btn-minus').addEventListener('click', () => { removeFromDeck(data.id); showPreview('card', data); });
     document.getElementById('btn-plus').addEventListener('click', () => { addToDeck(data); showPreview('card', data); });
+    const btnOpenDetail = document.getElementById('btn-open-full-detail');
+    if (btnOpenDetail) {
+      btnOpenDetail.addEventListener('click', () => {
+        if (typeof showCardDetail === 'function') showCardDetail(data);
+      });
+    }
     
     // === キーワードクイッククリック絞り込み検索 ===
     container.querySelectorAll('.kw-badge').forEach(badge => {
@@ -1111,21 +1169,37 @@ function showPreview(type, data) {
             ${isSelected ? '選択を解除' : 'シールドを選択'}
           </button>
         </div>
+        <button class="btn btn-secondary btn-full-detail" id="btn-open-shield-detail" style="width: 100% !important; margin-top: 6px !important; padding: 6px 12px !important; font-size: 12px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 6px !important; border: 1px solid rgba(251, 191, 36, 0.4) !important; color: #fbbf24 !important; background: rgba(15, 23, 42, 0.8) !important; border-radius: 6px !important; cursor: pointer !important;">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          <span>シールド詳細を開く</span>
+        </button>
       </div>
     `;
     
     document.getElementById('btn-toggle-shield').addEventListener('click', () => { toggleShield(data.id); showPreview('shield', data); });
+    const btnOpenShieldDetail = document.getElementById('btn-open-shield-detail');
+    if (btnOpenShieldDetail) {
+      btnOpenShieldDetail.addEventListener('click', () => {
+        if (typeof showCardDetail === 'function') showCardDetail(data);
+      });
+    }
   }
 }
 
 function addToDeck(card) {
   const totalCards = Object.values(deck).reduce((s, c) => s + c, 0);
-  if (totalCards >= 40) return;
+  if (totalCards >= 40) {
+    if (window.audioManager) window.audioManager.playSE('error');
+    return;
+  }
   const current = deck[card.id] || 0;
   const maxCopies = (typeof card.maxCopies !== 'undefined') ? card.maxCopies : 3;
-  if (current >= maxCopies) return;
+  if (current >= maxCopies) {
+    if (window.audioManager) window.audioManager.playSE('error');
+    return;
+  }
   deck[card.id] = current + 1;
-  if (window.audioManager) window.audioManager.playSE('draw');
+  if (window.audioManager) window.audioManager.playSE('card_play');
   renderGrid();
   renderDeckList();
   updateSubmitButton();
@@ -1135,7 +1209,7 @@ function removeFromDeck(cardId) {
   if (!deck[cardId]) return;
   deck[cardId]--;
   if (deck[cardId] <= 0) delete deck[cardId];
-  if (window.audioManager) window.audioManager.playSE('draw');
+  if (window.audioManager) window.audioManager.playSE('flick_snap');
   renderGrid();
   renderDeckList();
   updateSubmitButton();
@@ -1144,10 +1218,14 @@ function removeFromDeck(cardId) {
 function toggleShield(shieldId) {
   if (selectedShields.includes(shieldId)) {
     selectedShields = selectedShields.filter(id => id !== shieldId);
+    if (window.audioManager) window.audioManager.playSE('flick_snap');
   } else if (selectedShields.length < 3) {
     selectedShields.push(shieldId);
+    if (window.audioManager) window.audioManager.playSE('click');
+  } else {
+    if (window.audioManager) window.audioManager.playSE('error');
+    return;
   }
-  if (window.audioManager) window.audioManager.playSE('click');
   renderGrid();
   renderShieldSlotsList();
   updateSubmitButton();
@@ -1157,12 +1235,17 @@ function renderDeckList() {
   const list = document.getElementById('deck-list');
   list.innerHTML = '';
   const totalCards = Object.values(deck).reduce((s, c) => s + c, 0);
-  document.getElementById('deck-count').textContent = totalCards;
+  const deckCountEl = document.getElementById('deck-count');
+  if (deckCountEl) deckCountEl.textContent = totalCards;
 
   const entries = Object.entries(deck).map(([id, count]) => {
     const card = allCards.find(c => c.id === id);
     return { card, count };
-  }).filter(e => e.card).sort((a, b) => a.card.cost - b.card.cost);
+  }).filter(e => e.card).sort((a, b) => {
+    const costDiff = (a.card.cost || 0) - (b.card.cost || 0);
+    if (costDiff !== 0) return costDiff;
+    return (a.card.name || '').localeCompare(b.card.name || '');
+  });
 
   for (const { card, count } of entries) {
     const el = document.createElement('div');
@@ -1173,23 +1256,42 @@ function renderDeckList() {
     const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
     const primaryColor = getColorCSS(colors[0]);
 
-    el.style.backgroundImage = `linear-gradient(90deg, rgba(15, 17, 26, 0.95) 0%, rgba(15, 17, 26, 0.8) 40%, rgba(15, 17, 26, 0.25) 100%), url('${bgUrl}')`;
-    el.style.backgroundSize = 'cover';
-    el.style.backgroundPosition = 'right center';
+    el.style.backgroundImage = `linear-gradient(90deg, rgba(12, 16, 26, 0.95) 0%, rgba(12, 16, 26, 0.82) 45%, rgba(12, 16, 26, 0.35) 85%, rgba(12, 16, 26, 0.9) 100%), url('${bgUrl}')`;
     el.style.borderLeft = `3.5px solid ${primaryColor}`;
     
+    const isLegend = (card.rarity === 4 || card.level === 4);
+    const copiesText = isLegend ? '<svg viewBox="0 0 24 24" width="12" height="12" fill="#fbbf24" style="vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>' : `×${count}`;
+    const copiesStyle = isLegend ? 'border-color: #fbbf24; color: #fbbf24;' : '';
+
     el.innerHTML = `
-      <span class="de-cost" style="background:${primaryColor}; shadow: 0 1px 3px rgba(0,0,0,0.5);">${card.cost}</span>
+      <span class="de-cost" style="background:${primaryColor};">${card.cost}</span>
       <span class="de-name">${card.name}</span>
-      <span class="de-copies">×${count}</span>
+      <span class="de-copies" style="${copiesStyle}">${copiesText}</span>
+      <button class="de-remove-btn" title="1枚減らす" aria-label="1枚減らす">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
     `;
-    el.addEventListener('click', () => { showPreview('card', card); });
-    el.addEventListener('dblclick', () => {
+
+    // ホバーでプレビュー更新
+    el.addEventListener('mouseenter', () => { showPreview('card', card); });
+    
+    // クリックで1枚減らす
+    el.addEventListener('click', () => {
       removeFromDeck(card.id);
       showPreview('card', card);
     });
+
+    // 削除ボタン専用クリック
+    const removeBtn = el.querySelector('.de-remove-btn');
+    if (removeBtn) {
+      removeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        removeFromDeck(card.id);
+        showPreview('card', card);
+      });
+    }
     
-    // デッキリスト内でも詳細表示を有効化
+    // 右クリック/長押しで詳細モーダルを開く
     if (typeof attachCardDetailEvent === 'function') {
       attachCardDetailEvent(el, card);
     }
@@ -1205,10 +1307,18 @@ function renderDeckAnalysis() {
   const colorCounts = { white: 0, red: 0, blue: 0, green: 0, black: 0, neutral: 0 };
   const costCounts = Array(8).fill(0); // 0, 1, 2, 3, 4, 5, 6, 7+
   let totalCardsForColors = 0;
+  let unitCount = 0;
+  let spellCount = 0;
 
   for (const [id, count] of Object.entries(deck)) {
     const card = allCards.find(c => c.id === id);
     if (card) {
+      if ((card.type || '').toLowerCase() === 'unit') {
+        unitCount += count;
+      } else {
+        spellCount += count;
+      }
+
       // 1. 色割合集計
       const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
       colors.forEach(col => {
@@ -1230,6 +1340,12 @@ function renderDeckAnalysis() {
       }
     }
   }
+
+  // --- 構成内訳タグ更新 ---
+  const unitCountEl = document.getElementById('unit-count');
+  if (unitCountEl) unitCountEl.textContent = unitCount;
+  const spellCountEl = document.getElementById('spell-count');
+  if (spellCountEl) spellCountEl.textContent = spellCount;
 
   // --- 色割合インジケーター描画 ---
   const bar = document.getElementById('color-balance-bar');
@@ -1254,7 +1370,7 @@ function renderDeckAnalysis() {
     }
   }
 
-  // --- マナカーブ棒グラフ描画 ---
+  // --- マナカーブ棒グラフ描画 (インタラクティブ) ---
   const chart = document.getElementById('mana-curve-chart');
   if (chart) {
     chart.innerHTML = '';
@@ -1264,9 +1380,11 @@ function renderDeckAnalysis() {
       const cnt = costCounts[i];
       const heightPct = (cnt / maxCount) * 100;
       const colLabel = i === 7 ? '7+' : i;
+      const isFilterActive = (activeCost === String(i)) || (i === 7 && activeCost === '7+');
       
       const barWrapper = document.createElement('div');
-      barWrapper.className = 'mana-bar-wrapper';
+      barWrapper.className = `mana-bar-wrapper${isFilterActive ? ' active-filter' : ''}`;
+      barWrapper.title = `コスト${colLabel}: ${cnt}枚 (クリックで絞り込み)`;
       barWrapper.innerHTML = `
         <div class="mana-bar-value">${cnt > 0 ? cnt : ''}</div>
         <div class="mana-bar-outer">
@@ -1274,6 +1392,25 @@ function renderDeckAnalysis() {
         </div>
         <div class="mana-bar-label">${colLabel}</div>
       `;
+
+      barWrapper.addEventListener('click', () => {
+        const targetCost = i === 7 ? '7+' : String(i);
+        if (activeCost === targetCost) {
+          activeCost = 'all';
+        } else {
+          activeCost = targetCost;
+        }
+        if (window.audioManager) window.audioManager.playSE('select');
+
+        // 上部のコストピルボタンのactive状態も同期
+        document.querySelectorAll('#card-specific-filters .cost-filters .pill').forEach(p => {
+          p.classList.toggle('active', p.dataset.cost === activeCost);
+        });
+
+        renderGrid();
+        renderDeckAnalysis();
+      });
+
       chart.appendChild(barWrapper);
     }
   }
@@ -1282,50 +1419,68 @@ function renderDeckAnalysis() {
 function renderShieldSlotsList() {
   const container = document.getElementById('shield-slots');
   container.innerHTML = '';
-  document.getElementById('shield-count').textContent = selectedShields.length;
+  const shieldCountEl = document.getElementById('shield-count');
+  if (shieldCountEl) shieldCountEl.textContent = selectedShields.length;
   
   for (let i = 0; i < 3; i++) {
-    const el = document.createElement('div');
-    el.className = 'shield-list-item';
-    
     if (i < selectedShields.length) {
       const shield = allShields.find(s => s.id === selectedShields[i]);
+      const el = document.createElement('div');
+      el.className = 'shield-socket-item shield-socket-filled';
       
       if (shield) {
-        const controls = document.createElement('div');
-        controls.className = 'shield-reorder-controls';
-        controls.innerHTML = `
-          <button class="btn-arrow btn-up" ${i === 0 ? 'disabled' : ''}>▲</button>
-          <button class="btn-arrow btn-down" ${i === selectedShields.length - 1 ? 'disabled' : ''}>▼</button>
+        const bgUrl = getShieldImagePath(shield);
+        el.style.backgroundImage = `linear-gradient(90deg, rgba(12, 16, 26, 0.95) 0%, rgba(12, 16, 26, 0.8) 45%, rgba(12, 16, 26, 0.3) 100%), url('${bgUrl}')`;
+
+        el.innerHTML = `
+          <div class="shield-durability-crest" title="耐久値">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>${shield.durability}</span>
+          </div>
+          <div class="shield-socket-name" title="${shield.name}">${shield.name}</div>
+          <div class="shield-socket-controls">
+            <button class="shield-btn-order btn-up" ${i === 0 ? 'disabled' : ''} title="上へ移動">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            </button>
+            <button class="shield-btn-order btn-down" ${i === selectedShields.length - 1 ? 'disabled' : ''} title="下へ移動">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <button class="shield-btn-remove" title="シールドを解除" aria-label="解除">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
         `;
         
-        const content = document.createElement('div');
-        content.style.flex = '1';
-        content.style.cursor = 'pointer';
-        content.innerHTML = `<span>${shield.name}</span><span style="font-size:12px;color:var(--text-dim);margin-left:8px;">耐久${shield.durability}</span>`;
-        content.addEventListener('click', () => showPreview('shield', shield));
+        el.addEventListener('mouseenter', () => showPreview('shield', shield));
+        el.querySelector('.shield-socket-name').addEventListener('click', () => showPreview('shield', shield));
         
-        controls.querySelector('.btn-up').addEventListener('click', (e) => { e.stopPropagation(); moveShield(i, -1); });
-        controls.querySelector('.btn-down').addEventListener('click', (e) => { e.stopPropagation(); moveShield(i, 1); });
-        
-        el.appendChild(controls);
-        el.appendChild(content);
-        el.classList.add('filled');
-        
-        // 背景イラストとグラデーションマスクの設定
-        const bgUrl = getShieldImagePath(shield);
-        el.style.backgroundImage = `linear-gradient(90deg, rgba(15, 17, 26, 0.95) 0%, rgba(15, 17, 26, 0.8) 45%, rgba(15, 17, 26, 0.3) 100%), url('${bgUrl}')`;
-        el.style.backgroundSize = 'cover';
-        el.style.backgroundPosition = 'right center';
+        el.querySelector('.btn-up').addEventListener('click', (e) => { e.stopPropagation(); moveShield(i, -1); });
+        el.querySelector('.btn-down').addEventListener('click', (e) => { e.stopPropagation(); moveShield(i, 1); });
+        el.querySelector('.shield-btn-remove').addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleShield(shield.id);
+        });
+
+        if (typeof attachCardDetailEvent === 'function') {
+          attachCardDetailEvent(el, shield);
+        }
       } else {
-        el.innerHTML = `<span style="color:#ef4444;font-size:13px;">不明なシールド (ID: ${selectedShields[i]})</span>`;
-        el.classList.add('error-slot');
+        el.innerHTML = `<span style="color:#ef4444;font-size:12px;">不明なシールド (ID: ${selectedShields[i]})</span>`;
       }
+      container.appendChild(el);
     } else {
-      el.innerHTML = `<span style="color:var(--text-dim);font-size:13px;">空のシールド枠</span>`;
-      el.classList.add('empty-slot');
+      const el = document.createElement('div');
+      el.className = 'shield-socket-item shield-socket-empty';
+      el.innerHTML = `
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:#fbbf24;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>シールドを選択 (＋)</span>
+      `;
+      el.addEventListener('click', () => {
+        if (window.audioManager) window.audioManager.playSE('click');
+        switchTab('shields');
+      });
+      container.appendChild(el);
     }
-    container.appendChild(el);
   }
 }
 
@@ -1341,15 +1496,36 @@ function moveShield(index, direction) {
 function updateSubmitButton() {
   const totalCards = Object.values(deck).reduce((s, c) => s + c, 0);
   const btn = document.getElementById('btn-submit-deck');
-  btn.disabled = !(totalCards === 40 && selectedShields.length === 3);
-
-  const deckBadge = document.getElementById('deck-count').parentElement;
-  if(totalCards !== 40 && totalCards > 0) deckBadge.classList.add('error-pulse');
-  else deckBadge.classList.remove('error-pulse');
+  const isReady = totalCards === 40 && selectedShields.length === 3;
+  const wasReady = !btn.disabled;
   
-  const shieldBadge = document.getElementById('shield-count').parentElement;
-  if(selectedShields.length !== 3 && totalCards > 0) shieldBadge.classList.add('error-pulse');
-  else shieldBadge.classList.remove('error-pulse');
+  btn.disabled = !isReady;
+  btn.classList.toggle('ready-to-battle', isReady);
+
+  if (isReady && !wasReady) {
+    if (window.audioManager) window.audioManager.playSE('levelUp');
+  }
+
+  // プログレスバーの更新
+  const progressFill = document.getElementById('deck-progress-bar-fill');
+  if (progressFill) {
+    const pct = Math.min(100, (totalCards / 40) * 100);
+    progressFill.style.width = `${pct}%`;
+    progressFill.classList.toggle('complete', totalCards === 40);
+  }
+
+  // カウントバッジのステータス更新
+  const deckBadge = document.getElementById('deck-count-badge');
+  if (deckBadge) {
+    deckBadge.classList.toggle('is-max', totalCards === 40);
+    if (totalCards > 40) deckBadge.classList.add('error-pulse');
+    else deckBadge.classList.remove('error-pulse');
+  }
+  
+  const shieldBadge = document.getElementById('shield-count-badge');
+  if (shieldBadge) {
+    shieldBadge.classList.toggle('is-max', selectedShields.length === 3);
+  }
 }
 
 document.getElementById('btn-submit-deck').addEventListener('click', () => {
@@ -1401,7 +1577,7 @@ let isNavigatingToGame = false;
 socket.on('game_started', () => {
   if (isNavigatingToGame) return;
   isNavigatingToGame = true;
-  console.log('🎮 [CLIENT] game_started received, clearing old session & redirecting to /game.html...');
+  console.log('[CLIENT] game_started received, clearing old session & redirecting to /game.html...');
   sessionStorage.removeItem('dcg_session_id');
   localStorage.removeItem('dcg_session_id');
   window.location.href = '/game.html';
@@ -1528,7 +1704,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// ========== ★4レジェンダリーカード：ホログラフィック・ホイル座標追従グローバルデリゲーション ==========
+// ========== レジェンダリーカード(Rarity 4)：ホログラフィック・ホイル座標追従グローバルデリゲーション ==========
 document.addEventListener('pointermove', (e) => {
   const card = e.target.closest('.rarity-4');
   if (!card) return;

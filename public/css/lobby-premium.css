@@ -547,7 +547,7 @@ input#player-name:focus {
 }
 
 /* ==========================================================================
-   ★ v146 - デッキ編成UI ブラッシュアップ & ドロップダウンメニュー スタイル
+   v146 - デッキ編成UI ブラッシュアップ & ドロップダウンメニュー スタイル
    ========================================================================== */
 .deck-menu-container {
   position: relative;
@@ -576,25 +576,20 @@ input#player-name:focus {
   right: 0;
   width: 210px;
   background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 215, 0, 0.25);
-  border-radius: 12px;
-  padding: 8px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 15px rgba(147, 51, 234, 0.2);
+  min-width: 220px;
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7), 0 0 1px rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  padding: 6px 0;
   z-index: 1000;
-  animation: deckMenuFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fadeInMenu 0.15s ease-out;
 }
 
-@keyframes deckMenuFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+@keyframes fadeInMenu {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .deck-menu-item {
@@ -602,22 +597,20 @@ input#player-name:focus {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
-  background: transparent;
+  padding: 10px 16px;
+  background: none;
   border: none;
-  border-radius: 8px;
   color: #e2e8f0;
   font-size: 13px;
-  font-weight: 500;
   cursor: pointer;
-  text-align: left;
   transition: all 0.15s ease;
+  text-align: left;
 }
 
 .deck-menu-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  transform: translateX(2px);
+  background: rgba(251, 191, 36, 0.12);
+  color: #fbbf24;
+  padding-left: 20px;
 }
 
 .deck-menu-item.item-danger {
@@ -625,18 +618,18 @@ input#player-name:focus {
 }
 
 .deck-menu-item.item-danger:hover {
-  background: rgba(239, 68, 68, 0.2);
-  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
 }
 
 .deck-menu-divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   margin: 6px 4px;
 }
 
 /* ==========================================================================
-   ★ v148 - デッキ編成UI/UX 商業レベルブラッシュアップ スタイル
+   v148 - デッキ編成UI/UX 商業レベルブラッシュアップ スタイル
    ========================================================================== */
 
 /* ヘッダーナビゲーションボタン (ロビー・ヘルプ) */
@@ -902,7 +895,7 @@ input#player-name:focus {
 }
 
 /* ==========================================================================
-   📱 デッキ編成画面 スマホ・モバイル最適化レスポンシブスタイル
+   デッキ編成画面 スマホ・モバイル最適化レスポンシブスタイル
    ========================================================================== */
 @media screen and (max-width: 932px) {
   /* 1. 全体ボタン・操作部のタッチ領域拡大 */
@@ -943,7 +936,7 @@ input#player-name:focus {
 }
 
 /* ==========================================================================
-   🎯 ユーザー指定：カード一覧 ＆ 左詳細プレビュー 精密デザインカスタマイズ
+   ユーザー指定：カード一覧 ＆ 左詳細プレビュー 精密デザインカスタマイズ
    ========================================================================== */
 
 /* 1. 中央カード一覧の「SPELL」バッジ表示オミット */
@@ -1010,7 +1003,7 @@ input#player-name:focus {
 }
 
 /* ==========================================================================
-   🔒 プレビュー詳細枠：縦長3:4黄金比と完全左上詰めの完璧な両立
+   プレビュー詳細枠：縦長3:4黄金比と完全左上詰めの完璧な両立
    ========================================================================== */
 
 /* デッキ構築画面のプレビューカード画像表示の完全絶対固定（幅240px・アスペクト比3/4・自動伸縮ゼロ） */
@@ -1181,7 +1174,7 @@ input#player-name:focus {
 }
 
 /* ==========================================================================
-   🚨 カード詳細モーダル (.card-detail-modal / .cd-text-box) の絶対左上詰め強制
+   カード詳細モーダル (.card-detail-modal / .cd-text-box) の絶対左上詰め強制
    ========================================================================== */
 .cd-text-box,
 #cd-text,
@@ -1219,66 +1212,613 @@ input#player-name:focus {
 }
 
 /* ==========================================================================
-   🚨 Vol.190 画面視認性＆ソリッドUIデザイン強化 (極上高視認性スタイル)
+   COMMERCIAL DCG DECK BUILDER STYLES (SHADOWVERSE / HEARTHSTONE LEVEL)
    ========================================================================== */
 
-/* 1. デッキ採用上限（3枚）到達カードの上品なモノトーン調表示（イラストの質感を美しく維持） */
+/* 1. 全体レイアウト & パネル装飾 */
+.deck-builder {
+  display: grid !important;
+  grid-template-columns: 290px 1fr 320px !important;
+  grid-template-rows: 100% !important;
+  gap: 14px !important;
+  padding: 14px !important;
+  height: 1080px !important;
+  box-sizing: border-box !important;
+  background: radial-gradient(circle at 50% 30%, #131a2b 0%, #060913 100%) !important;
+  overflow: hidden !important;
+}
+
+.deck-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  background: rgba(10, 15, 28, 0.88) !important;
+  border: 1px solid rgba(251, 191, 36, 0.25) !important;
+  border-radius: 14px !important;
+  padding: 14px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(16px) !important;
+  overflow: hidden !important;
+}
+
+.deck-panel-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 6px !important;
+}
+
+#deck-title-display {
+  font-family: 'Shippori Mincho', 'Cinzel', serif !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: #fbbf24 !important;
+  letter-spacing: 0.5px !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* 2. デッキ完成度プログレスバー */
+.deck-progress-bar-container {
+  width: 100% !important;
+  margin-bottom: 8px !important;
+}
+.deck-progress-bar-track {
+  width: 100% !important;
+  height: 6px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 4px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+.deck-progress-bar-fill {
+  height: 100% !important;
+  background: linear-gradient(90deg, #d97706 0%, #fbbf24 100%) !important;
+  border-radius: 4px !important;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.deck-progress-bar-fill.complete {
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.8) !important;
+}
+
+/* 3. デッキカウントバッジ */
+.deck-counts {
+  display: flex !important;
+  gap: 6px !important;
+  align-items: center !important;
+}
+.deck-count-badge {
+  background: rgba(15, 23, 42, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 6px !important;
+  padding: 3px 8px !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  color: #e2e8f0 !important;
+  font-family: 'Cinzel', sans-serif !important;
+}
+.deck-count-badge.is-max {
+  border-color: #fbbf24 !important;
+  color: #fbbf24 !important;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.3) !important;
+}
+.deck-count-badge.shield-badge.is-max {
+  border-color: #38bdf8 !important;
+  color: #38bdf8 !important;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.3) !important;
+}
+
+/* 4. デッキ分析パネル (属性バランス・内訳・マナカーブ) */
+.deck-analysis-panel {
+  background: rgba(0, 0, 0, 0.35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 10px !important;
+  padding: 8px 10px !important;
+  margin-bottom: 8px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+.analysis-header-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+.analysis-title {
+  font-size: 11px !important;
+  color: #94a3b8 !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+}
+.deck-breakdown-tags {
+  display: flex !important;
+  gap: 4px !important;
+}
+.breakdown-tag {
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  padding: 1px 6px !important;
+  border-radius: 4px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  font-family: 'Cinzel', sans-serif !important;
+}
+.tag-units {
+  background: rgba(59, 130, 246, 0.15) !important;
+  border: 1px solid rgba(59, 130, 246, 0.4) !important;
+  color: #93c5fd !important;
+}
+.tag-spells {
+  background: rgba(168, 85, 247, 0.15) !important;
+  border: 1px solid rgba(168, 85, 247, 0.4) !important;
+  color: #d8b4fe !important;
+}
+
+/* 色バランスバー */
+.color-balance-bar {
+  display: flex !important;
+  height: 6px !important;
+  border-radius: 3px !important;
+  overflow: hidden !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+.color-segment {
+  height: 100% !important;
+  transition: width 0.25s ease !important;
+}
+
+/* インタラクティブ・マナカーブ */
+.mana-curve-chart {
+  display: flex !important;
+  gap: 4px !important;
+  align-items: flex-end !important;
+  height: 66px !important;
+  padding-top: 4px !important;
+}
+.mana-bar-wrapper {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  padding: 2px !important;
+  border-radius: 6px !important;
+  transition: background 0.15s ease, border-color 0.15s ease !important;
+  border: 1px solid transparent !important;
+}
+.mana-bar-wrapper:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+.mana-bar-wrapper.active-filter {
+  background: rgba(251, 191, 36, 0.15) !important;
+  border-color: rgba(251, 191, 36, 0.6) !important;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.25) !important;
+}
+.mana-bar-value {
+  font-size: 10.5px !important;
+  font-weight: 800 !important;
+  color: #f1f5f9 !important;
+  font-family: 'Cinzel', sans-serif !important;
+  height: 14px !important;
+  line-height: 14px !important;
+}
+.mana-bar-outer {
+  width: 16px !important;
+  height: 38px !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  border-radius: 3px 3px 0 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+.mana-bar-inner {
+  width: 100% !important;
+  background: linear-gradient(180deg, #fbbf24 0%, #b45309 100%) !important;
+  border-radius: 2px 2px 0 0 !important;
+  transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.mana-bar-wrapper.active-filter .mana-bar-inner {
+  background: linear-gradient(180deg, #fef08a 0%, #f59e0b 100%) !important;
+  box-shadow: 0 0 6px rgba(251, 191, 36, 0.7) !important;
+}
+.mana-bar-label {
+  font-size: 10.5px !important;
+  font-weight: 800 !important;
+  color: #94a3b8 !important;
+  font-family: 'Cinzel', sans-serif !important;
+  margin-top: 2px !important;
+}
+.mana-bar-wrapper.active-filter .mana-bar-label {
+  color: #fbbf24 !important;
+  font-weight: 900 !important;
+}
+
+/* 5. 商用デッキリスト (Hearthstone / Shadowverse風リボン) */
+.deck-list-container {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  padding-right: 4px !important;
+  margin-bottom: 8px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+}
+.deck-list-container::-webkit-scrollbar {
+  width: 5px !important;
+}
+.deck-list-container::-webkit-scrollbar-thumb {
+  background: rgba(251, 191, 36, 0.3) !important;
+  border-radius: 3px !important;
+}
+
+.deck-entry {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 8px 0 0 !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background-size: cover !important;
+  background-position: right center !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5) !important;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+.deck-entry:hover {
+  transform: translateX(-4px) scale(1.005) !important;
+  border-color: rgba(251, 191, 36, 0.6) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7), 0 0 8px rgba(251, 191, 36, 0.2) !important;
+}
+.deck-entry .de-cost {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50% !important;
+  margin-left: 6px !important;
+  margin-right: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-family: 'Cinzel', sans-serif !important;
+  font-weight: 900 !important;
+  font-size: 13px !important;
+  color: #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.8) !important;
+  text-shadow: 0 1px 2px #000 !important;
+  flex-shrink: 0 !important;
+}
+.deck-entry .de-name {
+  flex: 1 !important;
+  font-family: 'Shippori Mincho', serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #f8fafc !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.8) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  padding-right: 6px !important;
+}
+.deck-entry .de-copies {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 24px !important;
+  height: 22px !important;
+  padding: 0 6px !important;
+  border-radius: 4px !important;
+  background: rgba(15, 23, 42, 0.9) !important;
+  border: 1px solid rgba(251, 191, 36, 0.4) !important;
+  color: #fbbf24 !important;
+  font-family: 'Cinzel', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  text-shadow: 0 1px 2px #000 !important;
+  flex-shrink: 0 !important;
+  transition: opacity 0.15s ease !important;
+}
+.deck-entry .de-remove-btn {
+  display: none !important;
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 4px !important;
+  background: rgba(220, 38, 38, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+  cursor: pointer !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-left: 4px !important;
+  flex-shrink: 0 !important;
+  transition: background 0.15s ease !important;
+}
+.deck-entry .de-remove-btn:hover {
+  background: rgba(239, 68, 68, 1) !important;
+}
+.deck-entry:hover .de-remove-btn {
+  display: inline-flex !important;
+}
+
+/* 6. シールド専用ソケット (聖遺物クレストソケット) */
+.shield-list-section {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 10px !important;
+  padding: 8px 10px !important;
+  margin-bottom: 8px !important;
+}
+.shield-section-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 6px !important;
+}
+.shield-section-title {
+  font-size: 11px !important;
+  color: #94a3b8 !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+}
+.shield-hint {
+  font-size: 10px !important;
+  color: #a09880 !important;
+}
+.shield-sockets-container {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+.shield-socket-item {
+  height: 38px !important;
+  min-height: 38px !important;
+  border-radius: 6px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 8px !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: all 0.2s ease !important;
+  user-select: none !important;
+}
+.shield-socket-empty {
+  border: 1.5px dashed rgba(251, 191, 36, 0.35) !important;
+  background: rgba(15, 23, 42, 0.4) !important;
+  cursor: pointer !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  color: #a09880 !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+}
+.shield-socket-empty:hover {
+  border-color: #fbbf24 !important;
+  background: rgba(251, 191, 36, 0.08) !important;
+  color: #fbbf24 !important;
+  transform: translateY(-1px) !important;
+}
+.shield-socket-filled {
+  border: 1px solid rgba(251, 191, 36, 0.35) !important;
+  border-left: 3.5px solid #fbbf24 !important;
+  background-size: cover !important;
+  background-position: right center !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5) !important;
+}
+.shield-durability-crest {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  background: rgba(15, 23, 42, 0.85) !important;
+  border: 1px solid rgba(56, 189, 248, 0.5) !important;
+  border-radius: 4px !important;
+  padding: 1px 6px !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  color: #38bdf8 !important;
+  font-family: 'Cinzel', sans-serif !important;
+  margin-right: 8px !important;
+  flex-shrink: 0 !important;
+}
+.shield-socket-name {
+  flex: 1 !important;
+  font-family: 'Shippori Mincho', serif !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.95) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  cursor: pointer !important;
+}
+.shield-socket-controls {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  flex-shrink: 0 !important;
+}
+.shield-btn-order {
+  background: rgba(15, 23, 42, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #94a3b8 !important;
+  border-radius: 3px !important;
+  width: 20px !important;
+  height: 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  transition: all 0.15s ease !important;
+}
+.shield-btn-order:hover:not(:disabled) {
+  color: #fbbf24 !important;
+  border-color: #fbbf24 !important;
+}
+.shield-btn-order:disabled {
+  opacity: 0.3 !important;
+  cursor: not-allowed !important;
+}
+.shield-btn-remove {
+  background: rgba(220, 38, 38, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  border-radius: 3px !important;
+  width: 20px !important;
+  height: 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin-left: 2px !important;
+  transition: background 0.15s ease !important;
+}
+.shield-btn-remove:hover {
+  background: rgba(239, 68, 68, 1) !important;
+}
+
+/* 7. 対戦開始ボタンの商用演出 */
+.btn-start-game {
+  width: 100% !important;
+  padding: 14px !important;
+  font-family: 'Cinzel', 'Shippori Mincho', serif !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  letter-spacing: 1px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+}
+.btn-start-game:disabled {
+  background: rgba(30, 41, 59, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #64748b !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+.btn-start-game.ready-to-battle {
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #d97706 100%) !important;
+  border: 1px solid #fef08a !important;
+  color: #030712 !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.5), 0 4px 12px rgba(0,0,0,0.6) !important;
+  animation: readyPulse 2s infinite ease-in-out !important;
+}
+@keyframes readyPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.4), 0 4px 12px rgba(0,0,0,0.6);
+  }
+  50% {
+    box-shadow: 0 0 28px rgba(251, 191, 36, 0.75), 0 4px 16px rgba(0,0,0,0.7);
+  }
+}
+
+/* 8. カード一覧グリッド (コレクションタイル) */
+.card-item {
+  cursor: pointer !important;
+  transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.18s ease, border-color 0.18s ease !important;
+}
+.card-item:hover {
+  transform: translateY(-5px) scale(1.02) !important;
+  z-index: 10 !important;
+}
+.card-item.shake-reject {
+  animation: shakeHoriz 0.22s ease-in-out !important;
+}
+@keyframes shakeHoriz {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* 採用上限時のモノトーン */
 .card-item.max-in-deck {
-  filter: grayscale(45%) brightness(0.85) !important;
-  opacity: 0.9 !important;
+  filter: grayscale(50%) brightness(0.8) !important;
 }
 .card-item.max-in-deck:hover {
-  filter: grayscale(20%) brightness(0.95) !important;
-  opacity: 1 !important;
+  filter: grayscale(25%) brightness(0.92) !important;
 }
 
-/* 右上の上品なブラックゴールド枚数ミニバッジ */
+/* 採用枚数ピップス (カード下部) */
+.card-pips-bar {
+  position: absolute !important;
+  bottom: 5px !important;
+  right: 6px !important;
+  display: flex !important;
+  gap: 3px !important;
+  z-index: 6 !important;
+  background: rgba(10, 15, 26, 0.8) !important;
+  padding: 3px 6px !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+.card-pip {
+  width: 5px !important;
+  height: 5px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.25) !important;
+  transition: all 0.2s ease !important;
+}
+.card-pip.filled {
+  background: #fbbf24 !important;
+  box-shadow: 0 0 5px #fbbf24 !important;
+}
+
+/* MAXインジケーターバッジ */
 .grid-card-overlay .grid-count.max-count {
   position: absolute !important;
-  top: 6px !important;
-  right: 6px !important;
-  background: rgba(15, 23, 42, 0.85) !important;
+  top: 5px !important;
+  right: 5px !important;
+  background: rgba(15, 23, 42, 0.9) !important;
   color: #fbbf24 !important;
-  font-weight: 800 !important;
-  font-size: 11px !important;
-  padding: 3px 7px !important;
-  border-radius: 6px !important;
-  border: 1px solid rgba(251, 191, 36, 0.5) !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6) !important;
-  line-height: 1 !important;
+  font-weight: 900 !important;
+  font-size: 10.5px !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  border: 1px solid rgba(251, 191, 36, 0.6) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7) !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.5px !important;
+  font-family: 'Cinzel', sans-serif !important;
 }
 
-/* 2. 上部フィルターアクティブ状態：シックな画面に馴染む上品なシャンパンゴールド */
+/* フィルタ件数バッジ */
+.filter-count-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 4px 10px !important;
+  background: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 6px !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  color: #94a3b8 !important;
+  margin-left: auto !important;
+}
+
+/* フィルターアクティブ状態 */
 .filter-btn.active,
 .cost-filter-btn.active,
 .tab-btn.active,
 .type-btn.active,
 .btn-filter.active,
-.btn-tab.active {
-  background: rgba(251, 191, 36, 0.15) !important;
+.btn-tab.active,
+.pill.active {
+  background: rgba(251, 191, 36, 0.18) !important;
   color: #fbbf24 !important;
   font-weight: 800 !important;
-  border: 1px solid #fbbf24 !important;
-  box-shadow: 0 2px 10px rgba(251, 191, 36, 0.2) !important;
-}
-
-/* 3. デッキリストのコスト丸バッジ装飾 */
-.deck-entry .de-cost {
-  width: 22px !important;
-  height: 22px !important;
-  border-radius: 50% !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-weight: 900 !important;
-  font-size: 12px !important;
-  color: #ffffff !important;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8) !important;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.5) !important;
+  border-color: #fbbf24 !important;
+  box-shadow: 0 2px 10px rgba(251, 191, 36, 0.25) !important;
 }
 
 /* ==========================================================================
-   ✨ Direct Battle & Clean Modern Lobby Styles
+   Direct Battle & Clean Modern Lobby Styles
    ========================================================================== */
 
 .lobby-container {
