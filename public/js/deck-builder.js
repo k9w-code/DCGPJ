@@ -756,18 +756,6 @@ function renderCardGrid() {
 
     el.style.backgroundImage = `url('${window.getCardImagePath(card)}')`;
     
-    // 採用枚数ピップス（0/3〜3/3）
-    let pipsHtml = '';
-    if (maxCopies > 0) {
-      pipsHtml = `<div class="card-pips-bar">`;
-      for (let p = 0; p < maxCopies; p++) {
-        pipsHtml += `<div class="card-pip${p < count ? ' filled' : ''}"></div>`;
-      }
-      pipsHtml += `</div>`;
-    }
-
-    const maxBadgeHtml = isMax ? `<div class="grid-count max-count">MAX</div>` : '';
-    
     const statsOverlay = card.type === 'unit' 
       ? `<div class="grid-stats"><span class="gs-atk">${card.attack}</span><span class="gs-hp">${card.hp}</span></div>` 
       : ``;
@@ -775,8 +763,6 @@ function renderCardGrid() {
     el.innerHTML = `
       <div class="grid-card-overlay">
         <div class="grid-cost" style="border-color:${primaryColor} !important;">${card.cost}</div>
-        ${maxBadgeHtml}
-        ${pipsHtml}
         ${statsOverlay}
         <div class="grid-card-name">${card.name}</div>
       </div>
@@ -1027,8 +1013,8 @@ function showPreview(type, data) {
     const displayHp = (typeof data.hp !== 'undefined' && data.hp !== null) ? data.hp : ((typeof data.life !== 'undefined' && data.life !== null) ? data.life : 0);
 
     // ATK/HP アイコンを大きく 34px x 34px
-    const atkImg = `<span class="stat-icon-gem" style="width: 34px !important; height: 34px !important; display: inline-block !important; background: url('/assets/images/ui/gem_atk.png') center/contain no-repeat !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)) !important; flex-shrink: 0 !important; margin: 0 !important;"></span>`;
-    const hpImg = `<span class="stat-icon-gem" style="width: 34px !important; height: 34px !important; display: inline-block !important; background: url('/assets/images/ui/gem_hp.png') center/contain no-repeat !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)) !important; flex-shrink: 0 !important; margin: 0 !important;"></span>`;
+    const atkImg = `<span class="stat-icon-gem" style="width: 34px !important; height: 34px !important; display: inline-block !important; background: url('/assets/images/ui/stat_atk.png') center/contain no-repeat !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)) !important; flex-shrink: 0 !important; margin: 0 !important;"></span>`;
+    const hpImg = `<span class="stat-icon-gem" style="width: 34px !important; height: 34px !important; display: inline-block !important; background: url('/assets/images/ui/stat_hp.png') center/contain no-repeat !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)) !important; flex-shrink: 0 !important; margin: 0 !important;"></span>`;
 
     const statsHtml = isUnit 
       ? `<div class="preview-stats cd-stats" style="margin: 6px 0 !important; display: flex !important; gap: 12px !important; align-items: center !important; justify-content: flex-start !important; width: 100% !important;">
@@ -1256,17 +1242,19 @@ function renderDeckList() {
     const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
     const primaryColor = getColorCSS(colors[0]);
 
-    el.style.backgroundImage = `linear-gradient(90deg, rgba(12, 16, 26, 0.95) 0%, rgba(12, 16, 26, 0.82) 45%, rgba(12, 16, 26, 0.35) 85%, rgba(12, 16, 26, 0.9) 100%), url('${bgUrl}')`;
+    el.style.backgroundImage = `linear-gradient(90deg, rgba(10, 14, 24, 0.96) 0%, rgba(10, 14, 24, 0.82) 42%, rgba(10, 14, 24, 0.18) 82%, rgba(10, 14, 24, 0.85) 100%), url('${bgUrl}')`;
     el.style.borderLeft = `3.5px solid ${primaryColor}`;
     
     const isLegend = (card.rarity === 4 || card.level === 4);
+    const maxCopies = typeof card.maxCopies !== 'undefined' ? card.maxCopies : 3;
+    const isMax = count >= maxCopies;
+    const copiesClass = `de-copies${isLegend ? ' is-legend' : ''}${isMax ? ' is-max' : ''}`;
     const copiesText = isLegend ? '<svg viewBox="0 0 24 24" width="12" height="12" fill="#fbbf24" style="vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>' : `×${count}`;
-    const copiesStyle = isLegend ? 'border-color: #fbbf24; color: #fbbf24;' : '';
 
     el.innerHTML = `
       <span class="de-cost" style="background:${primaryColor};">${card.cost}</span>
       <span class="de-name">${card.name}</span>
-      <span class="de-copies" style="${copiesStyle}">${copiesText}</span>
+      <span class="${copiesClass}">${copiesText}</span>
       <button class="de-remove-btn" title="1枚減らす" aria-label="1枚減らす">
         <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
       </button>

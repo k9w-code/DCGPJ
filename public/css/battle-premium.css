@@ -6569,7 +6569,7 @@ html body #mulligan-cards .mulligan-card.selected-for-redraw {
 
 
 /* ==========================================================================
-   🚨 カード詳細モーダル (card-detail-modal) マスターワーク完全修復
+   【定義】 カード詳細モーダル (card-detail-modal) マスターワーク完全修復
    ========================================================================== */
 html body #card-detail-overlay,
 html body .card-detail-overlay,
@@ -6716,22 +6716,24 @@ html body #card-detail-overlay #btn-close-detail:hover,
 
 .card-detail-modal .cd-cost,
 #cd-cost {
-  width: 44px !important;
-  height: 44px !important;
-  min-width: 44px !important;
-  border-radius: 50% !important;
-  background: radial-gradient(circle at 35% 30%, #60a5fa 0%, #2563eb 45%, #1e3a8a 100%) !important;
-  border: 2px solid rgba(251, 191, 36, 0.9) !important;
-  box-shadow: 0 0 14px rgba(59, 130, 246, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.5), inset 0 -2px 6px rgba(0, 0, 0, 0.6) !important;
+  width: 58px !important;
+  height: 58px !important;
+  min-width: 58px !important;
+  border-radius: 0 !important;
+  border: none !important;
+  background: url('/assets/images/ui/stat_cost.png') center/contain no-repeat !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.75)) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   font-family: 'Cinzel', serif !important;
-  font-size: 22px !important;
+  font-size: 28px !important;
   font-weight: 900 !important;
   color: #ffffff !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9) !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.95), 0 0 8px rgba(0, 0, 0, 0.8) !important;
   flex-shrink: 0 !important;
+  line-height: 1 !important;
 }
 
 .card-detail-modal .cd-name,
@@ -6812,31 +6814,52 @@ html body #card-detail-overlay #btn-close-detail:hover,
 }
 
 .card-detail-modal .cd-rarity,
-.card-detail-modal #cd-rarity {
+.card-detail-modal #cd-rarity,
+#card-detail-overlay .cd-rarity {
   font-family: 'Cinzel', serif !important;
-  font-size: 11px !important;
+  font-size: 11.5px !important;
   font-weight: 800 !important;
-  letter-spacing: 1px !important;
+  letter-spacing: 1.5px !important;
   height: 24px !important;
-  padding: 0 10px !important;
+  padding: 0 12px !important;
   border-radius: 6px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   box-sizing: border-box !important;
   text-transform: uppercase !important;
+  animation: none !important;
+  animation-name: none !important;
+  box-shadow: none !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
 }
 
-.card-detail-modal .cd-rarity.rarity-1 { border: 1px solid #94a3b8 !important; color: #cbd5e1 !important; background: rgba(148, 163, 184, 0.12) !important; }
-.card-detail-modal .cd-rarity.rarity-2 { border: 1px solid #38bdf8 !important; color: #7dd3fc !important; background: rgba(56, 189, 248, 0.15) !important; box-shadow: 0 0 10px rgba(56, 189, 248, 0.25) !important; }
-.card-detail-modal .cd-rarity.rarity-3 { border: 1px solid #c084fc !important; color: #e9d5ff !important; background: rgba(192, 132, 252, 0.15) !important; box-shadow: 0 0 12px rgba(192, 132, 252, 0.3) !important; }
-.card-detail-modal .cd-rarity.rarity-4 { border: 1px solid #fbbf24 !important; color: #fef08a !important; background: linear-gradient(135deg, rgba(180, 83, 9, 0.4), rgba(217, 119, 6, 0.4)) !important; box-shadow: 0 0 16px rgba(251, 191, 36, 0.4) !important; }
+.card-detail-modal .cd-rarity.rarity-1,
+#card-detail-overlay .cd-rarity.rarity-1 { border: 1px solid rgba(148, 163, 184, 0.35) !important; color: #cbd5e1 !important; background: rgba(148, 163, 184, 0.12) !important; box-shadow: none !important; animation: none !important; }
+.card-detail-modal .cd-rarity.rarity-2,
+#card-detail-overlay .cd-rarity.rarity-2 { border: 1px solid rgba(56, 189, 248, 0.45) !important; color: #7dd3fc !important; background: rgba(56, 189, 248, 0.12) !important; box-shadow: none !important; animation: none !important; }
+.card-detail-modal .cd-rarity.rarity-3,
+#card-detail-overlay .cd-rarity.rarity-3 { border: 1px solid rgba(192, 132, 252, 0.45) !important; color: #e9d5ff !important; background: rgba(192, 132, 252, 0.12) !important; box-shadow: none !important; animation: none !important; }
+.card-detail-modal .cd-rarity.rarity-4,
+#card-detail-overlay .cd-rarity.rarity-4 { border: 1px solid rgba(251, 191, 36, 0.55) !important; color: #fbbf24 !important; background: rgba(251, 191, 36, 0.12) !important; box-shadow: none !important; animation: none !important; }
 
-/* 6. スタッツ（ATK / HP ジュエルプレート） */
+/* モーダル内でのレアリティ発光・揺らめきアニメーションの完全無効化 */
+#card-detail-overlay .rarity-1,
+#card-detail-overlay .rarity-2,
+#card-detail-overlay .rarity-3,
+#card-detail-overlay .rarity-4,
+.card-detail-modal .rarity-1,
+.card-detail-modal .rarity-2,
+.card-detail-modal .rarity-3,
+.card-detail-modal .rarity-4 {
+  animation: none !important;
+}
+
+/* 6. スタッツ（ATK / HP ジュエルプレート ＆ 本格3Dスプライトアイコン） */
 .card-detail-modal .cd-stats {
   display: flex !important;
-  gap: 14px !important;
-  margin: 0 !important;
+  gap: 16px !important;
+  margin: 4px 0 !important;
   flex-shrink: 0 !important;
   align-items: center !important;
 }
@@ -6844,35 +6867,57 @@ html body #card-detail-overlay #btn-close-detail:hover,
 .card-detail-modal .cd-jewel-stat {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 8px !important;
-  font-family: 'Cinzel', serif !important;
-  font-size: 20px !important;
-  font-weight: 900 !important;
-  padding: 4px 14px !important;
-  border-radius: 8px !important;
+  gap: 10px !important;
+  height: 48px !important;
+  padding: 0 18px 0 6px !important;
+  border-radius: 24px !important;
   box-sizing: border-box !important;
-  min-width: 78px !important;
+  min-width: 88px !important;
   justify-content: center !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.15) !important;
 }
 
 .card-detail-modal .cd-jewel-atk {
-  background: linear-gradient(135deg, rgba(153, 27, 27, 0.45) 0%, rgba(90, 15, 15, 0.3) 100%) !important;
-  border: 1.5px solid rgba(239, 68, 68, 0.65) !important;
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.25) !important;
+  background: linear-gradient(135deg, rgba(35, 10, 10, 0.92) 0%, rgba(18, 5, 5, 0.92) 100%) !important;
+  border: 1.5px solid rgba(239, 68, 68, 0.7) !important;
   color: #fca5a5 !important;
 }
 
 .card-detail-modal .cd-jewel-hp {
-  background: linear-gradient(135deg, rgba(22, 101, 52, 0.45) 0%, rgba(15, 60, 30, 0.3) 100%) !important;
-  border: 1.5px solid rgba(34, 197, 94, 0.65) !important;
-  box-shadow: 0 0 12px rgba(34, 197, 94, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.25) !important;
+  background: linear-gradient(135deg, rgba(8, 30, 16, 0.92) 0%, rgba(4, 18, 8, 0.92) 100%) !important;
+  border: 1.5px solid rgba(34, 197, 94, 0.7) !important;
+  color: #86efac !important;
+}
+
+.card-detail-modal .cd-stat-gem-icon {
+  width: 40px !important;
+  height: 40px !important;
+  object-fit: contain !important;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.8)) !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+}
+
+.card-detail-modal #cd-attack,
+.card-detail-modal #cd-hp {
+  font-family: 'Cinzel', serif !important;
+  font-size: 26px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.5px !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9) !important;
+  line-height: 1 !important;
+}
+
+.card-detail-modal .cd-jewel-atk #cd-attack {
+  color: #fca5a5 !important;
+}
+
+.card-detail-modal .cd-jewel-hp #cd-hp {
   color: #86efac !important;
 }
 
 .card-detail-modal .cd-stat-decor {
-  width: 17px !important;
-  height: 17px !important;
-  flex-shrink: 0 !important;
+  display: none !important;
 }
 
 /* 7. テキストボックス（効果文・キーワード解説・フレーバーテキスト） */
@@ -6974,13 +7019,14 @@ html body #card-detail-overlay #cd-text,
 .card-detail-modal .cd-flavor-text,
 .card-detail-modal #cd-flavor {
   font-family: 'Shippori Mincho', serif !important;
-  font-size: 12px !important;
-  line-height: 1.5 !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
   color: #94a3b8 !important;
-  font-style: italic !important;
+  font-style: normal !important;
   border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-  padding-top: 8px !important;
+  padding-top: 10px !important;
   margin-top: auto !important;
+  letter-spacing: 0.4px !important;
 }
 
 
