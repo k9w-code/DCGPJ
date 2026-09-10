@@ -385,7 +385,19 @@ window.showCardDetail = function(card) {
   };
 
   overlay.style.display = 'flex';
-  const isShield = card.type === 'shield' || card.cardType === 'shield';
+  const isShield = card.type === 'shield' || card.cardType === 'shield' || (card.id && String(card.id).startsWith('S'));
+
+  // マスターデータから不足プロパティを自動補完
+  let master = null;
+  if (isShield && window.allShields) {
+    master = window.allShields.find(s => s.id === card.id);
+  } else if (!isShield && window.allCards) {
+    master = window.allCards.find(c => c.id === card.id);
+  }
+  if (master) {
+    card = Object.assign({}, master, card);
+  }
+
   const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
   const firstColor = colors[0].toLowerCase();
 
@@ -412,7 +424,10 @@ window.showCardDetail = function(card) {
     if (isShield) {
       costEl.classList.add('is-shield-durability');
       costEl.style.display = 'flex';
-      costEl.textContent = (typeof card.durability !== 'undefined' && card.durability !== null) ? card.durability : (card.shieldHp || 1);
+      const durVal = (typeof card.currentDurability !== 'undefined' && card.currentDurability !== null)
+        ? card.currentDurability
+        : ((typeof card.durability !== 'undefined' && card.durability !== null) ? card.durability : (card.maxDurability || 1));
+      costEl.textContent = durVal;
     } else if (card.cost !== undefined) {
       costEl.classList.remove('is-shield-durability');
       costEl.style.display = 'flex';
@@ -599,42 +614,59 @@ window.showCardDetail = function(card) {
     }
     textEl.innerHTML = mainText + modHTML;
 
-    // --- 召喚トークンセクションの追加 ---
+    // --- 召喚トークン・関連カードセクションの追加 ---
+    const allKnownCards = window.allCards || [];
     const tokenAbilities = (card.abilities || []).filter(a => a.effect === 'summon_token');
-    if (tokenAbilities.length > 0) {
-      const tokenIds = [...new Set(tokenAbilities.map(a => a.tokenId || a.value))];
-      const tokenCards = tokenIds.map(id => (window.allCards || []).find(c => c.id === id)).filter(Boolean);
+    const tokenIds = new Set(tokenAbilities.map(a => a.tokenId || a.value));
 
-      if (tokenCards.length > 0) {
-        const tokenSection = document.createElement('div');
-        tokenSection.className = 'cd-token-section';
-        tokenSection.innerHTML = `
-          <div class="cd-token-label">召喚トークン (SUMMON TOKEN)</div>
-          <div class="cd-token-list">
-            ${tokenCards.map(tc => `
-              <div class="cd-token-item" data-token-id="${tc.id}">
+    // テキスト内の「カード名」を走査して関連カードを自動検出（例: 「真龍ヴァサーゴ」を召喚する）
+    const combinedText = `${card.text || ''} ${card.effect_description || ''}`;
+    const nameMatches = combinedText.match(/「([^」]+)」/g) || [];
+    nameMatches.forEach(bracketName => {
+      const cleanName = bracketName.replace(/[「」]/g, '').trim();
+      const matched = allKnownCards.find(c => c.name === cleanName || c.id === cleanName);
+      if (matched && matched.id !== card.id) {
+        tokenIds.add(matched.id);
+      }
+    });
+
+    const tokenCards = Array.from(tokenIds).map(id => allKnownCards.find(c => c.id === id)).filter(Boolean);
+
+    if (tokenCards.length > 0) {
+      const tokenSection = document.createElement('div');
+      tokenSection.className = 'cd-token-section';
+      tokenSection.innerHTML = `
+        <div class="cd-token-label">関連カード (RELATED CARDS)</div>
+        <div class="cd-token-list">
+          ${tokenCards.map(tc => {
+            const isUnit = (tc.type || '').toLowerCase() === 'unit';
+            const statsHtml = isUnit 
+              ? `<div class="cd-token-stats">
+                   <span class="atk-box">${tc.attack !== undefined ? tc.attack : (tc.atk || 0)}</span>
+                   <span class="hp-box">${tc.hp !== undefined ? tc.hp : (tc.life || 0)}</span>
+                 </div>`
+              : '';
+            return `
+              <div class="cd-token-item" data-token-id="${tc.id}" title="${tc.name}の詳細を表示">
                 <div class="cd-token-icon" style="background-image: url('${window.getCardImagePath(tc)}'), url('/assets/images/ui/card_back.jpeg')"></div>
                 <div class="cd-token-name">${tc.name}</div>
-                <div class="cd-token-stats">
-                  <span class="atk-box">${tc.attack}</span>
-                  <span class="hp-box">${tc.hp}</span>
-                </div>
+                ${statsHtml}
               </div>
-            `).join('')}
-          </div>
-        `;
-        textEl.appendChild(tokenSection);
+            `;
+          }).join('')}
+        </div>
+      `;
+      textEl.appendChild(tokenSection);
 
-        // クリックイベントの付与
-        tokenSection.querySelectorAll('.cd-token-item').forEach(item => {
-          item.onclick = (e) => {
-            e.stopPropagation();
-            const tid = item.dataset.tokenId;
-            const tc = (window.allCards || []).find(c => c.id === tid);
-            if (tc) window.showCardDetail(tc);
-          };
-        });
-      }
+      // クリックイベントの付与
+      tokenSection.querySelectorAll('.cd-token-item').forEach(item => {
+        item.onclick = (e) => {
+          e.stopPropagation();
+          const tid = item.dataset.tokenId;
+          const tc = allKnownCards.find(c => c.id === tid);
+          if (tc) window.showCardDetail(tc);
+        };
+      });
     }
   }
 

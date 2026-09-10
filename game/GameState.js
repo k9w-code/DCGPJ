@@ -78,6 +78,7 @@ function createUnitInstance(cardData, ownerId) {
 }
 
 function createShieldInstance(shieldData) {
+  const dur = shieldData.durability || shieldData.life || 1;
   return {
     id: shieldData.id,
     artId: shieldData.artId || shieldData.id,
@@ -86,8 +87,13 @@ function createShieldInstance(shieldData) {
     skillId: shieldData.skillId,
     skill: shieldData.skill,
     rarity: shieldData.rarity || 1,
-    maxDurability: shieldData.durability,
-    currentDurability: shieldData.durability,
+    durability: dur,
+    maxDurability: dur,
+    currentDurability: dur,
+    text: shieldData.text || (shieldData.skill ? shieldData.skill.text : ''),
+    abilities: shieldData.abilities || [],
+    description: shieldData.description || (shieldData.skill ? shieldData.skill.description : '') || '',
+    flavorText: shieldData.flavorText || shieldData.description || (shieldData.skill ? shieldData.skill.description : '') || '',
     destroyed: false,
   };
 }

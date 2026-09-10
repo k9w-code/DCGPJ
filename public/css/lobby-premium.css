@@ -1008,7 +1008,6 @@ input#player-name:focus {
 
 /* デッキ構築画面のプレビューカード画像表示の完全絶対固定（幅240px・アスペクト比3/4・自動伸縮ゼロ） */
 .preview-panel #preview-content .preview-card-image,
-#cd-image,
 .preview-card-image {
   width: 240px !important;
   min-width: 240px !important;

@@ -981,29 +981,43 @@ function showPreview(type, data) {
       abilitiesHtml = `<div class="preview-ability-text-left" style="margin: 0 !important; padding: 0 !important; background: transparent !important; border: none !important; text-align: left !important; font-size: 15.5px !important; font-weight: 700 !important; color: #ffffff !important; line-height: 1.55 !important; text-shadow: 0 1px 3px #000 !important; display: block !important; width: 100% !important; box-sizing: border-box !important; float: left !important; clear: both !important;">${cleanText}</div>`;
     }
 
-    // 召喚トークンセクション
+    // 召喚トークン・関連カードセクション
     let tokenHtml = '';
+    const allKnownCards = window.allCards || [];
     const tokenAbilities = (data.abilities || []).filter(a => a.effect === 'summon_token');
-    if (tokenAbilities.length > 0) {
-      const tokenIds = [...new Set(tokenAbilities.map(a => a.tokenId || a.value))];
-      const tokenCards = tokenIds.map(id => (window.allCards || []).find(c => c.id === id)).filter(Boolean);
+    const tokenIds = new Set(tokenAbilities.map(a => a.tokenId || a.value));
 
-      if (tokenCards.length > 0) {
-        tokenHtml = `
-          <div class="preview-token-section" style="margin-top: 10px; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 6px;">
-            <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 6px;">召喚トークン</div>
-            <div class="token-list">
-              ${tokenCards.map(tc => `
-                <div class="token-item" style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 4px; cursor: pointer;" onclick="var tc = (window.allCards || []).find(function(c){ return c.id === '${tc.id}'; }); if (tc) window.showCardDetail(tc);">
-                  <div style="width: 26px; height: 26px; background-image: url('${window.getCardImagePath(tc)}'); background-size: cover; border-radius: 2px;"></div>
-                  <div style="flex:1; font-size: 11px; font-weight: bold;">${tc.name}</div>
-                  <div style="font-size: 10px;"><span class="atk-box">${tc.attack || tc.atk || 0}</span> <span class="hp-box">${tc.hp || tc.life || 0}</span></div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
+    const combinedText = `${data.text || ''} ${data.effect_description || ''}`;
+    const nameMatches = combinedText.match(/「([^」]+)」/g) || [];
+    nameMatches.forEach(bracketName => {
+      const cleanName = bracketName.replace(/[「」]/g, '').trim();
+      const matched = allKnownCards.find(c => c.name === cleanName || c.id === cleanName);
+      if (matched && matched.id !== data.id) {
+        tokenIds.add(matched.id);
       }
+    });
+
+    const tokenCards = Array.from(tokenIds).map(id => allKnownCards.find(c => c.id === id)).filter(Boolean);
+
+    if (tokenCards.length > 0) {
+      tokenHtml = `
+        <div class="preview-token-section" style="margin-top: 10px; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 6px; width: 100%;">
+          <div style="font-size: 11px; font-weight: 700; color: #fbbf24; margin-bottom: 6px;">関連カード</div>
+          <div class="token-list" style="display: flex; flex-direction: column; gap: 4px;">
+            ${tokenCards.map(tc => {
+              const isUnit = (tc.type || '').toLowerCase() === 'unit';
+              const statsStr = isUnit ? `<div style="font-size: 11px; font-weight: 800;"><span style="color: #fca5a5;">${tc.attack || tc.atk || 0}</span> / <span style="color: #86efac;">${tc.hp || tc.life || 0}</span></div>` : '';
+              return `
+                <div class="token-item" style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); padding: 5px 8px; border-radius: 6px; cursor: pointer;" onclick="var tc = (window.allCards || []).find(function(c){ return c.id === '${tc.id}'; }); if (tc) window.showCardDetail(tc);">
+                  <div style="width: 28px; height: 28px; background-image: url('${window.getCardImagePath(tc)}'); background-size: cover; border-radius: 4px; flex-shrink: 0;"></div>
+                  <div style="flex:1; font-size: 12px; font-weight: bold; color: #fff;">${tc.name}</div>
+                  ${statsStr}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
     }
 
     // 案A: 左パネルではフレーバーテキストを非表示に（※カード詳細モーダルでのみ表示）

@@ -123,12 +123,13 @@ async function loadAllData(options = {}) {
     };
   }
 
-  // \u30ab\u30fc\u30c9\u30c7\u30fc\u30bf\u306e\u69cb\u7bc9
+  // カードデータの構築
   const cards = cardsRaw.filter(row => row.id).map(row => {
     const abilities = [];
-    const trigger = row.ability_trigger || row.trigger;
-    const effect = row.ability_effect || row.effect;
-    const valueStr = row.ability_value || row.value;
+    const trigger = row.ability_trigger_1 || row.ability_trigger || row.trigger;
+    const effect = row.ability_effect_1 || row.ability_effect || row.effect;
+    const valueStr = row.ability_value_1 || row.ability_value || row.value;
+    const target = row.ability_target_1 || row.ability_target || row.target;
     
     if (trigger && trigger.trim() !== '' && trigger.trim() !== 'none') {
       abilities.push({
@@ -136,21 +137,21 @@ async function loadAllData(options = {}) {
         trigger: trigger.trim(),
         effect: effect ? effect.trim() : '',
         value: isNaN(parseInt(valueStr)) ? (valueStr ? valueStr.trim() : '') : parseInt(valueStr),
-        target: row.target ? row.target.trim() : '',
+        target: target ? target.trim() : '',
         text: row.text ? row.text.trim() : '',
         description: row.description || '',
         condition: row.condition ? row.condition.trim() : ''
       });
     }
 
-    const trigger2 = row.trigger2;
-    const effect2 = row.effect2;
-    const valueStr2 = row.value2;
-    const target2 = row.target2;
+    const trigger2 = row.ability_trigger_2 || row.trigger2;
+    const effect2 = row.ability_effect_2 || row.effect2;
+    const valueStr2 = row.ability_value_2 || row.value2;
+    const target2 = row.ability_target_2 || row.ability_target_2 || row.target2;
 
-    // trigger2 \u304c 'none' \u307e\u305f\u306f\u7a7a\u6b04\u3067\u3082\u3001effect2 \u304c\u3042\u308c\u3070 trigger1 \u3092\u7d99\u627f\u3059\u308b
+    // trigger2 が 'none' または空欄でも、effect2 があれば trigger1 を継承する
     if ((trigger2 && trigger2.trim() !== '' && trigger2.trim() !== 'none') || (effect2 && effect2.trim() !== '')) {
-      const finalTrigger2 = (trigger2 && trigger2.trim() !== 'none' && trigger2.trim() !== '') ? trigger2.trim() : trigger.trim();
+      const finalTrigger2 = (trigger2 && trigger2.trim() !== 'none' && trigger2.trim() !== '') ? trigger2.trim() : (trigger ? trigger.trim() : '');
       abilities.push({
         id: `${row.id}_ability2`,
         trigger: finalTrigger2,
@@ -245,6 +246,8 @@ async function loadAllData(options = {}) {
       durability: isNaN(life) ? 1 : life,
       abilities: abilities,
       text: row.text || '', // トップレベルにも追加
+      description: row.description || '',
+      flavorText: row.description || '',
       // 過去のコードとの互換性のために skill オブジェクトもメインのアビリティで構築
       skill: abilities.length > 0 ? {
         id: abilities[0].id,

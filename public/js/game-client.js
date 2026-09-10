@@ -289,14 +289,21 @@ fetch('/api/keywords')
   })
   .catch(err => console.error('   [CLIENT] Keyword map load failed:', err));
 
-// === \u30bf\u30fc\u30b2\u30c3\u30c8\u9078\u629e\u51e6\u7406 ===
-fetch('/api/cards')
+fetch('/api/cards?dev=true')
   .then(res => res.json())
   .then(data => {
     window.allCards = data;
     console.log('   [CLIENT] All cards loaded:', data.length, 'cards found.');
   })
   .catch(err => console.error('   [CLIENT] Cards load failed:', err));
+
+fetch('/api/shields?dev=true')
+  .then(res => res.json())
+  .then(data => {
+    window.allShields = data;
+    console.log('   [CLIENT] All shields loaded:', data.length, 'shields found.');
+  })
+  .catch(err => console.error('   [CLIENT] Shields load failed:', err));
 
 // === ターゲット選択処理 ===
 // これにより 接続完了直後にデータが届いてもこぼさず受け取れます 
