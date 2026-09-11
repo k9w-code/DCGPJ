@@ -4052,43 +4052,84 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
 }
 
 .deck-slots {
-  display: flex;
-  gap: 4px;
+  display: flex !important;
+  gap: 6px !important;
+  align-items: center !important;
 }
 
 .deck-slots .save-slot {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-family: 'Outfit', 'Inter', sans-serif;
-  font-weight: 700;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.4);
-  transition: all 0.2s ease;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 7px !important;
+  background: rgba(15, 23, 42, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  position: relative !important;
+  padding: 2px 0 3px 0 !important;
+  box-sizing: border-box !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+}
+
+.deck-slots .save-slot .slot-num {
+  font-family: 'Rajdhani', sans-serif !important;
+  font-weight: 800 !important;
+  font-size: 14px !important;
+  color: #94a3b8 !important;
+  line-height: 1 !important;
+}
+
+.deck-slots .save-slot .slot-lamp {
+  width: 5px !important;
+  height: 5px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  margin-top: 2px !important;
+  transition: all 0.2s ease !important;
 }
 
 .deck-slots .save-slot:hover {
-  border-color: rgba(139, 92, 246, 0.6);
-  color: #fff;
-  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(251, 191, 36, 0.6) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6) !important;
+}
+
+.deck-slots .save-slot:hover .slot-num {
+  color: #ffffff !important;
 }
 
 .deck-slots .save-slot.active {
-  background: rgba(139, 92, 246, 0.4);
-  border-color: rgba(139, 92, 246, 0.8);
-  color: #fff;
-  box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)) !important;
+  border: 1.5px solid #fbbf24 !important;
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3) !important;
 }
 
-.deck-slots .save-slot.has-data {
-  color: #fbbf24;
-  border-color: rgba(251, 191, 36, 0.3);
+.deck-slots .save-slot.active .slot-num {
+  color: #fbbf24 !important;
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.6) !important;
+}
+
+.deck-slots .save-slot.has-data .slot-lamp {
+  background: #22c55e !important;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.8) !important;
+}
+
+.deck-slots .save-slot.active.has-data .slot-lamp {
+  background: #fbbf24 !important;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.9) !important;
+}
+
+.deck-slots .save-slot.saved-flash {
+  animation: slot-flash-save 0.6s ease-out !important;
+}
+
+@keyframes slot-flash-save {
+  0% { transform: scale(1.15); border-color: #22c55e; box-shadow: 0 0 16px rgba(34, 197, 94, 0.9); }
+  100% { transform: scale(1); }
 }
 
 /* --- ヘッダーアクションボタン群 --- */
@@ -4223,152 +4264,254 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
 
 /* COLOR BALANCE バー */
 .color-balance-bar {
-  display: flex;
-  height: 8px;
-  border-radius: 4px;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex !important;
+  height: 9px !important;
+  border-radius: 5px !important;
+  overflow: hidden !important;
+  background: rgba(15, 23, 42, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7) !important;
+  margin-top: 5px !important;
 }
 
 .color-segment {
-  min-width: 3px;
-  transition: width 0.3s ease;
+  min-width: 4px !important;
+  transition: width 0.3s ease !important;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3) !important;
 }
 
-.color-segment.segment-white { background: #e2e8f0; }
-.color-segment.segment-red   { background: #ef4444; }
-.color-segment.segment-blue  { background: #3b82f6; }
-.color-segment.segment-green { background: #22c55e; }
-.color-segment.segment-black { background: #8b5cf6; }
+.color-segment.segment-white { background: #e2e8f0 !important; }
+.color-segment.segment-red   { background: #ef4444 !important; }
+.color-segment.segment-blue  { background: #3b82f6 !important; }
+.color-segment.segment-green { background: #22c55e !important; }
+.color-segment.segment-black { background: #8b5cf6 !important; }
 
-/* MANA CURVE 棒グラフ */
+/* MANA CURVE 棒グラフ（ラグジュアリー・ヒストグラム仕様） */
 .mana-curve-chart {
-  display: flex;
-  gap: 3px;
-  align-items: flex-end;
-  height: 50px;
-  padding-top: 4px;
+  display: flex !important;
+  gap: 5px !important;
+  align-items: flex-end !important;
+  height: 64px !important;
+  padding: 4px 4px 0 4px !important;
+  box-sizing: border-box !important;
 }
 
 .mana-bar-wrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  height: 100%;
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 3px !important;
+  height: 100% !important;
+  cursor: pointer !important;
+  transition: transform 0.15s ease !important;
+}
+
+.mana-bar-wrapper:hover {
+  transform: translateY(-2px) !important;
 }
 
 .mana-bar-value {
-  font-family: 'Outfit', 'Inter', sans-serif;
-  font-size: 9px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.5);
-  height: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-family: 'Rajdhani', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  color: #94a3b8 !important;
+  height: 14px !important;
+  line-height: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: color 0.15s ease !important;
+}
+
+.mana-bar-wrapper.has-cards .mana-bar-value {
+  color: #fbbf24 !important;
+  text-shadow: 0 0 6px rgba(251, 191, 36, 0.5) !important;
 }
 
 .mana-bar-outer {
-  flex: 1;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 3px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  overflow: hidden;
+  flex: 1 !important;
+  width: 100% !important;
+  max-width: 18px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-radius: 4px 4px 2px 2px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6) !important;
 }
 
 .mana-bar-inner {
-  width: 100%;
-  background: linear-gradient(to top, rgba(139, 92, 246, 0.7), rgba(139, 92, 246, 0.4));
-  border-radius: 3px 3px 0 0;
-  transition: height 0.3s ease;
-  min-height: 0;
+  width: 100% !important;
+  background: linear-gradient(to top, rgba(217, 119, 6, 0.85), rgba(251, 191, 36, 0.95)) !important;
+  border-radius: 3px 3px 0 0 !important;
+  transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  min-height: 0 !important;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.4) !important;
+}
+
+.mana-bar-wrapper:hover .mana-bar-inner,
+.mana-bar-wrapper.active-filter .mana-bar-inner {
+  background: linear-gradient(to top, #ea580c, #fde047) !important;
+  box-shadow: 0 0 12px rgba(253, 224, 71, 0.8) !important;
+}
+
+.mana-bar-wrapper.active-filter .mana-bar-outer {
+  border-color: #fbbf24 !important;
 }
 
 .mana-bar-label {
-  font-family: 'Outfit', 'Inter', sans-serif;
-  font-size: 9px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.35);
-  height: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-family: 'Rajdhani', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #64748b !important;
+  height: 14px !important;
+  line-height: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.mana-bar-wrapper:hover .mana-bar-label,
+.mana-bar-wrapper.active-filter .mana-bar-label {
+  color: #fbbf24 !important;
 }
 
 /* --- デッキリスト改善 --- */
 .deck-list-container {
-  flex: 1;
-  overflow-y: auto;
-  padding: 4px 0;
-  margin: 0;
+  flex: 1 !important;
+  overflow-y: auto !important;
+  padding: 4px 0 !important;
+  margin: 0 !important;
 }
 
 .deck-list-container::-webkit-scrollbar {
-  width: 4px;
+  width: 4px !important;
 }
 
 .deck-list-container::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.3);
-  border-radius: 2px;
+  background: rgba(251, 191, 36, 0.3) !important;
+  border-radius: 2px !important;
 }
 
+/* --- デッキエントリー（高級カードストリップ） --- */
 .deck-entry {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 10px;
-  border-radius: 6px;
-  margin: 1px 4px;
-  transition: all 0.15s ease;
-  cursor: pointer;
-  border-left: 3px solid transparent;
-  min-height: 28px;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  margin: 2px 4px !important;
+  min-height: 32px !important;
+  height: 32px !important;
+  box-sizing: border-box !important;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer !important;
+  position: relative !important;
+  overflow: hidden !important;
+  background-size: cover !important;
+  background-position: right center !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5) !important;
 }
 
 .deck-entry:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-left-color: rgba(139, 92, 246, 0.6);
+  transform: translateX(2px) !important;
+  border-color: rgba(251, 191, 36, 0.6) !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.8), 0 0 10px rgba(251, 191, 36, 0.25) !important;
 }
 
 .de-cost {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Outfit', 'Inter', sans-serif;
-  font-weight: 800;
-  font-size: 11px;
-  color: #fff;
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
-  flex-shrink: 0;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-family: 'Rajdhani', sans-serif !important;
+  font-weight: 800 !important;
+  font-size: 13.5px !important;
+  color: #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
+  flex-shrink: 0 !important;
+  line-height: 1 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6) !important;
 }
 
 .de-name {
-  flex: 1;
-  font-size: 12px;
-  font-weight: 500;
-  color: #e2e8f0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.3;
+  flex: 1 !important;
+  font-family: 'Shippori Mincho', 'Noto Sans JP', serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.3 !important;
+  letter-spacing: 0.3px !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 1), 0 0 6px rgba(0, 0, 0, 0.95), 0 0 2px #000 !important;
 }
 
 .de-copies {
-  font-family: 'Outfit', 'Inter', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  color: #fbbf24;
-  flex-shrink: 0;
+  font-family: 'Rajdhani', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  color: #e2e8f0 !important;
+  background: rgba(15, 23, 42, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 4px !important;
+  padding: 1px 7px !important;
+  line-height: 1.2 !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5) !important;
+  transition: all 0.15s ease !important;
+}
+
+.de-copies.is-max {
+  color: #fbbf24 !important;
+  border-color: rgba(251, 191, 36, 0.55) !important;
+  background: rgba(251, 191, 36, 0.15) !important;
+  text-shadow: 0 0 6px rgba(251, 191, 36, 0.5) !important;
+}
+
+.de-copies.is-legend {
+  padding: 1px 5px !important;
+  border-color: rgba(251, 191, 36, 0.7) !important;
+  background: rgba(251, 191, 36, 0.2) !important;
+}
+
+.de-remove-btn {
+  background: rgba(220, 38, 38, 0.8) !important;
+  border: 1px solid rgba(248, 113, 113, 0.4) !important;
+  color: #ffffff !important;
+  border-radius: 4px !important;
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  opacity: 0 !important;
+  transform: scale(0.8) !important;
+  transition: all 0.15s ease !important;
+  margin-left: 2px !important;
+}
+
+.deck-entry:hover .de-remove-btn {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+}
+
+.de-remove-btn:hover {
+  background: rgba(239, 68, 68, 1) !important;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.6) !important;
 }
 
 /* --- シールドリスト改善 --- */
@@ -5060,38 +5203,6 @@ body, button, select, input, .player-name, .turn-indicator, .panel-subtitle, .bt
 
 .card-item.rarity-2 {
   border-color: rgba(59, 130, 246, 0.25);
-}
-
-/* --- 右パネル: スロットボタン改善 --- */
-.deck-slots .save-slot {
-  width: 28px !important;
-  height: 28px !important;
-  font-size: 11px !important;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding: 0 2px;
-}
-
-/* デッキリストの行をさらにコンパクトに */
-.deck-entry {
-  padding: 4px 8px;
-  min-height: 26px;
-  gap: 6px;
-}
-
-.de-cost {
-  width: 20px;
-  height: 20px;
-  font-size: 10px;
-}
-
-.de-name {
-  font-size: 11px;
-}
-
-.de-copies {
-  font-size: 11px;
 }
 
 /* デッキビルダー一覧のレジェンダリーカードのホイルシャイン演出のオミット (ユーザーの要望による) */

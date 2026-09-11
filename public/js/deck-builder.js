@@ -467,6 +467,7 @@ function initUI() {
   }
 
   // デッキ保存スロットの生成と初期化
+  // デッキ保存スロットの生成と初期化（1〜5の固定ナンバリング＆ステータスランプ）
   const slotsContainer = document.getElementById('deck-slots');
   if (slotsContainer && slotsContainer.children.length === 0) {
     for (let i = 0; i < 5; i++) {
@@ -474,17 +475,16 @@ function initUI() {
       slot.className = `save-slot${i === currentSaveSlot ? ' active' : ''}`;
       slot.dataset.slot = i;
       
-      const savedName = localStorage.getItem(`dcg_deck_name_slot_${i}`) || `${i + 1}`;
-      slot.textContent = savedName;
+      const savedName = localStorage.getItem(`dcg_deck_name_slot_${i}`) || `スロット ${i + 1}`;
+      slot.innerHTML = `<span class="slot-num">${i + 1}</span><span class="slot-lamp"></span>`;
+      slot.title = `スロット ${i + 1}: ${savedName}`;
       slotsContainer.appendChild(slot);
     }
   }
 
-  // デッキ保存スロット
+  // デッキ保存スロット切り替え
   document.querySelectorAll('.save-slot').forEach(slot => {
-    slot.addEventListener('click', (e) => {
-      if (e.target.tagName && e.target.tagName.toLowerCase() === 'input') return;
-      
+    slot.addEventListener('click', () => {
       document.querySelectorAll('.save-slot').forEach(s => s.classList.remove('active'));
       slot.classList.add('active');
       currentSaveSlot = parseInt(slot.dataset.slot);
@@ -493,53 +493,8 @@ function initUI() {
       renderDeckList();
       renderShieldSlotsList();
       updateSubmitButton();
-    });
-
-    slot.addEventListener('dblclick', () => {
-      if (slot.querySelector('input')) return;
-
-      const currentName = slot.textContent.trim();
-      slot.innerHTML = '';
-      
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.value = currentName;
-      input.style.width = '90px';
-      input.style.background = '#0f172a';
-      input.style.color = '#ffffff';
-      input.style.border = '1px solid #fbbf24';
-      input.style.borderRadius = '6px';
-      input.style.padding = '4px 6px';
-      input.style.fontSize = '12px';
-      input.style.textAlign = 'center';
-      input.style.outline = 'none';
-      input.style.boxShadow = '0 0 10px rgba(251, 191, 36, 0.3)';
-      
-      slot.appendChild(input);
-      input.focus();
-      input.select();
-
-      const finishEdit = () => {
-        let newName = input.value.trim();
-        if (!newName) newName = `${parseInt(slot.dataset.slot) + 1}`;
-        localStorage.setItem(`dcg_deck_name_slot_${slot.dataset.slot}`, newName);
-        slot.innerHTML = '';
-        slot.textContent = newName;
-        if (window.audioManager) window.audioManager.playSE('click');
-      };
-
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          finishEdit();
-        } else if (e.key === 'Escape') {
-          slot.innerHTML = '';
-          slot.textContent = currentName;
-        }
-      });
-
-      input.addEventListener('blur', () => {
-        finishEdit();
-      });
+      updateSlotIndicators();
+      if (window.audioManager) window.audioManager.playSE('click');
     });
   });
 
@@ -661,7 +616,15 @@ function loadDeckFromSlot(slotIndex) {
 function updateSlotIndicators() {
   document.querySelectorAll('.save-slot').forEach(slot => {
     const idx = slot.dataset.slot;
+    const num = parseInt(idx) + 1;
     const raw = localStorage.getItem(SAVE_KEY_PREFIX + idx);
+    const savedName = localStorage.getItem(`dcg_deck_name_slot_${idx}`) || `スロット ${num}`;
+    slot.title = `スロット ${num}: ${savedName}`;
+    
+    if (!slot.querySelector('.slot-num')) {
+      slot.innerHTML = `<span class="slot-num">${num}</span><span class="slot-lamp"></span>`;
+    }
+    
     if (raw) {
       try {
         const data = JSON.parse(raw);
@@ -1256,21 +1219,24 @@ function renderDeckList() {
     const colors = card.colors && card.colors.length > 0 ? card.colors : [card.color || 'neutral'];
     const primaryColor = getColorCSS(colors[0]);
 
-    el.style.backgroundImage = `linear-gradient(90deg, rgba(10, 14, 24, 0.96) 0%, rgba(10, 14, 24, 0.82) 42%, rgba(10, 14, 24, 0.18) 82%, rgba(10, 14, 24, 0.85) 100%), url('${bgUrl}')`;
+    // 左側の文字保護を強化した多重グラデーション
+    el.style.backgroundImage = `linear-gradient(90deg, rgba(8, 12, 22, 0.98) 0%, rgba(8, 12, 22, 0.90) 38%, rgba(8, 12, 22, 0.35) 75%, rgba(8, 12, 22, 0.92) 100%), url('${bgUrl}')`;
     el.style.borderLeft = `3.5px solid ${primaryColor}`;
     
     const isLegend = (card.rarity === 4 || card.level === 4);
     const maxCopies = typeof card.maxCopies !== 'undefined' ? card.maxCopies : 3;
     const isMax = count >= maxCopies;
     const copiesClass = `de-copies${isLegend ? ' is-legend' : ''}${isMax ? ' is-max' : ''}`;
-    const copiesText = isLegend ? '<svg viewBox="0 0 24 24" width="12" height="12" fill="#fbbf24" style="vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>' : `×${count}`;
+    const copiesText = isLegend 
+      ? '<svg viewBox="0 0 24 24" width="13" height="13" fill="#fbbf24" style="vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>' 
+      : `×${count}`;
 
     el.innerHTML = `
-      <span class="de-cost" style="background:${primaryColor};">${card.cost}</span>
+      <span class="de-cost" style="border-color:${primaryColor} !important; background: radial-gradient(circle, rgba(15,23,42,0.9) 30%, ${primaryColor} 140%);">${card.cost}</span>
       <span class="de-name">${card.name}</span>
       <span class="${copiesClass}">${copiesText}</span>
       <button class="de-remove-btn" title="1枚減らす" aria-label="1枚減らす">
-        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
     `;
 
@@ -1354,7 +1320,7 @@ function renderDeckAnalysis() {
   if (bar) {
     bar.innerHTML = '';
     if (totalCardsForColors === 0) {
-      bar.innerHTML = '<div style="color: var(--text-dim); font-size: 11px; text-align: center; width: 100%; line-height: 12px;">デッキが空です</div>';
+      bar.innerHTML = '';
     } else {
       const colorsOrder = ['white', 'red', 'blue', 'green', 'black'];
       colorsOrder.forEach(col => {
@@ -1432,23 +1398,17 @@ function renderShieldSlotsList() {
       
       if (shield) {
         const bgUrl = getShieldImagePath(shield);
-        el.style.backgroundImage = `linear-gradient(90deg, rgba(12, 16, 26, 0.95) 0%, rgba(12, 16, 26, 0.8) 45%, rgba(12, 16, 26, 0.3) 100%), url('${bgUrl}')`;
+        el.style.backgroundImage = `linear-gradient(90deg, rgba(8, 12, 22, 0.98) 0%, rgba(8, 12, 22, 0.88) 45%, rgba(8, 12, 22, 0.2) 100%), url('${bgUrl}')`;
 
         el.innerHTML = `
-          <div class="shield-durability-crest" title="耐久値">
-            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            <span>${shield.durability}</span>
+          <div class="shield-durability-crest" title="耐久値: ${shield.durability}">
+            <img class="shield-crest-img" src="/assets/images/ui/stat_durability.png" alt="DUR">
+            <span class="shield-crest-num">${shield.durability}</span>
           </div>
           <div class="shield-socket-name" title="${shield.name}">${shield.name}</div>
           <div class="shield-socket-controls">
-            <button class="shield-btn-order btn-up" ${i === 0 ? 'disabled' : ''} title="上へ移動">
-              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
-            </button>
-            <button class="shield-btn-order btn-down" ${i === selectedShields.length - 1 ? 'disabled' : ''} title="下へ移動">
-              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
             <button class="shield-btn-remove" title="シールドを解除" aria-label="解除">
-              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
           </div>
         `;
@@ -1456,8 +1416,6 @@ function renderShieldSlotsList() {
         el.addEventListener('mouseenter', () => showPreview('shield', shield));
         el.querySelector('.shield-socket-name').addEventListener('click', () => showPreview('shield', shield));
         
-        el.querySelector('.btn-up').addEventListener('click', (e) => { e.stopPropagation(); moveShield(i, -1); });
-        el.querySelector('.btn-down').addEventListener('click', (e) => { e.stopPropagation(); moveShield(i, 1); });
         el.querySelector('.shield-btn-remove').addEventListener('click', (e) => {
           e.stopPropagation();
           toggleShield(shield.id);
@@ -1474,8 +1432,10 @@ function renderShieldSlotsList() {
       const el = document.createElement('div');
       el.className = 'shield-socket-item shield-socket-empty';
       el.innerHTML = `
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:#fbbf24;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <span>シールドを選択 (＋)</span>
+        <div class="shield-empty-crest">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <span class="shield-empty-text">第${i + 1}スロット: 聖遺物シールドを選択 (+)</span>
       `;
       el.addEventListener('click', () => {
         if (window.audioManager) window.audioManager.playSE('click');
@@ -1503,6 +1463,20 @@ function updateSubmitButton() {
   
   btn.disabled = !isReady;
   btn.classList.toggle('ready-to-battle', isReady);
+
+  if (isReady) {
+    btn.innerHTML = `<span class="submit-btn-text">このデッキで対戦開始</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+  } else {
+    let missingText = '';
+    if (totalCards < 40) {
+      missingText = `デッキ未完成 (残り ${40 - totalCards}枚)`;
+    } else if (totalCards > 40) {
+      missingText = `デッキ超過 (${totalCards - 40}枚減らしてください)`;
+    } else if (selectedShields.length < 3) {
+      missingText = `シールド未設定 (残り ${3 - selectedShields.length}枠)`;
+    }
+    btn.innerHTML = `<span class="submit-btn-text">${missingText}</span>`;
+  }
 
   if (isReady && !wasReady) {
     if (window.audioManager) window.audioManager.playSE('levelUp');
