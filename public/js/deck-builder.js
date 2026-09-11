@@ -723,10 +723,21 @@ function renderCardGrid() {
       ? `<div class="grid-stats"><span class="gs-atk">${card.attack}</span><span class="gs-hp">${card.hp}</span></div>` 
       : ``;
       
+    let deckBadgeHtml = '';
+    if (count > 0) {
+      if (isMax) {
+        const maxText = maxCopies === 1 ? '★MAX' : `${count} MAX`;
+        deckBadgeHtml = `<div class="grid-deck-badge badge-max${maxCopies === 1 ? ' legend-max' : ''}">${maxText}</div>`;
+      } else {
+        deckBadgeHtml = `<div class="grid-deck-badge">×${count}</div>`;
+      }
+    }
+      
     el.innerHTML = `
       <div class="grid-card-overlay">
         <div class="grid-cost" style="border-color:${primaryColor} !important;">${card.cost}</div>
         ${statsOverlay}
+        ${deckBadgeHtml}
         <div class="grid-card-name">${card.name}</div>
       </div>
       <img src="${window.getCardImagePath(card)}" style="display:none;" onerror="${IMG_FALLBACK}">
@@ -790,7 +801,7 @@ function renderShieldGrid() {
     });
     
     const setBadge = isSelected 
-      ? `<div class="grid-count max-count" style="display:inline-flex;align-items:center;gap:3px;"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>SET</div>` 
+      ? `<div class="grid-deck-badge badge-max shield-set-badge" style="background: linear-gradient(135deg, #0284c7, #0369a1) !important; border-color: #38bdf8 !important; color: #fff !important; display:inline-flex;align-items:center;gap:3px;"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>SET</div>` 
       : '';
 
     el.innerHTML = `
@@ -990,70 +1001,171 @@ function showPreview(type, data) {
     const displayHp = (typeof data.hp !== 'undefined' && data.hp !== null) ? data.hp : ((typeof data.life !== 'undefined' && data.life !== null) ? data.life : 0);
 
     // ATK/HP アイコンを大きく 34px x 34px
-    const atkImg = `<span class="stat-icon-gem" style="width: 34px !important; height: 34px !important; display: inline-block !important; background: url('/assets/images/ui/stat_atk.png') center/contain no-repeat !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)) !important; flex-shrink: 0 !important; margin: 0 !important;"></span>`;
-    const hpImg = `<span class="stat-icon-gem" style="width: 34px !important; height: 34px !important; display: inline-block !important; background: url('/assets/images/ui/stat_hp.png') center/contain no-repeat !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)) !important; flex-shrink: 0 !important; margin: 0 !important;"></span>`;
+    const atkImg = `<span class="stat-icon-gem" style="width: 32px !important; height: 32px !important; display: inline-block !important; background: url('/assets/images/ui/stat_atk.png') center/contain no-repeat !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)) !important; flex-shrink: 0 !important; margin: 0 !important;"></span>`;
+    const hpImg = `<span class="stat-icon-gem" style="width: 32px !important; height: 32px !important; display: inline-block !important; background: url('/assets/images/ui/stat_hp.png') center/contain no-repeat !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)) !important; flex-shrink: 0 !important; margin: 0 !important;"></span>`;
 
     const statsHtml = isUnit 
-      ? `<div class="preview-stats cd-stats" style="margin: 6px 0 !important; display: flex !important; gap: 12px !important; align-items: center !important; justify-content: flex-start !important; width: 100% !important;">
-          <div class="cd-jewel-stat cd-jewel-atk" style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 900 !important; font-size: 20px !important; color: #fff !important; background: rgba(15, 23, 42, 0.8) !important; padding: 4px 16px !important; border-radius: 8px !important; border: 1.5px solid rgba(239, 68, 68, 0.6) !important; box-shadow: 0 4px 10px rgba(0,0,0,0.4) !important;" title="攻撃力">
-            ${atkImg}<span style="font-size: 20px !important; font-weight: 900 !important; color: #fff !important;">${displayAtk}</span>
+      ? `<div class="preview-stats cd-stats" style="margin: 6px 0 !important; display: flex !important; gap: 10px !important; align-items: center !important; justify-content: flex-start !important; width: 100% !important;">
+          <div class="cd-jewel-stat cd-jewel-atk" style="flex: 1 !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; background: linear-gradient(135deg, rgba(80, 15, 15, 0.85), rgba(15, 23, 42, 0.95)) !important; padding: 4px 12px !important; border-radius: 8px !important; border: 1.5px solid rgba(239, 68, 68, 0.7) !important; box-shadow: 0 4px 10px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15) !important;" title="攻撃力">
+            ${atkImg}<span style="font-family: 'Rajdhani', sans-serif !important; font-size: 24px !important; font-weight: 900 !important; color: #fff !important; line-height: 1 !important;">${displayAtk}</span>
           </div>
-          <div class="cd-jewel-stat cd-jewel-hp" style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 900 !important; font-size: 20px !important; color: #fff !important; background: rgba(15, 23, 42, 0.8) !important; padding: 4px 16px !important; border-radius: 8px !important; border: 1.5px solid rgba(16, 185, 129, 0.6) !important; box-shadow: 0 4px 10px rgba(0,0,0,0.4) !important;" title="体力">
-            ${hpImg}<span style="font-size: 20px !important; font-weight: 900 !important; color: #fff !important;">${displayHp}</span>
+          <div class="cd-jewel-stat cd-jewel-hp" style="flex: 1 !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; background: linear-gradient(135deg, rgba(6, 78, 59, 0.85), rgba(15, 23, 42, 0.95)) !important; padding: 4px 12px !important; border-radius: 8px !important; border: 1.5px solid rgba(16, 185, 129, 0.7) !important; box-shadow: 0 4px 10px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15) !important;" title="体力">
+            ${hpImg}<span style="font-family: 'Rajdhani', sans-serif !important; font-size: 24px !important; font-weight: 900 !important; color: #fff !important; line-height: 1 !important;">${displayHp}</span>
           </div>
          </div>` 
       : '';
 
+    // キーワード解説ボックスの動的生成
+    let keywordExplHtml = '';
+    if (data.keywords && data.keywords.length > 0) {
+      const DEFAULT_DESC = {
+        taunt: '前列にいる場合、相手はこのユニット以外を攻撃できない。',
+        rush: '場に出たターンから即座に攻撃できる。',
+        speed: '場に出たターンから即座に攻撃できる。',
+        stealth: '攻撃するまで相手の攻撃やスペル・能力の対象にならない。',
+        double_strike: '攻撃時に2回連続でダメージを与える。',
+        barrier: '1度だけ受けるダメージを無効化する。',
+        endure: '撃破時に1度だけHP1で踏みとどまる。',
+        siege: '相手シールドに与えるダメージが2になる。',
+        comeback: '自軍のシールドが残り1枚以下の時に追加効果が発動する。',
+        lethal: '1以上のダメージを与えた対象を即座に破壊する。',
+        crisis: '自分のライフが3以下の時に追加効果が発動する。',
+        snipe: '前後列ルールや挑発を無視して任意の敵を攻撃できる。',
+        resonance: 'スペルカードをプレイするたびに追加効果が発動する。',
+        silence: '対象の全キーワードとアビリティを無効化する。',
+        link: 'このターンに他のカードをプレイしていると追加効果が発動する。',
+        vanguard: '前列に味方がこの1体のみの時に追加効果が発動する。',
+        rearguard: '後列に味方がこの1体のみの時に追加効果が発動する。',
+        spellshield: '相手のスペルや能力の対象に選ばれない。',
+        sacrifice: '味方ユニット1体を破壊してプレイする。',
+        echo: '場に出た時、SPを支払い同名ユニットを召喚する。',
+        overload: '次のターンの獲得SPが減少する。',
+        loner: '場に他の味方ユニットが存在しない時に追加効果が発動する。',
+        avenger: 'このターンに味方が撃破されている時に追加効果が発動する。',
+        decay: 'ターン終了時に1ダメージを受ける。',
+        legacy: 'このユニットが破壊された時に効果が発動する。'
+      };
+
+      const explItems = data.keywords.map(kw => {
+        const parts = kw.split(':');
+        const baseKw = parts[0];
+        const rawVal = parts[1];
+        const master = window.keywordMap && window.keywordMap[baseKw];
+        const name = master ? master.name : (KEYWORD_NAMES[baseKw] || baseKw);
+        let desc = master ? master.description : (DEFAULT_DESC[baseKw] || '');
+        if (rawVal && desc) {
+          const valJp = COLOR_JP[rawVal.toLowerCase()] || rawVal;
+          desc = `(${valJp}) ${desc}`;
+        }
+        return desc ? { name, desc } : null;
+      }).filter(Boolean);
+
+      if (explItems.length > 0) {
+        keywordExplHtml = `
+          <div class="preview-kw-expl-box" style="margin-top: 8px !important; width: 100% !important; background: rgba(15, 23, 42, 0.75) !important; border: 1px solid rgba(251, 191, 36, 0.25) !important; border-radius: 8px !important; padding: 8px 10px !important; box-sizing: border-box !important;">
+            <div style="font-size: 11px !important; font-weight: 700 !important; color: #fbbf24 !important; display: flex !important; align-items: center !important; gap: 4px !important; margin-bottom: 6px !important; letter-spacing: 0.5px !important;">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <span>特性・キーワード解説</span>
+            </div>
+            <div style="display: flex !important; flex-direction: column !important; gap: 5px !important;">
+              ${explItems.map(item => `
+                <div style="display: flex !important; flex-direction: column !important; gap: 2px !important;">
+                  <span style="font-size: 11.5px !important; font-weight: 800 !important; color: #fde047 !important;">【${item.name}】</span>
+                  <span style="font-size: 11px !important; color: #cbd5e1 !important; line-height: 1.4 !important;">${item.desc}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // キーワードもトークンもない場合のメタ情報
+    let cardMetaHtml = '';
+    if (!keywordExplHtml && (!tokenCards || tokenCards.length === 0)) {
+      const expMap = { basic: '基本パック (ベーシック)', expansion1: '第1弾「創世の黎明」', promo: 'プロモーション' };
+      const expName = expMap[data.expansion] || data.expansion || 'ベーシック';
+      cardMetaHtml = `
+        <div class="preview-meta-box" style="margin-top: 8px !important; width: 100% !important; background: rgba(15, 23, 42, 0.6) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 8px !important; padding: 8px 10px !important; box-sizing: border-box !important;">
+          <div style="display: flex !important; justify-content: space-between !important; font-size: 11px !important; margin-bottom: 4px !important;">
+            <span style="color: #94a3b8 !important;">収録セット</span>
+            <span style="color: #e2e8f0 !important; font-weight: 600 !important;">${expName}</span>
+          </div>
+          <div style="display: flex !important; justify-content: space-between !important; font-size: 11px !important; margin-bottom: 4px !important;">
+            <span style="color: #94a3b8 !important;">カードID</span>
+            <span style="color: #fbbf24 !important; font-family: 'Rajdhani', sans-serif !important; font-weight: 700 !important;">${data.id || data.code || '-'}</span>
+          </div>
+          <div style="display: flex !important; justify-content: space-between !important; font-size: 11px !important;">
+            <span style="color: #94a3b8 !important;">デッキ上限</span>
+            <span style="color: #e2e8f0 !important; font-weight: 600 !important;">最大 ${maxCopies} 枚</span>
+          </div>
+        </div>
+      `;
+    }
+
     // UNIT と COMMON (レアリティ) のフォント・スタイルを完全統一
     const badgeCommonStyle = `font-family: 'Shippori Mincho', 'Inter', system-ui, -apple-system, sans-serif !important; font-size: 12px !important; font-weight: 700 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; height: 26px !important; padding: 0 12px !important; border-radius: 6px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; box-sizing: border-box !important; margin: 0 !important;`;
 
-    // 親コンテナ container (preview-content) 自身のインラインプロパティを物理設定
-    container.style.cssText = "display: flex !important; flex-direction: column !important; justify-content: flex-start !important; align-items: flex-start !important; text-align: left !important;";
+    // 親コンテナ container (preview-content) 自身のインラインプロパティを物理設定 (100%高さを活かした上部情報・最下部コンソール分離構造)
+    container.style.cssText = "display: flex !important; flex-direction: column !important; justify-content: space-between !important; align-items: flex-start !important; text-align: left !important; height: 100% !important; min-height: 0 !important; box-sizing: border-box !important; overflow: hidden !important;";
 
     // コストの「右横」に UNIT と COMMON を直列並びで配置
     container.innerHTML = `
-      <div class="preview-card-image" style="background-image: url('${bgImage}') !important; width: 100% !important; aspect-ratio: 3/4 !important; border-radius: 12px !important; background-size: cover !important; background-position: center !important; margin-bottom: 8px !important; flex-shrink: 0 !important;"></div>
-      
-      <!-- preview-info: 上から隙間なく吸着するフレキシブルコンテナ (縦伸ばし flex:1 や space-between を物理破棄) -->
-      <div class="preview-info" style="padding: 0 !important; margin: 0 !important; display: flex !important; flex-direction: column !important; align-items: flex-start !important; justify-content: flex-start !important; text-align: left !important; width: 100% !important; height: auto !important; min-height: 0 !important; flex: none !important;">
+      <div class="preview-scroll-body" style="width: 100% !important; display: flex !important; flex-direction: column !important; align-items: flex-start !important; flex: 1 1 auto !important; min-height: 0 !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 2px !important; margin-bottom: 8px !important;">
+        <div class="preview-card-image" style="background-image: url('${bgImage}') !important; width: 100% !important; aspect-ratio: 3/4 !important; border-radius: 12px !important; background-size: cover !important; background-position: center !important; margin-bottom: 8px !important; flex-shrink: 0 !important; border: 1.5px solid rgba(251, 191, 36, 0.3) !important; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;"></div>
         
-        <!-- 1行目: コストと UNIT / RARITY バッジ (横並び flex-direction: row) -->
-        <div class="preview-header-meta" style="display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: flex-start !important; width: 100% !important; gap: 8px !important; margin-top: 0 !important; margin-bottom: 4px !important; flex: none !important;">
-          <span class="preview-cost" style="width: 36px !important; height: 36px !important; font-size: 18px !important; font-weight: 900 !important; background-image: url('/assets/images/icon/divine/${(data.color || 'neutral').toLowerCase()}.png') !important; background-size: contain !important; background-repeat: no-repeat !important; background-position: center !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; text-shadow: 0 2px 4px #000 !important; margin: 0 !important; flex-shrink: 0 !important;">${data.cost || (data.durability || 0)}</span>
+        <!-- preview-info: 上から隙間なく吸着するフレキシブルコンテナ -->
+        <div class="preview-info" style="padding: 0 !important; margin: 0 !important; display: flex !important; flex-direction: column !important; align-items: flex-start !important; justify-content: flex-start !important; text-align: left !important; width: 100% !important; height: auto !important; min-height: 0 !important; flex: none !important;">
           
-          <div class="cd-type-badge" style="${badgeCommonStyle} background: rgba(255,255,255,0.08) !important; border: 1px solid rgba(255,255,255,0.2) !important; color: #cbd5e1 !important;">
-            ${typeText}
+          <!-- 1行目: コストと UNIT / RARITY バッジ (横並び flex-direction: row) -->
+          <div class="preview-header-meta" style="display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: flex-start !important; width: 100% !important; gap: 8px !important; margin-top: 0 !important; margin-bottom: 4px !important; flex: none !important;">
+            <span class="preview-cost" style="width: 36px !important; height: 36px !important; font-family: 'Rajdhani', sans-serif !important; font-size: 20px !important; font-weight: 900 !important; background-image: url('/assets/images/icon/divine/${(data.color || 'neutral').toLowerCase()}.png') !important; background-size: contain !important; background-repeat: no-repeat !important; background-position: center !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; text-shadow: 0 2px 4px #000 !important; margin: 0 !important; flex-shrink: 0 !important;">${data.cost || (data.durability || 0)}</span>
+            
+            <div class="cd-type-badge" style="${badgeCommonStyle} background: rgba(255,255,255,0.08) !important; border: 1px solid rgba(255,255,255,0.2) !important; color: #cbd5e1 !important;">
+              ${typeText}
+            </div>
+            <div class="cd-rarity rarity-${rVal}" style="${badgeCommonStyle}">
+              ${rarityText}
+            </div>
           </div>
-          <div class="cd-rarity rarity-${rVal}" style="${badgeCommonStyle}">
-            ${rarityText}
+          
+          <!-- 2行目: カード名 -->
+          <div class="preview-title-row" style="margin-top: 2px !important; margin-bottom: 4px !important; width: 100% !important; text-align: left !important; flex: none !important;">
+            <h2 style="font-size: 18px !important; font-weight: 800 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; margin: 0 !important; line-height: 1.2 !important; color: #ffffff !important; text-align: left !important;" title="${data.name}">${data.name}</h2>
           </div>
-        </div>
-        
-        <!-- 2行目: カード名 -->
-        <div class="preview-title-row" style="margin-top: 2px !important; margin-bottom: 4px !important; width: 100% !important; text-align: left !important; flex: none !important;">
-          <h2 style="font-size: 18px !important; font-weight: 800 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; margin: 0 !important; line-height: 1.2 !important; color: #ffffff !important; text-align: left !important;" title="${data.name}">${data.name}</h2>
-        </div>
 
-        ${statsHtml}
-        ${keywordHtml}
-        
-        <!-- 5行目: アビリティ効果本文（先頭空白・物理改行を100%完全抹消した超即着上詰め描画） -->
-        <div class="preview-desc" style="margin-top: 4px !important; margin-bottom: 4px !important; padding: 0 !important; border: none !important; width: 100% !important; text-align: left !important; text-align-last: left !important; display: block !important; float: left !important; clear: both !important; align-self: flex-start !important; flex: none !important;"><div style="text-align: left !important; text-align-last: left !important; width: 100% !important; float: left !important; display: block !important; margin: 0 !important; padding: 0 !important; color: #ffffff !important; font-size: 14px !important; font-weight: 700 !important; line-height: 1.5 !important;">${abilitiesHtml}</div></div>
-        ${flavorHtml}
-        ${tokenHtml}
+          ${statsHtml}
+          ${keywordHtml}
+          
+          <!-- アビリティ効果本文 -->
+          <div class="preview-ability-box" style="margin-top: 6px !important; margin-bottom: 6px !important; width: 100% !important; background: rgba(15, 23, 42, 0.75) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; border-radius: 8px !important; padding: 8px 10px !important; box-sizing: border-box !important;">
+            <div style="font-size: 11px !important; font-weight: 700 !important; color: #94a3b8 !important; margin-bottom: 4px !important; display: flex !important; align-items: center !important; gap: 4px !important;">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fbbf24" stroke-width="2.2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              <span>アビリティ / 効果</span>
+            </div>
+            <div style="text-align: left !important; width: 100% !important; color: #ffffff !important; font-size: 14.5px !important; font-weight: 700 !important; line-height: 1.5 !important;">${abilitiesHtml}</div>
+          </div>
+          ${keywordExplHtml}
+          ${tokenHtml}
+          ${cardMetaHtml}
+        </div>
       </div>
       
-      <!-- プレビューコントロール部 (margin-top: auto を排除し 8px で直結) -->
-      <div class="preview-controls" style="margin-top: 8px !important; width: 100% !important; flex: none !important;">
-        <label style="font-size: 12px !important; font-weight: 700 !important; color: #94a3b8 !important; display: block !important; margin-bottom: 4px !important; text-align: left !important;">デッキに登録されている枚数</label>
-        <div class="control-group" style="margin-top: 4px !important;">
-          <button class="btn btn-secondary" id="btn-minus" ${count === 0 ? 'disabled' : ''}>ー</button>
-          <span class="count-display">${count} / ${maxCopies}</span>
-          <button class="btn btn-primary" id="btn-plus" ${count >= maxCopies || Object.values(deck).reduce((a,b)=>a+b,0) >= 40 ? 'disabled' : ''}>＋</button>
+      <!-- プレビューコントロール部 (最下部固定デッキ投入コンソール) -->
+      <div class="preview-controls-card" style="margin-top: auto !important; width: 100% !important; background: linear-gradient(180deg, rgba(15, 23, 42, 0.88) 0%, rgba(10, 15, 28, 0.98) 100%) !important; border: 1px solid rgba(251, 191, 36, 0.3) !important; border-radius: 10px !important; padding: 10px !important; box-sizing: border-box !important; box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important; flex-shrink: 0 !important;">
+        <div style="display: flex !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 8px !important;">
+          <span style="font-size: 12px !important; font-weight: 700 !important; color: #94a3b8 !important;">デッキ投入枚数</span>
+          <span style="font-family: 'Rajdhani', sans-serif !important; font-size: 14px !important; font-weight: 800 !important; color: ${count >= maxCopies ? '#fbbf24' : '#e2e8f0'} !important; background: rgba(0,0,0,0.4) !important; padding: 2px 8px !important; border-radius: 6px !important; border: 1px solid ${count >= maxCopies ? 'rgba(251, 191, 36, 0.6)' : 'rgba(255,255,255,0.1)'} !important;">
+            ${count} / ${maxCopies}${count >= maxCopies ? ' (MAX)' : ''}
+          </span>
         </div>
-        <button class="btn btn-secondary btn-full-detail" id="btn-open-full-detail" style="width: 100% !important; margin-top: 6px !important; padding: 6px 12px !important; font-size: 12px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 6px !important; border: 1px solid rgba(251, 191, 36, 0.4) !important; color: #fbbf24 !important; background: rgba(15, 23, 42, 0.8) !important; border-radius: 6px !important; cursor: pointer !important;">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-          <span>カード詳細を開く</span>
+        <div class="pc-control-group">
+          <button class="pc-btn pc-btn-remove" id="btn-minus" ${count === 0 ? 'disabled' : ''}>ー 1枚外す</button>
+          <button class="pc-btn pc-btn-add" id="btn-plus" ${count >= maxCopies || Object.values(deck).reduce((a,b)=>a+b,0) >= 40 ? 'disabled' : ''}>＋ 追加する</button>
+        </div>
+        <button class="btn btn-secondary btn-full-detail" id="btn-open-full-detail" style="width: 100% !important; margin-top: 8px !important; height: 32px !important; font-size: 12px !important; font-weight: 700 !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 6px !important; border: 1px solid rgba(251, 191, 36, 0.4) !important; color: #fbbf24 !important; background: rgba(15, 23, 42, 0.6) !important; border-radius: 6px !important; cursor: pointer !important; transition: all 0.2s ease !important;">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          <span>カード詳細（全画面）を開く</span>
         </button>
       </div>
     `;
@@ -1114,27 +1226,49 @@ function showPreview(type, data) {
     const abilityText = (data.skill ? data.skill.text || '' : '能力なし').toString().replace(/\\n/g, '\n');
     
     container.innerHTML = `
-      <div class="preview-card-image" style="background-image: url('${bgImage}')"></div>
-      <div class="preview-info">
-        <div class="preview-title">
-          <h2>${data.name}</h2>
+      <div class="preview-scroll-body" style="width: 100% !important; display: flex !important; flex-direction: column !important; align-items: flex-start !important; flex: 1 1 auto !important; min-height: 0 !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 2px !important; margin-bottom: 8px !important;">
+        <div class="preview-card-image" style="background-image: url('${bgImage}') !important; width: 100% !important; aspect-ratio: 3/4 !important; border-radius: 12px !important; background-size: cover !important; background-position: center !important; margin-bottom: 8px !important; flex-shrink: 0 !important; border: 1.5px solid rgba(56, 189, 248, 0.4) !important; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;"></div>
+        <div class="preview-info" style="padding: 0 !important; margin: 0 !important; display: flex !important; flex-direction: column !important; align-items: flex-start !important; justify-content: flex-start !important; text-align: left !important; width: 100% !important; height: auto !important; min-height: 0 !important; flex: none !important;">
+          <div class="preview-header-meta" style="display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: flex-start !important; width: 100% !important; gap: 8px !important; margin-top: 0 !important; margin-bottom: 4px !important; flex: none !important;">
+            <div class="cd-type-badge" style="font-family: 'Shippori Mincho', 'Inter', sans-serif !important; font-size: 12px !important; font-weight: 700 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; height: 26px !important; padding: 0 12px !important; border-radius: 6px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; background: rgba(56, 189, 248, 0.12) !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; color: #38bdf8 !important;">
+              SHIELD
+            </div>
+          </div>
+          <div class="preview-title-row" style="margin-top: 2px !important; margin-bottom: 4px !important; width: 100% !important; text-align: left !important; flex: none !important;">
+            <h2 style="font-size: 18px !important; font-weight: 800 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; margin: 0 !important; line-height: 1.2 !important; color: #ffffff !important; text-align: left !important;" title="${data.name}">${data.name}</h2>
+          </div>
+          <div class="preview-stats" style="margin: 6px 0 !important; display: flex !important; align-items: center !important; width: 100% !important;">
+            <div style="background: linear-gradient(135deg, rgba(3, 105, 161, 0.8), rgba(15, 23, 42, 0.95)) !important; padding: 6px 16px !important; border-radius: 8px !important; border: 1.5px solid rgba(56, 189, 248, 0.7) !important; display: inline-flex !important; align-items: center !important; gap: 8px !important; box-shadow: 0 4px 10px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2) !important;">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#38bdf8" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span style="font-size: 12px !important; font-weight: 700 !important; color: #94a3b8 !important;">耐久値:</span>
+              <span style="font-family: 'Rajdhani', sans-serif !important; font-size: 22px !important; font-weight: 900 !important; color: #ffffff !important; line-height: 1 !important;">${data.durability || 1}</span>
+            </div>
+          </div>
+          <div class="preview-desc" style="margin-top: 6px !important; margin-bottom: 8px !important; padding: 0 !important; border: none !important; width: 100% !important; text-align: left !important; display: block !important;"><div style="color: #ffffff !important; font-size: 14px !important; font-weight: 700 !important; line-height: 1.5 !important;">${abilityText}</div></div>
+          <div class="preview-meta-box" style="margin-top: 6px !important; width: 100% !important; background: rgba(15, 23, 42, 0.6) !important; border: 1px solid rgba(56, 189, 248, 0.2) !important; border-radius: 8px !important; padding: 8px 10px !important; box-sizing: border-box !important;">
+            <div style="font-size: 11px !important; color: #94a3b8 !important; line-height: 1.4 !important;">
+              シールド効果は、プレイヤーへのダメージを受けた際に発動する守護の聖遺物です。
+            </div>
+          </div>
         </div>
-        <div class="preview-stats" style="margin: 4px 0 !important; display: flex !important; align-items: center !important;">
-          <span style="background: rgba(15, 23, 42, 0.85); padding: 4px 14px; border-radius: 6px; border: 1.5px solid rgba(251, 191, 36, 0.5); font-weight: 800; font-size: 13px; color: #fbbf24; letter-spacing: 0.5px;">耐久値 ${data.durability || 1}</span>
-        </div>
-        <div class="preview-desc" style="margin-top: 6px !important; margin-bottom: 4px !important; text-align: left !important; text-align-last: left !important; width: 100% !important; box-sizing: border-box !important; align-self: flex-start !important;">${abilityText}</div>
       </div>
       
-      <div class="preview-controls">
-        <label>シールド枠（最大3）</label>
-        <div class="control-group">
-          <button class="btn ${isSelected ? 'btn-secondary' : 'btn-primary'}" id="btn-toggle-shield" style="width:100%;">
-            ${isSelected ? '選択を解除' : 'シールドを選択'}
+      <!-- プレビューコントロール部 (最下部固定デッキ投入コンソール) -->
+      <div class="preview-controls-card" style="margin-top: auto !important; width: 100% !important; background: linear-gradient(180deg, rgba(15, 23, 42, 0.88) 0%, rgba(10, 15, 28, 0.98) 100%) !important; border: 1px solid rgba(56, 189, 248, 0.35) !important; border-radius: 10px !important; padding: 10px !important; box-sizing: border-box !important; box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important; flex-shrink: 0 !important;">
+        <div style="display: flex !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 8px !important;">
+          <span style="font-size: 12px !important; font-weight: 700 !important; color: #94a3b8 !important;">シールド枠登録</span>
+          <span style="font-family: 'Rajdhani', sans-serif !important; font-size: 13px !important; font-weight: 800 !important; color: ${isSelected ? '#38bdf8' : '#94a3b8'} !important; background: rgba(0,0,0,0.4) !important; padding: 2px 8px !important; border-radius: 6px !important; border: 1px solid ${isSelected ? 'rgba(56, 189, 248, 0.6)' : 'rgba(255,255,255,0.1)'} !important;">
+            ${isSelected ? 'セット中' : '未セット'} (3枠中 ${selectedShields.length}枠)
+          </span>
+        </div>
+        <div class="pc-control-group" style="width: 100% !important;">
+          <button class="pc-btn ${isSelected ? 'pc-btn-remove' : 'pc-btn-add'}" id="btn-toggle-shield" style="width: 100% !important;">
+            ${isSelected ? 'ー シールド枠から解除' : '＋ シールド枠にセット'}
           </button>
         </div>
-        <button class="btn btn-secondary btn-full-detail" id="btn-open-shield-detail" style="width: 100% !important; margin-top: 6px !important; padding: 6px 12px !important; font-size: 12px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 6px !important; border: 1px solid rgba(251, 191, 36, 0.4) !important; color: #fbbf24 !important; background: rgba(15, 23, 42, 0.8) !important; border-radius: 6px !important; cursor: pointer !important;">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-          <span>シールド詳細を開く</span>
+        <button class="btn btn-secondary btn-full-detail" id="btn-open-shield-detail" style="width: 100% !important; margin-top: 8px !important; height: 32px !important; font-size: 12px !important; font-weight: 700 !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 6px !important; border: 1px solid rgba(56, 189, 248, 0.4) !important; color: #38bdf8 !important; background: rgba(15, 23, 42, 0.6) !important; border-radius: 6px !important; cursor: pointer !important; transition: all 0.2s ease !important;">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          <span>シールド詳細（全画面）を開く</span>
         </button>
       </div>
     `;
